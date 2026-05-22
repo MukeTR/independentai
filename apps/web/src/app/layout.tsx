@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://independentai.space'),
   verification: {
     google: 'ImjLNUrWJkApbuMOEU3U4g90MqhDu2UFiAa6tTbReVs',
+    other: {
+      'msvalidate.01': 'F440311F8BC957B6B3A54D13B82CFAC8',
+    },
   },
 };
 
