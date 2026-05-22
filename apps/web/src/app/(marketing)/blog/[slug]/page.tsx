@@ -4,17 +4,51 @@ import { Container } from '@/components/container';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd, JsonLd } from '@/components/json-ld';
 import { LlmsTxtGenerator } from '@/components/marketing/llms-txt-generator';
+import { AiSeoChecklist } from '@/components/marketing/ai-seo-checklist';
+import { VisibilityCalculator } from '@/components/marketing/visibility-calculator';
+import { SchemaGenerator } from '@/components/marketing/schema-generator';
+import { GeoAuditChecklist } from '@/components/marketing/geo-audit-checklist';
 import { buildMetadata } from '@/lib/seo';
 import { POSTS, getPostBySlug } from '@/data/blog-posts';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 
 // Slug bazlı interaktif araç eklemeleri.
-// AI'a doğrudan konuşmak isteyen okuyucu için inline generator.
+// AI'a doğrudan konuşmak isteyen okuyucu için inline tool.
 const INLINE_TOOLS: Record<string, { title: string; body: string; component: React.ComponentType }> = {
   'llms-txt-rehberi-2026': {
     title: 'Kendi llms.txt\'ini şimdi oluştur',
     body: 'Aşağıdaki interaktif araç ile markanın bilgilerini gir, llms.txt dosyanı anında indir. 30 saniyede hazır.',
     component: LlmsTxtGenerator,
+  },
+  'llms-txt-nedir-nasil-kurulur': {
+    title: 'llms.txt jeneratörü',
+    body: 'Formu doldur, kendi markana özel llms.txt\'ini anında üret ve indir.',
+    component: LlmsTxtGenerator,
+  },
+  'ai-seo-checklist-2026': {
+    title: '25 maddelik checklist\'i şimdi kontrol et',
+    body: 'Aşağıdaki interaktif checklist ile sitenizin GEO sağlığını ölç. Skor + indirilebilir rapor.',
+    component: AiSeoChecklist,
+  },
+  'ai-visibility-score-nasil-hesaplanir': {
+    title: 'Kendi Visibility Score\'unu hesapla',
+    body: 'Promptlarınızı ve mention sayılarınızı gir, anlık Visibility Score + Share of Voice çıktısı al.',
+    component: VisibilityCalculator,
+  },
+  'ai-gorunurlugu-icin-structured-data-rehberi': {
+    title: 'Organization JSON-LD üret',
+    body: 'Şirket bilgilerinizi gir, schema.org formatında JSON-LD\'nizi anında üret ve HTML\'inize ekle.',
+    component: SchemaGenerator,
+  },
+  'schema-markup-geoya-katki-saglar-mi': {
+    title: 'Organization Schema Generator',
+    body: 'Schema markup\'ı düşünmek yerine üret. Form doldur, HTML\'e yapıştır.',
+    component: SchemaGenerator,
+  },
+  'geo-audit-nasil-yapilir': {
+    title: 'GEO Audit\'ini şimdi başlat',
+    body: '10 adımlık denetimi sayfayı kapatmadan tamamla. Notlarınla beraber markdown rapor olarak indir.',
+    component: GeoAuditChecklist,
   },
 };
 
