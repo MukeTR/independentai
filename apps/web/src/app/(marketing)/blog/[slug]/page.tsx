@@ -3,9 +3,20 @@ import { notFound } from 'next/navigation';
 import { Container } from '@/components/container';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd, JsonLd } from '@/components/json-ld';
+import { LlmsTxtGenerator } from '@/components/marketing/llms-txt-generator';
 import { buildMetadata } from '@/lib/seo';
 import { POSTS, getPostBySlug } from '@/data/blog-posts';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
+
+// Slug bazlı interaktif araç eklemeleri.
+// AI'a doğrudan konuşmak isteyen okuyucu için inline generator.
+const INLINE_TOOLS: Record<string, { title: string; body: string; component: React.ComponentType }> = {
+  'llms-txt-rehberi-2026': {
+    title: 'Kendi llms.txt\'ini şimdi oluştur',
+    body: 'Aşağıdaki interaktif araç ile markanın bilgilerini gir, llms.txt dosyanı anında indir. 30 saniyede hazır.',
+    component: LlmsTxtGenerator,
+  },
+};
 
 export async function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
@@ -104,6 +115,21 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               }
             })}
           </div>
+
+          {INLINE_TOOLS[post.slug] && (
+            <div className="mt-12">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-brand" />
+                <span className="eyebrow text-brand-deep">İnteraktif araç</span>
+              </div>
+              <h2 className="font-display text-[28px] tracking-tight">{INLINE_TOOLS[post.slug]!.title}</h2>
+              <p className="text-[15px] text-ink-muted mt-3 leading-relaxed">{INLINE_TOOLS[post.slug]!.body}</p>
+              {(() => {
+                const Tool = INLINE_TOOLS[post.slug]!.component;
+                return <Tool />;
+              })()}
+            </div>
+          )}
 
           <div className="mt-16 pt-8 border-t-hairline border-hairline">
             <div className="eyebrow mb-4">Diğer yazılar</div>
