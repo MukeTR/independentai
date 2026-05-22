@@ -1,15 +1,30 @@
+import { BATCH_1 } from './blog-posts-batch-1';
+import { BATCH_2 } from './blog-posts-batch-2';
+import { BATCH_3 } from './blog-posts-batch-3';
+import { BATCH_4 } from './blog-posts-batch-4';
+
+export type BlogCategory = 'GEO' | 'AI' | 'Pazarlama' | 'Ürün' | 'Teknik' | 'Strateji' | 'Sektör';
+
+export type BlogBody =
+  | { type: 'p'; text: string }
+  | { type: 'h2'; text: string }
+  | { type: 'h3'; text: string }
+  | { type: 'ul'; items: string[] }
+  | { type: 'quote'; text: string }
+  | { type: 'code'; text: string };
+
 export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
   publishedAt: string;
   readTimeMin: number;
-  category: 'GEO' | 'AI' | 'Pazarlama' | 'Ürün';
+  category: BlogCategory;
   author: { name: string; role: string };
-  body: { type: 'p' | 'h2' | 'h3' | 'ul' | 'quote' | 'code'; text?: string; items?: string[] }[];
+  body: BlogBody[];
 };
 
-export const POSTS: BlogPost[] = [
+const ORIGINAL_POSTS: BlogPost[] = [
   {
     slug: 'geo-nedir-seo-nasil-degisti',
     title: 'GEO nedir, SEO\'dan ne farkı var?',
@@ -42,8 +57,7 @@ export const POSTS: BlogPost[] = [
   {
     slug: 'chatgpt-claude-gemini-marka-cevaplari-farkli-mi',
     title: 'ChatGPT, Claude ve Gemini aynı soruya farklı markalar mı öneriyor?',
-    excerpt:
-      'Üç modeli aynı 50 soruyla test ettik. Cevap: evet, ciddi farklar var — ve bu farklılıkların stratejik etkileri var.',
+    excerpt: 'Üç modeli aynı 50 soruyla test ettik. Cevap: evet, ciddi farklar var — ve bu farklılıkların stratejik etkileri var.',
     publishedAt: '2026-05-10',
     readTimeMin: 9,
     category: 'AI',
@@ -70,8 +84,7 @@ export const POSTS: BlogPost[] = [
   {
     slug: 'llms-txt-rehberi-2026',
     title: 'llms.txt: AI crawler\'lara markanızı doğrudan anlatın',
-    excerpt:
-      'llms.txt standardı 2025\'te ortaya çıktı, 2026\'da Türkiye\'de hızla yayılıyor. Robots.txt\'in AI versiyonu. Adım adım nasıl ekleneceğini anlattık.',
+    excerpt: 'llms.txt standardı 2025\'te ortaya çıktı, 2026\'da Türkiye\'de hızla yayılıyor. Robots.txt\'in AI versiyonu. Adım adım nasıl ekleneceğini anlattık.',
     publishedAt: '2026-05-05',
     readTimeMin: 6,
     category: 'GEO',
@@ -80,29 +93,9 @@ export const POSTS: BlogPost[] = [
       { type: 'p', text: 'llms.txt, web sitenizin köküne koyduğunuz bir markdown dosyası. AI modellerinin markanız hakkında doğru, yapılandırılmış bilgi alabilmesi için tasarlandı. Robots.txt\'in arama motorları için yaptığını AI için yapıyor.' },
       { type: 'h2', text: 'Neden gerekli?' },
       { type: 'p', text: 'AI modelleri web sitenizi taradığında HTML\'inizden, navigation\'ınızdan, JavaScript ile yüklenen içerikten birçok şey kaçırabilir. llms.txt size doğrudan kontrol veriyor: "İşte markamız, işte ne yapıyoruz, işte en önemli sayfalarımız." Kısa, net, yapılandırılmış.' },
-      { type: 'h2', text: 'Örnek llms.txt' },
-      { type: 'code', text: `# Acme Yazılım
-
-> KOBİ\'ler için bulut tabanlı muhasebe ve ön muhasebe yazılımı.
-
-Acme, 2018\'den beri 5.000+ KOBİ\'ye hizmet veriyor. Web tabanlı arayüz, mobil uygulama, e-fatura entegrasyonu, KDV ve gelir vergisi otomatik hesaplama özellikleri sunar.
-
-## Önemli sayfalar
-
-- [Ana sayfa](https://acme.com/): Ürün özeti
-- [Fiyatlandırma](https://acme.com/fiyat): Plan seçenekleri
-- [Özellikler](https://acme.com/ozellikler): Tüm özellik listesi
-- [Hakkımızda](https://acme.com/hakkimizda): Şirket bilgisi
-
-## Hakkında
-
-- Kuruluş: 2018
-- Lokasyon: Ankara
-- Müşteri sayısı: 5.000+
-- Hedef kitle: KOBİ\'ler (1-50 çalışan)` },
       { type: 'h2', text: 'Nasıl eklerim?' },
       { type: 'ul', items: [
-        '1. Yukarıdaki şablonu kendi markanıza uyarlayın.',
+        '1. Markdown şablonu kendi markanıza uyarlayın (sayfanın altında interaktif jeneratör mevcut).',
         '2. Dosyayı sitenizin köküne koyun: https://siteniz.com/llms.txt',
         '3. Content-Type olarak text/markdown veya text/plain ayarlayın.',
         '4. robots.txt\'inizde AI crawler\'ları (GPTBot, ClaudeBot, PerplexityBot) explicit allow edin.',
@@ -113,30 +106,35 @@ Acme, 2018\'den beri 5.000+ KOBİ\'ye hizmet veriyor. Web tabanlı arayüz, mobi
   {
     slug: 'tr-pazarinda-geo-2026',
     title: 'Türkiye pazarında GEO 2026: ilk hareket avantajı kimde?',
-    excerpt:
-      'TR pazarında AI brand monitoring oyununa giren ilk markalar 2 yıl içinde ciddi avantaj sağlayacak. Neden ve nasıl?',
+    excerpt: 'TR pazarında AI brand monitoring oyununa giren ilk markalar 2 yıl içinde ciddi avantaj sağlayacak. Neden ve nasıl?',
     publishedAt: '2026-04-28',
     readTimeMin: 8,
     category: 'Pazarlama',
     author: { name: 'Independent AI ekibi', role: 'Editöryal' },
     body: [
-      { type: 'p', text: 'Türkiye SaaS, e-ticaret ve hizmet pazarlarında bir gerçek: müşterileriniz AI\'yı SEO\'dan çok daha hızlı benimsiyor. 2026 Q1 itibarıyla TR\'de ChatGPT aktif kullanıcı sayısı 8 milyona yaklaştı. Bu kullanıcıların önemli kısmı satın alma kararını AI önerisi ile şekillendiriyor.' },
+      { type: 'p', text: 'Türkiye SaaS, e-ticaret ve hizmet pazarlarında bir gerçek: müşterileriniz AI\'yı SEO\'dan çok daha hızlı benimsiyor. 2026 Q1 itibarıyla TR\'de ChatGPT aktif kullanıcı sayısı 8 milyona yaklaştı.' },
       { type: 'h2', text: 'TR pazarında neden GEO öncelikli?' },
       { type: 'ul', items: [
-        'İngilizce dil avantajı: GPT modelleri Türkçe içerikte İngilizceye göre daha az hata yapıyor; markaları daha net öneriyorlar.',
-        'Yerel rekabet boşluğu: Profound, Otterly gibi global GEO oyuncular Türkçeye optimize değil. TR\'ye özel araç (Independent AI) yeni yeni geliyor.',
-        'Müşteri davranışı: Türk kullanıcılar yabancı kullanıcılara göre AI önerisine daha çok güveniyor (Statista 2026 araştırması).',
+        'GPT modelleri Türkçe içerikte İngilizceye göre daha az hata yapıyor; markaları daha net öneriyor.',
+        'Yerel rekabet boşluğu: Profound, Otterly gibi global GEO oyuncular Türkçeye optimize değil.',
+        'Türk kullanıcılar yabancı kullanıcılara göre AI önerisine daha çok güveniyor (Statista 2026).',
       ] },
-      { type: 'h2', text: 'İlk hareket avantajı somut mu?' },
-      { type: 'p', text: 'Evet. Bugün GEO\'ya yatırım yapan markalar 6-12 ay sonra önemli avantaj elde edecek. AI modellerinin eğitim verisi gecikmeli güncellenir — bugün AI cevaplarında ön plana çıkmak, gelecek 1-2 yıl boyunca yerinizi sağlamlaştırmak demek.' },
       { type: 'h2', text: 'Ne yapmalı?' },
-      { type: 'p', text: '1. Ölçün. Markanız bugün AI cevaplarında nerede? Hiçbir şey ölçmeden başlayamazsınız. Independent AI 6 ay ücretsiz; bu kullanım için biçilmiş kaftan.' },
-      { type: 'p', text: '2. İçerik stratejinizi GEO-uyumlu hale getirin. AI modellerinin markanızı doğru anlayacağı, yetkili, yapılandırılmış içerik üretin. Wikipedia\'ya benzer kalite ve tarafsız ton işe yarıyor.' },
-      { type: 'p', text: '3. llms.txt ekleyin (yukarıdaki rehberimize bakın).' },
+      { type: 'p', text: '1. Ölçün. Markanız bugün AI cevaplarında nerede? Independent AI 6 ay ücretsiz.' },
+      { type: 'p', text: '2. İçerik stratejinizi GEO-uyumlu hale getirin. AI modellerinin markanızı doğru anlayacağı, yetkili, yapılandırılmış içerik üretin.' },
+      { type: 'p', text: '3. llms.txt ekleyin.' },
       { type: 'p', text: '4. Her ay ölçün ve iterate edin. SEO\'da 3 ayda etki görürdüyseniz, GEO\'da etkiyi 6 ayda görmeyi planlayın.' },
     ],
   },
 ];
+
+export const POSTS: BlogPost[] = [
+  ...ORIGINAL_POSTS,
+  ...BATCH_1,
+  ...BATCH_2,
+  ...BATCH_3,
+  ...BATCH_4,
+].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return POSTS.find((p) => p.slug === slug);
