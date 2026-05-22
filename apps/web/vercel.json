@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @independentai/shared build && pnpm --filter @independentai/web build",
+  "installCommand": "echo 'skip - root install handles it'",
+  "outputDirectory": ".next"
+}
