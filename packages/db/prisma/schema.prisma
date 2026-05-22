@@ -19,6 +19,8 @@ model Tenant {
   id          String   @id @default(cuid())
   name        String
   website     String?
+  industry    String?  // örn. "saas", "ecommerce", "restaurant", "agency"
+  locale      String   @default("tr")
   // 6 aylık ücretsiz lansman: kayıt tarihi + 6 ay
   trialEndsAt DateTime
   createdAt   DateTime @default(now())
@@ -33,17 +35,21 @@ model Tenant {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  role         UserRole @default(OWNER)
-  tenantId     String
-  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  name          String?
+  role          UserRole @default(OWNER)
+  // Platform sahibi (independentai.space operatörü) için.
+  // Sıradan tenant user'larında false.
+  isSuperAdmin  Boolean  @default(false)
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([tenantId])
+  @@index([isSuperAdmin])
 }
 
 enum UserRole {

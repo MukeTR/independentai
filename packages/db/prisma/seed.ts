@@ -38,6 +38,7 @@ async function main() {
       passwordHash: hashPassword('demo1234'),
       name: 'Demo Kullanıcı',
       role: 'OWNER',
+      isSuperAdmin: true, // staging demo hesabı = super admin
     },
   });
 
