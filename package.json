@@ -5,7 +5,7 @@
   "description": "Independent AI — şirketlerin ChatGPT, Claude, Gemini gibi yapay zekalarda kendi markalarının nasıl konumlandığını izlediği bağımsız görünürlük platformu (independentai.space)",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
-    "build": "turbo run build",
+    "build": "pnpm --filter @independentai/db generate && turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
