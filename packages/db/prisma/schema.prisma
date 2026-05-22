@@ -1,0 +1,162 @@
+// Independent AI — Prisma şeması
+// Postgres (Neon free tier)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Tenant & User
+// ───────────────────────────────────────────────────────────────
+
+model Tenant {
+  id          String   @id @default(cuid())
+  name        String
+  website     String?
+  // 6 aylık ücretsiz lansman: kayıt tarihi + 6 ay
+  trialEndsAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  brands      Brand[]
+  prompts     Prompt[]
+  competitors Competitor[]
+
+  @@index([trialEndsAt])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         UserRole @default(OWNER)
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  VIEWER
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Brand (firmanın kendisi) ve Competitors
+// ───────────────────────────────────────────────────────────────
+
+model Brand {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String                  // ana marka adı: "Acme"
+  aliases   String[] @default([])   // ["Acme Corp", "acme.com", "Acmecorp"]
+  website   String?
+  isOwn     Boolean  @default(true) // firmanın kendi markası mı yoksa rakip mi?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mentions  BrandMention[]
+
+  @@index([tenantId])
+}
+
+model Competitor {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  aliases   String[] @default([])
+  website   String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Prompt (izlenecek sorular)
+// ───────────────────────────────────────────────────────────────
+
+model Prompt {
+  id        String       @id @default(cuid())
+  tenantId  String
+  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  text      String       // "İstanbul'da en iyi diş hekimi"
+  language  String       @default("tr")
+  category  String?      // örn. "discovery", "comparison", "review"
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  runs      ModelRun[]
+
+  @@index([tenantId, isActive])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  ModelRun (her gün her prompt × her model = bir kayıt)
+// ───────────────────────────────────────────────────────────────
+
+model ModelRun {
+  id           String     @id @default(cuid())
+  promptId     String
+  prompt       Prompt     @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  provider     AiProvider
+  modelName    String     // örn. "gpt-4o-mini", "claude-haiku-4-5", "gemini-1.5-flash"
+  responseText String     @db.Text
+  citations    Json?      // [{url, title, snippet}]
+  tokensUsed   Int?
+  costUsd      Float?
+  latencyMs    Int?
+  runDate      DateTime   @default(now())
+  isMocked     Boolean    @default(false)
+  errorMessage String?
+
+  mentions     BrandMention[]
+
+  @@index([promptId, runDate])
+  @@index([provider, runDate])
+}
+
+enum AiProvider {
+  OPENAI
+  ANTHROPIC
+  GOOGLE
+}
+
+// ───────────────────────────────────────────────────────────────
+//  BrandMention (bir run'ın içinde hangi marka geçti)
+// ───────────────────────────────────────────────────────────────
+
+model BrandMention {
+  id              String   @id @default(cuid())
+  modelRunId      String
+  modelRun        ModelRun @relation(fields: [modelRunId], references: [id], onDelete: Cascade)
+  brandId         String?  // null ise rakip / dış marka
+  brand           Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  mentionName     String   // gerçekte metinde geçen ad
+  isOwnBrand      Boolean  @default(false)
+  isCompetitor    Boolean  @default(false)
+  position        Int      // metindeki kaçıncı bahsedilen marka (1, 2, 3...)
+  sentiment       Sentiment @default(NEUTRAL)
+  snippet         String   @db.Text  // markanın geçtiği cümlenin etrafındaki bağlam
+
+  @@index([modelRunId])
+  @@index([brandId])
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
