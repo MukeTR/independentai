@@ -1,33 +1,16 @@
 import Link from 'next/link';
-import { api } from '@/lib/api';
+import { notFound } from 'next/navigation';
 import { PROVIDER_LABELS } from '@independentai/shared';
+import { requireSession } from '@/server/session';
+import { getPromptWithRuns } from '@/server/repo';
 import { RunNowButton } from './run-now-button';
-
-type PromptDetail = {
-  id: string;
-  text: string;
-  category: string | null;
-  isActive: boolean;
-  runs: {
-    id: string;
-    provider: keyof typeof PROVIDER_LABELS;
-    modelName: string;
-    responseText: string;
-    runDate: string;
-    isMocked: boolean;
-    mentions: { mentionName: string; isOwnBrand: boolean; isCompetitor: boolean; position: number; sentiment: string }[];
-  }[];
-};
 
 function highlightMentions(
   text: string,
-  mentions: PromptDetail['runs'][number]['mentions'],
+  mentions: { mentionName: string; isOwnBrand: boolean }[],
 ): React.ReactNode {
   if (!mentions.length) return text;
-  const tokens: { name: string; isOwn: boolean }[] = mentions.map((m) => ({
-    name: m.mentionName,
-    isOwn: m.isOwnBrand,
-  }));
+  const tokens = mentions.map((m) => ({ name: m.mentionName, isOwn: m.isOwnBrand }));
   const pattern = new RegExp(`(${tokens.map((t) => t.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
   const parts = text.split(pattern);
   return parts.map((part, i) => {
@@ -47,11 +30,12 @@ function highlightMentions(
 }
 
 export default async function PromptDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await requireSession();
   const { id } = await params;
-  const prompt = await api<PromptDetail>(`/prompts/${id}`);
+  const prompt = await getPromptWithRuns(session.tenantId, id);
+  if (!prompt) notFound();
 
-  // Latest run per provider
-  const latestByProvider = new Map<string, PromptDetail['runs'][number]>();
+  const latestByProvider = new Map<string, typeof prompt.runs[number]>();
   for (const r of prompt.runs) {
     if (!latestByProvider.has(r.provider)) latestByProvider.set(r.provider, r);
   }
@@ -75,7 +59,7 @@ export default async function PromptDetailPage({ params }: { params: Promise<{ i
             <div className="flex items-baseline justify-between">
               <div>
                 <div className="font-display text-[20px]">
-                  {PROVIDER_LABELS[run.provider]}
+                  {PROVIDER_LABELS[run.provider as keyof typeof PROVIDER_LABELS]}
                 </div>
                 <div className="font-mono text-[11px] text-ink-faint mt-1">
                   {run.modelName} · {new Date(run.runDate).toLocaleDateString('tr-TR')}

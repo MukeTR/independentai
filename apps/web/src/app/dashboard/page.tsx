@@ -1,10 +1,11 @@
-import { api } from '@/lib/api';
-import type { DashboardMetrics } from '@independentai/shared';
+import { requireSession } from '@/server/session';
+import { getDashboardMetrics } from '@/server/repo';
 import { MetricCard } from '@/components/metric-card';
 import { TrendChart } from '@/components/trend-chart';
 
 export default async function DashboardHome() {
-  const metrics = await api<DashboardMetrics>('/dashboard/metrics');
+  const session = await requireSession();
+  const metrics = await getDashboardMetrics(session.tenantId);
 
   return (
     <div className="max-w-6xl">
@@ -54,10 +55,7 @@ export default async function DashboardHome() {
                   <span className="font-mono text-[14px] tabular">{p.visibility}%</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-paper-4 mt-2 overflow-hidden">
-                  <div
-                    className="h-full bg-brand"
-                    style={{ width: `${p.visibility}%` }}
-                  />
+                  <div className="h-full bg-brand" style={{ width: `${p.visibility}%` }} />
                 </div>
               </li>
             ))}

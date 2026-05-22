@@ -14,7 +14,7 @@ export function NewPromptForm() {
     if (!text.trim()) return;
     setSaving(true);
     try {
-      await fetch('/api/proxy/prompts', {
+      await fetch('/api/prompts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text.trim(), language: 'tr' }),
@@ -30,7 +30,7 @@ export function NewPromptForm() {
     <form onSubmit={submit} className="card p-5 flex gap-3">
       <input
         className="input"
-        placeholder='Örn: "Türkiye\'de en iyi muhasebe yazılımı hangisi?"'
+        placeholder={`Örn: "Türkiye'de en iyi muhasebe yazılımı hangisi?"`}
         value={text}
         onChange={(e) => setText(e.target.value)}
       />

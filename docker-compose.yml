@@ -1,6 +1,5 @@
-# Yerel geliştirme için opsiyonel.
-# Önerilen: Neon (postgres) + Upstash (redis) free tier — bu dosyayı kullanma.
-# Bu dosya sadece offline geliştirme için fallback.
+# Yerel geliştirme için offline fallback.
+# Önerilen: Neon free tier — bu dosyayı kullanma.
 services:
   postgres:
     image: postgres:16-alpine
@@ -15,15 +14,5 @@ services:
       - pg-data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  redis:
-    image: redis:7-alpine
-    container_name: independentai-redis
-    ports:
-      - "6380:6379"
-    volumes:
-      - redis-data:/data
-    restart: unless-stopped
-
 volumes:
   pg-data:
-  redis-data:

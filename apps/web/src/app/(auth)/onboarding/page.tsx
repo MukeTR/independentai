@@ -29,20 +29,20 @@ export default function OnboardingPage() {
     setSaving(true);
     setError(null);
     try {
-      await fetch('/api/proxy/brands', {
+      await fetch('/api/brands', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: brandName, aliases, website: website || undefined }),
       });
       for (const c of competitors) {
-        await fetch('/api/proxy/competitors', {
+        await fetch('/api/competitors', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: c, aliases: [] }),
         });
       }
       for (const p of prompts) {
-        await fetch('/api/proxy/prompts', {
+        await fetch('/api/prompts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: p, language: 'tr' }),

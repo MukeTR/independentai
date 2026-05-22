@@ -25,9 +25,9 @@ export function BrandSettingsForm({ brands }: { brands: Brand[] }) {
     const body = JSON.stringify({ name, aliases, website: website || undefined });
     try {
       if (existing) {
-        await fetch(`/api/proxy/brands/${existing.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
+        await fetch(`/api/brands/${existing.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
       } else {
-        await fetch('/api/proxy/brands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+        await fetch('/api/brands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       }
       setSavedAt(new Date().toLocaleTimeString('tr-TR'));
       router.refresh();

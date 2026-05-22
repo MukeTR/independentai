@@ -4,37 +4,47 @@
 
 **independentai.space** — ChatGPT, Claude ve Gemini'nin alanınızla ilgili sorulara verdiği cevaplarda markanız geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız, üçüncü taraf bir gözle ölçer.
 
-## Stack
+> 🎁 **Lansman:** 2026-05-22 itibarıyla kayıt olan herkese **ilk 6 ay tamamen ücretsiz**.
+
+## Stack ($0/ay ile başlar)
 
 | Katman | Teknoloji | Free Tier |
 |---|---|---|
-| Web | Next.js 15 + Tailwind | Vercel |
-| API | NestJS | Railway |
-| Worker | BullMQ + cron | Railway |
+| Web + API + Cron | Next.js 15 (App Router, Route Handlers, Vercel Cron) | Vercel Hobby |
 | DB | Postgres + Prisma | Neon |
-| Cache/Queue | Redis | Upstash |
-| AI | OpenAI, Anthropic, Google Gemini | pay-as-you-go |
+| AI | OpenAI, Anthropic, Google Gemini (mock fallback) | pay-as-you-go |
+
+Mimari tek deploy: tüm API endpoint'ler `apps/web/src/app/api/*` altında Next.js route handlers. Daily cron Vercel Cron tarafından `/api/cron/daily-run`'a vurur. Worker yok, Redis yok.
 
 ## Geliştirme
 
 ```bash
 pnpm install
-cp .env.example .env  # API key'leri doldur
+cp .env.example .env   # DATABASE_URL ve JWT_SECRET zorunlu
 
-# DB + Redis local (Neon + Upstash ücretsiz hesabı önerilir)
-pnpm db:push
-pnpm db:seed
-
-# Hepsini birlikte çalıştır
-pnpm dev
+pnpm db:push           # şemayı DB'ye yayınla
+pnpm db:seed           # demo veri (opsiyonel)
+pnpm dev               # http://localhost:3200
 ```
 
-Web: http://localhost:3200 — API: http://localhost:4002
+Demo login (seed sonrası): `demo@independentai.space` / `demo1234`
 
-## Deploy
+## Deploy → Vercel + Neon
 
-- **Web** → Vercel (root: `apps/web`)
-- **API** → Railway (root: `apps/api`, start: `node dist/main.js`)
-- **Worker** → Railway (root: `apps/worker`, start: `node dist/main.js`)
-- **DB** → Neon (`DATABASE_URL` Railway+Vercel env'larına ekle)
-- **Redis** → Upstash (`REDIS_URL` Railway env'una ekle)
+Adım adım rehber için `DEPLOY.md`'ye bak. Özetle:
+
+1. **Neon** → Postgres branch oluştur, `DATABASE_URL` al
+2. **Vercel** → GitHub `MukeTR/independentai`'ı import et, root `apps/web`, env'leri ekle
+3. **DNS** → `independentai.space` → Vercel
+4. **Cron** → `vercel.json`'da tanımlı, otomatik kurulur
+
+AI API key'leri yoksa otomatik mock mode çalışır — UI ve akışlar tam çalışır, sadece üretilen cevaplar deterministik fake olur.
+
+## Monorepo
+
+```
+apps/web                    Next.js 15 — UI + API + Cron
+packages/db                 Prisma schema + client
+packages/ai                 Provider adapter'ları + mock + mention extractor
+packages/shared             Type'lar + sabitler
+```

@@ -1,25 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/server/prisma';
+import { verifyPassword } from '@/server/password';
+import { setSessionCookie, jsonError, handleRouteError } from '@/server/session';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4002';
-const AUTH_COOKIE = 'iai_token';
+const schema = z.object({ email: z.string().email(), password: z.string().min(1) });
 
 export async function POST(req: NextRequest) {
-  const body = await req.text();
-  const res = await fetch(`${API_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body,
-  });
-  const data = await res.json();
-  if (!res.ok) return NextResponse.json(data, { status: res.status });
-
-  const response = NextResponse.json({ ok: true });
-  response.cookies.set(AUTH_COOKIE, data.token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 24 * 30,
-    path: '/',
-  });
-  return response;
+  try {
+    const body = schema.parse(await req.json());
+    const user = await prisma.user.findUnique({ where: { email: body.email } });
+    if (!user || !verifyPassword(body.password, user.passwordHash)) {
+      return jsonError('E-posta veya şifre hatalı', 401);
+    }
+    const res = NextResponse.json({ ok: true });
+    await setSessionCookie(res, { userId: user.id, tenantId: user.tenantId, email: user.email });
+    return res;
+  } catch (err) {
+    return handleRouteError(err);
+  }
 }

@@ -11,7 +11,7 @@ export function RunNowButton({ promptId }: { promptId: string }) {
   async function run() {
     setLoading(true);
     try {
-      await fetch(`/api/proxy/prompts/${promptId}/run`, { method: 'POST' });
+      await fetch(`/api/prompts/${promptId}/run`, { method: 'POST' });
       router.refresh();
     } finally {
       setLoading(false);

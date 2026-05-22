@@ -18,7 +18,7 @@ export function CompetitorsManager({ initial }: { initial: Competitor[] }) {
     if (!name.trim()) return;
     setSaving(true);
     try {
-      await fetch('/api/proxy/competitors', {
+      await fetch('/api/competitors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -37,7 +37,7 @@ export function CompetitorsManager({ initial }: { initial: Competitor[] }) {
   }
 
   async function remove(id: string) {
-    await fetch(`/api/proxy/competitors/${id}`, { method: 'DELETE' });
+    await fetch(`/api/competitors/${id}`, { method: 'DELETE' });
     router.refresh();
   }
 

@@ -1,98 +1,108 @@
 # Deploy — Independent AI (independentai.space)
 
-Tüm yığını **ücretsiz tier'lar** ile çalıştırıyoruz. Toplam aylık maliyet: $0 (AI provider API kullanımı hariç).
+Tüm yığını **iki ücretsiz servis** ile çalıştırıyoruz: Vercel + Neon. Toplam aylık maliyet: $0 (AI provider API kullanımı hariç). Worker / Redis yok — Vercel Cron + Next.js Route Handlers her şeyi hallediyor.
+
+## Mimari (Vercel-only)
+
+```
+                  ┌───────────────────────────────────────┐
+                  │     independentai.space (Vercel)      │
+                  │  ┌─────────────┐    ┌──────────────┐  │
+                  │  │  Next.js    │    │  /api/cron/  │  │
+                  │  │  web + API  │────│  daily-run   │  │
+                  │  └─────────────┘    └──────────────┘  │
+                  └──────────────┬────────────────────────┘
+                                 │ Prisma
+                                 ▼
+                  ┌──────────────────────────┐
+                  │   Neon Postgres (free)   │
+                  └──────────────────────────┘
+                                 │
+                                 ▼  doğrudan API çağrısı
+                  OpenAI · Anthropic · Google Gemini
+```
 
 ## 0. Servis hesapları (5 dakika)
 
-| Servis | Ne için | Free tier limiti | Link |
+| Servis | Ne için | Free tier | Link |
 |---|---|---|---|
-| **Vercel** | web (Next.js) | sınırsız hobby projeleri | vercel.com |
-| **Railway** | api + worker | $5/ay trial credit, sonra Hobby $5/ay | railway.app |
-| **Neon** | Postgres | 0.5 GB · 1 proje | neon.tech |
-| **Upstash** | Redis (BullMQ için) | 10k komut/gün · serverless | upstash.com |
-| **OpenAI / Anthropic / Google** | AI API key'leri | pay-as-you-go | her birinin dashboard'u |
+| **Vercel** | Web + API + Cron | Hobby sınırsız (1 cron/gün yeter) | vercel.com |
+| **Neon** | Postgres | 0.5 GB | neon.tech |
+| **OpenAI / Anthropic / Google** | AI API keys | pay-as-you-go (yoksa mock) | her birinin dashboard'u |
 
-> **Not:** Worker'a günlük 1 kez tetikleniyor + manuel "şimdi çalıştır" → Upstash 10k/gün rahat yeter. Büyürken hibrit cron'a geçeriz.
+> Şu an: staging branch'i Neon'da hazır. Production branch'i ayrıca yapılacak.
 
 ---
 
-## 1. Neon — Postgres
+## 1. Neon Postgres
 
-1. neon.tech → "New project" → bölge: AWS Frankfurt
-2. Proje adı: `independentai`
-3. "Connection string" → kopyala: `postgresql://...neon.tech/independentai?sslmode=require`
-4. Bunu hem **Railway api + worker** hem de **Vercel** ortamında `DATABASE_URL` olarak ekle
+**Staging** (geliştirme + ön test): `ep-shy-salad-ap1ijb8p-pooler.c-7.us-east-1.aws.neon.tech`  
+**Production** (canlı): `ep-summer-brook-ap7c96ie-pooler.c-7.us-east-1.aws.neon.tech`
 
-İlk kurulumdan sonra şemayı yayınla:
+Production'a schema yayını:
 ```bash
-DATABASE_URL=... pnpm --filter @independentai/db migrate:deploy
-DATABASE_URL=... pnpm --filter @independentai/db seed   # opsiyonel demo verisi
+DATABASE_URL='postgresql://...summer-brook...' pnpm --filter @independentai/db push
 ```
+> Production'a seed atma (demo veri prod'a sızmasın diye). Kullanıcılar register oldukça gerçek veri akacak.
 
-## 2. Upstash — Redis
+## 2. Vercel deploy
 
-1. upstash.com → "Create Database" → Type: Regional, Region: eu-west-1
-2. "TLS" açık olmalı
-3. "Connect" → "BullMQ" sekmesi → URL kopyala: `rediss://default:...@xxxx.upstash.io:6379`
-4. Railway worker + api ortamına `REDIS_URL` olarak ekle
-
-## 3. Railway — API + Worker
-
-1. railway.app → "New Project" → "Deploy from GitHub" → `MukeTR/independentai`
-2. **İki ayrı service** oluştur:
-   - **api** → Root directory: `apps/api`
-   - **worker** → Root directory: `apps/worker`
-3. Her ikisine de environment variables:
-   ```
-   DATABASE_URL=...        (Neon)
-   REDIS_URL=...           (Upstash)
-   JWT_SECRET=...          (32+ karakter rastgele)
-   OPENAI_API_KEY=...
-   ANTHROPIC_API_KEY=...
-   GOOGLE_API_KEY=...
-   NODE_ENV=production
-   ```
-   Ek olarak **api** için: `API_PORT=4002` (Railway otomatik $PORT verir, code zaten 4002 default)
-   Ek olarak **worker** için: `DAILY_RUN_CRON=0 2 * * *`
-4. Deploy → api için public URL'i kopyala (örn. `https://independentai-api.up.railway.app`)
-
-## 4. Vercel — Web
-
-1. vercel.com → "New Project" → GitHub: `MukeTR/independentai`
+1. vercel.com → **New Project** → GitHub: `MukeTR/independentai`
 2. **Root Directory** → `apps/web`
-3. **Build & Output Settings:**
-   - Build command: `cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @independentai/shared build && pnpm --filter @independentai/web build`
-   - Install command: (boş bırak — yukarıdaki halleder)
+3. **Build & Output Settings** otomatik tanınır (`vercel.json` mevcut), ama:
+   - Build command: `cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @independentai/db generate && pnpm --filter @independentai/db build && pnpm --filter @independentai/shared build && pnpm --filter @independentai/ai build && pnpm --filter @independentai/web build`
+   - Install: `echo skip`
    - Output: `.next`
 4. **Environment Variables:**
    ```
-   NEXT_PUBLIC_API_URL=https://independentai-api.up.railway.app
+   DATABASE_URL=<production-neon-url>
+   JWT_SECRET=<32+ karakter rastgele, openssl rand -hex 32>
+   CRON_SECRET=<rastgele, Vercel cron'unu sadece bu tetikleyebilsin>
    NEXT_PUBLIC_SITE_URL=https://independentai.space
+
+   # Opsiyonel — yoksa mock çalışır
+   OPENAI_API_KEY=
+   ANTHROPIC_API_KEY=
+   GOOGLE_API_KEY=
    ```
 5. Deploy
 
-## 5. Domain — independentai.space
+## 3. Domain — independentai.space
 
 1. Vercel → Project Settings → Domains → "Add" → `independentai.space` ve `www.independentai.space`
-2. DNS sağlayıcında (Namecheap / GoDaddy / Cloudflare):
+2. DNS sağlayıcında:
    - `A` record: `@` → `76.76.21.21`
    - `CNAME`: `www` → `cname.vercel-dns.com`
-3. 5-30 dakika içinde SSL otomatik bağlanır
+3. 5-30 dk içinde SSL otomatik bağlanır
 
-## 6. Sağlık kontrolü
+## 4. Vercel Cron
+
+`vercel.json`'da zaten tanımlı: `/api/cron/daily-run` her gün `0 23 * * *` (UTC 23:00 = TR 02:00).  
+Vercel kendi authorize header'ı ekler (`Bearer $CRON_SECRET`); endpoint bu olmadan istek kabul etmez.
+
+İlk deploy sonrası Vercel Dashboard → Settings → Cron Jobs'tan çalıştığını gör.
+
+## 5. Sağlık kontrolü
 
 ```bash
-curl https://independentai.space                          # 200
-curl https://independentai-api.up.railway.app/api/auth/me # 401 (token yok — beklenen)
+curl https://independentai.space                                    # 200 (landing)
+curl https://independentai.space/api/auth/me                        # 401 (token yok — beklenen)
+curl -H "Authorization: Bearer $CRON_SECRET" \
+     https://independentai.space/api/cron/daily-run                 # 200, "processed: N"
 ```
 
-Railway worker loglarında: `🛰  Independent AI worker başladı` görmelisin.
+## Function timeout notları
+
+Vercel Hobby: function başına **max 60s**. 
+- `/api/prompts/[id]/run` paralelde 3 modeli çağırır → 10-20s (mock) / 5-15s (gerçek).
+- `/api/cron/daily-run` aktif prompt sayısı × 3-5s. 10+ prompt birikirse cron timeout'a takılır. O noktada cron'u parçalı yaparız (her promptu ayrı job, queue tablosu üzerinden).
 
 ---
 
 ## Sonraki
 
-- [ ] Trial sona ererken email bildirim (Resend ile)
-- [ ] Iyzico subscription billing entegrasyonu
+- [ ] Trial sona ererken email bildirim (Resend free tier)
+- [ ] Iyzico subscription billing (6 ay sonrası için)
 - [ ] Perplexity + Grok adapter'ı
-- [ ] Daha akıllı brand mention extraction (LLM-tabanlı)
+- [ ] LLM-based brand mention extraction (daha akıllı)
+- [ ] Cron'u prompt başına job'a böl (>50 prompt için)

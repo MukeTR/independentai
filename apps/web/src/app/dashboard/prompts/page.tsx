@@ -1,19 +1,12 @@
 import Link from 'next/link';
-import { api } from '@/lib/api';
-import { MessageSquare, Plus } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
+import { requireSession } from '@/server/session';
+import { listPrompts } from '@/server/repo';
 import { NewPromptForm } from './new-prompt-form';
 
-type PromptRow = {
-  id: string;
-  text: string;
-  category: string | null;
-  isActive: boolean;
-  createdAt: string;
-  _count: { runs: number };
-};
-
 export default async function PromptsPage() {
-  const prompts = await api<PromptRow[]>('/prompts');
+  const session = await requireSession();
+  const prompts = await listPrompts(session.tenantId);
 
   return (
     <div className="max-w-5xl">

@@ -1,7 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @independentai/shared build && pnpm --filter @independentai/web build",
-  "installCommand": "echo 'skip - root install handles it'",
-  "outputDirectory": ".next"
+  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @independentai/db generate && pnpm --filter @independentai/db build && pnpm --filter @independentai/shared build && pnpm --filter @independentai/ai build && pnpm --filter @independentai/web build",
+  "installCommand": "echo 'root handles install'",
+  "outputDirectory": ".next",
+  "crons": [
+    {
+      "path": "/api/cron/daily-run",
+      "schedule": "0 23 * * *"
+    }
+  ]
 }

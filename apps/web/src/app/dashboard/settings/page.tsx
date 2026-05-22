@@ -1,10 +1,10 @@
-import { api } from '@/lib/api';
+import { requireSession } from '@/server/session';
+import { listOwnBrands } from '@/server/repo';
 import { BrandSettingsForm } from './brand-settings-form';
 
-type Brand = { id: string; name: string; aliases: string[]; website: string | null };
-
 export default async function SettingsPage() {
-  const brands = await api<Brand[]>('/brands');
+  const session = await requireSession();
+  const brands = await listOwnBrands(session.tenantId);
 
   return (
     <div className="max-w-3xl">

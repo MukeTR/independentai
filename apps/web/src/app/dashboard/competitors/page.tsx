@@ -1,10 +1,10 @@
-import { api } from '@/lib/api';
+import { requireSession } from '@/server/session';
+import { listCompetitors } from '@/server/repo';
 import { CompetitorsManager } from './competitors-manager';
 
-type Competitor = { id: string; name: string; aliases: string[]; website: string | null };
-
 export default async function CompetitorsPage() {
-  const competitors = await api<Competitor[]>('/competitors');
+  const session = await requireSession();
+  const competitors = await listCompetitors(session.tenantId);
 
   return (
     <div className="max-w-4xl">
