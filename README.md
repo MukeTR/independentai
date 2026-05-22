@@ -4,10 +4,6 @@
 
 **independentai.space** — ChatGPT, Claude ve Gemini'nin alanınızla ilgili sorulara verdiği cevaplarda markanız geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız, üçüncü taraf bir gözle ölçer.
 
-## 🎁 Lansman Promosyonu
-
-**İlk 6 ay tüm kullanıcılara ücretsiz** (2026-05-22 itibarıyla kayıt olan herkes için).
-
 ## Stack
 
 | Katman | Teknoloji | Free Tier |
