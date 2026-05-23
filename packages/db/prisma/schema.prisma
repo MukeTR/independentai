@@ -167,3 +167,19 @@ enum Sentiment {
   NEUTRAL
   NEGATIVE
 }
+
+// ───────────────────────────────────────────────────────────────
+//  Platform-wide configuration (super admin yönetir)
+//  API key'ler gibi hassas değerler crypto.ts ile şifrelenir.
+// ───────────────────────────────────────────────────────────────
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique           // örn. "OPENAI_API_KEY", "ANTHROPIC_API_KEY"
+  value     String   @db.Text          // encrypted ciphertext (base64)
+  encrypted Boolean  @default(true)    // ileride non-sensitive değerler için false olabilir
+  updatedAt DateTime @updatedAt
+  updatedBy String?                    // super admin user.id
+
+  @@index([key])
+}

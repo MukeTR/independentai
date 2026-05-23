@@ -1,43 +1,50 @@
+import Link from 'next/link';
+import { ArrowRight, KeyRound, Database, Server } from 'lucide-react';
 import { requireSuperAdmin } from '@/server/admin';
 import { TriggerCronButton } from './trigger-cron-button';
-import { ALL_PROVIDERS, getAdapter } from '@independentai/ai';
+import { listConfigStatus } from '@/server/system-config';
 
 export default async function AdminSystem() {
   await requireSuperAdmin();
-
-  const providers = ALL_PROVIDERS.map((id) => ({
-    id,
-    label: id,
-    available: getAdapter(id).isAvailable(),
-  }));
+  const configs = await listConfigStatus();
 
   return (
     <div className="max-w-4xl">
       <div className="eyebrow">Super Admin</div>
       <h1 className="font-display text-[36px] tracking-tight mt-2">Sistem</h1>
-      <p className="text-[14px] text-ink-muted mt-2">Provider durumu, cron tetikleme, hızlı operasyonlar.</p>
+      <p className="text-[14px] text-ink-muted mt-2">Provider durumu, cron tetikleme, API key yönetimi.</p>
 
       {/* AI providers */}
       <div className="card p-6 mt-8">
-        <div className="eyebrow">AI Provider Durumu</div>
-        <ul className="mt-5 space-y-3">
-          {providers.map((p) => (
-            <li key={p.id} className="flex items-center justify-between border-b-hairline border-hairline pb-3 last:border-0">
-              <div>
-                <div className="font-display text-[16px]">{p.label}</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="eyebrow">AI Provider Durumu</div>
+          <Link href="/admin/system/api-keys" className="text-[12px] text-brand-deep hover:text-brand inline-flex items-center gap-1">
+            <KeyRound className="w-3 h-3" /> Key\'leri yönet <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+        <ul className="mt-3 space-y-3">
+          {configs.map((c) => (
+            <li key={c.key} className="flex items-center justify-between border-b-hairline border-hairline pb-3 last:border-0">
+              <div className="min-w-0">
+                <div className="font-display text-[16px]">{c.label}</div>
                 <div className="text-[11px] text-ink-faint font-mono mt-0.5">
-                  {p.available ? 'API_KEY mevcut · gerçek API çağrıları aktif' : 'API_KEY yok · mock mode'}
+                  {c.source === 'db' && (<>
+                    <Database className="inline w-3 h-3 mr-1" />
+                    DB\'de tanımlı · {c.preview}
+                  </>)}
+                  {c.source === 'env' && (<>
+                    <Server className="inline w-3 h-3 mr-1" />
+                    Vercel env\'inde tanımlı · {c.preview}
+                  </>)}
+                  {c.source === 'none' && 'Tanımsız → mock mode'}
                 </div>
               </div>
-              <span className={p.available ? 'chip own' : 'chip'}>
-                {p.available ? 'live' : 'mock'}
+              <span className={c.source === 'none' ? 'chip' : 'chip own'}>
+                {c.source === 'none' ? 'mock' : 'live'}
               </span>
             </li>
           ))}
         </ul>
-        <p className="text-[11px] text-ink-faint mt-5 font-mono">
-          // API key'leri Vercel project settings → Environment Variables üzerinden eklenir
-        </p>
       </div>
 
       {/* Manual cron */}
@@ -45,8 +52,8 @@ export default async function AdminSystem() {
         <div className="eyebrow">Manuel Cron Tetikle</div>
         <h3 className="font-display text-[20px] mt-3">Tüm aktif promptları şimdi çalıştır</h3>
         <p className="text-[13.5px] text-ink-muted mt-2 leading-relaxed">
-          Normal akış: her gece 02:00'de Vercel Cron tetikler. Bunu manuel olarak hemen yapmak istersen aşağıdaki butonu kullan.
-          Tüm tenant'lar × tüm aktif promptlar × 3 model çalışır. Uzun sürebilir.
+          Normal akış: her gece 02:00\'de Vercel Cron tetikler. Bunu manuel olarak hemen yapmak istersen aşağıdaki butonu kullan.
+          Tüm tenant\'lar × tüm aktif promptlar × 3 model çalışır. Uzun sürebilir.
         </p>
         <div className="mt-5">
           <TriggerCronButton />

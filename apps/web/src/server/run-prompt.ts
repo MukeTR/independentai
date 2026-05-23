@@ -1,12 +1,17 @@
 import { prisma } from './prisma';
 import { ALL_PROVIDERS, getAdapter, extractMentions, type BrandSpec } from '@independentai/ai';
 import type { AiProvider, Sentiment } from '@independentai/db';
+import { hydrateEnvFromConfig } from './system-config';
 
 /**
  * Bir prompt'u 3 modelde paralel çalıştırır, mention'ları çıkartıp DB'ye yazar.
  * Vercel cron (60s timeout) içinde rahat çalışsın diye providers paralel.
  */
 export async function runPromptOnce(tenantId: string, promptId: string) {
+  // Önce DB'deki API key'leri process.env'e enjekte et (super admin override).
+  // Adapter'lar process.env okuyor, bu yüzden bu hydration kritik.
+  await hydrateEnvFromConfig();
+
   const prompt = await prisma.prompt.findFirst({ where: { id: promptId, tenantId } });
   if (!prompt) return { skipped: true, reason: 'prompt not found' };
 

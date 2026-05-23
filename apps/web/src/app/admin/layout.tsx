@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getSession } from '@/server/session';
 import { prisma } from '@/server/prisma';
 import { Logo } from '@/components/logo';
-import { LayoutDashboard, Building2, Users as UsersIcon, Activity, Settings as SettingsIcon, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, Building2, Users as UsersIcon, Activity, Settings as SettingsIcon, ArrowLeft, KeyRound } from 'lucide-react';
 
 export const metadata = { robots: { index: false, follow: false } };
 
@@ -13,6 +13,7 @@ const ADMIN_NAV = [
   { href: '/admin/users', label: 'Kullanıcılar', icon: UsersIcon },
   { href: '/admin/runs', label: 'Run kayıtları', icon: Activity },
   { href: '/admin/system', label: 'Sistem', icon: SettingsIcon },
+  { href: '/admin/system/api-keys', label: 'API Keys', icon: KeyRound },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
