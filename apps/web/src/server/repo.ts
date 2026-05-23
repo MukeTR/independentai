@@ -23,6 +23,7 @@ export async function getMe(userId: string) {
     email: user.email,
     name: user.name,
     role: user.role,
+    isSuperAdmin: user.isSuperAdmin,
     tenant: {
       id: user.tenant.id,
       name: user.tenant.name,
