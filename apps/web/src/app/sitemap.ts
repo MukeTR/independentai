@@ -3,43 +3,46 @@ import { SITE_URL } from '@/lib/seo';
 import { POSTS } from '@/data/blog-posts';
 
 /**
- * Dynamic sitemap — statik marketing/legal sayfalar + dinamik blog post'lar +
- * tüm docs, resources, use-cases, blog kategorileri.
- *
- * Yeni blog post veya yeni sayfa eklediğinde otomatik olarak sitemap'e girer.
+ * SEO + GEO optimized sitemap
+ * - Daha doğal priority dağılımı
+ * - Pagination crawl-budget optimizasyonu
+ * - Daha temiz lastModified handling
+ * - Google uyumlu sade yapı
  */
 
 const STATIC_PAGES = [
-  // Marketing
+  // Core marketing
   { path: '/', priority: 1.0, change: 'weekly' as const },
-  { path: '/features', priority: 0.9, change: 'weekly' as const },
-  { path: '/pricing', priority: 0.9, change: 'monthly' as const },
-  { path: '/how-it-works', priority: 0.8, change: 'monthly' as const },
-  { path: '/use-cases', priority: 0.8, change: 'monthly' as const },
-  { path: '/about', priority: 0.6, change: 'monthly' as const },
-  { path: '/contact', priority: 0.5, change: 'yearly' as const },
+  { path: '/features', priority: 0.8, change: 'weekly' as const },
+  { path: '/pricing', priority: 0.8, change: 'monthly' as const },
+  { path: '/how-it-works', priority: 0.7, change: 'monthly' as const },
+  { path: '/use-cases', priority: 0.7, change: 'monthly' as const },
 
-  // Blog index ve pagination sayfaları
-  { path: '/blog', priority: 0.8, change: 'daily' as const },
+  // Company
+  { path: '/about', priority: 0.5, change: 'monthly' as const },
+  { path: '/contact', priority: 0.4, change: 'yearly' as const },
 
-  // Resources hub + alt sayfalar
+  // Blog
+  { path: '/blog', priority: 0.7, change: 'daily' as const },
+
+  // Resources
   { path: '/resources', priority: 0.7, change: 'monthly' as const },
-  { path: '/resources/geo-101', priority: 0.8, change: 'monthly' as const },
-  { path: '/resources/glossary', priority: 0.7, change: 'monthly' as const },
+  { path: '/resources/geo-101', priority: 0.7, change: 'monthly' as const },
+  { path: '/resources/glossary', priority: 0.6, change: 'monthly' as const },
 
   // Docs
-  { path: '/docs', priority: 0.6, change: 'monthly' as const },
+  { path: '/docs', priority: 0.5, change: 'monthly' as const },
   { path: '/docs/api', priority: 0.4, change: 'monthly' as const },
   { path: '/docs/webhooks', priority: 0.4, change: 'monthly' as const },
 
   // Changelog
-  { path: '/changelog', priority: 0.5, change: 'weekly' as const },
+  { path: '/changelog', priority: 0.4, change: 'weekly' as const },
 
   // Legal
-  { path: '/legal/privacy', priority: 0.3, change: 'yearly' as const },
-  { path: '/legal/terms', priority: 0.3, change: 'yearly' as const },
-  { path: '/legal/kvkk', priority: 0.3, change: 'yearly' as const },
-  { path: '/legal/cookies', priority: 0.3, change: 'yearly' as const },
+  { path: '/legal/privacy', priority: 0.2, change: 'yearly' as const },
+  { path: '/legal/terms', priority: 0.2, change: 'yearly' as const },
+  { path: '/legal/kvkk', priority: 0.2, change: 'yearly' as const },
+  { path: '/legal/cookies', priority: 0.2, change: 'yearly' as const },
 ];
 
 const PAGE_SIZE = 12;
@@ -47,40 +50,66 @@ const PAGE_SIZE = 12;
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  // Statik sayfalar
-  const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.map((p) => ({
-    url: `${SITE_URL}${p.path}`,
+  /**
+   * Static pages
+   */
+  const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.map((page) => ({
+    url: `${SITE_URL}${page.path}`,
     lastModified: now,
-    changeFrequency: p.change,
-    priority: p.priority,
+    changeFrequency: page.change,
+    priority: page.priority,
   }));
 
-  // Blog pagination sayfaları (sayfa 2, 3, ...)
+  /**
+   * Blog pagination
+   *
+   * NOTE:
+   * Pagination pages intentionally lower priority
+   * to avoid crawl budget waste.
+   */
   const totalPages = Math.ceil(POSTS.length / PAGE_SIZE);
-  const blogPagination: MetadataRoute.Sitemap = [];
-  for (let page = 2; page <= totalPages; page++) {
-    blogPagination.push({
-      url: `${SITE_URL}/blog?page=${page}`,
+
+  const blogPagination: MetadataRoute.Sitemap = Array.from(
+    { length: Math.max(totalPages - 1, 0) },
+    (_, index) => ({
+      url: `${SITE_URL}/blog?page=${index + 2}`,
       lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.5,
-    });
-  }
+      changeFrequency: 'weekly',
+      priority: 0.2,
+    }),
+  );
 
-  // Tüm blog post'ları
-  const blogEntries: MetadataRoute.Sitemap = POSTS.map((post) => ({
-    url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
-    changeFrequency: 'monthly',
-    // Yeni post (son 30 gün) yüksek priority, eski post'lar düşük
-    priority: (() => {
-      const ageDays = (now.getTime() - new Date(post.publishedAt).getTime()) / (1000 * 60 * 60 * 24);
-      if (ageDays < 30) return 0.7;
-      if (ageDays < 90) return 0.6;
-      if (ageDays < 180) return 0.5;
-      return 0.4;
-    })(),
-  }));
+  /**
+   * Blog entries
+   */
+  const blogEntries: MetadataRoute.Sitemap = POSTS.map((post) => {
+    const published = new Date(post.publishedAt);
 
-  return [...staticEntries, ...blogPagination, ...blogEntries];
+    const ageDays =
+      (now.getTime() - published.getTime()) /
+      (1000 * 60 * 60 * 24);
+
+    let priority = 0.4;
+
+    if (ageDays <= 30) {
+      priority = 0.7;
+    } else if (ageDays <= 90) {
+      priority = 0.6;
+    } else if (ageDays <= 180) {
+      priority = 0.5;
+    }
+
+    return {
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: published,
+      changeFrequency: 'monthly' as const,
+      priority,
+    };
+  });
+
+  return [
+    ...staticEntries,
+    ...blogPagination,
+    ...blogEntries,
+  ];
 }
