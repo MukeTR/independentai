@@ -6,6 +6,7 @@
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "build": "pnpm --filter @independentai/db generate && turbo run build",
+    "vercel-build": "pnpm --filter @independentai/db generate && pnpm --filter @independentai/db exec prisma db push --skip-generate && turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
