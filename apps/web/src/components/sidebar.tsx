@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, MessageSquare, Swords, Settings, LogOut, Wrench, Sparkles } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Swords, Settings, LogOut, Wrench, Sparkles, Bell, Code2 } from 'lucide-react';
 import { Logo } from './logo';
 import { cn } from '@/lib/cn';
 
@@ -14,15 +14,21 @@ const NAV_MAIN = [
 
 const NAV_TOOLS = [
   { href: '/dashboard/tools', label: 'Tüm Araçlar', icon: Wrench, exact: true },
+  { href: '/dashboard/tools/geo-audit', label: 'GEO Audit (skor)' },
+  { href: '/dashboard/tools/content-audit', label: 'İçerik denetleyici' },
+  { href: '/dashboard/tools/keyword-finder', label: 'Prompt bulucu' },
+  { href: '/dashboard/tools/backlink-finder', label: 'Backlink bulucu' },
+  { href: '/dashboard/tools/cannibalization', label: 'Kanibalizasyon' },
+  { href: '/dashboard/tools/hallucination', label: 'Halüsinasyon tespiti' },
+  { href: '/dashboard/tools/aeo-writer', label: 'AEO içerik yazıcı' },
   { href: '/dashboard/tools/llms-txt', label: 'llms.txt' },
   { href: '/dashboard/tools/robots', label: 'robots.txt' },
   { href: '/dashboard/tools/schema', label: 'Schema markup' },
-  { href: '/dashboard/tools/audit', label: 'GEO Audit' },
-  { href: '/dashboard/tools/visibility', label: 'Visibility hesaplayıcı' },
-  { href: '/dashboard/tools/checklist', label: 'SEO checklist' },
 ];
 
 const NAV_BOTTOM = [
+  { href: '/dashboard/alerts', label: 'Uyarılar & Raporlar', icon: Bell },
+  { href: '/dashboard/api', label: 'API Erişimi', icon: Code2 },
   { href: '/dashboard/settings', label: 'Markam', icon: Settings },
 ];
 

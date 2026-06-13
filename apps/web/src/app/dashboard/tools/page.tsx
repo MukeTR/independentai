@@ -1,7 +1,59 @@
 import Link from 'next/link';
-import { ArrowRight, FileText, Bot, Code, ClipboardCheck, Calculator, CheckCircle2, Wrench } from 'lucide-react';
+import {
+  ArrowRight, FileText, Bot, Code, ClipboardCheck, Calculator, CheckCircle2, Wrench,
+  Gauge, FileSearch, KeyRound, Link2, GitFork, ShieldAlert, PenLine,
+} from 'lucide-react';
 
 const TOOLS = [
+  {
+    href: '/dashboard/tools/geo-audit',
+    icon: Gauge,
+    title: 'GEO Audit (0-100 skor)',
+    desc: 'URL girin, sayfanızı gerçek zamanlı tarayıp AI-hazırlık skorunu 5 eksende çıkaralım.',
+    category: 'Denetim',
+  },
+  {
+    href: '/dashboard/tools/content-audit',
+    icon: FileSearch,
+    title: 'İçerik Denetleyicisi',
+    desc: 'Sayfanızı analiz edip AI-alıntılanabilirliği artıracak önceliklendirilmiş aksiyon kartları verir.',
+    category: 'Denetim',
+  },
+  {
+    href: '/dashboard/tools/cannibalization',
+    icon: GitFork,
+    title: 'Kanibalizasyon Denetleyici',
+    desc: 'Aynı konu için yarışan kendi sayfalarınızı tespit edin — AI alıntılarını birbirinden çalmasın.',
+    category: 'Denetim',
+  },
+  {
+    href: '/dashboard/tools/hallucination',
+    icon: ShieldAlert,
+    title: 'Halüsinasyon Tespiti',
+    desc: 'AI cevaplarında markanız hakkında yanlış bilgi var mı? Gerçeklerinizle karşılaştırıp yakalar.',
+    category: 'Denetim',
+  },
+  {
+    href: '/dashboard/tools/keyword-finder',
+    icon: KeyRound,
+    title: 'Prompt / Anahtar Kelime Bulucu',
+    desc: 'Müşterilerinizin AI\'a soracağı yüksek niyetli soruları bulun, tek tıkla takibe ekleyin.',
+    category: 'Keşif',
+  },
+  {
+    href: '/dashboard/tools/backlink-finder',
+    icon: Link2,
+    title: 'Backlink Bulucu',
+    desc: 'AI motorlarının sektörünüzde en çok atıf verdiği siteler — en değerli outreach hedefleriniz.',
+    category: 'Keşif',
+  },
+  {
+    href: '/dashboard/tools/aeo-writer',
+    icon: PenLine,
+    title: 'AEO İçerik Yazıcı',
+    desc: 'AI-alıntılanabilir FAQ, Q&A sayfası, meta ve sosyal içerik üretir. Boşlukları kapatın.',
+    category: 'Üretici',
+  },
   {
     href: '/dashboard/tools/llms-txt',
     icon: FileText,
@@ -27,7 +79,7 @@ const TOOLS = [
     href: '/dashboard/tools/audit',
     icon: ClipboardCheck,
     title: 'GEO Audit Checklist',
-    desc: '10 adımlık denetim, her adımda not alma, markdown rapor olarak indir.',
+    desc: '10 adımlık manuel denetim, her adımda not alma, markdown rapor olarak indir.',
     category: 'Denetim',
   },
   {
@@ -46,7 +98,7 @@ const TOOLS = [
   },
 ];
 
-const CATEGORIES = ['Üretici', 'Denetim', 'Hesaplayıcı'];
+const CATEGORIES = ['Denetim', 'Keşif', 'Üretici', 'Hesaplayıcı'];
 
 export default function ToolsHub() {
   return (
@@ -90,9 +142,12 @@ export default function ToolsHub() {
       ))}
 
       <div className="card p-6 mt-10 bg-paper-2/40">
-        <div className="eyebrow mb-2">Sırada ne var?</div>
+        <div className="eyebrow mb-2">Ücretsiz public araçlar</div>
         <p className="text-[13.5px] text-ink-muted leading-relaxed">
-          Yol haritasında: Brand alias suggester, prompt önerici, AI crawler log analyzer, citation tracker, sentiment analizi tool\'u.
+          Kayıt gerektirmeyen hızlı kontrol araçları:{' '}
+          <a href="/arac/chatgpt-rank-checker" className="text-brand-deep hover:text-brand underline">ChatGPT</a>,{' '}
+          <a href="/arac/claude-rank-checker" className="text-brand-deep hover:text-brand underline">Claude</a> ve{' '}
+          <a href="/arac/gemini-rank-checker" className="text-brand-deep hover:text-brand underline">Gemini</a> rank checker.
           Aklında olan bir araç var mı? <a href="/contact" className="text-brand-deep hover:text-brand underline">İletişim</a>'den bize yaz.
         </p>
       </div>

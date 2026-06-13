@@ -1,6 +1,13 @@
 import { prisma } from './prisma';
-import { ALL_PROVIDERS, getAdapter, extractMentions, type BrandSpec } from '@independentai/ai';
-import type { AiProvider, Sentiment } from '@independentai/db';
+import {
+  ALL_PROVIDERS,
+  getAdapter,
+  extractMentions,
+  enrichMentions,
+  extractCitations,
+  type BrandSpec,
+} from '@independentai/ai';
+import type { AiProvider, Sentiment, MentionType } from '@independentai/db';
 import { hydrateEnvFromConfig } from './system-config';
 
 /**
@@ -32,7 +39,10 @@ export async function runPromptOnce(tenantId: string, promptId: string) {
       const adapter = getAdapter(provider);
       try {
         const out = await adapter.run({ prompt: prompt.text, language: 'tr' });
-        const mentions = extractMentions(out.text, ownSpecs, compSpecs);
+        const rawMentions = extractMentions(out.text, ownSpecs, compSpecs);
+        // LLM ile sentiment + mention type iyileştir (best-effort, hata olursa heuristic kalır)
+        const mentions = await enrichMentions(out.text, rawMentions);
+        const citations = extractCitations(out.text, out.citations);
 
         return prisma.modelRun.create({
           data: {
@@ -40,6 +50,7 @@ export async function runPromptOnce(tenantId: string, promptId: string) {
             provider: provider as AiProvider,
             modelName: out.modelName,
             responseText: out.text,
+            citations: citations.length ? citations : undefined,
             tokensUsed: out.tokensUsed,
             costUsd: out.costUsd,
             latencyMs: out.latencyMs,
@@ -52,7 +63,16 @@ export async function runPromptOnce(tenantId: string, promptId: string) {
                 isCompetitor: m.isCompetitor,
                 position: m.position,
                 sentiment: m.sentiment as Sentiment,
+                mentionType: m.mentionType as MentionType,
                 snippet: m.snippet,
+              })),
+            },
+            citationLinks: {
+              create: citations.map((c) => ({
+                tenantId,
+                url: c.url,
+                domain: c.domain,
+                title: c.title,
               })),
             },
           },

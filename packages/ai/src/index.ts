@@ -5,6 +5,9 @@ import type { AiProviderAdapter, ProviderId } from './types';
 
 export * from './types';
 export * from './mention-extractor';
+export * from './citation-extractor';
+export * from './llm';
+export * from './embed';
 
 export const adapters: Record<ProviderId, AiProviderAdapter> = {
   OPENAI: openaiAdapter,

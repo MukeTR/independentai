@@ -32,6 +32,11 @@ const STATIC_PAGES = [
   { path: '/docs/api', priority: 0.4, change: 'monthly' as const },
   { path: '/docs/webhooks', priority: 0.4, change: 'monthly' as const },
 
+  // Ücretsiz public araçlar (lead-gen)
+  { path: '/arac/chatgpt-rank-checker', priority: 0.9, change: 'monthly' as const },
+  { path: '/arac/claude-rank-checker', priority: 0.9, change: 'monthly' as const },
+  { path: '/arac/gemini-rank-checker', priority: 0.9, change: 'monthly' as const },
+
   // Changelog
   { path: '/changelog', priority: 0.5, change: 'weekly' as const },
 
