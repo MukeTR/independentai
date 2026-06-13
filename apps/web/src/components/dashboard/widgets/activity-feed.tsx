@@ -16,7 +16,7 @@ export function ActivityFeed({ activity }: { activity: ComprehensiveAnalytics['a
   const rows = activity;
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="flex items-center justify-between">
         <div className="eyebrow">Son Aktivite</div>
         {rows.length > 0 && <span className="text-[10.5px] font-mono text-ink-faint">{rows.length} kayıt</span>}

@@ -23,7 +23,7 @@ export function CategoryBreakdown({
   );
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Kategoriye Göre Görünürlük</div>
 
       {rows.length === 0 ? (

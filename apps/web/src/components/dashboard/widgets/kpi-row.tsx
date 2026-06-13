@@ -54,7 +54,7 @@ export function KpiRow({ kpis }: Props) {
   const pos = kpis.avgPosition > 0 ? kpis.avgPosition.toFixed(1) : '—';
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-5 gap-x-1 divide-hairline lg:divide-x">
         <Stat
           label="Görünürlük"

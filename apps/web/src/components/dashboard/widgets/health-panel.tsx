@@ -18,7 +18,7 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
     })}`;
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Çalıştırma Sağlığı</div>
 
       <div className="mt-5 grid grid-cols-2 gap-4">

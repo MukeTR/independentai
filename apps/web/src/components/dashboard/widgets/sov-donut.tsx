@@ -46,7 +46,7 @@ export function SovDonut({
   const hasData = slices.some((s) => s.value > 0);
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Ses Payı Dağılımı</div>
 
       {!hasData ? (

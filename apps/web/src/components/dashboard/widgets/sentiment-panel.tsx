@@ -37,7 +37,7 @@ export function SentimentPanel({ sentiment, sentimentTrend }: Props) {
   ];
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Duygu Analizi</div>
 
       {total === 0 ? (

@@ -59,7 +59,7 @@ export function PromptPerformanceTable({
   const rows = prompts ?? [];
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="flex items-center justify-between gap-4">
         <div className="eyebrow">Soru Performansı</div>
         <Link

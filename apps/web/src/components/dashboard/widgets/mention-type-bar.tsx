@@ -15,7 +15,7 @@ export function MentionTypeBar({
   const max = Math.max(1, ...mentionTypes.map((m) => m.count));
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Anılma Biçimi</div>
       <p className="mt-1 text-[12px] text-ink-faint">AI markanızı nasıl andı</p>
 

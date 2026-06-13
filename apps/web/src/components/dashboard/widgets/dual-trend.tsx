@@ -20,7 +20,7 @@ export function DualTrend({ trend }: DualTrendProps) {
   const hasData = trend.length > 0;
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Görünürlük &amp; Ses Payı Trendi</div>
 
       {hasData ? (

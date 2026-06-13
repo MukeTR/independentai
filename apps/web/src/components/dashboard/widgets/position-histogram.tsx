@@ -43,7 +43,7 @@ export function PositionHistogram({
   const hasData = data.some((d) => d.count > 0);
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Sıralama Dağılımı</div>
       <h3 className="font-display text-[16px] mt-1">
         Markanız cevaplarda kaçıncı sırada anılıyor

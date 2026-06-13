@@ -18,7 +18,7 @@ export function CompetitorLeaderboard({
   const maxSov = Math.max(...rows.map((r) => r.sov), 1);
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <div className="eyebrow">Rakip Lider Tablosu</div>
 
       {rows.length === 0 ? (

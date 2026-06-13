@@ -102,19 +102,19 @@ export default async function DashboardHome() {
 
           {/* Trend + SoV */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-3">
-            <div className="lg:col-span-2"><DualTrend trend={analytics.trend} /></div>
+            <div className="lg:col-span-2 h-full"><DualTrend trend={analytics.trend} /></div>
             <SovDonut ownSov={analytics.kpis.sov} competitors={analytics.competitors} />
           </div>
 
           {/* Provider breakdown + Health */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-3">
-            <div className="lg:col-span-2"><ProviderBreakdown byProvider={analytics.byProvider} /></div>
+            <div className="lg:col-span-2 h-full"><ProviderBreakdown byProvider={analytics.byProvider} /></div>
             <HealthPanel health={analytics.health} />
           </div>
 
           {/* Radar + Sentiment */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 rise-3">
-            <div className="card p-6">
+            <div className="card p-6 h-full">
               <div className="flex items-center gap-2 mb-1">
                 <Radar className="w-4 h-4 text-brand" />
                 <h3 className="font-display text-[16px]">Rekabet Radarı</h3>
@@ -140,7 +140,7 @@ export default async function DashboardHome() {
 
           {/* Prompt performance + Activity */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-4">
-            <div className="lg:col-span-2"><PromptPerformanceTable prompts={analytics.promptPerformance} /></div>
+            <div className="lg:col-span-2 h-full"><PromptPerformanceTable prompts={analytics.promptPerformance} /></div>
             <ActivityFeed activity={analytics.activity} />
           </div>
 

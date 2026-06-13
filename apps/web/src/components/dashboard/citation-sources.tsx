@@ -5,7 +5,7 @@ import type { CitationSource } from '@/server/insights';
 export function CitationSources({ sources }: { sources: CitationSource[] }) {
   if (sources.length === 0) {
     return (
-      <div className="card p-6">
+      <div className="card p-6 h-full">
         <Header />
         <p className="text-[13px] text-ink-muted mt-3">
           Henüz atıf verisi yok. Modeller cevaplarında kaynak gösterdikçe (özellikle Gemini/Perplexity), en çok
@@ -18,7 +18,7 @@ export function CitationSources({ sources }: { sources: CitationSource[] }) {
   const max = sources[0]?.count ?? 1;
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 h-full">
       <Header />
       <div className="mt-4 space-y-2.5">
         {sources.map((s) => (
