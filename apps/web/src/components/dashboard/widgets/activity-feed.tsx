@@ -8,21 +8,24 @@ function sentimentDotClass(sentiment: string | null): string {
     case 'NEGATIVE':
       return 'bg-danger';
     default:
-      return 'bg-neutral';
+      return 'bg-ink-faint';
   }
 }
 
 export function ActivityFeed({ activity }: { activity: ComprehensiveAnalytics['activity'] }) {
-  const rows = activity.slice(0, 12);
+  const rows = activity;
 
   return (
     <div className="card p-6">
-      <div className="eyebrow">Son Aktivite</div>
+      <div className="flex items-center justify-between">
+        <div className="eyebrow">Son Aktivite</div>
+        {rows.length > 0 && <span className="text-[10.5px] font-mono text-ink-faint">{rows.length} kayıt</span>}
+      </div>
 
       {rows.length === 0 ? (
         <p className="mt-3 text-[13px] text-ink-faint">henüz çalıştırma yok</p>
       ) : (
-        <ul className="mt-4 divide-y divide-hairline">
+        <ul className="mt-3 max-h-[320px] overflow-y-auto divide-y divide-hairline pr-1 -mr-1">
           {rows.map((item) => (
             <li
               key={item.id}

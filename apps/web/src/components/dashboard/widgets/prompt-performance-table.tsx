@@ -56,7 +56,7 @@ export function PromptPerformanceTable({
 }: {
   prompts: ComprehensiveAnalytics['promptPerformance'];
 }) {
-  const rows = (prompts ?? []).slice(0, 10);
+  const rows = prompts ?? [];
 
   return (
     <div className="card p-6">
@@ -74,9 +74,9 @@ export function PromptPerformanceTable({
       {rows.length === 0 ? (
         <p className="mt-6 text-[13px] text-ink-faint">Henüz veri yok</p>
       ) : (
-        <div className="mt-5 overflow-x-auto">
+        <div className="mt-5 max-h-[340px] overflow-auto">
           <table className="w-full min-w-[640px] border-collapse">
-            <thead>
+            <thead className="sticky top-0 bg-paper-3 z-10">
               <tr className="eyebrow border-b border-hairline text-left">
                 <th className="pb-2 pr-4 font-mono font-normal">Soru</th>
                 <th className="pb-2 pr-4 font-mono font-normal">Kategori</th>

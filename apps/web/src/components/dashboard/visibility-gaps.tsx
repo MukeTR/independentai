@@ -19,7 +19,7 @@ export function VisibilityGaps({ gaps }: { gaps: VisibilityGap[] }) {
           🎉 Harika — rakiplerin geçip sizin geçmediğiniz bir boşluk yok. Tüm sorularda görünürsünüz.
         </div>
       ) : (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2 max-h-[320px] overflow-y-auto pr-1 -mr-1">
           {gaps.map((g) => (
             <Link
               key={g.promptId}

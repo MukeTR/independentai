@@ -19,7 +19,7 @@ import { CategoryBreakdown } from '@/components/dashboard/widgets/category-break
 import { HealthPanel } from '@/components/dashboard/widgets/health-panel';
 import { ActivityFeed } from '@/components/dashboard/widgets/activity-feed';
 import {
-  ArrowRight, Sparkles, CheckCircle2, Activity, Radar, Gauge, FileSearch, GitFork,
+  ArrowRight, CheckCircle2, Activity, Radar, Gauge, FileSearch, GitFork,
   ShieldAlert, KeyRound, Link2, PenLine,
 } from 'lucide-react';
 
@@ -58,14 +58,11 @@ export default async function DashboardHome() {
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-8 rise-1">
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-7 rise-1">
         <div>
-          <div className="inline-flex items-center gap-2 chip own !text-[10px]">
-            <Sparkles className="w-3 h-3" />
-            {me?.tenant.trialDaysLeft} gün ücretsiz dönem
-          </div>
-          <h1 className="font-display text-[34px] lg:text-[40px] tracking-tight mt-3 leading-tight">
-            {me?.tenant.name} <span className="text-ink-faint">· Komuta Merkezi</span>
+          <div className="eyebrow">Komuta Merkezi</div>
+          <h1 className="font-display text-[30px] lg:text-[36px] tracking-tight mt-1.5 leading-tight">
+            Merhaba, {me?.tenant.name}
           </h1>
           <p className="text-[14px] text-ink-muted mt-2">
             {hasContent
