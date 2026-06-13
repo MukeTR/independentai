@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import { requireSession } from '@/server/session';
 import { getDashboardMetrics, listPrompts, listCompetitors, listOwnBrands, getMe } from '@/server/repo';
+import { getRadarData, getTopCitationSources, getVisibilityGaps } from '@/server/insights';
 import { MetricCard } from '@/components/metric-card';
 import { TrendChart } from '@/components/trend-chart';
+import { CompetitorRadar } from '@/components/dashboard/competitor-radar';
+import { CitationSources } from '@/components/dashboard/citation-sources';
+import { VisibilityGaps } from '@/components/dashboard/visibility-gaps';
 import {
-  ArrowRight, Sparkles, FileText, Bot, Code, ClipboardCheck, Calculator, CheckCircle2,
-  MessageSquare, Swords, Settings, TrendingUp, Eye, Activity,
+  ArrowRight, Sparkles, FileText, Bot, Code, ClipboardCheck, CheckCircle2, Activity, Radar,
 } from 'lucide-react';
 
 const QUICK_TOOLS = [
@@ -17,12 +20,15 @@ const QUICK_TOOLS = [
 
 export default async function DashboardHome() {
   const session = await requireSession();
-  const [metrics, prompts, competitors, brands, me] = await Promise.all([
+  const [metrics, prompts, competitors, brands, me, radar, citationSources, gaps] = await Promise.all([
     getDashboardMetrics(session.tenantId),
     listPrompts(session.tenantId),
     listCompetitors(session.tenantId),
     listOwnBrands(session.tenantId),
     getMe(session.userId),
+    getRadarData(session.tenantId),
+    getTopCitationSources(session.tenantId),
+    getVisibilityGaps(session.tenantId),
   ]);
 
   const hasContent = prompts.length > 0 && brands.length > 0;
@@ -129,6 +135,28 @@ export default async function DashboardHome() {
                 ))}
               </ul>
             </div>
+          </div>
+
+          {/* Rekabet Radarı + Top Citation Sources */}
+          <div className="grid grid-cols-3 gap-5 mb-6 rise-4">
+            <div className="col-span-3 lg:col-span-2 card p-6">
+              <div className="flex items-center gap-2 mb-1">
+                <Radar className="w-4 h-4 text-brand" />
+                <h3 className="font-display text-[16px]">Rekabet Radarı</h3>
+              </div>
+              <p className="text-[12.5px] text-ink-muted mb-2">
+                Markanız (dolu alan) ile rakipleriniz 5 eksende: görünürlük, bahis, sentiment, pozisyon, öneri.
+              </p>
+              <CompetitorRadar entities={radar.entities} axes={radar.axes} />
+            </div>
+            <div className="col-span-3 lg:col-span-1">
+              <CitationSources sources={citationSources} />
+            </div>
+          </div>
+
+          {/* Görünürlük boşlukları */}
+          <div className="mb-8 rise-4">
+            <VisibilityGaps gaps={gaps} />
           </div>
         </>
       )}

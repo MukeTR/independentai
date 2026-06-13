@@ -5,6 +5,8 @@ export type BrandSpec = {
   isOwn?: boolean;
 };
 
+export type MentionType = 'RECOMMENDED' | 'LISTED' | 'COMPARED' | 'PASSING';
+
 export type ExtractedMention = {
   brandId?: string;
   mentionName: string;
@@ -12,11 +14,24 @@ export type ExtractedMention = {
   isCompetitor: boolean;
   position: number;
   sentiment: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
+  mentionType: MentionType;
   snippet: string;
 };
 
 const POSITIVE_HINTS = ['öne çıkıyor', 'en iyi', 'tavsiye', 'önerilir', 'tercih', 'güçlü', 'yaygın olarak kullanılır', 'lider'];
 const NEGATIVE_HINTS = ['zayıf', 'sorunlu', 'önerilmez', 'kötü', 'pahalı ve', 'geride kalıyor', 'eleştirilen'];
+
+const RECOMMEND_HINTS = ['tavsiye', 'öneririm', 'önerilir', 'en iyi seçim', 'tercih edilmeli', 'ideal'];
+const COMPARE_HINTS = ['ise', 'oysa', 'kıyasla', 'göre', 'fakat', 'ancak', 'farkı', 'aksine', 'vs'];
+
+function detectMentionType(snippet: string, position: number): MentionType {
+  const lower = snippet.toLowerCase();
+  if (RECOMMEND_HINTS.some((w) => lower.includes(w))) return 'RECOMMENDED';
+  if (COMPARE_HINTS.some((w) => lower.includes(w))) return 'COMPARED';
+  // numaralı/madde işaretli liste bağlamı
+  if (/(^|\s)(\d+[\.\)]|[-•*])\s/.test(snippet) || position <= 5) return 'LISTED';
+  return 'PASSING';
+}
 
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -48,7 +63,10 @@ export function extractMentions(
   const scan = (spec: BrandSpec, isOwn: boolean, isCompetitor: boolean) => {
     const candidates = [spec.name, ...spec.aliases].filter(Boolean);
     for (const candidate of candidates) {
-      const pattern = new RegExp(`\\b${escapeRegex(candidate)}\\b`, 'gi');
+      // ASCII \b Türkçe harfleri (çğıöşü/ÇĞİÖŞÜ) kelime sınırı saymadığı için
+      // lookaround + genişletilmiş harf sınıfı kullan.
+      const W = 'A-Za-z0-9çğıöşüÇĞİÖŞÜ';
+      const pattern = new RegExp(`(?<![${W}])${escapeRegex(candidate)}(?![${W}])`, 'gi');
       let match: RegExpExecArray | null;
       while ((match = pattern.exec(responseText)) !== null) {
         hits.push({
@@ -86,7 +104,50 @@ export function extractMentions(
       isCompetitor: h.isCompetitor,
       position: i + 1,
       sentiment: detectSentiment(snippet),
+      mentionType: detectMentionType(snippet, i + 1),
       snippet,
     };
+  });
+}
+
+/**
+ * LLM ile sentiment + mention type'ı iyileştirir (best-effort).
+ * Provider yoksa veya hata olursa heuristic değerleri korunur.
+ * Tek LLM çağrısıyla tüm mention'ları sınıflandırır.
+ */
+export async function enrichMentions(
+  responseText: string,
+  mentions: ExtractedMention[],
+): Promise<ExtractedMention[]> {
+  if (mentions.length === 0) return mentions;
+  const { completeJSON } = await import('./llm');
+
+  const list = mentions.map((m, i) => `${i}: "${m.mentionName}" (bağlam: ${m.snippet})`).join('\n');
+  const prompt = `Aşağıda bir AI cevabında geçen marka bahisleri var. Her biri için duygu (sentiment) ve bahsedilme tipini sınıflandır.
+
+AI cevabı:
+"""${responseText.slice(0, 2000)}"""
+
+Bahisler:
+${list}
+
+Her bahis için JSON döndür. sentiment: POSITIVE|NEUTRAL|NEGATIVE. type: RECOMMENDED (açıkça öneriliyor) | LISTED (liste içinde) | COMPARED (karşılaştırma) | PASSING (geçerken).
+Format: {"items":[{"i":0,"sentiment":"POSITIVE","type":"RECOMMENDED"}]}`;
+
+  type Resp = { items: { i: number; sentiment: string; type: string }[] };
+  const res = await completeJSON<Resp>(prompt, { maxTokens: 600 });
+  if (!res?.items) return mentions;
+
+  const byIdx = new Map(res.items.map((it) => [it.i, it]));
+  return mentions.map((m, i) => {
+    const it = byIdx.get(i);
+    if (!it) return m;
+    const sentiment = ['POSITIVE', 'NEUTRAL', 'NEGATIVE'].includes(it.sentiment)
+      ? (it.sentiment as ExtractedMention['sentiment'])
+      : m.sentiment;
+    const mentionType = ['RECOMMENDED', 'LISTED', 'COMPARED', 'PASSING'].includes(it.type)
+      ? (it.type as MentionType)
+      : m.mentionType;
+    return { ...m, sentiment, mentionType };
   });
 }

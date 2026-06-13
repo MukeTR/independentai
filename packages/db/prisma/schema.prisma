@@ -129,10 +129,30 @@ model ModelRun {
   isMocked     Boolean    @default(false)
   errorMessage String?
 
-  mentions     BrandMention[]
+  mentions      BrandMention[]
+  citationLinks Citation[]
 
   @@index([promptId, runDate])
   @@index([provider, runDate])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Citation (AI cevabında atıf verilen kaynaklar — Faz 0/1/6)
+// ───────────────────────────────────────────────────────────────
+
+model Citation {
+  id         String   @id @default(cuid())
+  modelRunId String
+  modelRun   ModelRun @relation(fields: [modelRunId], references: [id], onDelete: Cascade)
+  tenantId   String   // hızlı agregasyon için denormalize
+  url        String   @db.Text
+  domain     String   // normalize edilmiş ana alan (örn. "linkedin.com")
+  title      String?
+  runDate    DateTime @default(now())
+
+  @@index([tenantId, runDate])
+  @@index([domain])
+  @@index([modelRunId])
 }
 
 enum AiProvider {
@@ -156,6 +176,7 @@ model BrandMention {
   isCompetitor    Boolean  @default(false)
   position        Int      // metindeki kaçıncı bahsedilen marka (1, 2, 3...)
   sentiment       Sentiment @default(NEUTRAL)
+  mentionType     MentionType @default(LISTED) // AI markayı nasıl andı (Faz 0)
   snippet         String   @db.Text  // markanın geçtiği cümlenin etrafındaki bağlam
 
   @@index([modelRunId])
@@ -166,6 +187,14 @@ enum Sentiment {
   POSITIVE
   NEUTRAL
   NEGATIVE
+}
+
+// AI cevabında markanın anılma biçimi
+enum MentionType {
+  RECOMMENDED // açıkça öneriliyor ("X'i tavsiye ederim")
+  LISTED      // bir liste içinde sıralanmış
+  COMPARED    // karşılaştırma bağlamında
+  PASSING     // geçerken/yan cümlede
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -182,4 +211,89 @@ model SystemConfig {
   updatedBy String?                    // super admin user.id
 
   @@index([key])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Audit (GEO Audit & İçerik Denetleyicisi — Faz 2 & 4)
+// ───────────────────────────────────────────────────────────────
+
+model Audit {
+  id           String    @id @default(cuid())
+  tenantId     String?   // null = public lead-magnet denetimi (kayıtsız)
+  kind         AuditKind @default(GEO)
+  url          String    @db.Text
+  overallScore Int       // 0-100
+  breakdown    Json      // { answerFirst, citationAuthority, aiComprehension, technical, freshness }
+  findings     Json      // [{ category, status: pass|warn|fail, title, detail, fix? }]
+  recommendations Json?  // İçerik denetimi aksiyon kartları [{title, difficulty, impact, detail}]
+  createdAt    DateTime  @default(now())
+
+  @@index([tenantId, createdAt])
+}
+
+enum AuditKind {
+  GEO     // teknik AI-hazırlık denetimi
+  CONTENT // içerik/sayfa optimizasyon denetimi
+}
+
+// ───────────────────────────────────────────────────────────────
+//  PageEmbedding (Kanibalizasyon Denetleyici — Faz 7)
+//  Embedding'ler Json (number[]) olarak; cosine JS'te hesaplanır.
+// ───────────────────────────────────────────────────────────────
+
+model PageEmbedding {
+  id        String   @id @default(cuid())
+  tenantId  String
+  url       String   @db.Text
+  title     String?
+  excerpt   String?  @db.Text
+  embedding Json     // number[]
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AlertConfig (Uyarılar & Raporlar — Faz 8)
+// ───────────────────────────────────────────────────────────────
+
+model AlertConfig {
+  id                      String   @id @default(cuid())
+  tenantId                String   @unique
+  emailEnabled            Boolean  @default(true)
+  slackWebhookUrl         String?
+  weeklyReportEnabled     Boolean  @default(true)
+  visibilityDropThreshold Int      @default(15) // puan düşüşü eşiği
+  lastNotifiedAt          DateTime?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+// ───────────────────────────────────────────────────────────────
+//  BrandFact (Halüsinasyon tespiti — Faz 9)
+// ───────────────────────────────────────────────────────────────
+
+model BrandFact {
+  id        String   @id @default(cuid())
+  tenantId  String
+  fact      String   @db.Text // doğrulanmış marka gerçeği ("2019'da kuruldu", "fiyat 99₺/ay")
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  ApiToken (Programatik erişim — Faz 9)
+// ───────────────────────────────────────────────────────────────
+
+model ApiToken {
+  id         String    @id @default(cuid())
+  tenantId   String
+  name       String
+  tokenHash  String    @unique // sha256(token)
+  prefix     String    // "iai_live_xxxx" gösterim için ilk karakterler
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([tenantId])
 }
