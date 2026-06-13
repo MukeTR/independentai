@@ -1,27 +1,42 @@
 import Link from 'next/link';
 import { requireSession } from '@/server/session';
-import { getDashboardMetrics, listPrompts, listCompetitors, listOwnBrands, getMe } from '@/server/repo';
+import { listPrompts, listCompetitors, listOwnBrands, getMe } from '@/server/repo';
+import { getComprehensiveAnalytics } from '@/server/dashboard-analytics';
 import { getRadarData, getTopCitationSources, getVisibilityGaps } from '@/server/insights';
-import { MetricCard } from '@/components/metric-card';
-import { TrendChart } from '@/components/trend-chart';
 import { CompetitorRadar } from '@/components/dashboard/competitor-radar';
 import { CitationSources } from '@/components/dashboard/citation-sources';
 import { VisibilityGaps } from '@/components/dashboard/visibility-gaps';
+import { KpiRow } from '@/components/dashboard/widgets/kpi-row';
+import { DualTrend } from '@/components/dashboard/widgets/dual-trend';
+import { SovDonut } from '@/components/dashboard/widgets/sov-donut';
+import { SentimentPanel } from '@/components/dashboard/widgets/sentiment-panel';
+import { MentionTypeBar } from '@/components/dashboard/widgets/mention-type-bar';
+import { PositionHistogram } from '@/components/dashboard/widgets/position-histogram';
+import { ProviderBreakdown } from '@/components/dashboard/widgets/provider-breakdown';
+import { CompetitorLeaderboard } from '@/components/dashboard/widgets/competitor-leaderboard';
+import { PromptPerformanceTable } from '@/components/dashboard/widgets/prompt-performance-table';
+import { CategoryBreakdown } from '@/components/dashboard/widgets/category-breakdown';
+import { HealthPanel } from '@/components/dashboard/widgets/health-panel';
+import { ActivityFeed } from '@/components/dashboard/widgets/activity-feed';
 import {
-  ArrowRight, Sparkles, FileText, Bot, Code, ClipboardCheck, CheckCircle2, Activity, Radar,
+  ArrowRight, Sparkles, CheckCircle2, Activity, Radar, Gauge, FileSearch, GitFork,
+  ShieldAlert, KeyRound, Link2, PenLine,
 } from 'lucide-react';
 
-const QUICK_TOOLS = [
-  { href: '/dashboard/tools/llms-txt', icon: FileText, title: 'llms.txt üret', desc: 'AI bot\'lara markanızı anlatın' },
-  { href: '/dashboard/tools/robots', icon: Bot, title: 'robots.txt üret', desc: 'AI crawler\'ları yönetin' },
-  { href: '/dashboard/tools/schema', icon: Code, title: 'Schema markup', desc: 'JSON-LD Organization' },
-  { href: '/dashboard/tools/audit', icon: ClipboardCheck, title: 'GEO Audit', desc: '10 adımlık denetim' },
+const FEATURED_TOOLS = [
+  { href: '/dashboard/tools/geo-audit', icon: Gauge, title: 'GEO Audit', desc: 'URL → 0-100 AI hazırlık skoru' },
+  { href: '/dashboard/tools/content-audit', icon: FileSearch, title: 'İçerik Denetleyici', desc: 'Sayfa → aksiyon kartları' },
+  { href: '/dashboard/tools/keyword-finder', icon: KeyRound, title: 'Prompt Bulucu', desc: 'Yüksek niyetli sorular' },
+  { href: '/dashboard/tools/cannibalization', icon: GitFork, title: 'Kanibalizasyon', desc: 'Rakip kendi sayfaların' },
+  { href: '/dashboard/tools/hallucination', icon: ShieldAlert, title: 'Halüsinasyon', desc: 'Yanlış bilgi tespiti' },
+  { href: '/dashboard/tools/backlink-finder', icon: Link2, title: 'Backlink Bulucu', desc: 'Atıf alan kaynaklar' },
+  { href: '/dashboard/tools/aeo-writer', icon: PenLine, title: 'AEO Yazıcı', desc: 'AI-optimize içerik üret' },
 ];
 
 export default async function DashboardHome() {
   const session = await requireSession();
-  const [metrics, prompts, competitors, brands, me, radar, citationSources, gaps] = await Promise.all([
-    getDashboardMetrics(session.tenantId),
+  const [analytics, prompts, competitors, brands, me, radar, citationSources, gaps] = await Promise.all([
+    getComprehensiveAnalytics(session.tenantId),
     listPrompts(session.tenantId),
     listCompetitors(session.tenantId),
     listOwnBrands(session.tenantId),
@@ -31,51 +46,48 @@ export default async function DashboardHome() {
     getVisibilityGaps(session.tenantId),
   ]);
 
-  const hasContent = prompts.length > 0 && brands.length > 0;
+  const hasContent = analytics.hasData;
   const onboarding = {
     brand: brands.length > 0,
     competitors: competitors.length > 0,
     prompts: prompts.length > 0,
-    firstRun: metrics.totalRuns > 0,
+    firstRun: analytics.kpis.totalRuns > 0,
   };
   const onboardingDone = Object.values(onboarding).filter(Boolean).length;
-  const onboardingTotal = 4;
 
   return (
-    <div className="max-w-6xl">
-      {/* Welcome banner */}
-      <div className="relative card overflow-hidden p-8 lg:p-10 mb-8 rise-1"
-        style={{ background: 'linear-gradient(135deg, var(--paper-3) 0%, var(--brand-glow) 100%)' }}>
-        <div className="absolute top-0 right-0 w-72 h-72 -mr-20 -mt-20 rounded-full opacity-30"
-          style={{ background: 'radial-gradient(circle, var(--brand-glow), transparent 70%)' }} />
-        <div className="relative">
+    <div>
+      {/* Header */}
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-8 rise-1">
+        <div>
           <div className="inline-flex items-center gap-2 chip own !text-[10px]">
             <Sparkles className="w-3 h-3" />
             {me?.tenant.trialDaysLeft} gün ücretsiz dönem
           </div>
-          <h1 className="font-display text-[36px] lg:text-[44px] tracking-tight mt-4 leading-tight">
-            Hoş geldin, <span className="text-brand">{me?.tenant.name}</span>
+          <h1 className="font-display text-[34px] lg:text-[40px] tracking-tight mt-3 leading-tight">
+            {me?.tenant.name} <span className="text-ink-faint">· Komuta Merkezi</span>
           </h1>
-          <p className="text-[15px] text-ink-muted mt-3 max-w-2xl">
+          <p className="text-[14px] text-ink-muted mt-2">
             {hasContent
-              ? `Son 30 günde ${metrics.totalRuns} model çalıştırması yaptık. Markanız izlenen sorguların %${metrics.visibilityScore}'inde görünüyor.`
-              : 'Birkaç dakikada GEO yolculuğuna başlayalım. Aşağıdaki adımları tamamla, ilk verilerin gelmesini bekle.'}
+              ? `Son ${analytics.window} gün · ${analytics.kpis.totalRuns} çalıştırma · markanız sorguların %${analytics.kpis.visibility}'inde görünüyor.`
+              : 'AI görünürlük takibinize başlamak için birkaç adım kaldı.'}
           </p>
         </div>
+        <div className="chip !text-[11px] font-mono">Son {analytics.window} gün</div>
       </div>
 
-      {/* Onboarding progress (only show if not 100%) */}
-      {onboardingDone < onboardingTotal && (
+      {/* Onboarding */}
+      {onboardingDone < 4 && (
         <div className="card p-7 mb-8 rise-2">
           <div className="flex items-baseline justify-between mb-4">
             <div>
               <div className="eyebrow">Başlangıç adımları</div>
-              <h2 className="font-display text-[20px] mt-1">Hesabını {onboardingDone}/{onboardingTotal} tamamladın</h2>
+              <h2 className="font-display text-[20px] mt-1">Hesabını {onboardingDone}/4 tamamladın</h2>
             </div>
-            <div className="font-display text-[28px] tabular text-brand">{Math.round((onboardingDone / onboardingTotal) * 100)}%</div>
+            <div className="font-display text-[28px] tabular text-brand">{Math.round((onboardingDone / 4) * 100)}%</div>
           </div>
           <div className="h-1.5 bg-paper-4 rounded-full overflow-hidden mb-5">
-            <div className="h-full bg-brand transition-all duration-500" style={{ width: `${(onboardingDone / onboardingTotal) * 100}%` }} />
+            <div className="h-full bg-brand transition-all duration-500" style={{ width: `${(onboardingDone / 4) * 100}%` }} />
           </div>
           <div className="space-y-2.5">
             <OnboardStep done={onboarding.brand} label="Marka bilgilerini gir" href="/dashboard/settings" />
@@ -86,149 +98,94 @@ export default async function DashboardHome() {
         </div>
       )}
 
-      {/* Metrics */}
-      {hasContent && (
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6 rise-3">
-            <MetricCard
-              label="Görünürlük Skoru"
-              value={metrics.visibilityScore}
-              suffix="%"
-              tone="brand"
-              hint="Markanız geçen çalıştırma oranı"
-            />
-            <MetricCard
-              label="Share of Voice"
-              value={metrics.shareOfVoice}
-              suffix="%"
-              hint="Rakiplerinizle birlikte paynız"
-            />
-            <MetricCard
-              label="Toplam Çalıştırma"
-              value={metrics.totalRuns}
-              hint="Son 30 günde"
-            />
-            <MetricCard
-              label="Toplam Bahsetme"
-              value={metrics.totalMentions}
-              hint="Siz + rakip toplam"
-            />
+      {hasContent ? (
+        <div className="space-y-6">
+          {/* KPI row */}
+          <div className="rise-2"><KpiRow kpis={analytics.kpis} /></div>
+
+          {/* Trend + SoV */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-3">
+            <div className="lg:col-span-2"><DualTrend trend={analytics.trend} /></div>
+            <SovDonut ownSov={analytics.kpis.sov} competitors={analytics.competitors} />
           </div>
 
-          <div className="grid grid-cols-3 gap-5 mb-8 rise-4">
-            <div className="col-span-3 lg:col-span-2">
-              <TrendChart data={metrics.trend} />
-            </div>
-            <div className="col-span-3 lg:col-span-1 card p-6">
-              <div className="eyebrow">Modellere Göre</div>
-              <ul className="mt-5 space-y-4">
-                {metrics.byProvider.map((p) => (
-                  <li key={p.provider}>
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[14px]">{p.provider}</span>
-                      <span className="font-mono text-[14px] tabular">{p.visibility}%</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-paper-4 mt-2 overflow-hidden">
-                      <div className="h-full bg-brand transition-all duration-500" style={{ width: `${p.visibility}%` }} />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* Provider breakdown + Health */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-3">
+            <div className="lg:col-span-2"><ProviderBreakdown byProvider={analytics.byProvider} /></div>
+            <HealthPanel health={analytics.health} />
           </div>
 
-          {/* Rekabet Radarı + Top Citation Sources */}
-          <div className="grid grid-cols-3 gap-5 mb-6 rise-4">
-            <div className="col-span-3 lg:col-span-2 card p-6">
+          {/* Radar + Sentiment */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 rise-3">
+            <div className="card p-6">
               <div className="flex items-center gap-2 mb-1">
                 <Radar className="w-4 h-4 text-brand" />
                 <h3 className="font-display text-[16px]">Rekabet Radarı</h3>
               </div>
-              <p className="text-[12.5px] text-ink-muted mb-2">
-                Markanız (dolu alan) ile rakipleriniz 5 eksende: görünürlük, bahis, sentiment, pozisyon, öneri.
-              </p>
+              <p className="text-[12.5px] text-ink-muted mb-2">Markanız ile rakipleriniz 5 eksende.</p>
               <CompetitorRadar entities={radar.entities} axes={radar.axes} />
             </div>
-            <div className="col-span-3 lg:col-span-1">
-              <CitationSources sources={citationSources} />
-            </div>
+            <SentimentPanel sentiment={analytics.sentiment} sentimentTrend={analytics.sentimentTrend} />
           </div>
 
-          {/* Görünürlük boşlukları */}
-          <div className="mb-8 rise-4">
-            <VisibilityGaps gaps={gaps} />
+          {/* Position + MentionType + Category */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-4">
+            <PositionHistogram positionHistogram={analytics.positionHistogram} />
+            <MentionTypeBar mentionTypes={analytics.mentionTypes} />
+            <CategoryBreakdown categories={analytics.categoryBreakdown} />
           </div>
-        </>
-      )}
 
-      {/* Quick tools — always visible */}
-      <div className="mb-8 rise-5">
-        <div className="flex items-baseline justify-between mb-4">
-          <div>
-            <div className="eyebrow">Hızlı Araçlar</div>
-            <h2 className="font-display text-[20px] mt-1">İhtiyacınız olan GEO araçları, tek tıkla</h2>
+          {/* Leaderboard + Citation sources */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 rise-4">
+            <CompetitorLeaderboard competitors={analytics.competitors} />
+            <CitationSources sources={citationSources} />
           </div>
-          <Link href="/dashboard/tools" className="text-[13px] text-brand-deep hover:text-brand inline-flex items-center gap-1">
-            Tümü <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+
+          {/* Prompt performance + Activity */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-4">
+            <div className="lg:col-span-2"><PromptPerformanceTable prompts={analytics.promptPerformance} /></div>
+            <ActivityFeed activity={analytics.activity} />
+          </div>
+
+          {/* Gaps */}
+          <div className="rise-5"><VisibilityGaps gaps={gaps} /></div>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {QUICK_TOOLS.map((tool) => (
-            <Link
-              key={tool.href}
-              href={tool.href}
-              className="card p-5 hover:bg-paper-3 hover:-translate-y-0.5 transition-all group"
-            >
-              <tool.icon className="w-5 h-5 text-brand mb-3 group-hover:scale-110 transition" />
-              <div className="font-display text-[15px] leading-tight">{tool.title}</div>
-              <div className="text-[11.5px] text-ink-muted mt-1.5">{tool.desc}</div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent prompts (if any) */}
-      {prompts.length > 0 && (
-        <div className="card p-6 rise-5">
-          <div className="flex items-baseline justify-between mb-4">
-            <div className="eyebrow">Son izlenen sorular</div>
-            <Link href="/dashboard/prompts" className="text-[13px] text-brand-deep hover:text-brand inline-flex items-center gap-1">
-              Tüm sorular <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="divide-y divide-hairline">
-            {prompts.slice(0, 5).map((p) => (
-              <Link
-                key={p.id}
-                href={`/dashboard/prompts/${p.id}`}
-                className="flex items-center justify-between py-3 hover:bg-paper-2 -mx-2 px-2 rounded transition"
-              >
-                <div className="min-w-0">
-                  <div className="text-[13.5px] text-ink truncate">{p.text}</div>
-                  <div className="text-[11px] text-ink-faint font-mono mt-0.5">
-                    {p._count.runs} çalıştırma {p.category ? `· ${p.category}` : ''}
-                  </div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-ink-faint" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Empty state — no prompts yet */}
-      {!hasContent && (
-        <div className="card p-10 text-center mb-8">
+      ) : (
+        <div className="card p-10 text-center mb-8 rise-3">
           <Activity className="w-10 h-10 text-ink-faint mx-auto mb-4" />
           <h3 className="font-display text-[20px]">Henüz veri yok</h3>
           <p className="text-[14px] text-ink-muted mt-2 max-w-md mx-auto">
-            Yukarıdaki başlangıç adımlarını tamamla. İlk çalıştırma sonrası burada görünürlük metriklerin görünecek.
+            Başlangıç adımlarını tamamla. İlk gece çalıştırması sonrası tüm görünürlük metriklerin burada belirir.
           </p>
           <Link href="/dashboard/prompts" className="btn-primary inline-flex items-center gap-2 mt-6">
             İlk sorunu ekle <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       )}
+
+      {/* Tools showcase */}
+      <div className="mt-10 rise-5">
+        <div className="flex items-baseline justify-between mb-4">
+          <div>
+            <div className="eyebrow">GEO Araç Kutusu</div>
+            <h2 className="font-display text-[22px] mt-1">İhtiyacın olan her şey, tek tıkla</h2>
+          </div>
+          <Link href="/dashboard/tools" className="text-[13px] text-brand-deep hover:text-brand inline-flex items-center gap-1">
+            Tüm araçlar <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          {FEATURED_TOOLS.map((t) => (
+            <Link key={t.href} href={t.href} className="card p-4 hover:-translate-y-0.5 hover:bg-paper-2 transition-all group">
+              <div className="w-9 h-9 rounded-lg bg-brand-glow flex items-center justify-center mb-3 group-hover:bg-brand/15 transition">
+                <t.icon className="w-4 h-4 text-brand" />
+              </div>
+              <div className="font-display text-[13.5px] leading-tight">{t.title}</div>
+              <div className="text-[10.5px] text-ink-faint mt-1 leading-tight">{t.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

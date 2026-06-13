@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/server/session';
 import { getMe } from '@/server/repo';
-import { Sidebar } from '@/components/sidebar';
+import { DockNav } from '@/components/dock-nav';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -11,9 +11,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!me) redirect('/login');
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar user={me} />
-      <main className="flex-1 p-10 overflow-x-hidden">{children}</main>
+    <div className="min-h-screen">
+      <main className="mx-auto max-w-[1280px] px-6 lg:px-10 py-10 pb-32">{children}</main>
+      <DockNav user={me} />
     </div>
   );
 }
