@@ -24,6 +24,9 @@ const NAV_TOOLS = [
   { href: '/dashboard/tools/llms-txt', label: 'llms.txt' },
   { href: '/dashboard/tools/robots', label: 'robots.txt' },
   { href: '/dashboard/tools/schema', label: 'Schema markup' },
+  { href: '/dashboard/tools/audit', label: 'GEO checklist' },
+  { href: '/dashboard/tools/visibility', label: 'Visibility hesaplayıcı' },
+  { href: '/dashboard/tools/checklist', label: 'SEO checklist' },
 ];
 
 const NAV_BOTTOM = [

@@ -8,8 +8,7 @@ import { CompetitorRadar } from '@/components/dashboard/competitor-radar';
 import { CitationSources } from '@/components/dashboard/citation-sources';
 import { VisibilityGaps } from '@/components/dashboard/visibility-gaps';
 import {
-  ArrowRight, Sparkles, FileText, Bot, Code, ClipboardCheck, Calculator, CheckCircle2,
-  MessageSquare, Swords, Settings, TrendingUp, Eye, Activity, Radar,
+  ArrowRight, Sparkles, FileText, Bot, Code, ClipboardCheck, CheckCircle2, Activity, Radar,
 } from 'lucide-react';
 
 const QUICK_TOOLS = [

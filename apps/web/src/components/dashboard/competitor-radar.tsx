@@ -23,8 +23,9 @@ export function CompetitorRadar({ entities, axes }: { entities: RadarEntity[]; a
     Öneri: e.recommend,
   });
 
+  // Eksen etiketi için çakışmayacak bir anahtar kullan (bir entity adı "axis" olabilir).
   const data = axes.map((axis) => {
-    const row: Record<string, string | number> = { axis };
+    const row: Record<string, string | number> = { _metric: axis };
     entities.forEach((e) => {
       row[e.name] = keyFor(e)[axis] ?? 0;
     });
@@ -36,7 +37,7 @@ export function CompetitorRadar({ entities, axes }: { entities: RadarEntity[]; a
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} outerRadius="72%">
           <PolarGrid stroke="#E5E1D8" />
-          <PolarAngleAxis dataKey="axis" tick={{ fill: '#6B6660', fontSize: 12 }} />
+          <PolarAngleAxis dataKey="_metric" tick={{ fill: '#6B6660', fontSize: 12 }} />
           <PolarRadiusAxis domain={[0, 100]} tick={{ fill: '#A8A29A', fontSize: 9 }} axisLine={false} />
           {entities.map((e, i) => (
             <Radar

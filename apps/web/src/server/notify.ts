@@ -57,7 +57,7 @@ function daysAgo(n: number): Date {
 
 async function visibilityForWindow(tenantId: string, fromDays: number, toDays: number): Promise<{ vis: number; runs: number }> {
   const runs = await prisma.modelRun.findMany({
-    where: { prompt: { tenantId }, runDate: { gte: daysAgo(fromDays), lt: daysAgo(toDays) } },
+    where: { prompt: { tenantId }, runDate: { gte: daysAgo(fromDays), lt: daysAgo(toDays) }, errorMessage: null },
     include: { mentions: true },
   });
   if (runs.length === 0) return { vis: 0, runs: 0 };
@@ -80,7 +80,12 @@ export async function getWeeklyDelta(tenantId: string): Promise<WeeklyDelta> {
   recent.forEach((m) => counts.set(m.mentionName, (counts.get(m.mentionName) ?? 0) + 1));
   const topCompetitor = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
-  return { current: cur.vis, previous: prev.vis, delta: cur.vis - prev.vis, runs: cur.runs, topCompetitor };
+  // Önceki pencerede yeterli veri yoksa (baseline yok) delta'yı 0 say — yanlış "büyük düşüş/artış"
+  // ve hatalı düşüş uyarısı üretmesin.
+  const hasBaseline = prev.runs >= 3;
+  const delta = hasBaseline ? cur.vis - prev.vis : 0;
+
+  return { current: cur.vis, previous: prev.vis, delta, runs: cur.runs, topCompetitor };
 }
 
 function digestText(tenantName: string, d: WeeklyDelta): string {

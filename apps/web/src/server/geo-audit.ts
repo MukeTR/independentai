@@ -4,6 +4,7 @@
  * Bağımlılıksız: regex tabanlı HTML analizi + opsiyonel LLM "anlaşılabilirlik" pass'i.
  */
 import { complete } from '@independentai/ai';
+import { safeFetch } from './safe-fetch';
 
 export type AuditStatus = 'pass' | 'warn' | 'fail';
 export type AuditFinding = { category: string; status: AuditStatus; title: string; detail: string; fix?: string };
@@ -26,15 +27,12 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 export async function fetchText(url: string, timeout = FETCH_TIMEOUT): Promise<string | null> {
   try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), timeout);
-    const res = await fetch(url, {
-      signal: ctrl.signal,
+    // SSRF-güvenli: internal/loopback/metadata adresleri engellenir, redirect'ler yeniden doğrulanır.
+    const res = await safeFetch(url, {
+      timeout,
       headers: { 'User-Agent': 'IndependentAI-GEOBot/1.0 (+https://independentai.space)' },
-      redirect: 'follow',
     });
-    clearTimeout(t);
-    if (!res.ok) return null;
+    if (!res || !res.ok) return null;
     return await res.text();
   } catch {
     return null;
@@ -46,7 +44,7 @@ export function stripTags(html: string): string {
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/&(#\d+|#x[0-9a-f]+|[a-z][a-z0-9]*);/gi, ' ') // named + decimal + hex entities
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -98,7 +96,7 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   const hasCanonical = /<link[^>]+rel=["']canonical["']/i.test(html);
   const hasJsonLd = /<script[^>]+type=["']application\/ld\+json["']/i.test(html);
   const noindex = /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html);
-  const aiBotsAllowed = !robotsTxt || !/User-agent:\s*GPTBot[\s\S]*?Disallow:\s*\//i.test(robotsTxt);
+  const aiBotsAllowed = !robotsTxt || !gptBotDisallowed(robotsTxt);
 
   technical += isHttps ? 18 : 0;
   technical += hasTitle ? 14 : 0;
@@ -191,6 +189,16 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   );
 
   return { url, overallScore, breakdown, findings };
+}
+
+/** Sadece GPTBot user-agent grubunun içinde "Disallow: /" var mı? (gruplar arası taşmayı önler) */
+function gptBotDisallowed(robots: string): boolean {
+  const idx = robots.search(/user-agent:\s*gptbot/i);
+  if (idx === -1) return false; // GPTBot'a özel kural yok → engellenmemiş
+  const after = robots.slice(idx);
+  const nextUA = after.slice(1).search(/^\s*user-agent:/im);
+  const block = nextUA === -1 ? after : after.slice(0, nextUA + 1);
+  return /^\s*disallow:\s*\/\s*$/im.test(block);
 }
 
 function statusFinding(category: string, ok: boolean, title: string, passDetail: string, fix: string): AuditFinding {

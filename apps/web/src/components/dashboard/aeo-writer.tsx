@@ -33,7 +33,14 @@ export function AeoWriter() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, topic, brand: brand || undefined, notes: notes || undefined }),
       });
-      setResult(await res.json());
+      const data = await res.json().catch(() => null);
+      if (res.ok && data) {
+        setResult(data);
+      } else {
+        setResult({ type, label: 'Hata', available: false, content: data?.message || 'İçerik üretilemedi, tekrar deneyin.' });
+      }
+    } catch {
+      setResult({ type, label: 'Hata', available: false, content: 'Bağlantı hatası, tekrar deneyin.' });
     } finally {
       setLoading(false);
     }

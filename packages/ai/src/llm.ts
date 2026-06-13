@@ -90,11 +90,12 @@ export function parseJSON<T = unknown>(raw: string): T | null {
   const firstObj = text.indexOf('{');
   const firstArr = text.indexOf('[');
   const start = firstArr === -1 ? firstObj : firstObj === -1 ? firstArr : Math.min(firstObj, firstArr);
-  if (start > 0) {
+  if (start >= 0) {
+    // JSON index 0'da başlasa bile sondaki fazla metni kırp (start > 0 yerine >= 0)
     const lastObj = text.lastIndexOf('}');
     const lastArr = text.lastIndexOf(']');
     const end = Math.max(lastObj, lastArr);
-    if (end > start) text = text.slice(start, end + 1);
+    if (end >= start) text = text.slice(start, end + 1);
   }
   try {
     return JSON.parse(text) as T;

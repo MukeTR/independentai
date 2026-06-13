@@ -39,25 +39,36 @@ export type BacklinkTarget = {
  * outreach hedefleri. Citation verisinin domain bazında zenginleştirilmiş hali.
  */
 export async function getBacklinkTargets(tenantId: string, days = 60, limit = 20): Promise<BacklinkTarget[]> {
-  const rows = await prisma.citation.findMany({
-    where: { tenantId, runDate: { gte: sinceDays(days) } },
+  const since = sinceDays(days);
+  // Doğru sayım: tüm pencere üzerinden groupBy (take cap'i tarafından çarpıtılmaz)
+  const grouped = await prisma.citation.groupBy({
+    by: ['domain'],
+    where: { tenantId, runDate: { gte: since } },
+    _count: { domain: true },
+    orderBy: { _count: { domain: 'desc' } },
+    take: limit,
+  });
+  if (grouped.length === 0) return [];
+
+  // Sadece üst domainler için örnek URL'ler
+  const topDomains = grouped.map((g) => g.domain);
+  const sampleRows = await prisma.citation.findMany({
+    where: { tenantId, runDate: { gte: since }, domain: { in: topDomains } },
     select: { domain: true, url: true },
     orderBy: { runDate: 'desc' },
-    take: 1000,
   });
-
-  const map = new Map<string, { count: number; urls: Set<string> }>();
-  for (const r of rows) {
-    const entry = map.get(r.domain) ?? { count: 0, urls: new Set<string>() };
-    entry.count += 1;
-    if (entry.urls.size < 3) entry.urls.add(r.url);
-    map.set(r.domain, entry);
+  const samples = new Map<string, Set<string>>();
+  for (const r of sampleRows) {
+    const set = samples.get(r.domain) ?? new Set<string>();
+    if (set.size < 3) set.add(r.url);
+    samples.set(r.domain, set);
   }
 
-  return [...map.entries()]
-    .map(([domain, v]) => ({ domain, count: v.count, sampleUrls: [...v.urls] }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, limit);
+  return grouped.map((g) => ({
+    domain: g.domain,
+    count: g._count.domain,
+    sampleUrls: [...(samples.get(g.domain) ?? [])],
+  }));
 }
 
 // ───────────────── Rekabet Radarı ─────────────────
@@ -76,7 +87,7 @@ const SENTIMENT_SCORE = { POSITIVE: 100, NEUTRAL: 50, NEGATIVE: 0 } as const;
 
 export async function getRadarData(tenantId: string, days = 30): Promise<{ entities: RadarEntity[]; axes: string[] }> {
   const runs = await prisma.modelRun.findMany({
-    where: { prompt: { tenantId }, runDate: { gte: sinceDays(days) } },
+    where: { prompt: { tenantId }, runDate: { gte: sinceDays(days) }, errorMessage: null },
     include: { mentions: true },
   });
   const totalRuns = runs.length || 1;
@@ -147,11 +158,20 @@ export async function getVisibilityGaps(tenantId: string, days = 30, limit = 15)
     orderBy: { runDate: 'desc' },
   });
 
+  // Sadece her (prompt × provider) için EN SON çalıştırmayı dikkate al — böylece 30 gün
+  // önce bir kez görünmek bugünkü boşluğu gizlemez. runs zaten tarih azalan sıralı, ilk = en son.
+  type Run = (typeof runs)[number];
+  const latest = new Map<string, Run>();
+  for (const r of runs) {
+    const key = `${r.promptId}|${r.provider}`;
+    if (!latest.has(key)) latest.set(key, r);
+  }
+
   // promptId → { text, ownSeen, comps:Set, missingProviders:Set }
   type G = { text: string; ownSeen: boolean; comps: Set<string>; missing: Set<string> };
   const byPrompt = new Map<string, G>();
 
-  for (const r of runs) {
+  for (const r of latest.values()) {
     const g = getOrInit(byPrompt, r.promptId, () => ({ text: r.prompt.text, ownSeen: false, comps: new Set<string>(), missing: new Set<string>() }));
     const ownHere = r.mentions.some((m) => m.isOwnBrand);
     if (ownHere) g.ownSeen = true;

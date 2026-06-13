@@ -20,16 +20,50 @@ export type CannibalizationResult = {
 const MAX_PAGES = 15;
 const SIMILARITY_THRESHOLD = 0.82;
 
+function unescapeXml(s: string): string {
+  return s
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)));
+}
+
+function dedup(urls: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const u of urls) {
+    const key = u.replace(/\/+$/, '').toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(u);
+  }
+  return out;
+}
+
+/** Bir sitemap XML'inden <loc>'ları çıkarır; sitemap-index ise ilk alt sitemap'i açar. */
+async function locsFromSitemap(xml: string, depth = 0): Promise<string[]> {
+  const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map((m) => unescapeXml(m[1]!.trim())).filter(Boolean);
+  // sitemap index → alt sitemap'lere işaret eder (sayfa değil)
+  if (/<sitemapindex/i.test(xml) && depth < 2 && locs.length) {
+    const childXml = await fetchText(locs[0]!);
+    if (childXml) return locsFromSitemap(childXml, depth + 1);
+  }
+  return locs;
+}
+
 /** sitemap.xml veya düz URL listesinden URL'leri çıkar. */
 async function resolveUrls(input: string): Promise<string[]> {
   const trimmed = input.trim();
-  // Birden fazla satır → URL listesi
+
+  // Birden fazla satır → URL listesi (dedup uygulanır)
   if (/\n/.test(trimmed)) {
-    return trimmed
+    const lines = trimmed
       .split(/\n+/)
       .map((s) => s.trim())
-      .filter((s) => /^https?:\/\//i.test(s))
-      .slice(0, MAX_PAGES);
+      .filter((s) => /^https?:\/\//i.test(s));
+    return dedup(lines).slice(0, MAX_PAGES);
   }
 
   let url = trimmed;
@@ -39,8 +73,8 @@ async function resolveUrls(input: string): Promise<string[]> {
   if (/sitemap.*\.xml$/i.test(url) || url.endsWith('.xml')) {
     const xml = await fetchText(url);
     if (xml) {
-      const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map((m) => m[1]!).filter(Boolean);
-      if (locs.length) return locs.slice(0, MAX_PAGES);
+      const locs = await locsFromSitemap(xml);
+      if (locs.length) return dedup(locs).slice(0, MAX_PAGES);
     }
   }
 
@@ -49,8 +83,8 @@ async function resolveUrls(input: string): Promise<string[]> {
     const origin = new URL(url).origin;
     const xml = await fetchText(`${origin}/sitemap.xml`);
     if (xml) {
-      const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map((m) => m[1]!).filter(Boolean);
-      if (locs.length) return locs.slice(0, MAX_PAGES);
+      const locs = await locsFromSitemap(xml);
+      if (locs.length) return dedup(locs).slice(0, MAX_PAGES);
     }
   } catch {
     /* yoksay */

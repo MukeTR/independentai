@@ -16,7 +16,10 @@ export function HallucinationTool() {
   const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
-    fetch('/api/brand-facts').then((r) => r.json()).then(setFacts).catch(() => setFacts([]));
+    fetch('/api/brand-facts')
+      .then((r) => r.json())
+      .then((d) => setFacts(Array.isArray(d) ? d : []))
+      .catch(() => setFacts([]));
   }, []);
 
   async function addFact(e: React.FormEvent) {
@@ -43,7 +46,14 @@ export function HallucinationTool() {
     setScan(null);
     try {
       const res = await fetch('/api/tools/hallucination', { method: 'POST' });
-      setScan(await res.json());
+      const data = await res.json().catch(() => null);
+      if (res.ok && data) {
+        setScan(data);
+      } else {
+        setScan({ needsFacts: false, needsLLM: false, checked: 0, hallucinations: [] });
+      }
+    } catch {
+      setScan({ needsFacts: false, needsLLM: false, checked: 0, hallucinations: [] });
     } finally {
       setScanning(false);
     }

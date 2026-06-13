@@ -63,7 +63,10 @@ export function extractMentions(
   const scan = (spec: BrandSpec, isOwn: boolean, isCompetitor: boolean) => {
     const candidates = [spec.name, ...spec.aliases].filter(Boolean);
     for (const candidate of candidates) {
-      const pattern = new RegExp(`\\b${escapeRegex(candidate)}\\b`, 'gi');
+      // ASCII \b Türkçe harfleri (çğıöşü/ÇĞİÖŞÜ) kelime sınırı saymadığı için
+      // lookaround + genişletilmiş harf sınıfı kullan.
+      const W = 'A-Za-z0-9çğıöşüÇĞİÖŞÜ';
+      const pattern = new RegExp(`(?<![${W}])${escapeRegex(candidate)}(?![${W}])`, 'gi');
       let match: RegExpExecArray | null;
       while ((match = pattern.exec(responseText)) !== null) {
         hits.push({

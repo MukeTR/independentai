@@ -14,6 +14,7 @@ export function AlertSettingsForm() {
   const [cfg, setCfg] = useState<Config | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
   const [testResult, setTestResult] = useState<string>('');
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export function AlertSettingsForm() {
     if (!cfg) return;
     setSaving(true);
     setSaved(false);
+    setError('');
     setTestResult('');
     try {
       const res = await fetch('/api/alerts', {
@@ -45,11 +47,15 @@ export function AlertSettingsForm() {
           testSlack,
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setSaved(true);
         if (data.testResult) setTestResult(data.testResult === 'sent' ? 'Test mesajı gönderildi ✓' : 'Test başarısız — webhook URL\'ini kontrol edin');
+      } else {
+        setError(data.message || 'Kaydedilemedi, tekrar deneyin.');
       }
+    } catch {
+      setError('Bağlantı hatası, tekrar deneyin.');
     } finally {
       setSaving(false);
     }
@@ -110,6 +116,8 @@ export function AlertSettingsForm() {
           <span className="font-mono text-[14px] tabular w-10 text-right">{cfg.visibilityDropThreshold}</span>
         </div>
       </div>
+
+      {error && <div className="text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>}
 
       <button onClick={() => save(false)} disabled={saving} className="btn-primary inline-flex items-center gap-2">
         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}

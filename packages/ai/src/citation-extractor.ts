@@ -10,6 +10,15 @@ export type ExtractedCitation = {
 };
 
 const URL_RE = /https?:\/\/[^\s<>()\[\]"']+/gi;
+
+/** Cümle sonu noktalamasını kırpar ama dengeli parantez/köşeli ayraçları korur (örn. Wikipedia linkleri). */
+function trimTrailingPunct(raw: string): string {
+  let u = raw.replace(/[.,;:!?'"]+$/, '');
+  const count = (s: string, ch: string) => s.split(ch).length - 1;
+  while (u.endsWith(')') && count(u, '(') < count(u, ')')) u = u.slice(0, -1);
+  while (u.endsWith(']') && count(u, '[') < count(u, ']')) u = u.slice(0, -1);
+  return u;
+}
 // Markdown link: [title](url)
 const MD_LINK_RE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi;
 
@@ -33,7 +42,7 @@ export function extractCitations(
   const out: ExtractedCitation[] = [];
 
   const add = (rawUrl: string, title?: string) => {
-    const url = rawUrl.replace(/[.,;:)\]]+$/, ''); // sondaki noktalama
+    const url = trimTrailingPunct(rawUrl);
     const domain = normalizeDomain(url);
     if (!domain) return;
     const key = `${domain}|${url}`;

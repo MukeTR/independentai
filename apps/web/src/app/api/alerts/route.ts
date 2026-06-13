@@ -4,10 +4,22 @@ import { prisma } from '@/server/prisma';
 import { requireSession, handleRouteError } from '@/server/session';
 import { sendSlack } from '@/server/notify';
 
+const slackUrl = z
+  .string()
+  .url()
+  .max(300)
+  .refine((u) => {
+    try {
+      return new URL(u).hostname.toLowerCase() === 'hooks.slack.com';
+    } catch {
+      return false;
+    }
+  }, 'Yalnızca hooks.slack.com webhook adresleri kabul edilir');
+
 const putSchema = z.object({
   emailEnabled: z.boolean().optional(),
   weeklyReportEnabled: z.boolean().optional(),
-  slackWebhookUrl: z.string().url().max(300).nullable().optional(),
+  slackWebhookUrl: slackUrl.nullable().optional(),
   visibilityDropThreshold: z.number().int().min(1).max(100).optional(),
   testSlack: z.boolean().optional(),
 });

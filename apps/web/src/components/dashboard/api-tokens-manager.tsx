@@ -13,7 +13,10 @@ export function ApiTokensManager() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    fetch('/api/api-tokens').then((r) => r.json()).then(setTokens).catch(() => setTokens([]));
+    fetch('/api/api-tokens')
+      .then((r) => r.json())
+      .then((d) => setTokens(Array.isArray(d) ? d : []))
+      .catch(() => setTokens([]));
   }, []);
 
   async function create(e: React.FormEvent) {
