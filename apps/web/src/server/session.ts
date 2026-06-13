@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { ZodError } from 'zod';
 import { signSession, verifySession, type SessionPayload } from './jwt';
 
 export const AUTH_COOKIE = 'iai_token';
@@ -48,6 +49,11 @@ export class ClientError extends Error {}
 export function handleRouteError(err: unknown): NextResponse {
   if (err instanceof UnauthorizedError) {
     return NextResponse.json({ message: 'Yetkisiz' }, { status: 401 });
+  }
+  // Zod doğrulama hataları → 400, ilk anlamlı mesajla (güvenli, kullanıcıya gösterilir).
+  if (err instanceof ZodError) {
+    const msg = err.issues[0]?.message || 'Geçersiz giriş';
+    return NextResponse.json({ message: msg }, { status: 400 });
   }
   // Sadece açıkça "client-safe" işaretlenen hataların mesajı dışarı verilir.
   if (err instanceof ClientError) {
