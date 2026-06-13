@@ -23,13 +23,15 @@ export function CategoryBreakdown({
   );
 
   return (
-    <div className="card p-6 h-full">
+    <div className="card p-6 h-full flex flex-col">
       <div className="eyebrow">Kategoriye Göre Görünürlük</div>
 
       {rows.length === 0 ? (
-        <p className="mt-4 text-[13px] text-ink-faint">henüz veri yok</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-[13px] text-ink-faint">henüz veri yok</p>
+        </div>
       ) : (
-        <ul className="mt-5 space-y-4">
+        <ul className="mt-5 flex-1 flex flex-col justify-center space-y-5">
           {rows.map((row) => {
             const pct = Math.max(0, Math.min(100, Math.round(row.visibility)));
             return (

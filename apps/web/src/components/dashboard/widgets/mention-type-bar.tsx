@@ -15,14 +15,16 @@ export function MentionTypeBar({
   const max = Math.max(1, ...mentionTypes.map((m) => m.count));
 
   return (
-    <div className="card p-6 h-full">
+    <div className="card p-6 h-full flex flex-col">
       <div className="eyebrow">Anılma Biçimi</div>
       <p className="mt-1 text-[12px] text-ink-faint">AI markanızı nasıl andı</p>
 
       {mentionTypes.length === 0 ? (
-        <p className="mt-4 text-[13px] text-ink-faint">henüz veri yok</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-[13px] text-ink-faint">henüz veri yok</p>
+        </div>
       ) : (
-        <div className="mt-5 space-y-3">
+        <div className="mt-5 flex-1 flex flex-col justify-center space-y-4">
           {mentionTypes.map((m) => {
             const pct = Math.round((m.count / max) * 100);
             const fill = FILL[m.type] ?? 'bg-ink-faint';

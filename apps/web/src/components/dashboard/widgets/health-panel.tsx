@@ -18,11 +18,11 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
     })}`;
 
   return (
-    <div className="card p-6 h-full">
+    <div className="card p-6 h-full flex flex-col">
       <div className="eyebrow">Çalıştırma Sağlığı</div>
 
-      <div className="mt-5 grid grid-cols-2 gap-4">
-        <div className="rounded-[10px] bg-paper-4 p-4">
+      <div className="mt-5 flex-1 grid grid-cols-2 gap-4">
+        <div className="rounded-[10px] bg-paper-4 p-4 flex flex-col justify-center">
           <div className="flex items-center gap-1.5">
             <Activity className="w-4 h-4 text-brand" />
             <span className="eyebrow">Hata Oranı</span>
@@ -32,7 +32,7 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
           </div>
         </div>
 
-        <div className="rounded-[10px] bg-paper-4 p-4">
+        <div className="rounded-[10px] bg-paper-4 p-4 flex flex-col justify-center">
           <div className="flex items-center gap-1.5">
             <Bot className="w-4 h-4 text-brand" />
             <span className="eyebrow">Mock Yanıt</span>
@@ -47,7 +47,7 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
           )}
         </div>
 
-        <div className="rounded-[10px] bg-paper-4 p-4">
+        <div className="rounded-[10px] bg-paper-4 p-4 flex flex-col justify-center">
           <div className="flex items-center gap-1.5">
             <Timer className="w-4 h-4 text-brand" />
             <span className="eyebrow">Ort. Gecikme</span>
@@ -57,7 +57,7 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
           </div>
         </div>
 
-        <div className="rounded-[10px] bg-paper-4 p-4">
+        <div className="rounded-[10px] bg-paper-4 p-4 flex flex-col justify-center">
           <div className="flex items-center gap-1.5">
             <DollarSign className="w-4 h-4 text-brand" />
             <span className="eyebrow">Toplam Maliyet</span>

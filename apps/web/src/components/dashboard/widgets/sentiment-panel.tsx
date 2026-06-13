@@ -37,11 +37,13 @@ export function SentimentPanel({ sentiment, sentimentTrend }: Props) {
   ];
 
   return (
-    <div className="card p-6 h-full">
+    <div className="card p-6 h-full flex flex-col">
       <div className="eyebrow">Duygu Analizi</div>
 
       {total === 0 ? (
-        <p className="mt-4 text-[13px] text-ink-faint">henüz duygu verisi yok</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-[13px] text-ink-faint">henüz duygu verisi yok</p>
+        </div>
       ) : (
         <>
           <div className="mt-4 flex h-3 w-full overflow-hidden rounded-full bg-paper-4">
@@ -72,7 +74,7 @@ export function SentimentPanel({ sentiment, sentimentTrend }: Props) {
           </div>
 
           {sentimentTrend.length > 0 ? (
-            <div className="mt-5 h-[150px] w-full">
+            <div className="mt-5 flex-1 min-h-[150px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   data={sentimentTrend}

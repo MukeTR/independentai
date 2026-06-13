@@ -46,14 +46,16 @@ export function SovDonut({
   const hasData = slices.some((s) => s.value > 0);
 
   return (
-    <div className="card p-6 h-full">
+    <div className="card p-6 h-full flex flex-col">
       <div className="eyebrow">Ses Payı Dağılımı</div>
 
       {!hasData ? (
-        <p className="mt-6 text-sm text-ink-faint">henüz veri yok</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-sm text-ink-faint">henüz veri yok</p>
+        </div>
       ) : (
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
-          <div className="relative h-[240px]">
+        <div className="mt-4 flex-1 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-stretch">
+          <div className="relative min-h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -101,7 +103,7 @@ export function SovDonut({
             </div>
           </div>
 
-          <ul className="space-y-2">
+          <ul className="flex flex-col justify-center space-y-2">
             {slices.map((s) => (
               <li
                 key={s.name}

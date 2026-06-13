@@ -43,14 +43,14 @@ export function PositionHistogram({
   const hasData = data.some((d) => d.count > 0);
 
   return (
-    <div className="card p-6 h-full">
+    <div className="card p-6 h-full flex flex-col">
       <div className="eyebrow">Sıralama Dağılımı</div>
       <h3 className="font-display text-[16px] mt-1">
         Markanız cevaplarda kaçıncı sırada anılıyor
       </h3>
 
       {hasData ? (
-        <div className="mt-4 h-[200px] w-full">
+        <div className="mt-4 flex-1 min-h-[180px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
