@@ -152,8 +152,8 @@ export async function upsertOAuthUser(
   profile: NormalizedProfile,
 ): Promise<{ userId: string; tenantId: string; email: string; isNew: boolean }> {
   // 1) Daha önce bu sosyal hesapla giriş yapılmış mı?
-  const byOauth = await prisma.user.findUnique({
-    where: { oauthProvider_oauthSub: { oauthProvider: provider, oauthSub: profile.sub } },
+  const byOauth = await prisma.user.findFirst({
+    where: { oauthProvider: provider, oauthSub: profile.sub },
   });
   if (byOauth) {
     return { userId: byOauth.id, tenantId: byOauth.tenantId, email: byOauth.email, isNew: false };

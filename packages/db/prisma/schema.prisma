@@ -53,7 +53,7 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  @@unique([oauthProvider, oauthSub])
+  @@index([oauthProvider, oauthSub])
   @@index([tenantId])
   @@index([isSuperAdmin])
 }
