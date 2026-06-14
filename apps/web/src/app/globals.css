@@ -239,11 +239,34 @@ i, em, .italic { font-style: normal !important; }
   border: 1px solid transparent;
 }
 
+/* Auth showcase (sağ panel) animasyonları */
+@keyframes authScan { 0% { top: 4%; opacity: 0; } 14% { opacity: 1; } 86% { opacity: 1; } 100% { top: 96%; opacity: 0; } }
+@keyframes authPop { 0%, 100% { opacity: .6; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+@keyframes authRing { 0% { transform: scale(.75); opacity: .65; } 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes authBarGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes authDraw { to { stroke-dashoffset: 0; } }
+@keyframes authProgress { from { width: 0%; } to { width: 100%; } }
+@keyframes authFloatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes authSpin { to { transform: rotate(360deg); } }
+
+.auth-scan { animation: authScan 2.6s cubic-bezier(0.45,0,0.55,1) infinite; }
+.auth-pop { animation: authPop 2.4s ease-in-out infinite; }
+.auth-ring { animation: authRing 2.2s ease-out infinite; }
+.auth-bar { transform-origin: bottom; animation: authBarGrow .9s cubic-bezier(0.22,1,0.36,1) both; }
+.auth-draw { stroke-dasharray: var(--len, 320); stroke-dashoffset: var(--len, 320); animation: authDraw 2s ease-out forwards; }
+.auth-progress { animation: authProgress var(--dur, 2800ms) linear forwards; }
+.auth-floaty { animation: authFloatY 6s ease-in-out infinite; }
+.auth-spin { animation: authSpin 1s linear infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .aurora-bg,
   .text-shimmer,
   .marquee-track,
-  .float { animation: none !important; }
+  .float,
+  .auth-scan, .auth-pop, .auth-ring, .auth-bar, .auth-draw, .auth-progress, .auth-floaty, .auth-spin {
+    animation: none !important;
+  }
   .text-shimmer { background-position: 0 center; }
+  .auth-draw { stroke-dashoffset: 0; }
 }

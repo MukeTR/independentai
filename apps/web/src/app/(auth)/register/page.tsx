@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
 import { OAuthButtons } from '@/components/auth/oauth-buttons';
+import { AuthSplit } from '@/components/auth/auth-split';
 import { RegisterForm } from './register-form';
 
 const OAUTH_ERRORS: Record<string, string> = {
@@ -20,7 +21,7 @@ export default async function RegisterPage({
   const oauthError = error ? OAUTH_ERRORS[error] : undefined;
 
   return (
-    <div className="card p-9 rise-1">
+    <AuthSplit>
       <div className="chip mb-5">
         <Sparkles className="w-3 h-3 text-brand" />
         <span className="font-mono">İlk 6 ay tamamen ücretsiz</span>
@@ -47,6 +48,6 @@ export default async function RegisterPage({
           Giriş yapın
         </Link>
       </p>
-    </div>
+    </AuthSplit>
   );
 }

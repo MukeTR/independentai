@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, X, ArrowRight } from 'lucide-react';
+import { AuthCentered } from '@/components/auth/auth-centered';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -58,6 +59,7 @@ export default function OnboardingPage() {
   }
 
   return (
+    <AuthCentered>
     <div className="card p-9 rise-1">
       <div className="flex items-center gap-3 mb-7">
         {[1, 2, 3].map((n) => (
@@ -274,5 +276,6 @@ export default function OnboardingPage() {
         </>
       )}
     </div>
+    </AuthCentered>
   );
 }

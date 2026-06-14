@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { OAuthButtons } from '@/components/auth/oauth-buttons';
+import { AuthSplit } from '@/components/auth/auth-split';
 import { LoginForm } from './login-form';
 
 const OAUTH_ERRORS: Record<string, string> = {
@@ -19,7 +20,7 @@ export default async function LoginPage({
   const oauthError = error ? OAUTH_ERRORS[error] : undefined;
 
   return (
-    <div className="card p-9 rise-1">
+    <AuthSplit>
       <div className="eyebrow">Tekrar hoş geldiniz</div>
       <h1 className="font-display text-[32px] tracking-tight mt-2">Giriş yap</h1>
       <p className="text-[14px] text-ink-muted mt-2">
@@ -43,6 +44,6 @@ export default async function LoginPage({
           Ücretsiz oluşturun
         </Link>
       </p>
-    </div>
+    </AuthSplit>
   );
 }
