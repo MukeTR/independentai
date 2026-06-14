@@ -1,38 +1,22 @@
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { OAuthButtons } from '@/components/auth/oauth-buttons';
+import { LoginForm } from './login-form';
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('demo@independentai.space');
-  const [password, setPassword] = useState('demo1234');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const OAUTH_ERRORS: Record<string, string> = {
+  oauth_unavailable: 'Bu giriş yöntemi şu an kullanılamıyor.',
+  oauth_denied: 'Giriş iptal edildi.',
+  oauth_state: 'Oturum doğrulaması başarısız oldu. Lütfen tekrar deneyin.',
+  oauth_failed: 'Sosyal giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.',
+  oauth_no_email: 'Hesabınızdan e-posta alınamadı. E-posta ile kayıt olabilirsiniz.',
+};
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message ?? 'Giriş başarısız');
-      }
-      router.push('/dashboard');
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
-    } finally {
-      setLoading(false);
-    }
-  }
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+  const oauthError = error ? OAUTH_ERRORS[error] : undefined;
 
   return (
     <div className="card p-9 rise-1">
@@ -42,38 +26,16 @@ export default function LoginPage() {
         Markanızın AI'daki konumunu izlemeye devam edin.
       </p>
 
-      <form onSubmit={submit} className="mt-8 space-y-4">
-        <div>
-          <label className="eyebrow block mb-2">E-posta</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
-            required
-          />
+      {oauthError && (
+        <div className="text-[13px] text-danger bg-danger/5 border-hairline border-danger/20 rounded-lg p-3 mt-6">
+          {oauthError}
         </div>
-        <div>
-          <label className="eyebrow block mb-2">Şifre</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input"
-            required
-          />
-        </div>
+      )}
 
-        {error && (
-          <div className="text-[13px] text-danger bg-danger/5 border-hairline border-danger/20 rounded-lg p-3">
-            {error}
-          </div>
-        )}
-
-        <button type="submit" disabled={loading} className="btn-primary w-full mt-6 disabled:opacity-50">
-          {loading ? 'Giriş yapılıyor…' : 'Giriş yap'}
-        </button>
-      </form>
+      <div className="mt-8">
+        <OAuthButtons />
+        <LoginForm />
+      </div>
 
       <p className="text-center text-[13px] text-ink-muted mt-6">
         Hesabınız yok mu?{' '}
