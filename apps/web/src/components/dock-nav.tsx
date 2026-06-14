@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   LayoutDashboard, MessageSquare, Swords, Settings, LogOut, Sparkles, Bell, Code2,
   LayoutGrid, Gauge, FileSearch, GitFork, ShieldAlert, KeyRound, Link2, PenLine,
@@ -47,8 +47,18 @@ export function DockNav({
 }) {
   const pathname = usePathname();
   const [toolsOpen, setToolsOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isActive = (href: string, exact?: boolean) => (exact ? pathname === href : pathname.startsWith(href));
   const toolsActive = pathname.startsWith('/dashboard/tools');
+
+  const openTools = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setToolsOpen(true);
+  };
+  const scheduleClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setToolsOpen(false), 120);
+  };
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -56,12 +66,13 @@ export function DockNav({
   }
 
   return (
-    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 pb-4 pt-10 group/dock" onMouseLeave={() => setToolsOpen(false)}>
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 pb-4 pt-10 group/dock" onMouseLeave={scheduleClose}>
       {/* Tools mega-popover */}
       {toolsOpen && (
         <div
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[min(92vw,760px)] animate-[rise_0.18s_ease]"
-          onMouseEnter={() => setToolsOpen(true)}
+          className="absolute bottom-full left-1/2 -translate-x-1/2 pb-3 w-[min(92vw,760px)] animate-[rise_0.18s_ease]"
+          onMouseEnter={openTools}
+          onMouseLeave={scheduleClose}
         >
           <div className="card p-5 shadow-2xl border-hairline" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)' }}>
             <div className="flex items-center justify-between mb-4">
@@ -109,7 +120,7 @@ export function DockNav({
 
         {/* Tools trigger */}
         <button
-          onMouseEnter={() => setToolsOpen(true)}
+          onMouseEnter={openTools}
           onClick={() => setToolsOpen((v) => !v)}
           className={cn(
             'relative w-11 h-11 rounded-xl flex items-center justify-center transition-all hover:-translate-y-0.5 group/btn',
@@ -117,7 +128,7 @@ export function DockNav({
           )}
         >
           <LayoutGrid className="w-[18px] h-[18px]" />
-          <ChevronUp className={cn('w-3 h-3 absolute -top-0.5 right-1 transition-transform', toolsOpen && 'rotate-180')} />
+          <ChevronUp className={cn('w-3 h-3 absolute -top-0.5 left-1/2 -translate-x-1/2 transition-transform', toolsOpen && 'rotate-180')} />
           <Tooltip>Araçlar</Tooltip>
         </button>
 

@@ -148,3 +148,102 @@ i, em, .italic { font-style: normal !important; }
 }
 .chip.own { background: var(--brand-glow); color: var(--brand-deep); border-color: rgba(79,70,229,0.2); }
 .chip.comp { background: rgba(180,58,40,0.06); color: var(--danger); border-color: rgba(180,58,40,0.15); }
+
+/* =============================================================================
+   2026 motion layer — pure CSS + tiny IntersectionObserver helpers
+   ============================================================================= */
+
+/* Scroll reveal (driven by components/marketing/reveal.tsx) */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* Aurora / mesh glow behind hero */
+@keyframes aurora {
+  0%   { transform: translate3d(-6%, -4%, 0) scale(1);    }
+  50%  { transform: translate3d(6%, 5%, 0)  scale(1.15);  }
+  100% { transform: translate3d(-6%, -4%, 0) scale(1);    }
+}
+.aurora-bg {
+  position: absolute;
+  inset: -25% -10% auto -10%;
+  height: 120%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(60px);
+  opacity: 0.55;
+  background:
+    radial-gradient(38% 50% at 22% 30%, rgba(79, 70, 229, 0.28), transparent 70%),
+    radial-gradient(34% 46% at 78% 24%, rgba(124, 58, 237, 0.20), transparent 70%),
+    radial-gradient(40% 42% at 60% 70%, rgba(56, 189, 248, 0.14), transparent 72%);
+  animation: aurora 18s ease-in-out infinite;
+}
+
+/* Shimmering gradient headline */
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+.text-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--brand-deep) 20%,
+    var(--brand) 38%,
+    #7c3aed 50%,
+    var(--brand) 62%,
+    var(--brand-deep) 80%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+/* Infinite marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+.marquee-mask:hover .marquee-track { animation-play-state: paused; }
+
+/* Subtle float */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+.float { animation: float 7s ease-in-out infinite; }
+
+/* Gradient hairline border for highlighted cells */
+.grad-border {
+  position: relative;
+  background:
+    linear-gradient(var(--paper-3), var(--paper-3)) padding-box,
+    linear-gradient(135deg, rgba(79,70,229,0.45), rgba(124,58,237,0.12) 55%, rgba(79,70,229,0.05)) border-box;
+  border: 1px solid transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .aurora-bg,
+  .text-shimmer,
+  .marquee-track,
+  .float { animation: none !important; }
+  .text-shimmer { background-position: 0 center; }
+}

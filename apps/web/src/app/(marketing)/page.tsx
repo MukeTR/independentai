@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import {
-  Sparkles, ArrowRight, BarChart3, Users, Globe2, Zap, Eye, GitCompare, Bell, Layers,
-  ShieldCheck, Brain, Check, TrendingUp, Quote,
+  Sparkles, ArrowRight, BarChart3, Zap, Eye, GitCompare, Bell, Layers,
+  ShieldCheck, Brain, Check, TrendingUp, Quote, Radar, Target, Webhook,
+  Mail, Activity, Crosshair, Code2,
 } from 'lucide-react';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
@@ -9,13 +10,17 @@ import { MockDashboard } from '@/components/marketing/mock-dashboard';
 import { PromptCardMock } from '@/components/marketing/prompt-card-mock';
 import { Faq } from '@/components/marketing/faq';
 import { CtaBlock } from '@/components/marketing/cta-block';
+import { Reveal } from '@/components/marketing/reveal';
+import { Counter } from '@/components/marketing/counter';
+import { Marquee } from '@/components/marketing/marquee';
+import { ToolBento } from '@/components/marketing/tool-bento';
 import { SoftwareApplicationJsonLd, FaqJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'AI çağında markanızın görünürlüğünü ölçün',
+  title: 'AI çağında markanızın görünürlüğünü ölçün ve optimize edin',
   description:
-    'ChatGPT, Claude ve Gemini\'nin verdiği cevaplarda markanız geçiyor mu? Independent AI bağımsız bir gözle ölçer. İlk 6 ay tüm kullanıcılara ücretsiz.',
+    'ChatGPT, Claude ve Gemini\'nin verdiği cevaplarda markanız geçiyor mu? Independent AI bağımsız bir gözle ölçer — ve 13 GEO aracıyla optimize etmenizi sağlar. İlk 6 ay tüm kullanıcılara ücretsiz.',
   path: '/',
 });
 
@@ -26,6 +31,11 @@ const LANDING_FAQS = [
       'Geleneksel SEO, kullanıcıları Google\'a yönlendirir. Ama 2025\'ten itibaren milyonlarca kullanıcı önce ChatGPT\'ye, Claude\'a veya Gemini\'ye soruyor. Yapay zekaların verdiği cevapta markanız geçiyor mu, hangi rakiplerle bahsediyor — bu görünürlük artık SEO kadar kritik. GEO (Generative Engine Optimization), bu yeni gerçeklikte markanı izleme ve optimize etme disiplini. Independent AI tam olarak bunu ölçer.',
   },
   {
+    question: 'Independent AI sadece izliyor mu, optimize de ediyor mu?',
+    answer:
+      'İkisi de. Önce ölçer (3 modelde günlük görünürlük, SoV, trend), sonra 13 GEO aracıyla aksiyon almanızı sağlar: GEO Audit ile sayfanızın AI hazırlık skorunu görür, İçerik Denetleyici ile somut düzeltme kartları alır, AEO Yazıcı ile atıf-dostu içerik üretir, Halüsinasyon tespitiyle modellerin uydurduğu yanlışları yakalar, llms.txt / robots.txt / Schema üreticileriyle teknik altyapınızı AI\'a açarsınız.',
+  },
+  {
     question: 'Hangi yapay zeka modellerini izliyorsunuz?',
     answer:
       'Şu an OpenAI (ChatGPT — gpt-4o-mini), Anthropic (Claude — claude-haiku-4-5) ve Google (Gemini — gemini-1.5-flash) modellerinde paralel sorgu çalıştırıyoruz. Perplexity, Grok ve Mistral entegrasyonları sonraki sürümlerde geliyor.',
@@ -33,12 +43,12 @@ const LANDING_FAQS = [
   {
     question: 'Markamı nasıl tespit ediyorsunuz?',
     answer:
-      'Onboarding sırasında marka adı + alternatif yazımlar (domain, kısaltma, farklı dil yazımı) eklersiniz. Sistem bu varyasyonları AI cevap metninde regex + alias matching ile arar; bulduğu her marka için pozisyon (kaçıncı bahsedilen), tonal değerlendirme ve cümle bağlamı kaydeder.',
+      'Onboarding sırasında marka adı + alternatif yazımlar (domain, kısaltma, farklı dil yazımı) eklersiniz. Sistem bu varyasyonları AI cevap metninde regex + alias matching ile arar; bulduğu her marka için pozisyon (kaçıncı bahsedilen), tonal değerlendirme ve cümle bağlamı kaydeder. Ayrıca AI cevaplarındaki atıf kaynaklarını (citation) çıkarıp Top Citation Sources panelinde toplar.',
   },
   {
     question: 'Sorgularım ne sıklıkla çalışıyor?',
     answer:
-      'Her gece 02:00\'de (Türkiye saati) tüm aktif sorgular 3 modelde otomatik yeniden çalıştırılır ve sonuçlar günlük trende eklenir. Ayrıca dashboard\'dan "şimdi çalıştır" diyerek anında manuel rerun yapabilirsiniz.',
+      'Her gece 02:00\'de (Türkiye saati) tüm aktif sorgular 3 modelde otomatik yeniden çalıştırılır ve sonuçlar günlük trende eklenir. Ayrıca dashboard\'dan "şimdi çalıştır" diyerek anında manuel rerun yapabilirsiniz. Haftalık özet rapor e-posta ve Slack\'e otomatik gönderilir.',
   },
   {
     question: 'Kayıt sırasında kredi kartı bilgisi gerekiyor mu?',
@@ -46,20 +56,28 @@ const LANDING_FAQS = [
       'Hayır. Lansman promosyonumuz kapsamında 2026-05-22 itibarıyla kayıt olan tüm kullanıcılar ilk 6 ay tüm özellikleri sınırsız ve kredi kartı bilgisi olmadan kullanır. 6 ay sonunda devam etmek istemezseniz hesabınız donar — otomatik ücretlendirme olmaz.',
   },
   {
-    question: 'Rakiplerimi nasıl ekliyorum?',
+    question: 'API erişiminiz var mı?',
     answer:
-      'Onboarding\'in 2. adımında 3-5 rakip ekleyebilirsiniz, sonra dashboard\'dan istediğiniz zaman ekleme/silme yapabilirsiniz. Sistem her sorgu sonucunda hem sizin markanızı hem rakipleri tarar ve "share of voice" karşılaştırması yapar.',
+      'Evet. API token üretip public `/api/v1/visibility` ucundan görünürlük skorlarınızı kendi sistemlerinize çekebilirsiniz. Ayrıca herkese açık ChatGPT / Claude / Gemini rank-checker araçlarımızı kayıt olmadan deneyebilirsiniz.',
   },
   {
     question: 'Verilerime kim erişebilir?',
     answer:
-      'Sadece siz ve hesabınıza davet ettiğiniz takım üyeleri. Verileriniz Türkiye dışındaki Neon Postgres (US-East) üzerinde tutulur, TLS ile şifrelenir. AI provider\'lara giden sorgular sadece izlediğiniz prompt metnini içerir — kullanıcı bilgisi paylaşılmaz.',
+      'Sadece siz ve hesabınıza davet ettiğiniz takım üyeleri. Verileriniz Neon Postgres üzerinde TLS ile şifrelenir. AI provider\'lara giden sorgular sadece izlediğiniz prompt metnini içerir — kullanıcı bilgisi paylaşılmaz.',
   },
-  {
-    question: 'API\'iniz var mı?',
-    answer:
-      'REST API ve webhooks yol haritasında, yakında. Geçerli sürümde tüm işlemler web arayüzü üzerinden yapılır.',
-  },
+];
+
+const STATS = [
+  { to: 3, suffix: '', label: 'AI modeli paralel' },
+  { to: 13, suffix: '', label: 'GEO optimizasyon aracı' },
+  { to: 30, suffix: ' gün', label: 'görünürlük trendi' },
+  { to: 6, suffix: ' ay', label: 'tüm özellikler ücretsiz' },
+];
+
+const MARQUEE_ITEMS = [
+  'ChatGPT', 'Claude', 'Gemini', 'Perplexity', 'Grok',
+  'Share of Voice', 'Citation Sources', 'GEO Audit', 'Halüsinasyon', 'AEO',
+  'llms.txt', 'Schema', 'Rekabet Radarı', 'Görünürlük Boşluğu',
 ];
 
 const FEATURES = [
@@ -70,8 +88,38 @@ const FEATURES = [
   { icon: BarChart3, t: '30 günlük trend', d: 'Görünürlük ve SoV\'un zaman serisi. Dün ne oldu, geçen hafta ne değişti — net görün.' },
   { icon: Zap, t: 'Anında manuel çalıştırma', d: 'Bir prompt eklediniz ve sonucu hemen görmek istiyorsunuz? Tek tıkla 3 modelde paralel koştur.' },
   { icon: Layers, t: 'Rakip karşılaştırma matrisi', d: 'Her sorguda hangi rakiplerin geçtiği, kaçıncı sırada bahsedildiği — kategorik dağılım.' },
-  { icon: Bell, t: 'Düşüş uyarıları', d: 'Görünürlüğünüz beklenmedik bir şekilde düşerse email ile haber alın.', badge: 'yakında' },
+  { icon: Bell, t: 'Düşüş uyarıları', d: 'Görünürlüğünüz beklenmedik bir şekilde düşerse e-posta ve Slack ile haber alın.' },
   { icon: ShieldCheck, t: 'Bağımsız üçüncü taraf', d: 'AI provider\'larla iş ortaklığımız yok. Sonuçlar herhangi bir tarafın menfaatine göre filtrelenmez.' },
+];
+
+const DIFFERENTIATORS = [
+  {
+    icon: Radar, eyebrow: 'Rekabet Radarı',
+    title: 'Rakiplerinizle yan yana, tek bakışta',
+    body: 'Her modelde sizin ve rakiplerinizin görünürlüğü tek radar görünümünde. Kim hangi soruda öne geçmiş, nerede açık bırakmışsınız — anında okuyun.',
+  },
+  {
+    icon: Quote, eyebrow: 'Top Citation Sources',
+    title: 'Yapay zeka kimden alıntı yapıyor?',
+    body: 'AI cevaplarındaki atıf kaynaklarını çıkarır ve sıralar. Modellerin güvendiği siteleri görün — backlink ve içerik stratejinizi oraya yönlendirin.',
+  },
+  {
+    icon: Crosshair, eyebrow: 'Görünürlük Boşluğu',
+    title: 'Hangi sorularda hiç yoksunuz?',
+    body: 'Rakiplerin geçtiği ama sizin hiç görünmediğiniz soruları işaretler. En yüksek getirili GEO fırsatlarınızın net listesi.',
+  },
+  {
+    icon: Activity, eyebrow: 'LLM Sentiment + Mention Type',
+    title: 'Sadece geçiyor musunuz — nasıl geçiyorsunuz?',
+    body: 'Her bahsedilme LLM ile etiketlenir: olumlu/nötr/olumsuz ton ve bahsetme türü (öneri, karşılaştırma, pasif anma). Görünürlüğün kalitesini ölçün.',
+  },
+];
+
+const AUTOMATION = [
+  { icon: Zap, t: 'Günlük otomatik cron', d: 'Her gece 02:00 TR — tüm sorular 3 modelde yeniden koşar.' },
+  { icon: Bell, t: 'Uyarılar', d: 'Görünürlük düşüşü veya yeni halüsinasyonda anında bildirim.' },
+  { icon: Mail, t: 'Haftalık rapor', d: 'E-posta ve Slack\'e özet performans raporu.' },
+  { icon: Webhook, t: 'Public API', d: 'API token + /api/v1/visibility ile veriyi kendi sisteminize çekin.' },
 ];
 
 const USE_CASES = [
@@ -93,7 +141,7 @@ const USE_CASES = [
   {
     eyebrow: 'Kurumsal',
     title: 'AI çağında marka itibarınızı koruyun',
-    body: 'Yapay zekanın size dair anlattığı hikayeyi izleyin, sentiment kayarsa erken farkına varın.',
+    body: 'Yapay zekanın size dair anlattığı hikayeyi izleyin, sentiment kayarsa veya yanlış bilgi üretirse erken farkına varın.',
   },
 ];
 
@@ -104,8 +152,9 @@ export default function Landing() {
       <FaqJsonLd items={LANDING_FAQS} />
 
       {/* Hero */}
-      <section className="pt-24 lg:pt-32 pb-20">
-        <Container>
+      <section className="relative pt-24 lg:pt-32 pb-20 overflow-hidden">
+        <div className="aurora-bg" aria-hidden />
+        <Container className="relative z-10">
           <div className="rise-1 inline-flex items-center gap-2 chip">
             <Sparkles className="w-3 h-3 text-brand" />
             <span className="font-mono tracking-eyebrow">Lansman · İlk 6 ay tüm kullanıcılara ücretsiz</span>
@@ -115,13 +164,13 @@ export default function Landing() {
             <div className="col-span-12 lg:col-span-7">
               <h1 className="rise-2 font-display text-[52px] lg:text-[80px] leading-[0.98] tracking-tight">
                 Yapay zekalar şirketinizden{' '}
-                <span className="text-brand">bahsediyor mu?</span>
+                <span className="text-shimmer">bahsediyor mu?</span>
               </h1>
               <p className="rise-3 text-[17px] lg:text-[19px] text-ink-muted mt-7 max-w-2xl leading-relaxed">
                 Müşterileriniz artık Google'da değil — ChatGPT'de, Claude'da, Gemini'de
-                öneri istiyor. Independent AI; bu sohbetlerde markanızın ne kadar geçtiğini,
-                rakiplerinizle nasıl konumlandığını, hangi modelde nasıl göründüğünüzü
-                bağımsız bir gözle ölçer.
+                öneri istiyor. Independent AI bu sohbetlerdeki görünürlüğünüzü bağımsız
+                bir gözle <span className="text-ink">ölçer</span>, sonra 13 GEO aracıyla{' '}
+                <span className="text-ink">optimize etmenizi</span> sağlar.
               </p>
 
               <div className="rise-4 flex items-center gap-3 mt-10 flex-wrap">
@@ -135,17 +184,42 @@ export default function Landing() {
               <div className="rise-5 mt-12 flex items-center gap-7 flex-wrap text-[12px] text-ink-faint">
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-brand" /> 3 model paralel</span>
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-brand" /> Her gece otomatik</span>
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-brand" /> Türkçe içerik için optimize</span>
+                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-brand" /> Türkçe için optimize</span>
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-brand" /> Bağımsız üçüncü taraf</span>
               </div>
             </div>
 
             <div className="col-span-12 lg:col-span-5 rise-5">
-              <MockDashboard />
+              <div className="float">
+                <MockDashboard />
+              </div>
             </div>
+          </div>
+
+          {/* Stats band */}
+          <div className="rise-5 grid grid-cols-2 lg:grid-cols-4 gap-px mt-16 rounded-2xl overflow-hidden border-hairline border bg-hairline">
+            {STATS.map((s) => (
+              <div key={s.label} className="bg-paper-3 px-6 py-7">
+                <div className="font-display text-[40px] lg:text-[46px] tracking-tight text-brand tabular leading-none">
+                  <Counter to={s.to} suffix={s.suffix} />
+                </div>
+                <div className="text-[12.5px] text-ink-muted mt-2 leading-snug">{s.label}</div>
+              </div>
+            ))}
           </div>
         </Container>
       </section>
+
+      {/* Marquee */}
+      <div className="py-6 border-y border-hairline bg-paper-2/50">
+        <Marquee>
+          {MARQUEE_ITEMS.map((m) => (
+            <span key={m} className="mx-6 inline-flex items-center gap-2 text-[15px] text-ink-faint font-display whitespace-nowrap">
+              <span className="w-1 h-1 rounded-full bg-brand/50" /> {m}
+            </span>
+          ))}
+        </Marquee>
+      </div>
 
       {/* Why now / problem */}
       <Section
@@ -155,27 +229,51 @@ export default function Landing() {
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
-            {
-              n: '01',
-              t: 'Yeni satın alma yolculuğu',
-              d: 'Kullanıcı sorusunu AI\'ya soruyor → AI 2-3 marka öneriyor → kullanıcı sadece o markaları araştırıyor. Listede yoksanız fırsat yok.',
-            },
-            {
-              n: '02',
-              t: "SEO'dan farklı bir oyun",
-              d: "Google'da 50.sayfada bile olsanız tıklanma şansınız var. AI cevabında 1-2-3 dışında 4. olmak görünmemekle aynı.",
-            },
-            {
-              n: '03',
-              t: 'Ölçemediğinizi yönetemezsiniz',
-              d: 'AI cevapları kapalı bir kutu. Her gün manuel kontrol edemezsiniz. Sistematik ölçüm olmadan optimizasyon yapılamaz.',
-            },
-          ].map((s) => (
-            <div key={s.n} className="card p-7">
-              <div className="font-mono text-[11px] tracking-eyebrow text-brand">{s.n}</div>
-              <h3 className="font-display text-[20px] mt-4 leading-snug">{s.t}</h3>
-              <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{s.d}</p>
-            </div>
+            { n: '01', t: 'Yeni satın alma yolculuğu', d: 'Kullanıcı sorusunu AI\'ya soruyor → AI 2-3 marka öneriyor → kullanıcı sadece o markaları araştırıyor. Listede yoksanız fırsat yok.' },
+            { n: '02', t: "SEO'dan farklı bir oyun", d: "Google'da 50.sayfada bile olsanız tıklanma şansınız var. AI cevabında 1-2-3 dışında 4. olmak görünmemekle aynı." },
+            { n: '03', t: 'Ölçemediğinizi yönetemezsiniz', d: 'AI cevapları kapalı bir kutu. Her gün manuel kontrol edemezsiniz. Sistematik ölçüm olmadan optimizasyon yapılamaz.' },
+          ].map((s, i) => (
+            <Reveal key={s.n} delay={i * 90}>
+              <div className="card p-7 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <div className="font-mono text-[11px] tracking-eyebrow text-brand">{s.n}</div>
+                <h3 className="font-display text-[20px] mt-4 leading-snug">{s.t}</h3>
+                <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{s.d}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+      {/* GEO toolbox — the new feature suite */}
+      <Section
+        eyebrow="GEO Araç Kutusu · Yeni"
+        title={<>Ölçmek başlangıç. <span className="text-brand">13 araçla optimize edin.</span></>}
+        intro="Independent AI sadece görünürlüğünüzü göstermez — onu yükseltecek somut araçları da verir. Denetleyin, keşfedin, üretin; hepsi tek panelde, Türkçe."
+        className="bg-paper-2/40"
+      >
+        <ToolBento />
+      </Section>
+
+      {/* Dashboard differentiators */}
+      <Section
+        eyebrow="Panelde öne çıkanlar"
+        title="Rakiplerin gösteremediği derinlik."
+        intro="Görünürlük tek bir sayı değil. Kiminle, nerede, hangi tonla ve hangi kaynaklara dayanarak görünüyorsunuz — hepsini ayrıştırır."
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {DIFFERENTIATORS.map((d, i) => (
+            <Reveal key={d.eyebrow} delay={i * 80}>
+              <div className="card p-7 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center gap-3">
+                  <span className="w-10 h-10 rounded-xl bg-brand-glow flex items-center justify-center shrink-0">
+                    <d.icon className="w-[18px] h-[18px] text-brand" />
+                  </span>
+                  <span className="eyebrow text-brand-deep">{d.eyebrow}</span>
+                </div>
+                <h3 className="font-display text-[21px] mt-5 leading-snug">{d.title}</h3>
+                <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{d.body}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </Section>
@@ -192,14 +290,45 @@ export default function Landing() {
             { n: '01', t: 'Markanızı tanıtın', d: 'Şirket adı, alternatif yazımlar, web sitesi ve 3-5 rakip ekleyin. Aliasları akıllı yakalama için detaylandırmanız önerilir.' },
             { n: '02', t: 'İzlenecek soruları girin', d: 'Müşterilerinizin AI\'a sorabileceği soruları yazın — örn. "İstanbul\'da en iyi dijital ajans" veya "muhasebe yazılımı önerir misin".' },
             { n: '03', t: 'Her sabah rapor', d: 'Her gece tüm sorular 3 modelde otomatik çalışır. Sabah dashboard\'unuzda görünürlük skoru, SoV, trend ve rakip dağılımı sizi bekler.' },
-          ].map((s) => (
-            <div key={s.n} className="card p-7">
-              <div className="font-mono text-[11px] tracking-eyebrow text-brand">{s.n}</div>
-              <h3 className="font-display text-[22px] mt-4 leading-tight">{s.t}</h3>
-              <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{s.d}</p>
-            </div>
+          ].map((s, i) => (
+            <Reveal key={s.n} delay={i * 90}>
+              <div className="card p-7 h-full">
+                <div className="font-mono text-[11px] tracking-eyebrow text-brand">{s.n}</div>
+                <h3 className="font-display text-[22px] mt-4 leading-tight">{s.t}</h3>
+                <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{s.d}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </Section>
+
+      {/* Automation & integration strip */}
+      <Section
+        eyebrow="Otomasyon & entegrasyon"
+        title="Kurun, unutun — sistem çalışmaya devam etsin."
+        intro="Bir kez ayarlayın; ölçüm, uyarı, raporlama ve veri akışı arka planda otomatik döner."
+      >
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {AUTOMATION.map((a, i) => (
+            <Reveal key={a.t} delay={i * 70}>
+              <div className="card p-6 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <a.icon className="w-5 h-5 text-brand" />
+                <h3 className="font-display text-[16px] mt-4 leading-snug">{a.t}</h3>
+                <p className="text-[12.5px] text-ink-muted mt-2 leading-relaxed">{a.d}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal delay={120}>
+          <div className="mt-9 flex items-center gap-4 flex-wrap">
+            <Link href="/arac/chatgpt-rank-checker" className="btn-secondary inline-flex items-center gap-2">
+              <Target className="w-4 h-4 text-brand" /> Ücretsiz rank-checker'ı dene
+            </Link>
+            <Link href="/docs/api" className="inline-flex items-center gap-1.5 text-[14px] text-brand-deep hover:text-brand">
+              <Code2 className="w-4 h-4" /> API dokümanları
+            </Link>
+          </div>
+        </Reveal>
       </Section>
 
       {/* Real AI answers preview */}
@@ -207,31 +336,25 @@ export default function Landing() {
         eyebrow="Gerçek AI cevapları"
         title={<>Sadece sayı değil. Modelin <span className="text-brand">kelime kelime cevabı.</span></>}
         intro="Markanızın hangi cümlede, hangi tonla geçtiğini görün. Rakipleriniz nerede bahsediliyor — ve neden sizden önce bahsediliyor olabilirler."
+        className="bg-paper-2/40"
       >
         <div className="grid grid-cols-12 gap-8 items-start">
           <div className="col-span-12 lg:col-span-7">
-            <PromptCardMock />
+            <Reveal><PromptCardMock /></Reveal>
           </div>
           <div className="col-span-12 lg:col-span-5">
             <div className="space-y-6">
               {[
-                {
-                  t: 'Marka highlight',
-                  d: 'Markanız geçtiği her cümlede vurgulanır, rakipleriniz ayrı renkte işaretlenir. Tek bakışta görünürlük net.',
-                },
-                {
-                  t: 'Pozisyon takibi',
-                  d: 'Cevapta kaç tane marka bahsedildi, siz kaçıncı sıradasınız? Listenin başında olmak listede olmamaktan çok daha kıymetli.',
-                },
-                {
-                  t: 'Cümle bağlamı',
-                  d: 'Markanız "öneririm" ile mi, "yetersiz" ile mi geçiyor? Cümlenin etrafındaki bağlam kaydedilir.',
-                },
-              ].map((b) => (
-                <div key={b.t} className="border-l-2 border-brand/40 pl-5">
-                  <h4 className="font-display text-[18px] tracking-tight">{b.t}</h4>
-                  <p className="text-[14px] text-ink-muted mt-2 leading-relaxed">{b.d}</p>
-                </div>
+                { t: 'Marka highlight', d: 'Markanız geçtiği her cümlede vurgulanır, rakipleriniz ayrı renkte işaretlenir. Tek bakışta görünürlük net.' },
+                { t: 'Pozisyon takibi', d: 'Cevapta kaç tane marka bahsedildi, siz kaçıncı sıradasınız? Listenin başında olmak listede olmamaktan çok daha kıymetli.' },
+                { t: 'Cümle bağlamı + sentiment', d: 'Markanız "öneririm" ile mi, "yetersiz" ile mi geçiyor? Cümlenin etrafındaki bağlam ve ton kaydedilir.' },
+              ].map((b, i) => (
+                <Reveal key={b.t} delay={i * 80}>
+                  <div className="border-l-2 border-brand/40 pl-5">
+                    <h4 className="font-display text-[18px] tracking-tight">{b.t}</h4>
+                    <p className="text-[14px] text-ink-muted mt-2 leading-relaxed">{b.d}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -243,18 +366,16 @@ export default function Landing() {
         eyebrow="Özellikler"
         title="Tek bir panelde, AI çağı için pazarlama altyapısı."
         intro="GEO ölçümünün her bileşeni — model çeşitliliği, akıllı tespit, trend grafikleri, rakip karşılaştırması. Sade ama tam."
-        className="bg-paper-2/40"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map(({ icon: Icon, t, d, badge }) => (
-            <div key={t} className="card p-6">
-              <div className="flex items-center justify-between">
+          {FEATURES.map(({ icon: Icon, t, d }, i) => (
+            <Reveal key={t} delay={(i % 3) * 70}>
+              <div className="card p-6 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
                 <Icon className="w-5 h-5 text-brand" />
-                {badge && <span className="chip !text-[10px]">{badge}</span>}
+                <h3 className="font-display text-[17px] mt-4 leading-snug">{t}</h3>
+                <p className="text-[13px] text-ink-muted mt-2 leading-relaxed">{d}</p>
               </div>
-              <h3 className="font-display text-[17px] mt-4 leading-snug">{t}</h3>
-              <p className="text-[13px] text-ink-muted mt-2 leading-relaxed">{d}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
         <div className="mt-10">
@@ -269,14 +390,17 @@ export default function Landing() {
         eyebrow="Kimler için"
         title="Müşterileri AI'dan öneri alan herkes için."
         intro="Farklı sektörlerde aynı sorun: yapay zekanın gözünden nasıl görünüyoruz?"
+        className="bg-paper-2/40"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {USE_CASES.map((u) => (
-            <div key={u.eyebrow} className="card p-7">
-              <div className="eyebrow text-brand-deep">{u.eyebrow}</div>
-              <h3 className="font-display text-[22px] mt-3 leading-snug">{u.title}</h3>
-              <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{u.body}</p>
-            </div>
+          {USE_CASES.map((u, i) => (
+            <Reveal key={u.eyebrow} delay={(i % 2) * 80}>
+              <div className="card p-7 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <div className="eyebrow text-brand-deep">{u.eyebrow}</div>
+                <h3 className="font-display text-[22px] mt-3 leading-snug">{u.title}</h3>
+                <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{u.body}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
         <div className="mt-10">
@@ -286,18 +410,20 @@ export default function Landing() {
         </div>
       </Section>
 
-      {/* Quote / testimonial-style block (aspirational, marked) */}
-      <Section className="bg-paper-2/40">
-        <div className="card p-10 lg:p-14 max-w-4xl mx-auto text-center">
-          <Quote className="w-8 h-8 text-brand/40 mx-auto" />
-          <p className="font-display text-[28px] lg:text-[34px] tracking-tight mt-6 leading-snug">
-            "AI cevaplarında yokuz" derken aslında hangi cevaplarda olmadığımızı bilmiyorduk. Şimdi her sabah
-            ilk açtığımız sekme Independent AI oluyor.
-          </p>
-          <div className="mt-7 text-[13px] text-ink-faint">
-            — <span className="text-ink">Lansman testçisi</span>, SaaS pazarlama lideri
+      {/* Quote */}
+      <Section>
+        <Reveal>
+          <div className="card p-10 lg:p-14 max-w-4xl mx-auto text-center">
+            <Quote className="w-8 h-8 text-brand/40 mx-auto" />
+            <p className="font-display text-[28px] lg:text-[34px] tracking-tight mt-6 leading-snug">
+              "AI cevaplarında yokuz" derken aslında hangi cevaplarda olmadığımızı bilmiyorduk. Şimdi her sabah
+              ilk açtığımız sekme Independent AI oluyor.
+            </p>
+            <div className="mt-7 text-[13px] text-ink-faint">
+              — <span className="text-ink">Lansman testçisi</span>, SaaS pazarlama lideri
+            </div>
           </div>
-        </div>
+        </Reveal>
       </Section>
 
       {/* Pricing summary */}
@@ -305,29 +431,32 @@ export default function Landing() {
         eyebrow="Fiyatlandırma"
         title="Lansmanda her şey ücretsiz. 6 ay sonra ne istiyorsanız."
         intro="Bugün hesap aç, 6 ay boyunca tüm özellikleri sınırsız kullan. 6 ay sonunda devam etmek istemezsen otomatik ücretlendirme yok."
+        className="bg-paper-2/40"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
             { t: 'Launch', p: '₺0', desc: '6 ay boyunca her şey dahil. Lansman fırsatı.', highlight: true,
-              items: ['3 model paralel', 'Sınırsız soru', 'Sınırsız rakip', 'Günlük rerun', 'Trend + SoV'] },
+              items: ['3 model paralel', 'Sınırsız soru', 'Sınırsız rakip', '13 GEO aracı', 'API + uyarılar'] },
             { t: 'Starter', p: '₺??', desc: '6 ay sonrası için. Küçük ekipler ve solo kuruculara.',
               items: ['Tek marka', '50 izlenen soru', '3 kullanıcı', 'Email destek'] },
             { t: 'Growth', p: '₺??', desc: 'Çoklu marka, ajans veya kurumsal pazarlama ekipleri.',
               items: ['Sınırsız marka', 'Sınırsız soru', 'Sınırsız kullanıcı', 'Öncelikli destek', 'API erişimi'] },
-          ].map((p) => (
-            <div key={p.t} className={`card p-7 ${p.highlight ? 'ring-2 ring-brand' : ''}`}>
-              {p.highlight && <div className="chip own !text-[10px] mb-3">aktif</div>}
-              <div className="eyebrow">{p.t}</div>
-              <div className="font-display text-[40px] tracking-tight mt-2 tabular">{p.p}</div>
-              <p className="text-[13px] text-ink-muted mt-2 leading-relaxed">{p.desc}</p>
-              <ul className="space-y-2 mt-5">
-                {p.items.map((i) => (
-                  <li key={i} className="flex items-center gap-2 text-[13px]">
-                    <Check className="w-3.5 h-3.5 text-brand" /> {i}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          ].map((p, i) => (
+            <Reveal key={p.t} delay={i * 80}>
+              <div className={`card p-7 h-full ${p.highlight ? 'ring-2 ring-brand' : ''}`}>
+                {p.highlight && <div className="chip own !text-[10px] mb-3">aktif</div>}
+                <div className="eyebrow">{p.t}</div>
+                <div className="font-display text-[40px] tracking-tight mt-2 tabular">{p.p}</div>
+                <p className="text-[13px] text-ink-muted mt-2 leading-relaxed">{p.desc}</p>
+                <ul className="space-y-2 mt-5">
+                  {p.items.map((it) => (
+                    <li key={it} className="flex items-center gap-2 text-[13px]">
+                      <Check className="w-3.5 h-3.5 text-brand" /> {it}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
           ))}
         </div>
         <div className="mt-10">
