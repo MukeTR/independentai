@@ -48,3 +48,14 @@ export function buildMetadata(input: PageSeoInput): Metadata {
 
 export const SITE_URL = SITE;
 export const BRAND_NAME = BRAND;
+
+/**
+ * Kararlı entity @id'leri — Organization / WebSite / BlogPosting JSON-LD node'larını
+ * tek bir knowledge graph'a bağlamak için. Google'ın siteyi izole sayfalar yerine
+ * birbirine bağlı bir varlık olarak görmesini sağlar.
+ */
+export const ORG_ID = `${SITE}/#organization`;
+export const WEBSITE_ID = `${SITE}/#website`;
+
+/** IndexNow (Bing/Yandex anlık indeksleme) anahtarı — public/<key>.txt ile eşleşir. */
+export const INDEXNOW_KEY = '392951a5a37d9cb5307632a96bcc596d';

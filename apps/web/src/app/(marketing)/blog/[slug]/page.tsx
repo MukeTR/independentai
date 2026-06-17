@@ -8,8 +8,8 @@ import { AiSeoChecklist } from '@/components/marketing/ai-seo-checklist';
 import { VisibilityCalculator } from '@/components/marketing/visibility-calculator';
 import { SchemaGenerator } from '@/components/marketing/schema-generator';
 import { GeoAuditChecklist } from '@/components/marketing/geo-audit-checklist';
-import { buildMetadata } from '@/lib/seo';
-import { POSTS, getPostBySlug } from '@/data/blog-posts';
+import { buildMetadata, SITE_URL, ORG_ID, WEBSITE_ID } from '@/lib/seo';
+import { POSTS, getPostBySlug, getRelatedPosts, getWordCount } from '@/data/blog-posts';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 
 // Slug bazlı interaktif araç eklemeleri.
@@ -85,11 +85,23 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         data={{
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
+          '@id': `${SITE_URL}/blog/${post.slug}#article`,
           headline: post.title,
           description: post.excerpt,
           datePublished: post.publishedAt,
-          author: { '@type': 'Organization', name: 'Independent AI' },
-          publisher: { '@type': 'Organization', name: 'Independent AI' },
+          inLanguage: 'tr-TR',
+          url: `${SITE_URL}/blog/${post.slug}`,
+          mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/blog/${post.slug}` },
+          wordCount: getWordCount(post),
+          articleSection: post.category,
+          isPartOf: { '@id': WEBSITE_ID },
+          author: { '@type': 'Organization', '@id': ORG_ID, name: 'Independent AI' },
+          publisher: {
+            '@type': 'Organization',
+            '@id': ORG_ID,
+            name: 'Independent AI',
+            logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon.svg` },
+          },
         }}
       />
 
@@ -166,11 +178,16 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           )}
 
           <div className="mt-16 pt-8 border-t-hairline border-hairline">
-            <div className="eyebrow mb-4">Diğer yazılar</div>
-            <div className="space-y-3">
-              {POSTS.filter((p) => p.slug !== post.slug).slice(0, 3).map((p) => (
-                <Link key={p.slug} href={`/blog/${p.slug}`} className="block hover:text-brand-deep transition">
-                  <div className="text-[15px]">{p.title}</div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="eyebrow">İlgili yazılar</div>
+              <Link href="/blog/arsiv" className="text-[12px] text-brand-deep hover:underline">
+                Tüm yazılar →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+              {getRelatedPosts(post.slug, 6).map((p) => (
+                <Link key={p.slug} href={`/blog/${p.slug}`} className="block hover:text-brand-deep transition py-1">
+                  <div className="text-[15px] leading-snug">{p.title}</div>
                   <div className="text-[11px] text-ink-faint font-mono mt-1">{p.category} · {p.readTimeMin} dk</div>
                 </Link>
               ))}

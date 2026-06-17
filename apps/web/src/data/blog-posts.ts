@@ -139,3 +139,68 @@ export const POSTS: BlogPost[] = [
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return POSTS.find((p) => p.slug === slug);
 }
+
+/**
+ * İlgili yazılar — eski `slice(0, 3)` her yazıda HEP aynı 3 yazıyı linkliyordu,
+ * bu yüzden 72 yazı iç-link grafiğinde orphan kalıyordu. Bunun yerine:
+ *  1) aynı kategoriden yazılarla topik alaka,
+ *  2) "ring" komşularıyla (idx+1, idx+2, ...) — her yazı FARKLI bir ileri küme
+ *     linklediği için 84 yazı tam bağlı bir grafik oluşturur ve crawl equity tüm
+ *     korpusa yayılır.
+ * Build-time'da (SSG) hesaplanır, statik HTML'e gömülür.
+ */
+export function getRelatedPosts(slug: string, count = 6): BlogPost[] {
+  const idx = POSTS.findIndex((p) => p.slug === slug);
+  if (idx === -1) return POSTS.slice(0, count);
+
+  const self = POSTS[idx]!;
+  const n = POSTS.length;
+  const seen = new Set<string>([slug]);
+  const result: BlogPost[] = [];
+
+  // 1) Aynı kategoriden — listenin yaklaşık yarısı kadar topik alaka
+  const sameCategoryTarget = Math.ceil(count / 2);
+  for (const p of POSTS) {
+    if (result.length >= sameCategoryTarget) break;
+    if (!seen.has(p.slug) && p.category === self.category) {
+      result.push(p);
+      seen.add(p.slug);
+    }
+  }
+
+  // 2) Ring komşuları — her yazı farklı bir ileri küme linkler => tam bağlı grafik
+  for (let step = 1; step <= n && result.length < count; step++) {
+    const p = POSTS[(idx + step) % n]!;
+    if (!seen.has(p.slug)) {
+      result.push(p);
+      seen.add(p.slug);
+    }
+  }
+
+  return result.slice(0, count);
+}
+
+/** Yazının gövde kelime sayısı — BlogPosting JSON-LD wordCount için. */
+export function getWordCount(post: BlogPost): number {
+  return post.body.reduce((acc, b) => {
+    if (b.type === 'ul') {
+      return acc + (b.items?.join(' ').split(/\s+/).filter(Boolean).length ?? 0);
+    }
+    if ('text' in b && b.text) {
+      return acc + b.text.split(/\s+/).filter(Boolean).length;
+    }
+    return acc;
+  }, 0);
+}
+
+/** Kategoriye göre gruplanmış yazılar — arşiv sayfası için (publishedAt desc korunur). */
+export function getPostsByCategory(): { category: BlogCategory; posts: BlogPost[] }[] {
+  const preferredOrder: BlogCategory[] = ['GEO', 'AI', 'Strateji', 'Teknik', 'Pazarlama', 'Ürün', 'Sektör'];
+  // Tercih sırasına ek olarak, listede olmayan herhangi bir kategoriyi de dahil et
+  // (yeni kategori eklenince arşivden yazıların sessizce düşmesini engeller).
+  const seen = new Set<BlogCategory>(preferredOrder);
+  const extra = [...new Set(POSTS.map((p) => p.category))].filter((c) => !seen.has(c));
+  return [...preferredOrder, ...extra]
+    .map((category) => ({ category, posts: POSTS.filter((p) => p.category === category) }))
+    .filter((g) => g.posts.length > 0);
+}

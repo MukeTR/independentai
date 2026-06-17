@@ -1,6 +1,9 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
+// edge runtime'da ImageResponse Vercel'de 0-byte PNG döndürüyordu; nodejs runtime
+// next/og için daha güvenilir. force-static ile build'de bir kez üretilir.
+export const runtime = 'nodejs';
+export const dynamic = 'force-static';
 export const alt = 'Independent AI — Yapay zekaların gözünden markanız';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -45,8 +48,9 @@ export default async function Image() {
           >
             iA
           </div>
-          <div style={{ fontSize: 28, fontWeight: 600, color: '#14110D', letterSpacing: -0.5 }}>
-            Independent <span style={{ color: '#4F46E5' }}>AI</span>
+          <div style={{ display: 'flex', fontSize: 28, fontWeight: 600, color: '#14110D', letterSpacing: -0.5 }}>
+            <span>Independent</span>
+            <span style={{ color: '#4F46E5', marginLeft: 8 }}>AI</span>
           </div>
         </div>
 
@@ -64,6 +68,8 @@ export default async function Image() {
           </div>
           <div
             style={{
+              display: 'flex',
+              flexWrap: 'wrap',
               fontSize: 84,
               fontWeight: 600,
               letterSpacing: -2.5,
@@ -73,7 +79,7 @@ export default async function Image() {
               maxWidth: 1000,
             }}
           >
-            Yapay zekalar markanızdan{' '}
+            <span>Yapay zekalar markanızdan&nbsp;</span>
             <span style={{ color: '#4F46E5' }}>bahsediyor mu?</span>
           </div>
           <div

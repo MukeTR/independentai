@@ -8,6 +8,7 @@ export const metadata = buildMetadata({
   title: 'API Referansı — Yakında',
   description: 'Independent AI REST API referansı. Şu an dahili olarak geliştiriliyor, kısa süre içinde herkese açılacak.',
   path: '/docs/api',
+  noIndex: true, // "Yakında" stub'ı — gerçek dokümantasyon gelene kadar indekslenmez.
 });
 
 export default function ApiDocs() {

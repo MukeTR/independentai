@@ -10,6 +10,7 @@ const FOOTER_LINKS = [
       { href: '/pricing', label: 'Fiyatlandırma' },
       { href: '/how-it-works', label: 'Nasıl çalışır' },
       { href: '/use-cases', label: 'Kullanım senaryoları' },
+      { href: '/docs', label: 'Dokümantasyon' },
       { href: '/changelog', label: 'Sürüm notları' },
     ],
   },
@@ -17,10 +18,17 @@ const FOOTER_LINKS = [
     heading: 'Kaynaklar',
     links: [
       { href: '/blog', label: 'Blog' },
+      { href: '/blog/arsiv', label: 'Tüm yazılar' },
       { href: '/resources/geo-101', label: 'GEO 101 rehberi' },
       { href: '/resources/glossary', label: 'AI sözlüğü' },
-      { href: '/docs', label: 'Dokümantasyon' },
-      { href: '/docs/api', label: 'API' },
+    ],
+  },
+  {
+    heading: 'Ücretsiz araçlar',
+    links: [
+      { href: '/arac/chatgpt-rank-checker', label: 'ChatGPT rank checker' },
+      { href: '/arac/claude-rank-checker', label: 'Claude rank checker' },
+      { href: '/arac/gemini-rank-checker', label: 'Gemini rank checker' },
     ],
   },
   {
@@ -60,7 +68,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="col-span-12 md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="col-span-12 md:col-span-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-8">
             {FOOTER_LINKS.map((col) => (
               <div key={col.heading}>
                 <div className="eyebrow mb-4">{col.heading}</div>

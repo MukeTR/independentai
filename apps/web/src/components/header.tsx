@@ -72,6 +72,7 @@ const PANELS: MegaPanel[] = [
         heading: 'Öğren',
         links: [
           { href: '/blog', title: 'Blog', description: 'GEO ve AI marka stratejisi' },
+          { href: '/blog/arsiv', title: 'Tüm yazılar', description: 'Kategoriye göre tam arşiv' },
           { href: '/resources/geo-101', title: 'GEO 101 rehberi' },
           { href: '/resources/glossary', title: 'AI pazarlama sözlüğü' },
         ],

@@ -1,4 +1,4 @@
-import { SITE_URL, BRAND_NAME } from '@/lib/seo';
+import { SITE_URL, BRAND_NAME, ORG_ID, WEBSITE_ID } from '@/lib/seo';
 
 type Json = Record<string, unknown> | unknown[];
 
@@ -17,12 +17,40 @@ export function OrganizationJsonLd() {
       data={{
         '@context': 'https://schema.org',
         '@type': 'Organization',
+        '@id': ORG_ID,
         name: BRAND_NAME,
         url: SITE_URL,
-        logo: `${SITE_URL}/icon.svg`,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${SITE_URL}/icon.svg`,
+          width: 512,
+          height: 512,
+        },
+        // Gerçek profiller oluşturuldukça doldurulacak (LinkedIn, X, GitHub, Crunchbase).
         sameAs: [],
         description:
           'Yapay zekaların verdiği cevaplarda markanızın görünürlüğünü, sıralamasını ve rakiplerle karşılaştırmasını ölçen bağımsız platform.',
+      }}
+    />
+  );
+}
+
+/**
+ * WebSite entity — homepage, Organization ve tüm BlogPosting node'larını tek bir
+ * @id grafiğine bağlayan çapa. SearchAction EKLENMEDİ çünkü gerçek bir ?q= arama
+ * endpoint'i yok (yalanlanabilir bir yapısal işaret olurdu).
+ */
+export function WebSiteJsonLd() {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': WEBSITE_ID,
+        name: BRAND_NAME,
+        url: SITE_URL,
+        inLanguage: 'tr-TR',
+        publisher: { '@id': ORG_ID },
       }}
     />
   );
