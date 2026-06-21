@@ -8,6 +8,7 @@ export const metadata = buildMetadata({
   title: 'Webhooks — Yakında',
   description: 'Independent AI webhooks. Olay tabanlı entegrasyon için tasarlanıyor.',
   path: '/docs/webhooks',
+  noIndex: true, // "Yakında" stub'ı — gerçek dokümantasyon gelene kadar indekslenmez.
 });
 
 export default function WebhooksDocs() {

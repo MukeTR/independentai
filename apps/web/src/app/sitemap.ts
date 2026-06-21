@@ -3,12 +3,19 @@ import { SITE_URL } from '@/lib/seo';
 import { POSTS } from '@/data/blog-posts';
 
 /**
- * SEO + GEO optimized sitemap
- * - Daha doğal priority dağılımı
- * - Pagination crawl-budget optimizasyonu
- * - Daha temiz lastModified handling
- * - Google uyumlu sade yapı
+ * SEO + GEO optimize sitemap
+ * - Query-param (?page=) yerine path-based sayfalama (/blog/sayfa/N) — kendi kendine
+ *   canonical, "discovered, not indexed" tuzağını giderir.
+ * - Statik sayfalarda SABİT lastmod (her deploy'da değişen new Date() değil) — Google'ın
+ *   lastmod sinyaline güvenini korur.
+ * - "Yakında" stub'ları (docs/api, docs/webhooks) noindex olduğu için listelenmez.
  */
+
+// Statik içeriğin gerçekten en son değiştiği tarih. Deploy'da değişmemeli; içerik
+// güncellenince elle bump edilir (sahte tazelik churn'ünü önler).
+const STATIC_LASTMOD = '2026-06-14';
+
+const PAGE_SIZE = 12;
 
 const STATIC_PAGES = [
   // Core marketing
@@ -24,21 +31,20 @@ const STATIC_PAGES = [
 
   // Blog
   { path: '/blog', priority: 0.7, change: 'daily' as const },
+  { path: '/blog/arsiv', priority: 0.6, change: 'weekly' as const },
 
   // Resources
   { path: '/resources', priority: 0.7, change: 'monthly' as const },
   { path: '/resources/geo-101', priority: 0.7, change: 'monthly' as const },
   { path: '/resources/glossary', priority: 0.6, change: 'monthly' as const },
 
-  // Docs
+  // Docs (yalnızca canlı olanlar — api/webhooks "yakında" stub'ları noindex)
   { path: '/docs', priority: 0.5, change: 'monthly' as const },
-  { path: '/docs/api', priority: 0.4, change: 'monthly' as const },
-  { path: '/docs/webhooks', priority: 0.4, change: 'monthly' as const },
 
   // Ücretsiz public araçlar (lead-gen)
-  { path: '/arac/chatgpt-rank-checker', priority: 0.9, change: 'monthly' as const },
-  { path: '/arac/claude-rank-checker', priority: 0.9, change: 'monthly' as const },
-  { path: '/arac/gemini-rank-checker', priority: 0.9, change: 'monthly' as const },
+  { path: '/arac/chatgpt-rank-checker', priority: 0.7, change: 'monthly' as const },
+  { path: '/arac/claude-rank-checker', priority: 0.7, change: 'monthly' as const },
+  { path: '/arac/gemini-rank-checker', priority: 0.7, change: 'monthly' as const },
 
   // Changelog
   { path: '/changelog', priority: 0.4, change: 'weekly' as const },
@@ -50,59 +56,43 @@ const STATIC_PAGES = [
   { path: '/legal/cookies', priority: 0.2, change: 'yearly' as const },
 ];
 
-const PAGE_SIZE = 12;
-
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const staticLastmod = new Date(STATIC_LASTMOD);
 
-  /**
-   * Static pages
-   */
   const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.map((page) => ({
     url: `${SITE_URL}${page.path}`,
-    lastModified: now,
+    lastModified: staticLastmod,
     changeFrequency: page.change,
     priority: page.priority,
   }));
 
   /**
-   * Blog pagination
-   *
-   * NOTE:
-   * Pagination pages intentionally lower priority
-   * to avoid crawl budget waste.
+   * Blog sayfalama — path-based /blog/sayfa/N (sayfa 1 = /blog, üstte zaten var).
+   * Her sayfa kendi kendine canonical olduğu için indekslenebilir gerçek hedeflerdir.
    */
   const totalPages = Math.ceil(POSTS.length / PAGE_SIZE);
-
   const blogPagination: MetadataRoute.Sitemap = Array.from(
     { length: Math.max(totalPages - 1, 0) },
     (_, index) => ({
-      url: `${SITE_URL}/blog?page=${index + 2}`,
-      lastModified: now,
+      url: `${SITE_URL}/blog/sayfa/${index + 2}`,
+      lastModified: staticLastmod,
       changeFrequency: 'weekly',
-      priority: 0.2,
+      priority: 0.3,
     }),
   );
 
   /**
-   * Blog entries
+   * Blog yazıları — lastmod gerçek yayın tarihinden (sabit, dürüst).
    */
+  const now = new Date();
   const blogEntries: MetadataRoute.Sitemap = POSTS.map((post) => {
     const published = new Date(post.publishedAt);
-
-    const ageDays =
-      (now.getTime() - published.getTime()) /
-      (1000 * 60 * 60 * 24);
+    const ageDays = (now.getTime() - published.getTime()) / (1000 * 60 * 60 * 24);
 
     let priority = 0.4;
-
-    if (ageDays <= 30) {
-      priority = 0.7;
-    } else if (ageDays <= 90) {
-      priority = 0.6;
-    } else if (ageDays <= 180) {
-      priority = 0.5;
-    }
+    if (ageDays <= 30) priority = 0.7;
+    else if (ageDays <= 90) priority = 0.6;
+    else if (ageDays <= 180) priority = 0.5;
 
     return {
       url: `${SITE_URL}/blog/${post.slug}`,
@@ -112,9 +102,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  return [
-    ...staticEntries,
-    ...blogPagination,
-    ...blogEntries,
-  ];
+  return [...staticEntries, ...blogPagination, ...blogEntries];
 }
