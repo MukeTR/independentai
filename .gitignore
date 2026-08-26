@@ -8,3 +8,6 @@ dist
 *.tsbuildinfo
 packages/db/prisma/dev.db*
 .DS_Store
+
+# Supabase CLI geçici dosyaları
+supabase/.temp

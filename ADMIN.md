@@ -2,9 +2,9 @@
 
 Production'da kendinizi süper admin yapmak için (sadece bir kez):
 
-## Yöntem 1 — Neon SQL Editor
+## Yöntem 1 — Supabase SQL Editor
 
-1. neon.tech → projeniz → SQL Editor
+1. supabase.com → `independentai` projesi → SQL Editor
 2. Önce kendi hesabınızla normal kayıt olun (`/register` üzerinden)
 3. SQL Editor'da:
    ```sql

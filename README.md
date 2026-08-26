@@ -11,7 +11,7 @@
 | Katman | Teknoloji | Free Tier |
 |---|---|---|
 | Web + API + Cron | Next.js 15 (App Router, Route Handlers, Vercel Cron) | Vercel Hobby |
-| DB | Postgres + Prisma | Neon |
+| DB | Postgres + Prisma | Supabase |
 | AI | OpenAI, Anthropic, Google Gemini (mock fallback) | pay-as-you-go |
 
 Mimari tek deploy: tüm API endpoint'ler `apps/web/src/app/api/*` altında Next.js route handlers. Daily cron Vercel Cron tarafından `/api/cron/daily-run`'a vurur. Worker yok, Redis yok.
@@ -20,7 +20,7 @@ Mimari tek deploy: tüm API endpoint'ler `apps/web/src/app/api/*` altında Next.
 
 ```bash
 pnpm install
-cp .env.example .env   # DATABASE_URL ve JWT_SECRET zorunlu
+cp .env.example .env   # DATABASE_URL, DIRECT_URL ve JWT_SECRET zorunlu
 
 pnpm db:push           # şemayı DB'ye yayınla
 pnpm db:seed           # demo veri (opsiyonel)
@@ -29,11 +29,11 @@ pnpm dev               # http://localhost:3200
 
 Demo login (seed sonrası): `demo@independentai.space` / `demo1234`
 
-## Deploy → Vercel + Neon
+## Deploy → Vercel + Supabase
 
 Adım adım rehber için `DEPLOY.md`'ye bak. Özetle:
 
-1. **Neon** → Postgres branch oluştur, `DATABASE_URL` al
+1. **Supabase** → proje oluştur, `DATABASE_URL` (pooler 6543) + `DIRECT_URL` (pooler 5432) al
 2. **Vercel** → GitHub `MukeTR/independentai`'ı import et, root `apps/web`, env'leri ekle
 3. **DNS** → `independentai.space` → Vercel
 4. **Cron** → `vercel.json`'da tanımlı, otomatik kurulur

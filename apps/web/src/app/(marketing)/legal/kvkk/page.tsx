@@ -36,7 +36,7 @@ export default function Kvkk() {
             },
             {
               h: 'Aktarım',
-              c: 'Verileriniz yurt dışında bulunan hosting altyapısında (Vercel ve Neon — ABD) saklanır. Yurt dışı aktarımı için açık rızanız kayıt sırasında alınır.',
+              c: 'Verileriniz yurt dışında bulunan hosting altyapısında saklanır: veri tabanı Supabase (Almanya — Frankfurt), uygulama Vercel üzerinde çalışır. Yurt dışı aktarımı için açık rızanız kayıt sırasında alınır.',
             },
             {
               h: 'Saklama süresi',

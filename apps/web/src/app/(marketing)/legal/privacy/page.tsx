@@ -40,7 +40,7 @@ export default function Privacy() {
           </Section>
 
           <Section h="4. Üçüncü taraf hizmetler">
-            <strong>Hosting:</strong> Vercel (web), Neon (Postgres) — ABD-doğu bölgesi.<br/>
+            <strong>Hosting:</strong> Vercel (web), Supabase (Postgres) — Frankfurt, Almanya (AB).<br/>
             <strong>AI:</strong> OpenAI, Anthropic, Google — sadece prompt metni gönderilir.<br/>
             <strong>Analitik:</strong> Şu an üçüncü taraf analytics kullanmıyoruz.
           </Section>

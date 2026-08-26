@@ -63,7 +63,7 @@ const LANDING_FAQS = [
   {
     question: 'Verilerime kim erişebilir?',
     answer:
-      'Sadece siz ve hesabınıza davet ettiğiniz takım üyeleri. Verileriniz Neon Postgres üzerinde TLS ile şifrelenir. AI provider\'lara giden sorgular sadece izlediğiniz prompt metnini içerir — kullanıcı bilgisi paylaşılmaz.',
+      'Sadece siz ve hesabınıza davet ettiğiniz takım üyeleri. Verileriniz Supabase Postgres (AB — Frankfurt) üzerinde TLS ile şifrelenir. AI provider\'lara giden sorgular sadece izlediğiniz prompt metnini içerir — kullanıcı bilgisi paylaşılmaz.',
   },
 ];
 

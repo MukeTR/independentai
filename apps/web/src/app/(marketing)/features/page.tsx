@@ -73,7 +73,7 @@ const PILLARS = [
     features: [
       { icon: ShieldCheck, t: 'Bağımsız üçüncü taraf', d: 'OpenAI, Anthropic veya Google ile iş ortaklığımız yok. Cevaplar filtrelenmez, taraflı sıralanmaz.' },
       { icon: Lock, t: 'TLS şifreli iletişim', d: 'Tüm bağlantılar HTTPS/TLS 1.3. Şifreler scrypt ile hashlenir, JWT tabanlı oturum.' },
-      { icon: Database, t: 'PostgreSQL veri tabanı', d: 'Verileriniz Neon Postgres (US-East) üzerinde. Otomatik yedekleme, point-in-time recovery.' },
+      { icon: Database, t: 'PostgreSQL veri tabanı', d: 'Verileriniz Supabase Postgres (AB — Frankfurt) üzerinde. Günlük otomatik yedekleme, point-in-time recovery.' },
       { icon: ShieldCheck, t: 'KVKK uyumlu', d: 'KVKK aydınlatma metni, veri işleme sözleşmesi (DPA), veri sahibi hakları formu — hepsi mevcut.' },
     ],
   },

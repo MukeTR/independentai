@@ -1,6 +1,6 @@
 # Deploy — Independent AI (independentai.space)
 
-Tüm yığını **iki ücretsiz servis** ile çalıştırıyoruz: Vercel + Neon. Toplam aylık maliyet: $0 (AI provider API kullanımı hariç). Worker / Redis yok — Vercel Cron + Next.js Route Handlers her şeyi hallediyor.
+Tüm yığını **iki ücretsiz servis** ile çalıştırıyoruz: Vercel + Supabase. Toplam aylık maliyet: $0 (AI provider API kullanımı hariç). Worker / Redis yok — Vercel Cron + Next.js Route Handlers her şeyi hallediyor.
 
 ## Mimari (Vercel-only)
 
@@ -14,9 +14,12 @@ Tüm yığını **iki ücretsiz servis** ile çalıştırıyoruz: Vercel + Neon.
                   └──────────────┬────────────────────────┘
                                  │ Prisma
                                  ▼
-                  ┌──────────────────────────┐
-                  │   Neon Postgres (free)   │
-                  └──────────────────────────┘
+                  ┌──────────────────────────────┐
+                  │  Supabase Postgres (free)    │
+                  │  eu-central-1 · Frankfurt    │
+                  │  pooler:6543 (runtime)       │
+                  │  pooler:5432 (şema/migrate)  │
+                  └──────────────────────────────┘
                                  │
                                  ▼  doğrudan API çağrısı
                   OpenAI · Anthropic · Google Gemini
@@ -27,23 +30,49 @@ Tüm yığını **iki ücretsiz servis** ile çalıştırıyoruz: Vercel + Neon.
 | Servis | Ne için | Free tier | Link |
 |---|---|---|---|
 | **Vercel** | Web + API + Cron | Hobby sınırsız (1 cron/gün yeter) | vercel.com |
-| **Neon** | Postgres | 0.5 GB | neon.tech |
+| **Supabase** | Postgres | 500 MB | supabase.com |
 | **OpenAI / Anthropic / Google** | AI API keys | pay-as-you-go (yoksa mock) | her birinin dashboard'u |
 
-> Şu an: staging branch'i Neon'da hazır. Production branch'i ayrıca yapılacak.
+> Şu an: production Supabase projesi `independentai` (ref `pvxwwwomgjhnbhtulins`, eu-central-1) canlıda. Veri 26 Ağu 2026'da Neon'dan birebir taşındı; Neon artık kullanılmıyor.
 
 ---
 
-## 1. Neon Postgres
+## 1. Supabase Postgres
 
-**Staging** (geliştirme + ön test): `ep-shy-salad-ap1ijb8p-pooler.c-7.us-east-1.aws.neon.tech`  
-**Production** (canlı): `ep-summer-brook-ap7c96ie-pooler.c-7.us-east-1.aws.neon.tech`
+Proje: **independentai** — `eu-central-1` (Frankfurt), ref `pvxwwwomgjhnbhtulins`.
 
-Production'a schema yayını:
+Supabase iki farklı bağlantı ucu verir ve **ikisi de gerekli**:
+
+| Değişken | Port | Mod | Ne için |
+|---|---|---|---|
+| `DATABASE_URL` | 6543 | transaction pooler | Uygulama runtime'ı. Serverless'te bağlantı patlamasını önler. Prisma için `?pgbouncer=true&connection_limit=1` **şart**. |
+| `DIRECT_URL` | 5432 | session pooler | `prisma db push` / `migrate`. Pooler transaction modunda DDL çalışmaz. |
+
+> `db.<ref>.supabase.co` doğrudan host'u **yalnızca IPv6** dinliyor; Vercel ve çoğu CI IPv4 olduğu için
+> `DIRECT_URL` olarak da pooler host'unun **5432** portunu kullanıyoruz (`aws-0-eu-central-1.pooler.supabase.com`).
+
+Bağlantı adreslerini almak için: Supabase Dashboard → Project Settings → Database → Connection string.
+
+Şema yayını:
 ```bash
-DATABASE_URL='postgresql://...summer-brook...' pnpm --filter @independentai/db push
+DIRECT_URL='<supabase-5432-url>' pnpm --filter @independentai/db push
 ```
 > Production'a seed atma (demo veri prod'a sızmasın diye). Kullanıcılar register oldukça gerçek veri akacak.
+
+### Neon'dan veri taşıma (tek seferlik, tamamlandı)
+
+```bash
+# 1) Hedefte şema
+DIRECT_URL='<supabase-5432>' pnpm --filter @independentai/db push
+
+# 2) Kuru çalışma — sadece sayar
+SOURCE_DATABASE_URL='<neon-url>' TARGET_DATABASE_URL='<supabase-5432>' \
+  npx tsx scripts/migrate-to-supabase.ts
+
+# 3) Gerçek kopya (idempotent — yarıda kalırsa tekrar çalıştırılabilir)
+SOURCE_DATABASE_URL='<neon-url>' TARGET_DATABASE_URL='<supabase-5432>' \
+  npx tsx scripts/migrate-to-supabase.ts --apply
+```
 
 ## 2. Vercel deploy
 
@@ -55,7 +84,8 @@ DATABASE_URL='postgresql://...summer-brook...' pnpm --filter @independentai/db p
    - Output: `.next`
 4. **Environment Variables:**
    ```
-   DATABASE_URL=<production-neon-url>
+   DATABASE_URL=<supabase-pooler-6543-url>   # ?pgbouncer=true&connection_limit=1
+   DIRECT_URL=<supabase-pooler-5432-url>
    JWT_SECRET=<32+ karakter rastgele, openssl rand -hex 32>
    CRON_SECRET=<rastgele, Vercel cron'unu sadece bu tetikleyebilsin>
    NEXT_PUBLIC_SITE_URL=https://independentai.space
@@ -64,8 +94,14 @@ DATABASE_URL='postgresql://...summer-brook...' pnpm --filter @independentai/db p
    OPENAI_API_KEY=
    ANTHROPIC_API_KEY=
    GOOGLE_API_KEY=
+
+   # Opsiyonel — e-posta raporları (yoksa gönderim sessizce atlanır)
+   RESEND_API_KEY=
+   EMAIL_FROM=Independent AI <bildirim@independentai.space>
    ```
-5. Deploy
+5. **Function Region** → Settings → Functions → `Frankfurt (fra1)`.
+   Veri tabanı Frankfurt'ta; fonksiyonlar US'te kalırsa her sorgu Atlantik'i geçer.
+6. Deploy
 
 ## 3. Domain — independentai.space
 
