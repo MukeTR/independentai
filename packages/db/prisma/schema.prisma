@@ -273,7 +273,8 @@ model AlertConfig {
   slackWebhookUrl         String?
   weeklyReportEnabled     Boolean  @default(true)
   visibilityDropThreshold Int      @default(15) // puan düşüşü eşiği
-  lastNotifiedAt          DateTime?
+  lastNotifiedAt          DateTime? // son haftalık rapor
+  lastDropAlertAt         DateTime? // son düşüş uyarısı (günde en fazla bir kez)
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 }

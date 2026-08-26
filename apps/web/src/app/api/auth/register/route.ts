@@ -4,6 +4,7 @@ import { prisma } from '@/server/prisma';
 import { hashPassword } from '@/server/password';
 import { setSessionCookie, jsonError, handleRouteError } from '@/server/session';
 import { FREE_TRIAL_MONTHS } from '@independentai/shared';
+import { ensureAlertConfig } from '@/server/notify';
 
 const schema = z.object({
   email: z.string().email(),
@@ -33,6 +34,10 @@ export async function POST(req: NextRequest) {
         role: 'OWNER',
       },
     });
+
+    // Bildirim tercihleri varsayılanla oluşsun — kullanıcı ayarlara hiç girmese de
+    // haftalık rapor ve düşüş uyarısı alsın.
+    await ensureAlertConfig(tenant.id);
 
     const res = NextResponse.json({ ok: true });
     await setSessionCookie(res, { userId: user.id, tenantId: tenant.id, email: user.email });

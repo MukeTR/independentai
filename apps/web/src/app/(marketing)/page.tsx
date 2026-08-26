@@ -38,7 +38,7 @@ const LANDING_FAQS = [
   {
     question: 'Hangi yapay zeka modellerini izliyorsunuz?',
     answer:
-      'Şu an OpenAI (ChatGPT — gpt-4o-mini), Anthropic (Claude — claude-haiku-4-5) ve Google (Gemini — gemini-1.5-flash) modellerinde paralel sorgu çalıştırıyoruz. Perplexity, Grok ve Mistral entegrasyonları sonraki sürümlerde geliyor.',
+      'Şu an OpenAI (ChatGPT — gpt-4o-mini), Anthropic (Claude — claude-haiku-4-5) ve Google (Gemini — gemini-2.5-flash) modellerinde paralel sorgu çalıştırıyoruz. Perplexity, Grok ve Mistral entegrasyonları sonraki sürümlerde geliyor.',
   },
   {
     question: 'Markamı nasıl tespit ediyorsunuz?',

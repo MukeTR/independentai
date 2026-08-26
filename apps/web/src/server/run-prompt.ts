@@ -95,3 +95,43 @@ export async function runPromptOnce(tenantId: string, promptId: string) {
 
   return { runs: results };
 }
+
+/**
+ * Günlük toplu çalıştırma — cron ve admin manuel tetikleme ortak kullanır.
+ *
+ * İki sorunu birden çözer:
+ *  - Zaman aşımı: Vercel Hobby'de function 60s ile sınırlı. `deadlineAt`'e kadar
+ *    işler, kalanı `remaining` olarak döndürür — sonraki tetikleme kaldığı yerden devam eder.
+ *  - Mükerrer kayıt: Aynı gün (UTC) zaten çalıştırılmış promptlar atlanır, yani
+ *    cron iki kez tetiklenirse veri çiftlenmez.
+ */
+export async function runDuePrompts(opts: { deadlineAt: number; force?: boolean }) {
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+
+  const prompts = await prisma.prompt.findMany({
+    where: {
+      isActive: true,
+      ...(opts.force ? {} : { runs: { none: { runDate: { gte: startOfDay } } } }),
+    },
+    select: { id: true, tenantId: true },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  let processed = 0;
+  let failed = 0;
+
+  for (const p of prompts) {
+    // Bir sonraki prompt için yeterli süre kalmadıysa dur — yarım kalan run yazmaktansa
+    // sonraki tetiklemeye bırak.
+    if (Date.now() > opts.deadlineAt) break;
+    try {
+      await runPromptOnce(p.tenantId, p.id);
+    } catch {
+      failed++;
+    }
+    processed++;
+  }
+
+  return { processed, failed, remaining: prompts.length - processed, total: prompts.length };
+}

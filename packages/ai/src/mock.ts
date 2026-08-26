@@ -33,6 +33,6 @@ function mockModelName(provider: ProviderId): string {
     case 'ANTHROPIC':
       return 'claude-haiku-4-5 (mock)';
     case 'GOOGLE':
-      return 'gemini-1.5-flash (mock)';
+      return 'gemini-2.5-flash (mock)';
   }
 }

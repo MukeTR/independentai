@@ -94,26 +94,10 @@ export function listRecentRuns(limit = 50) {
 }
 
 export async function triggerManualCron() {
-  // Vercel cron endpoint'imizi local olarak çalıştırmak yerine,
-  // doğrudan run-prompt logic'ini import edip aynı şeyi yapıyoruz.
-  // Bu sayede CRON_SECRET'a ihtiyaç yok.
-  const { runPromptOnce } = await import('./run-prompt');
-  const prompts = await prisma.prompt.findMany({
-    where: { isActive: true },
-    select: { id: true, tenantId: true },
-  });
-  const results: { promptId: string; ok: boolean; error?: string }[] = [];
-  for (const p of prompts) {
-    try {
-      await runPromptOnce(p.tenantId, p.id);
-      results.push({ promptId: p.id, ok: true });
-    } catch (err) {
-      results.push({
-        promptId: p.id,
-        ok: false,
-        error: err instanceof Error ? err.message : String(err),
-      });
-    }
-  }
-  return { processed: results.length, failed: results.filter((r) => !r.ok).length };
+  // Cron endpoint'ini HTTP üzerinden çağırmak yerine aynı toplu çalıştırıcıyı
+  // doğrudan kullanıyoruz — böylece CRON_SECRET'a ihtiyaç yok.
+  // force: true → admin testinde aynı gün çalışmış promptlar da yeniden çalışır.
+  const { runDuePrompts } = await import('./run-prompt');
+  return runDuePrompts({ deadlineAt: Date.now() + 50_000, force: true });
 }
+

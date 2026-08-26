@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/server/prisma';
 import { requireSession, handleRouteError } from '@/server/session';
+import { runPromptOnce } from '@/server/run-prompt';
+
+export const maxDuration = 60; // ilk çalıştırma yanıttan sonra devam eder
 
 const schema = z.object({
   text: z.string().min(5).max(500),
@@ -35,6 +39,16 @@ export async function POST(req: NextRequest) {
         language: body.language ?? 'tr',
       },
     });
+    // İlk ölçümü cron'u beklemeden al — aksi halde kullanıcı ilk 24 saat boş panel görüyordu.
+    // after() yanıtı bloklamaz; çalıştırma yanıt gönderildikten sonra sürer.
+    after(async () => {
+      try {
+        await runPromptOnce(session.tenantId, created.id);
+      } catch (err) {
+        console.error('[prompts] ilk çalıştırma başarısız', created.id, err);
+      }
+    });
+
     return NextResponse.json(created, { status: 201 });
   } catch (err) {
     return handleRouteError(err);

@@ -7,7 +7,7 @@ import { Sparkles } from 'lucide-react';
 const PROVIDERS = [
   { id: 'gpt', name: 'ChatGPT', model: 'gpt-4o', accent: '#10A37F' },
   { id: 'claude', name: 'Claude', model: 'claude-haiku-4-5', accent: '#D97706' },
-  { id: 'gemini', name: 'Gemini', model: 'gemini-1.5-flash', accent: '#1A73E8' },
+  { id: 'gemini', name: 'Gemini', model: 'gemini-2.5-flash', accent: '#1A73E8' },
 ];
 
 const ANSWERS: Record<string, { text: string; highlights: { word: string; type: 'own' | 'comp' }[] }> = {

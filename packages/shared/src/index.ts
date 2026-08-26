@@ -7,7 +7,7 @@ export const PROVIDER_LABELS = {
 export const PROVIDER_MODEL_DEFAULTS = {
   OPENAI: 'gpt-4o-mini',
   ANTHROPIC: 'claude-haiku-4-5',
-  GOOGLE: 'gemini-1.5-flash',
+  GOOGLE: 'gemini-2.5-flash',
 } as const;
 
 export const PROMPT_CATEGORIES = [

@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { prisma } from '@/server/prisma';
 import { FREE_TRIAL_MONTHS } from '@independentai/shared';
+import { ensureAlertConfig } from './notify';
 
 /**
  * Bağımlılıksız OAuth 2.0 / OIDC akışı (Google + LinkedIn).
@@ -195,5 +196,8 @@ export async function upsertOAuthUser(
       role: 'OWNER',
     },
   });
+  // Bildirim tercihleri varsayılanla oluşsun (kayıt akışıyla aynı davranış).
+  await ensureAlertConfig(tenant.id);
+
   return { userId: user.id, tenantId: tenant.id, email: user.email, isNew: true };
 }

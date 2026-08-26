@@ -84,7 +84,7 @@ async function main() {
   const providers: { provider: AiProvider; modelName: string }[] = [
     { provider: 'OPENAI', modelName: 'gpt-4o-mini' },
     { provider: 'ANTHROPIC', modelName: 'claude-haiku-4-5' },
-    { provider: 'GOOGLE', modelName: 'gemini-1.5-flash' },
+    { provider: 'GOOGLE', modelName: 'gemini-2.5-flash' },
   ];
 
   const today = new Date();

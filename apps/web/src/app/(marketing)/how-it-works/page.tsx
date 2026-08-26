@@ -23,7 +23,7 @@ const STAGES = [
     n: '02',
     icon: GitBranch,
     title: 'Multi-provider sorgu hattı',
-    body: 'Her aktif soru için sistem 3 paralel API çağrısı yapar: OpenAI (gpt-4o-mini, temperature 0.7), Anthropic (claude-haiku-4-5), Google (gemini-1.5-flash). Cevap metinleri ve metadata (token, latency, cost) kaydedilir.',
+    body: 'Her aktif soru için sistem 3 paralel API çağrısı yapar: OpenAI (gpt-4o-mini, temperature 0.7), Anthropic (claude-haiku-4-5), Google (gemini-2.5-flash). Cevap metinleri ve metadata (token, latency, cost) kaydedilir.',
   },
   {
     n: '03',

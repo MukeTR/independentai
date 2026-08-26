@@ -1,8 +1,49 @@
 /**
  * Bildirim & rapor motoru (Faz 8) — haftalık digest + görünürlük düşüş uyarıları.
  * Slack incoming webhook + Resend e-posta (RESEND_API_KEY varsa). Key yoksa atlar.
+ *
+ * Not: Bildirimler AlertConfig satırı olmayan tenant'lar için de çalışır —
+ * satır yoksa DEFAULT_ALERT kullanılır. (Eskiden tablo boş olduğu için hiçbir
+ * tenant'a rapor gitmiyordu.)
  */
 import { prisma } from './prisma';
+
+// ───────────────── Varsayılan tercihler ─────────────────
+
+export const DEFAULT_ALERT = {
+  emailEnabled: true,
+  weeklyReportEnabled: true,
+  slackWebhookUrl: null as string | null,
+  visibilityDropThreshold: 15,
+};
+
+export type EffectiveAlertConfig = typeof DEFAULT_ALERT & {
+  lastNotifiedAt: Date | null;
+  lastDropAlertAt: Date | null;
+};
+
+/** AlertConfig satırı varsa onu, yoksa varsayılanları döndürür. */
+export async function getAlertConfig(tenantId: string): Promise<EffectiveAlertConfig> {
+  const row = await prisma.alertConfig.findUnique({ where: { tenantId } });
+  if (!row) return { ...DEFAULT_ALERT, lastNotifiedAt: null, lastDropAlertAt: null };
+  return {
+    emailEnabled: row.emailEnabled,
+    weeklyReportEnabled: row.weeklyReportEnabled,
+    slackWebhookUrl: row.slackWebhookUrl,
+    visibilityDropThreshold: row.visibilityDropThreshold,
+    lastNotifiedAt: row.lastNotifiedAt,
+    lastDropAlertAt: row.lastDropAlertAt,
+  };
+}
+
+/** Kayıt sırasında çağrılır — kullanıcı hiç ayara girmese de bildirim alsın. */
+export async function ensureAlertConfig(tenantId: string): Promise<void> {
+  await prisma.alertConfig.upsert({
+    where: { tenantId },
+    create: { tenantId },
+    update: {},
+  });
+}
 
 // ───────────────── Kanallar ─────────────────
 
@@ -123,20 +164,21 @@ function digestHtml(tenantName: string, d: WeeklyDelta): string {
 // ───────────────── Toplu gönderim (cron) ─────────────────
 
 export async function runWeeklyReports(): Promise<{ sent: number; skipped: number }> {
-  const configs = await prisma.alertConfig.findMany({ where: { weeklyReportEnabled: true } });
+  // AlertConfig satırı olmayan tenant'lar da kapsanır (varsayılan: haftalık rapor açık).
+  const tenants = await prisma.tenant.findMany({
+    include: { users: { where: { role: 'OWNER' }, take: 1 } },
+  });
   let sent = 0;
   let skipped = 0;
 
-  for (const cfg of configs) {
-    const tenant = await prisma.tenant.findUnique({
-      where: { id: cfg.tenantId },
-      include: { users: { where: { role: 'OWNER' }, take: 1 } },
-    });
-    if (!tenant) {
+  for (const tenant of tenants) {
+    const cfg = await getAlertConfig(tenant.id);
+    if (!cfg.weeklyReportEnabled) {
       skipped++;
       continue;
     }
-    const delta = await getWeeklyDelta(cfg.tenantId);
+
+    const delta = await getWeeklyDelta(tenant.id);
     if (delta.runs === 0) {
       skipped++;
       continue;
@@ -148,24 +190,123 @@ export async function runWeeklyReports(): Promise<{ sent: number; skipped: numbe
     }
     const ownerEmail = tenant.users[0]?.email;
     if (cfg.emailEnabled && ownerEmail) {
-      delivered = (await sendEmail(ownerEmail, `${tenant.name} — Haftalık AI Görünürlük Raporu`, digestHtml(tenant.name, delta))) || delivered;
-    }
-
-    // Eşiği aşan düşüş varsa ekstra uyarı
-    if (delta.delta <= -cfg.visibilityDropThreshold && cfg.slackWebhookUrl) {
-      await sendSlack(
-        cfg.slackWebhookUrl,
-        `⚠️ *${tenant.name}* — Görünürlük ${Math.abs(delta.delta)} puan düştü (%${delta.previous} → %${delta.current}). İncelemeniz önerilir.`,
-      );
+      delivered =
+        (await sendEmail(ownerEmail, `${tenant.name} — Haftalık AI Görünürlük Raporu`, digestHtml(tenant.name, delta))) ||
+        delivered;
     }
 
     if (delivered) {
       sent++;
-      await prisma.alertConfig.update({ where: { id: cfg.id }, data: { lastNotifiedAt: new Date() } });
+      await prisma.alertConfig.upsert({
+        where: { tenantId: tenant.id },
+        create: { tenantId: tenant.id, lastNotifiedAt: new Date() },
+        update: { lastNotifiedAt: new Date() },
+      });
     } else {
       skipped++;
     }
   }
 
   return { sent, skipped };
+}
+
+// ───────────────── Günlük düşüş uyarısı ─────────────────
+
+export type DailyDrop = {
+  current: number;   // son 24 saat görünürlük %
+  baseline: number;  // önceki 7 gün ortalaması
+  drop: number;      // baseline - current (pozitifse düşüş)
+  runs: number;      // son 24 saatteki geçerli run sayısı
+};
+
+/**
+ * Son 24 saati, önceki 7 günlük tabana göre kıyaslar.
+ * Taban için en az 3 geçerli run şartı var — tek günlük gürültüde alarm çalmasın.
+ */
+export async function getDailyDrop(tenantId: string): Promise<DailyDrop> {
+  const [today, baseline] = await Promise.all([
+    visibilityForWindow(tenantId, 1, 0),
+    visibilityForWindow(tenantId, 8, 1),
+  ]);
+  const comparable = baseline.runs >= 3 && today.runs > 0;
+  return {
+    current: today.vis,
+    baseline: baseline.vis,
+    drop: comparable ? baseline.vis - today.vis : 0,
+    runs: today.runs,
+  };
+}
+
+function dropText(tenantName: string, d: DailyDrop, threshold: number): string {
+  return [
+    `⚠️ *${tenantName}* — AI görünürlüğünüz düştü`,
+    ``,
+    `• Son 24 saat: *%${d.current}* (önceki 7 gün ortalaması %${d.baseline})`,
+    `• Düşüş: *${d.drop} puan* — uyarı eşiğiniz ${threshold} puan`,
+    `• Son 24 saatte ${d.runs} model çalıştırması`,
+    ``,
+    `Detaylar: https://independentai.space/dashboard`,
+  ].join('\n');
+}
+
+function dropHtml(tenantName: string, d: DailyDrop, threshold: number): string {
+  return `
+  <div style="font-family:-apple-system,Segoe UI,sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a">
+    <h2 style="font-size:20px">${tenantName} — Görünürlük düşüşü uyarısı</h2>
+    <div style="font-size:40px;font-weight:700;color:#E11D48">%${d.current}</div>
+    <p style="color:#6B6660">Önceki 7 gün ortalaması %${d.baseline} · <span style="color:#E11D48">-${d.drop} puan</span></p>
+    <ul style="color:#444;font-size:14px;line-height:1.7">
+      <li>Uyarı eşiğiniz: ${threshold} puan</li>
+      <li>Son 24 saatte ${d.runs} model çalıştırması</li>
+    </ul>
+    <a href="https://independentai.space/dashboard" style="display:inline-block;background:#4F46E5;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px">Panele git</a>
+  </div>`;
+}
+
+/**
+ * Günlük cron'un sonunda çalışır: eşiği aşan düşüşleri Slack + e-posta ile bildirir.
+ * Aynı tenant'a günde en fazla bir düşüş uyarısı gider (lastDropAlertAt).
+ */
+export async function runDailyDropAlerts(): Promise<{ alerted: number; checked: number }> {
+  const tenants = await prisma.tenant.findMany({
+    include: { users: { where: { role: 'OWNER' }, take: 1 } },
+  });
+  let alerted = 0;
+  let checked = 0;
+
+  for (const tenant of tenants) {
+    checked++;
+    const cfg = await getAlertConfig(tenant.id);
+
+    // Son 20 saat içinde zaten uyarı gittiyse tekrar gönderme.
+    if (cfg.lastDropAlertAt && Date.now() - cfg.lastDropAlertAt.getTime() < 20 * 60 * 60 * 1000) continue;
+
+    const d = await getDailyDrop(tenant.id);
+    if (d.drop < cfg.visibilityDropThreshold) continue;
+
+    let delivered = false;
+    if (cfg.slackWebhookUrl) {
+      delivered = (await sendSlack(cfg.slackWebhookUrl, dropText(tenant.name, d, cfg.visibilityDropThreshold))) || delivered;
+    }
+    const ownerEmail = tenant.users[0]?.email;
+    if (cfg.emailEnabled && ownerEmail) {
+      delivered =
+        (await sendEmail(
+          ownerEmail,
+          `${tenant.name} — AI görünürlüğünüz ${d.drop} puan düştü`,
+          dropHtml(tenant.name, d, cfg.visibilityDropThreshold),
+        )) || delivered;
+    }
+
+    if (delivered) {
+      alerted++;
+      await prisma.alertConfig.upsert({
+        where: { tenantId: tenant.id },
+        create: { tenantId: tenant.id, lastDropAlertAt: new Date() },
+        update: { lastDropAlertAt: new Date() },
+      });
+    }
+  }
+
+  return { alerted, checked };
 }

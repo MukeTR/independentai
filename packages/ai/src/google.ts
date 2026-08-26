@@ -2,7 +2,9 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AiProviderAdapter, RunPromptInput, RunPromptOutput } from './types';
 import { runMock } from './mock';
 
-const MODEL = 'gemini-1.5-flash';
+// gemini-1.5-flash 2026'da kaldırıldı (v1beta 404 döndürüyordu).
+// Model adı env ile geçersiz kılınabilir — Google model hattını hızlı değiştiriyor.
+const MODEL = process.env.GOOGLE_MODEL || 'gemini-2.5-flash';
 
 export const googleAdapter: AiProviderAdapter = {
   id: 'GOOGLE',

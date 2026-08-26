@@ -61,7 +61,7 @@ export async function complete(prompt: string, opts: CompleteOpts = {}): Promise
     }
     // GOOGLE
     const genai = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-    const model = genai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genai.getGenerativeModel({ model: process.env.GOOGLE_MODEL || 'gemini-2.5-flash' });
     const res = await model.generateContent(
       json ? `${prompt}\n\nSadece geçerli JSON döndür, başka metin ekleme.` : prompt,
     );
