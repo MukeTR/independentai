@@ -7,14 +7,16 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.1",
-    "openai": "^4.77.0",
-    "@google/generative-ai": "^0.21.0"
+    "@anthropic-ai/sdk": "^0.124.0",
+    "@google/genai": "^1.52.0",
+    "openai": "^4.104.0"
   },
   "devDependencies": {
-    "typescript": "^5.7.2"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
   }
 }

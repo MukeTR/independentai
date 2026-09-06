@@ -12,20 +12,76 @@ export const metadata = buildMetadata({
 });
 
 const TERMS = [
-  { term: 'AI Brand Visibility', tr: 'Yapay zeka marka görünürlüğü', d: 'Bir markanın AI sohbet ürünleri (ChatGPT, Claude, Gemini gibi) tarafından üretilen cevaplarda ne sıklıkla, hangi sırada ve hangi tonla geçtiğinin ölçümü.' },
-  { term: 'Alias Matching', tr: 'Takma ad eşleştirme', d: 'Bir markanın farklı yazımlarını (Ana ad, kısaltma, domain, yazım hataları) AI cevap metninde tespit etmek için kullanılan yöntem.' },
-  { term: 'BrandMention', tr: 'Marka bahsi', d: 'AI cevap metninde geçen herhangi bir marka adı. Her mention için pozisyon, sentiment ve bağlam kaydedilir.' },
-  { term: 'GEO (Generative Engine Optimization)', tr: 'Üretken motor optimizasyonu', d: 'SEO\'nun AI çağındaki karşılığı. Markanın AI cevaplarında öne çıkması için yapılan ölçüm ve içerik çalışmaları.' },
-  { term: 'llms.txt', tr: '', d: 'Web sitesinin köküne konulan, AI crawler\'larına marka hakkında yapılandırılmış bilgi veren markdown dosyası. llmstxt.org standardı.' },
-  { term: 'LLM (Large Language Model)', tr: 'Büyük dil modeli', d: 'GPT-4, Claude, Gemini gibi metin üreten ve cevap veren yapay zeka modelleri.' },
-  { term: 'Mention Position', tr: 'Bahsetme sırası', d: 'AI cevap metninde markanın kaçıncı bahsedilen marka olduğu. 1.sıra en değerli.' },
-  { term: 'ModelRun', tr: 'Model çalıştırması', d: 'Bir prompt\'un bir AI modelinde çalıştırılmasının kayıtı. Bizim sistemde her gün × her aktif prompt × her model = 1 ModelRun.' },
-  { term: 'Prompt', tr: 'İzlenecek soru', d: 'AI modeline gönderilen ve düzenli olarak izlenen soru. "En iyi muhasebe yazılımı" gibi.' },
-  { term: 'Sentiment', tr: 'Tonal değerlendirme', d: 'Bir marka bahsinin pozitif, nötr veya negatif olduğunun değerlendirmesi. Şu an heuristic, ileride LLM-tabanlı.' },
-  { term: 'Share of Voice (SoV)', tr: 'Ses payı', d: 'Bir markanın, kategorideki rakip markaların toplam bahsetme sayısı içindeki yüzdesi. Pazar payının AI versiyonu.' },
-  { term: 'Tenant', tr: 'Müşteri hesabı', d: 'Independent AI\'da bir şirketin hesabı. Bir tenant altında birden fazla user, brand, competitor olabilir.' },
-  { term: 'Trial', tr: 'Deneme süresi', d: 'Independent AI\'da kayıt tarihinden itibaren 6 ay olan ücretsiz erişim süresi.' },
-  { term: 'Visibility Score', tr: 'Görünürlük skoru', d: 'İzlenen tüm sorgularda markanızın geçtiği oran. 0-100 arası tek sayı.' },
+  {
+    term: 'AI Brand Visibility',
+    tr: 'Yapay zeka marka görünürlüğü',
+    d: 'Bir markanın AI sohbet ürünleri (ChatGPT, Claude, Gemini gibi) tarafından üretilen cevaplarda ne sıklıkla, hangi sırada ve hangi tonla geçtiğinin ölçümü.',
+  },
+  {
+    term: 'Alias Matching',
+    tr: 'Takma ad eşleştirme',
+    d: 'Bir markanın farklı yazımlarını (Ana ad, kısaltma, domain, yazım hataları) AI cevap metninde tespit etmek için kullanılan yöntem.',
+  },
+  {
+    term: 'BrandMention',
+    tr: 'Marka bahsi',
+    d: 'AI cevap metninde geçen herhangi bir marka adı. Her mention için pozisyon, sentiment ve bağlam kaydedilir.',
+  },
+  {
+    term: 'GEO (Generative Engine Optimization)',
+    tr: 'Üretken motor optimizasyonu',
+    d: "SEO'nun AI çağındaki karşılığı. Markanın AI cevaplarında öne çıkması için yapılan ölçüm ve içerik çalışmaları.",
+  },
+  {
+    term: 'llms.txt',
+    tr: '',
+    d: "Web sitesinin köküne konulan, AI crawler'larına marka hakkında yapılandırılmış bilgi veren markdown dosyası. llmstxt.org standardı.",
+  },
+  {
+    term: 'LLM (Large Language Model)',
+    tr: 'Büyük dil modeli',
+    d: 'GPT-4, Claude, Gemini gibi metin üreten ve cevap veren yapay zeka modelleri.',
+  },
+  {
+    term: 'Mention Position',
+    tr: 'Bahsetme sırası',
+    d: 'AI cevap metninde markanın kaçıncı bahsedilen marka olduğu. 1.sıra en değerli.',
+  },
+  {
+    term: 'ModelRun',
+    tr: 'Model çalıştırması',
+    d: "Bir prompt'un bir AI modelinde çalıştırılmasının kayıtı. Bizim sistemde her gün × her aktif prompt × her model = 1 ModelRun.",
+  },
+  {
+    term: 'Prompt',
+    tr: 'İzlenecek soru',
+    d: 'AI modeline gönderilen ve düzenli olarak izlenen soru. "En iyi muhasebe yazılımı" gibi.',
+  },
+  {
+    term: 'Sentiment',
+    tr: 'Tonal değerlendirme',
+    d: 'Bir marka bahsinin pozitif, nötr veya negatif olduğunun değerlendirmesi. Şu an heuristic, ileride LLM-tabanlı.',
+  },
+  {
+    term: 'Share of Voice (SoV)',
+    tr: 'Ses payı',
+    d: 'Bir markanın, kategorideki rakip markaların toplam bahsetme sayısı içindeki yüzdesi. Pazar payının AI versiyonu.',
+  },
+  {
+    term: 'Tenant',
+    tr: 'Müşteri hesabı',
+    d: "Independent AI'da bir şirketin hesabı. Bir tenant altında birden fazla user, brand, competitor olabilir.",
+  },
+  {
+    term: 'Trial',
+    tr: 'Deneme süresi',
+    d: "Independent AI'da kayıt tarihinden itibaren 6 ay olan ücretsiz erişim süresi.",
+  },
+  {
+    term: 'Visibility Score',
+    tr: 'Görünürlük skoru',
+    d: 'İzlenen tüm sorgularda markanızın geçtiği oran. 0-100 arası tek sayı.',
+  },
 ];
 
 const FIRST_LETTERS = [...new Set(TERMS.map((t) => (t.term[0] ?? '').toUpperCase()))].sort();
@@ -38,11 +94,13 @@ export default function Glossary() {
 
   return (
     <>
-      <BreadcrumbJsonLd items={[
-        { name: 'Ana sayfa', href: '/' },
-        { name: 'Kaynaklar', href: '/resources' },
-        { name: 'Sözlük', href: '/resources/glossary' },
-      ]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Kaynaklar', href: '/resources' },
+          { name: 'Sözlük', href: '/resources/glossary' },
+        ]}
+      />
 
       <section className="pt-24 pb-12">
         <Container className="max-w-4xl">
@@ -60,7 +118,9 @@ export default function Glossary() {
           {/* Alfabetik nav */}
           <div className="flex flex-wrap gap-2 mt-8">
             {FIRST_LETTERS.map((l) => (
-              <a key={l} href={`#g-${l}`} className="chip hover:bg-brand-glow transition">{l}</a>
+              <a key={l} href={`#g-${l}`} className="chip hover:bg-brand-glow transition">
+                {l}
+              </a>
             ))}
           </div>
         </Container>
@@ -90,7 +150,11 @@ export default function Glossary() {
       </section>
 
       <CtaBlock
-        title={<>Bu terimleri <span className="text-brand">eyleme dök.</span></>}
+        title={
+          <>
+            Bu terimleri <span className="text-brand">eyleme dök.</span>
+          </>
+        }
         body="Independent AI ile markanızın AI görünürlüğünü ölçmeye bugün başlayın."
       />
     </>

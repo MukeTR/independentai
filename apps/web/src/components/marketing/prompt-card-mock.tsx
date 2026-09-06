@@ -50,9 +50,7 @@ function highlight(text: string, highlights: { word: string; type: 'own' | 'comp
       <mark
         key={i}
         className={
-          h.type === 'own'
-            ? 'bg-brand/15 text-brand-deep px-1 rounded font-medium'
-            : 'bg-paper-4 text-ink px-1 rounded'
+          h.type === 'own' ? 'bg-brand/15 text-brand-deep px-1 rounded font-medium' : 'bg-paper-4 text-ink px-1 rounded'
         }
       >
         {part}
@@ -63,13 +61,13 @@ function highlight(text: string, highlights: { word: string; type: 'own' | 'comp
 
 export function PromptCardMock() {
   return (
-    <div className="card bg-paper-3 p-7 shadow-[0_30px_80px_-20px_rgba(20,17,13,0.15)]">
+    <div className="card bg-paper-3 p-7 shadow-[0_30px_80px_-20px_rgba(20,17,13,0.15)] max-w-full overflow-hidden">
       {/* user prompt */}
       <div className="flex items-start gap-3">
         <div className="shrink-0 w-7 h-7 rounded-full bg-paper-4 flex items-center justify-center text-[11px] font-medium">
           Siz
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="text-[11px] text-ink-faint font-mono mb-1">izlenen soru</div>
           <div className="font-display text-[18px] tracking-tight">
             Restoranlar için en iyi kar-zarar yazılımı hangisi?
@@ -85,13 +83,13 @@ export function PromptCardMock() {
           const compCount = a.highlights.filter((h) => h.type === 'comp').length;
           return (
             <div key={p.id} className="border-l-2 pl-4 py-1" style={{ borderColor: p.accent }}>
-              <div className="flex items-baseline justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5" style={{ color: p.accent }} />
+              <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Sparkles aria-hidden className="w-3.5 h-3.5 shrink-0" style={{ color: p.accent }} />
                   <span className="text-[13px] font-medium">{p.name}</span>
                   <span className="text-[10px] text-ink-faint font-mono">{p.model}</span>
                 </div>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5 shrink-0">
                   {ownCount > 0 ? (
                     <span className="chip own !text-[10px]">marka var</span>
                   ) : (
@@ -100,9 +98,7 @@ export function PromptCardMock() {
                   <span className="chip comp !text-[10px]">{compCount} rakip</span>
                 </div>
               </div>
-              <div className="text-[13.5px] text-ink leading-[1.65] mt-2.5">
-                {highlight(a.text, a.highlights)}
-              </div>
+              <div className="text-[13.5px] text-ink leading-[1.65] mt-2.5">{highlight(a.text, a.highlights)}</div>
             </div>
           );
         })}

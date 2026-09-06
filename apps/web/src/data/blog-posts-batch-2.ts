@@ -399,7 +399,7 @@ export const BATCH_2: BlogPost[] = [
         'Aylık update edilen "state of …" raporlar.',
       ] },
       { type: 'h2', text: 'Independent AI olarak Perplexity adapter\'ı' },
-      { type: 'p', text: 'Yol haritamızda Q2 2026 için Perplexity entegrasyonu var. O zamana kadar manuel olarak Perplexity\'de sektör sorularınızı sorup hangi kaynaklara citation verdiğini gözlemleyin.' },
+      { type: 'p', text: 'Yol haritamızda Perplexity entegrasyonu planlanıyor. O zamana kadar manuel olarak Perplexity\'de sektör sorularınızı sorup hangi kaynaklara citation verdiğini gözlemleyin.' },
     ],
   },
   {

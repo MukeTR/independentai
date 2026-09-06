@@ -6,6 +6,9 @@ import { Faq } from '@/components/marketing/faq';
 import { FaqJsonLd, BreadcrumbJsonLd } from '@/components/json-ld';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { buildMetadata } from '@/lib/seo';
+import { LAUNCH_OFFER } from '@independentai/shared';
+
+const FAIR = LAUNCH_OFFER.fairUse;
 
 export const metadata = buildMetadata({
   title: 'Fiyatlandırma — İlk 6 ay ücretsiz',
@@ -24,21 +27,25 @@ const PLANS = [
     highlight: true,
     features: [
       { v: true, label: '3 model paralel (ChatGPT, Claude, Gemini)' },
-      { v: true, label: 'Sınırsız izlenebilir soru' },
-      { v: true, label: 'Sınırsız rakip takibi' },
+      { v: true, label: `${FAIR.prompts} izlenebilir soru (adil kullanım)` },
+      { v: true, label: `${FAIR.competitors} rakip takibi (adil kullanım)` },
       { v: true, label: 'Her gün otomatik rerun' },
       { v: true, label: 'Anında manuel "şimdi çalıştır"' },
       { v: true, label: '30 günlük trend grafikleri' },
       { v: true, label: 'Share of Voice rakip dağılımı' },
       { v: true, label: 'Marka mention highlight' },
-      { v: true, label: '3 kullanıcı' },
+      { v: true, label: 'E-posta + Slack uyarıları, haftalık rapor' },
+      { v: true, label: `Public API (${FAIR.apiTokens} token, 60 istek/dk)` },
+      { v: true, label: '13 GEO aracı' },
+      { v: true, label: `${FAIR.members} ekip üyesi (Owner / Admin / Viewer)` },
     ],
   },
   {
     name: 'Starter',
-    price: '₺TBD',
-    period: 'ay (6 ay sonra)',
-    description: 'Bireysel kullanıcılar ve küçük ekipler için. 6 ay lansman bittikten sonra.',
+    price: 'Duyurulacak',
+    period: 'ay (6 ay sonra) — fiyat açıklanmadı',
+    description:
+      'Bireysel kullanıcılar ve küçük ekipler için taslak kapsam. 6 ay lansman bittikten sonra; fiyat henüz belirlenmedi.',
     cta: { label: 'Plan açıklanınca haber al', href: '/contact' },
     features: [
       { v: true, label: '3 model paralel' },
@@ -53,19 +60,20 @@ const PLANS = [
   },
   {
     name: 'Growth',
-    price: '₺TBD',
-    period: 'ay (6 ay sonra)',
-    description: 'Çoklu marka, ajans, kurumsal pazarlama ekipleri için.',
+    price: 'Duyurulacak',
+    period: 'ay (6 ay sonra) — fiyat açıklanmadı',
+    description: 'Ajans ve kurumsal pazarlama ekipleri için taslak kapsam. Fiyat henüz belirlenmedi.',
     cta: { label: 'Plan açıklanınca haber al', href: '/contact' },
     features: [
       { v: true, label: '3 model paralel' },
-      { v: true, label: 'Sınırsız soru' },
-      { v: true, label: 'Sınırsız rakip' },
+      { v: true, label: 'Daha yüksek soru limiti' },
+      { v: true, label: 'Daha yüksek rakip limiti' },
+      { v: true, label: 'Çoklu marka (planlanıyor)' },
       { v: true, label: 'Günlük rerun' },
       { v: true, label: '90 günlük trend' },
-      { v: true, label: 'API + Webhook erişimi' },
+      { v: true, label: 'API erişimi (webhooks planlanıyor)' },
       { v: true, label: 'Öncelikli destek' },
-      { v: true, label: 'Sınırsız kullanıcı' },
+      { v: true, label: 'Genişletilmiş ekip' },
     ],
   },
 ];
@@ -74,12 +82,17 @@ const PRICING_FAQS = [
   {
     question: '"6 ay ücretsiz" gerçekten ücretsiz mi?',
     answer:
-      'Evet. Kayıt olurken kredi kartı bilgisi istemiyoruz. 6 ay sonunda sizi ücretlendiremeyiz; sadece "devam etmek ister misiniz?" mesajı gönderiyoruz. İsterseniz devam, istemezseniz hesap arşive alınır.',
+      'Evet. Kayıt olurken kredi kartı bilgisi istemiyoruz. 6 ay sonunda sizi ücretlendiremeyiz; sadece "devam etmek ister misiniz?" mesajı gönderiyoruz. İstemezseniz hesap salt-okunur moda geçer, verileriniz silinmez.',
+  },
+  {
+    question: 'Deneme süresi bitince ne olur?',
+    answer:
+      'Hesap salt-okunur moda geçer: mevcut veriler, trendler ve raporlar görüntülenmeye devam eder; yeni sorgu, rerun ve düzenleme kapanır. Verileriniz silinmez. 7 gün ek süre tanınır. Ücretli plan duyurulduğunda devam etme seçeneği sunulur — fiyatlar henüz açıklanmadı.',
   },
   {
     question: '6 ay sonra fiyatlar ne olacak?',
     answer:
-      'Henüz nihai fiyatları açıklamadık çünkü gerçek kullanım verisi toplayıp adil bir fiyat belirleyeceğiz. Lansman kullanıcılarının "early adopter" indirimi olacak — kayıt tarihine göre kalıcı bir indirim sözü veriyoruz.',
+      'Henüz nihai fiyatları açıklamadık çünkü gerçek kullanım verisi toplayıp adil bir fiyat belirleyeceğiz. Lansman kullanıcıları için bir erken kullanıcı avantajı değerlendiriyoruz; oran ve kapsam henüz belirlenmedi.',
   },
   {
     question: 'AI provider maliyetlerini siz mi karşılıyorsunuz?',
@@ -89,17 +102,16 @@ const PRICING_FAQS = [
   {
     question: 'Yıllık abonelik indirimi var mı?',
     answer:
-      'Lansmanda fiyat yok, yıllık da yok. 6 ay sonrası planlarda yıllık ödeyenlere standart %15-20 indirim öngörüyoruz.',
+      'Lansmanda fiyat yok, yıllık da yok. 6 ay sonrası planlarda yıllık ödeme indirimi değerlendiriyoruz; oran duyurulmadı.',
   },
   {
     question: 'Plan değiştirebilir miyim, sınır aşarsam ne olur?',
-    answer:
-      'Lansmanda zaten sınır yok. 6 ay sonrası planlarda kademeli olarak uyarı + üst plana yumuşak geçiş tasarlıyoruz. Sürpriz fatura yok.',
+    answer: `Lansmanda adil kullanım sınırları var (${FAIR.prompts} soru, ${FAIR.competitors} rakip, ${FAIR.members} ekip üyesi, günde ${FAIR.manualRunsPerDay} manuel çalıştırma); sınıra yaklaşınca panel uyarır. 6 ay sonrası planlarda kademeli olarak uyarı + üst plana yumuşak geçiş tasarlıyoruz. Sürpriz fatura yok.`,
   },
   {
     question: 'İndirim/öğrenci/non-profit indirimi var mı?',
     answer:
-      'Evet. Öğrenci hesabı (.edu.tr email ile), erken aşama startup (50K TL altı aylık gelir) ve non-profit organizasyonlara kalıcı %50 indirim planlıyoruz. Detaylar 6 ay sonra duyurulacak.',
+      'Öğrenci, erken aşama startup ve non-profit organizasyonlar için indirim değerlendiriyoruz; oran ve koşullar ücretli planlarla birlikte duyurulacak.',
   },
 ];
 
@@ -107,7 +119,12 @@ export default function PricingPage() {
   return (
     <>
       <FaqJsonLd items={PRICING_FAQS} />
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Fiyatlandırma', href: '/pricing' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Fiyatlandırma', href: '/pricing' },
+        ]}
+      />
 
       <section className="pt-24 pb-12">
         <Container className="text-center">
@@ -116,12 +133,13 @@ export default function PricingPage() {
             <span className="font-mono tracking-eyebrow">Lansman · 6 ay ücretsiz</span>
           </div>
           <h1 className="font-display text-[52px] lg:text-[68px] tracking-tight mt-6 leading-[1.02]">
-            Sade fiyatlandırma.<br />
+            Sade fiyatlandırma.
+            <br />
             <span className="text-brand">Önce ücretsiz, sonrası adil.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-6 max-w-2xl mx-auto leading-relaxed">
-            Lansman sürümümüzdesiniz. Bugün kayıt olan herkese 6 ay boyunca tüm özellikleri sınırsız sunuyoruz —
-            kredi kartı bilgisi olmadan. Karşılığında bizden tek beklediğimiz: gerçek geri bildirim.
+            Lansman sürümümüzdesiniz. Bugün kayıt olan herkese 6 ay boyunca tüm özellikleri adil kullanım sınırları
+            içinde sunuyoruz — kredi kartı bilgisi olmadan. Karşılığında bizden tek beklediğimiz: gerçek geri bildirim.
           </p>
         </Container>
       </section>
@@ -140,7 +158,11 @@ export default function PricingPage() {
                   </div>
                 )}
                 <div className="eyebrow">{p.name}</div>
-                <div className="font-display text-[48px] tracking-tight mt-2 tabular">{p.price}</div>
+                <div
+                  className={`font-display tracking-tight mt-2 tabular ${p.highlight ? 'text-[48px]' : 'text-[30px] leading-[1.6]'}`}
+                >
+                  {p.price}
+                </div>
                 <div className="text-[12px] text-ink-faint -mt-1">/ {p.period}</div>
                 <p className="text-[13.5px] text-ink-muted mt-4 leading-relaxed">{p.description}</p>
 
@@ -168,7 +190,7 @@ export default function PricingPage() {
           </div>
 
           <p className="text-center text-[12px] text-ink-faint mt-10 font-mono">
-            // Vergiler (KDV %20) dahildir, faturalar e-arşiv olarak gönderilir
+            // Ücretli planlar duyurulduğunda fiyatlar KDV dahil gösterilecek
           </p>
         </Container>
       </section>
@@ -179,8 +201,12 @@ export default function PricingPage() {
 
       <CtaBlock
         eyebrow="6 ay boyunca her şey ücretsiz"
-        title={<>Bugün başla, <span className="text-brand">karar 6 ay sonra.</span></>}
-        body="Kayıt 30 saniye sürer. İlk dashboardunuz mock veri ile bile çalışır, gerçek AI sorgularını da hemen tetikleyebilirsiniz."
+        title={
+          <>
+            Bugün başla, <span className="text-brand">karar 6 ay sonra.</span>
+          </>
+        }
+        body="Kayıt 30 saniye sürer. İlk paneliniz mock veri ile bile çalışır, gerçek AI sorgularını da hemen tetikleyebilirsiniz."
       />
     </>
   );

@@ -5,7 +5,11 @@ import { cn } from '@/lib/cn';
 
 /**
  * Scroll-reveal wrapper. Adds `.in` (see globals.css `.reveal`) when the element
- * first enters the viewport, then stops observing. Respects reduced-motion via CSS.
+ * first enters the viewport, then stops observing.
+ *
+ * Reduced motion: hem CSS (globals.css `@media (prefers-reduced-motion)`) hem de burada
+ * JS tarafında saygı gösterilir — tercih açıksa IntersectionObserver hiç kurulmaz ve
+ * içerik anında görünür render edilir.
  */
 export function Reveal({
   children,
@@ -24,7 +28,9 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el || shown) return;
-    if (typeof IntersectionObserver === 'undefined') {
+    const prefersReduced =
+      typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced || typeof IntersectionObserver === 'undefined') {
       setShown(true);
       return;
     }

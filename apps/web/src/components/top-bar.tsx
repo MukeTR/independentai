@@ -19,7 +19,12 @@ function sectionLabel(pathname: string): string {
 export function TopBar({
   user,
 }: {
-  user: { email: string; tenant: { name: string; trialDaysLeft: number }; isSuperAdmin?: boolean };
+  user: {
+    email: string;
+    role?: string;
+    tenant: { name: string; trialDaysLeft: number; plan?: string; active?: boolean };
+    isSuperAdmin?: boolean;
+  };
 }) {
   const pathname = usePathname();
   const section = sectionLabel(pathname);
@@ -49,8 +54,9 @@ export function TopBar({
             href="/dashboard/alerts"
             className="w-8 h-8 rounded-full flex items-center justify-center text-ink-muted hover:bg-paper-4 hover:text-ink transition"
             title="Uyarılar"
+            aria-label="Uyarılar ve raporlar"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4" aria-hidden />
           </Link>
           {user.isSuperAdmin && (
             <Link
@@ -60,11 +66,18 @@ export function TopBar({
               <Sparkles className="w-3.5 h-3.5" /> Admin
             </Link>
           )}
-          <div className="hidden sm:flex items-center gap-1.5 chip own !text-[11px]">
-            <Sparkles className="w-3 h-3" />
-            {user.tenant.trialDaysLeft} gün
+          <div
+            className="hidden sm:flex items-center gap-1.5 chip own !text-[11px]"
+            title={user.tenant.active === false ? 'Deneme süresi doldu — salt-okunur' : 'Ücretsiz lansman süresi'}
+          >
+            <Sparkles className="w-3 h-3" aria-hidden />
+            {user.tenant.active === false
+              ? 'salt-okunur'
+              : user.tenant.plan && user.tenant.plan !== 'LAUNCH'
+                ? user.tenant.plan
+                : `${user.tenant.trialDaysLeft} gün`}
           </div>
-          <Link href="/dashboard/settings" className="flex items-center gap-2 group pl-1">
+          <Link href="/dashboard/settings" className="flex items-center gap-2 group pl-1" aria-label="Ayarlar">
             <div className="text-right leading-tight hidden lg:block">
               <div className="text-[12px] text-ink max-w-[140px] truncate">{user.tenant.name}</div>
               <div className="text-[10px] text-ink-faint font-mono max-w-[140px] truncate">{user.email}</div>

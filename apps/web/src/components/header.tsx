@@ -30,7 +30,7 @@ const PANELS: MegaPanel[] = [
     featured: {
       eyebrow: 'Yeni',
       title: 'GEO 101 — AI çağında görünürlük rehberi',
-      body: 'AI’nın markaları nasıl önerdiğine dair 12 sayfalık ücretsiz başucu kitabı.',
+      body: "AI'ın markaları nasıl önerdiğine dair 12 sayfalık ücretsiz başucu kitabı.",
       href: '/resources/geo-101',
       cta: 'Rehberi aç',
     },
@@ -42,7 +42,11 @@ const PANELS: MegaPanel[] = [
         heading: 'İzleme',
         links: [
           { href: '/features#multi-model', title: '3 modelde paralel', description: 'ChatGPT, Claude, Gemini' },
-          { href: '/features#alias-detection', title: 'Akıllı marka tespiti', description: 'Alternatif yazımlar dahil' },
+          {
+            href: '/features#alias-detection',
+            title: 'Akıllı marka tespiti',
+            description: 'Alternatif yazımlar dahil',
+          },
           { href: '/features#daily-tracking', title: 'Günlük rerun', description: 'Her sabah taze veri' },
           { href: '/features#on-demand', title: 'Anında çalıştırma', description: 'Tek tıkla yeniden tara' },
         ],
@@ -59,10 +63,10 @@ const PANELS: MegaPanel[] = [
     ],
     featured: {
       eyebrow: 'Demo',
-      title: 'Canlı dashboard\'u 60 saniyede gör',
+      title: 'Canlı paneli 60 saniyede gör',
       body: 'Kayıt olmadan örnek bir hesap üzerinden tüm özellikleri keşfet.',
       href: '/login',
-      cta: 'Demo\'ya gir',
+      cta: "Demo'ya gir",
     },
   },
   {
@@ -88,7 +92,7 @@ const PANELS: MegaPanel[] = [
       {
         heading: 'API',
         links: [
-          { href: '/docs/api', title: 'API referansı', badge: 'yakında' },
+          { href: '/docs/api', title: 'API referansı' },
           { href: '/docs/webhooks', title: 'Webhooks', badge: 'yakında' },
         ],
       },
@@ -127,15 +131,24 @@ export function Header() {
               <Logo />
               <MegaMenu panels={PANELS} />
             </div>
-            <div className="flex items-center gap-2">
-              <Link href="/pricing" className="hidden md:inline-flex text-[14px] text-ink-muted hover:text-ink px-3 py-2">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              <Link
+                href="/pricing"
+                className="hidden md:inline-flex text-[14px] text-ink-muted hover:text-ink px-3 py-2"
+              >
                 Fiyatlandırma
               </Link>
-              <Link href="/login" className="text-[14px] text-ink-muted hover:text-ink px-3 py-2">
+              <Link
+                href="/login"
+                className="text-[14px] text-ink-muted hover:text-ink px-2 sm:px-3 py-2 whitespace-nowrap"
+              >
                 Giriş
               </Link>
-              <Link href="/register" className="btn-primary !py-2 !px-4 inline-flex items-center gap-1.5 text-[13.5px]">
-                Ücretsiz başla <ArrowRight className="w-3.5 h-3.5" />
+              <Link
+                href="/register"
+                className="btn-primary !py-2 !px-3 sm:!px-4 inline-flex items-center gap-1.5 text-[13.5px] whitespace-nowrap"
+              >
+                Ücretsiz başla <ArrowRight className="w-3.5 h-3.5" aria-hidden />
               </Link>
             </div>
           </div>

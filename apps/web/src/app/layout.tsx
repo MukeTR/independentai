@@ -5,7 +5,7 @@ import { Analytics } from '@vercel/analytics/next';
 export const metadata: Metadata = {
   title: 'Independent AI — Yapay zekalarda markanız nasıl konumlanıyor?',
   description:
-    'ChatGPT, Claude ve Gemini\'nin alanınızla ilgili sorulara verdiği cevaplarda markanız geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız bir üçüncü taraf gözüyle ölçer.',
+    "ChatGPT, Claude ve Gemini'nin alanınızla ilgili sorulara verdiği cevaplarda markanız geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız bir üçüncü taraf gözüyle ölçer.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://independentai.space'),
   icons: {
     icon: '/icon.svg',

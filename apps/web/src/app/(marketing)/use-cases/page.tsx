@@ -1,14 +1,14 @@
-import Link from 'next/link';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
-import { ArrowRight, Building2, Store, ShoppingBag, Briefcase, Megaphone, Crown, Search, Newspaper } from 'lucide-react';
+import { Building2, Store, ShoppingBag, Briefcase, Megaphone, Crown, Search, Newspaper } from 'lucide-react';
 
 export const metadata = buildMetadata({
   title: 'Kullanım senaryoları — SaaS, e-ticaret, ajans, kurumsal',
-  description: 'Hangi sektörde, hangi rolde olursanız olun: AI cevaplarında görünürlüğünüz pazarlama hedeflerinizi etkiliyor. Senaryolarla anlatımı.',
+  description:
+    'Hangi sektörde, hangi rolde olursanız olun: AI cevaplarında görünürlüğünüz pazarlama hedeflerinizi etkiliyor. Senaryolarla anlatımı.',
   path: '/use-cases',
 });
 
@@ -17,8 +17,9 @@ const BY_INDUSTRY = [
     id: 'saas',
     icon: Building2,
     name: 'SaaS şirketleri',
-    pain: 'B2B alıcılarınız "en iyi CRM", "en iyi proje yönetim aracı" sorularını artık önce AI\'ya soruyor. Cevabın ilk 3\'ünde yoksanız demo talebine bile düşmüyorsunuz.',
-    solution: 'Independent AI ile sektörünüzdeki tüm değerlendirme sorularını izleyin. Görünürlüğünüzü rakiplerinizle karşılaştırın. Hangi modelde zayıfsınız anlayıp content stratejinizi oraya yönlendirin.',
+    pain: 'B2B alıcılarınız "en iyi CRM", "en iyi proje yönetim aracı" sorularını artık önce AI\'a soruyor. Cevabın ilk 3\'ünde yoksanız demo talebine bile düşmüyorsunuz.',
+    solution:
+      'Independent AI ile sektörünüzdeki tüm değerlendirme sorularını izleyin. Görünürlüğünüzü rakiplerinizle karşılaştırın. Hangi modelde zayıfsınız anlayıp content stratejinizi oraya yönlendirin.',
     metrics: ['Kategori soruları görünürlüğü', 'Vs. rakipler SoV', 'Modele göre dağılım'],
   },
   {
@@ -26,7 +27,8 @@ const BY_INDUSTRY = [
     icon: ShoppingBag,
     name: 'E-ticaret markaları',
     pain: '"En iyi spor ayakkabı markası" veya "kahve makinesi önerir misin" sorularında siz olmayabilirsiniz. Marka sıralamasında üst 3\'te değilseniz tıklama almıyorsunuz.',
-    solution: 'Kategori sorularınızı sistematik izleyin. Yeni ürün lansmanlarında ay başında görünürlük baseline\'ı alın, kampanya sonrası ölçün — etkisini AI cevaplarında somut görün.',
+    solution:
+      "Kategori sorularınızı sistematik izleyin. Yeni ürün lansmanlarında ay başında görünürlük baseline'ı alın, kampanya sonrası ölçün — etkisini AI cevaplarında somut görün.",
     metrics: ['Kategori görünürlüğü', 'Pozisyon takibi', 'Kampanya öncesi/sonrası fark'],
   },
   {
@@ -34,7 +36,8 @@ const BY_INDUSTRY = [
     icon: Store,
     name: 'Restoran & yerel işletmeler',
     pain: '"İstanbul\'da iyi italyan restoranı" veya "Ankara çorbacısı" sorularında AI hangi yerleri öneriyor? Sizin yeriniz orada mı?',
-    solution: 'Lokasyon bazlı sorularınızı izleyin. Rakip restoranlarla karşılaştırın. Google My Business ve sosyal medya stratejinizin AI çıktısına yansıdığını ölçün.',
+    solution:
+      'Lokasyon bazlı sorularınızı izleyin. Rakip restoranlarla karşılaştırın. Google My Business ve sosyal medya stratejinizin AI çıktısına yansıdığını ölçün.',
     metrics: ['Lokal görünürlük', 'Rakip restoranlar SoV', 'Modele göre öneri'],
   },
   {
@@ -42,16 +45,18 @@ const BY_INDUSTRY = [
     icon: Briefcase,
     name: 'Dijital ajanslar',
     pain: 'Müşterileriniz "neden bizi öneri listesinde göremiyoruz" diye soracak — siz cevap veremezseniz başka ajansa gidecekler.',
-    solution: 'Birden fazla müşteri markasının AI görünürlüğünü tek panelde takip edin. Aylık raporlarınıza yeni bir KPI ekleyin: "Müşterinizin AI Visibility Score\'u". Müşteri retention\'ı için yeni bir hikaye.',
-    metrics: ['Multi-tenant yönetim', 'Aylık PDF rapor (yakında)', 'Müşteri bazlı dashboard'],
+    solution:
+      'Müşteri markanızın AI görünürlüğünü panelde takip edin; ekibinizi Owner / Admin / Viewer rolleriyle davet edin. Aylık raporlarınıza yeni bir KPI ekleyin: "Müşterinizin AI Visibility Score\'u". Tek hesapta birden fazla müşteri markası planlanıyor.',
+    metrics: ['Ekip rolleri (Owner / Admin / Viewer)', 'Aylık PDF rapor (yakında)', 'Çoklu marka (planlanıyor)'],
   },
   {
     id: 'enterprise',
     icon: Crown,
     name: 'Kurumsal markalar',
     pain: 'Marka itibarı yıllarca yatırım yapılarak inşa edildi. AI cevaplarında hatalı, eksik veya rakip yanlı bir tasvirden anında haberdar olmanız gerek.',
-    solution: '"Marka adınız nedir, ne yapar, ne için ünlüdür" gibi temel soruları izleyin. Hatalı bilgi tespit ederseniz iletişim/PR ekibiniz proaktif düzeltmeye gidebilir.',
-    metrics: ['Brand health monitoring', 'Sentiment trend', 'Anomali uyarıları (yakında)'],
+    solution:
+      '"Marka adınız nedir, ne yapar, ne için ünlüdür" gibi temel soruları izleyin. Hatalı bilgi tespit ederseniz iletişim/PR ekibiniz proaktif düzeltmeye gidebilir.',
+    metrics: ['Brand health monitoring', 'Sentiment trend (beta)', 'Düşüş uyarıları (e-posta/Slack)'],
   },
 ];
 
@@ -60,42 +65,51 @@ const BY_ROLE = [
     id: 'marketing',
     icon: Megaphone,
     name: 'Pazarlama liderleri',
-    summary: 'CMO / VP Marketing. Yıllık planlamada yeni bir KPI: AI Visibility. Bütçe ayırma argümanı olarak somut veri.',
+    summary:
+      'CMO / VP Marketing. Yıllık planlamada yeni bir KPI: AI Visibility. Bütçe ayırma argümanı olarak somut veri.',
   },
   {
     id: 'founder',
     icon: Crown,
     name: 'Kurucular / CEO',
-    summary: 'Solo ya da küçük ekip kurucusu. Müşteri kazanımı yolunuzun en üst noktasında AI duruyor — orada görünmek hayati.',
+    summary:
+      'Solo ya da küçük ekip kurucusu. Müşteri kazanımı yolunuzun en üst noktasında AI duruyor — orada görünmek hayati.',
   },
   {
     id: 'seo',
     icon: Search,
     name: 'SEO uzmanları',
-    summary: 'Geleneksel sıralama takibinin yanına GEO sıralaması ekleyin. Müşterinize geleceği önceden gören danışman olun.',
+    summary:
+      'Geleneksel sıralama takibinin yanına GEO sıralaması ekleyin. Müşterinize geleceği önceden gören danışman olun.',
   },
   {
     id: 'pr',
     icon: Newspaper,
     name: 'PR / iletişim',
-    summary: 'Geleneksel media monitoring artık yetmez. AI nasıl konuşuyor sizden hakkınızda? Sentiment kayışını erken yakalayın.',
+    summary:
+      'Geleneksel media monitoring artık yetmez. AI nasıl konuşuyor sizden hakkınızda? Sentiment kayışını erken yakalayın.',
   },
 ];
 
 export default function UseCasesPage() {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Kullanım senaryoları', href: '/use-cases' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Kullanım senaryoları', href: '/use-cases' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
           <div className="eyebrow">Kullanım senaryoları</div>
           <h1 className="font-display text-[52px] lg:text-[68px] tracking-tight mt-4 leading-[1.02]">
-            Hangi sektörde olursanız olun, müşterileriniz <span className="text-brand">AI'ya soruyor.</span>
+            Hangi sektörde olursanız olun, müşterileriniz <span className="text-brand">AI'a soruyor.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Farklı sektörlerde aynı problem farklı şekillerde görünüyor. Bu sayfa size benzer bir konumdaki
-            şirketlerin Independent AI'ı nasıl kullandığına dair somut senaryolar sunar.
+            Farklı sektörlerde aynı problem farklı şekillerde görünüyor. Bu sayfa size benzer bir konumdaki şirketlerin
+            Independent AI'ı nasıl kullandığına dair somut senaryolar sunar.
           </p>
         </Container>
       </section>
@@ -114,7 +128,9 @@ export default function UseCasesPage() {
                   <h3 className="font-display text-[28px] mt-4 leading-tight">{u.name}</h3>
                   <div className="mt-4 space-y-2">
                     {u.metrics.map((m) => (
-                      <div key={m} className="text-[12px] text-ink-faint font-mono">// {m}</div>
+                      <div key={m} className="text-[12px] text-ink-faint font-mono">
+                        // {m}
+                      </div>
                     ))}
                   </div>
                 </div>

@@ -45,7 +45,12 @@ const RESOURCES = [
 export default function Resources() {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Kaynaklar', href: '/resources' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Kaynaklar', href: '/resources' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
@@ -54,7 +59,8 @@ export default function Resources() {
             GEO öğrenmenin <span className="text-brand">tüm yolları.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Yeni başlayanlar için 12 sayfalık rehber, hızlı referans için sözlük, derin dalış için blog ve teknik dokümantasyon.
+            Yeni başlayanlar için 12 sayfalık rehber, hızlı referans için sözlük, derin dalış için blog ve teknik
+            dokümantasyon.
           </p>
         </Container>
       </section>
@@ -65,7 +71,9 @@ export default function Resources() {
             {RESOURCES.map((r) => (
               <Link key={r.href} href={r.href} className="card p-8 hover:bg-paper-3 transition group">
                 <r.icon className="w-6 h-6 text-brand" />
-                <h2 className="font-display text-[22px] mt-5 leading-snug group-hover:text-brand-deep transition">{r.title}</h2>
+                <h2 className="font-display text-[22px] mt-5 leading-snug group-hover:text-brand-deep transition">
+                  {r.title}
+                </h2>
                 <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{r.description}</p>
                 <div className="inline-flex items-center gap-1.5 text-[13px] text-brand-deep mt-6">
                   {r.cta}

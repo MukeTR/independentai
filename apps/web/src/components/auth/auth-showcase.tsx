@@ -6,9 +6,24 @@ import { Search, Sparkles, BarChart3, Activity, Check, ArrowUpRight } from 'luci
 const PHASE_MS = 2900;
 
 const PHASES = [
-  { label: 'Araştırılıyor', title: '3 modelde aranıyor', sub: 'ChatGPT, Claude ve Gemini’ye aynı soru soruluyor.', icon: Search },
-  { label: 'Bulunuyor', title: 'Markanız tespit edildi', sub: 'Cevaplardaki yeriniz, sıranız ve tonunuz çıkarılıyor.', icon: Sparkles },
-  { label: 'Raporlanıyor', title: 'Skora dönüştürülüyor', sub: 'Görünürlük ve Share of Voice hesaplanıyor.', icon: BarChart3 },
+  {
+    label: 'Araştırılıyor',
+    title: '3 modelde aranıyor',
+    sub: 'ChatGPT, Claude ve Gemini’ye aynı soru soruluyor.',
+    icon: Search,
+  },
+  {
+    label: 'Bulunuyor',
+    title: 'Markanız tespit edildi',
+    sub: 'Cevaplardaki yeriniz, sıranız ve tonunuz çıkarılıyor.',
+    icon: Sparkles,
+  },
+  {
+    label: 'Raporlanıyor',
+    title: 'Skora dönüştürülüyor',
+    sub: 'Görünürlük ve Share of Voice hesaplanıyor.',
+    icon: BarChart3,
+  },
   { label: 'Takip ediliyor', title: 'Her gün otomatik', sub: '30 günlük trend; düşüşte anında uyarı.', icon: Activity },
 ] as const;
 
@@ -65,10 +80,18 @@ export function AuthShowcase() {
 
         {/* stage canvas */}
         <div className="relative mt-9 h-[340px] w-full max-w-xl">
-          <Scene active={phase === 0}><ResearchScene /></Scene>
-          <Scene active={phase === 1}><FoundScene /></Scene>
-          <Scene active={phase === 2}><ReportScene /></Scene>
-          <Scene active={phase === 3}><TrackScene /></Scene>
+          <Scene active={phase === 0}>
+            <ResearchScene />
+          </Scene>
+          <Scene active={phase === 1}>
+            <FoundScene />
+          </Scene>
+          <Scene active={phase === 2}>
+            <ReportScene />
+          </Scene>
+          <Scene active={phase === 3}>
+            <TrackScene />
+          </Scene>
         </div>
       </div>
 
@@ -80,10 +103,16 @@ export function AuthShowcase() {
               <div className="h-[3px] rounded-full bg-white/12 overflow-hidden">
                 {i < phase && <div className="h-full w-full bg-indigo-400" />}
                 {i === phase && (
-                  <div key={phase} className="auth-progress h-full bg-indigo-400" style={{ ['--dur' as string]: `${PHASE_MS}ms` }} />
+                  <div
+                    key={phase}
+                    className="auth-progress h-full bg-indigo-400"
+                    style={{ ['--dur' as string]: `${PHASE_MS}ms` }}
+                  />
                 )}
               </div>
-              <div className={`mt-2.5 text-[11px] font-mono tracking-wide transition-colors ${i === phase ? 'text-white' : 'text-white/40'}`}>
+              <div
+                className={`mt-2.5 text-[11px] font-mono tracking-wide transition-colors ${i === phase ? 'text-white' : 'text-white/40'}`}
+              >
                 {String(i + 1).padStart(2, '0')} {p.label}
               </div>
             </div>
@@ -140,7 +169,10 @@ function ResearchScene() {
           style={{ background: 'linear-gradient(90deg, transparent, #a5b4fc, transparent)' }}
         />
         {MODELS.map((m) => (
-          <div key={m.name} className="flex items-center gap-3 rounded-lg bg-white/[0.04] border border-white/8 px-3 py-2.5">
+          <div
+            key={m.name}
+            className="flex items-center gap-3 rounded-lg bg-white/[0.04] border border-white/8 px-3 py-2.5"
+          >
             <span className="w-2 h-2 rounded-full" style={{ background: m.c }} />
             <span className="text-[13px] text-white/85 flex-1">{m.name}</span>
             <span className="w-3.5 h-3.5 rounded-full border-2 border-white/25 border-t-indigo-300 auth-spin" />
@@ -178,7 +210,9 @@ function FoundScene() {
             }}
           >
             <span className={`text-[12px] font-mono w-6 ${f.own ? 'text-indigo-200' : 'text-white/40'}`}>{f.pos}</span>
-            <span className={`text-[13.5px] flex-1 ${f.own ? 'text-white font-medium' : 'text-white/80'}`}>{f.name}</span>
+            <span className={`text-[13.5px] flex-1 ${f.own ? 'text-white font-medium' : 'text-white/80'}`}>
+              {f.name}
+            </span>
             {f.own && <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-200">siz</span>}
           </div>
         ))}
@@ -204,8 +238,15 @@ function ReportScene() {
         <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">
           <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="7" />
           <circle
-            cx="40" cy="40" r="34" fill="none" stroke="#818cf8" strokeWidth="7" strokeLinecap="round"
-            className="auth-draw" style={{ ['--len' as string]: '214', strokeDashoffset: 28 }}
+            cx="40"
+            cy="40"
+            r="34"
+            fill="none"
+            stroke="#818cf8"
+            strokeWidth="7"
+            strokeLinecap="round"
+            className="auth-draw"
+            style={{ ['--len' as string]: '214', strokeDashoffset: 28 }}
           />
         </svg>
       </div>
@@ -231,7 +272,8 @@ function TrackScene() {
   // 30 günlük yukarı trend
   const pts = [6, 18, 12, 30, 24, 40, 34, 52, 60, 78];
   const last = pts[pts.length - 1] ?? 0;
-  const w = 460, h = 120;
+  const w = 460,
+    h = 120;
   const path = pts
     .map((p, i) => `${(i / (pts.length - 1)) * w},${h - (p / 90) * h}`)
     .map((c, i) => (i === 0 ? `M ${c}` : `L ${c}`))
@@ -253,12 +295,22 @@ function TrackScene() {
           </linearGradient>
         </defs>
         <path d={`${path} L ${w},${h} L 0,${h} Z`} fill="url(#authTrend)" opacity="0.7" />
-        <path d={path} fill="none" stroke="#a5b4fc" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-          className="auth-draw" style={{ ['--len' as string]: '620' }} />
+        <path
+          d={path}
+          fill="none"
+          stroke="#a5b4fc"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="auth-draw"
+          style={{ ['--len' as string]: '620' }}
+        />
         <circle cx={w} cy={h - (last / 90) * h} r="4" fill="#fff" />
       </svg>
       <div className="flex items-center justify-between text-[11px] text-white/40 font-mono mt-1">
-        <span>1 Haz</span><span>15 Haz</span><span>Bugün</span>
+        <span>1 Haz</span>
+        <span>15 Haz</span>
+        <span>Bugün</span>
       </div>
     </Glass>
   );

@@ -68,7 +68,7 @@ async function main() {
   const prompts = [
     { text: 'Restoranlar için en iyi kar-zarar takip yazılımı hangisi?', category: 'discovery' },
     { text: 'Uber Eats satıcıları hangi muhasebe programını kullanmalı?', category: 'discovery' },
-    { text: 'Türkiye\'deki en iyi restoran POS sistemleri nelerdir?', category: 'comparison' },
+    { text: "Türkiye'deki en iyi restoran POS sistemleri nelerdir?", category: 'comparison' },
     { text: 'KarPanel vs Adisyo karşılaştırması', category: 'comparison' },
     { text: 'Küçük market işletmesi için kar marjı hesaplama yazılımı önerir misin?', category: 'discovery' },
   ];

@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server';
-import { requireSession, handleRouteError } from '@/server/session';
+import { route } from '@/server/route';
+import { readJson, ClientError } from '@/server/errors';
+import { requireActor } from '@/server/authz';
 import { hydrateEnvFromConfig } from '@/server/system-config';
+import { enforceRateLimit, LIMITS } from '@/server/rate-limit';
 import { scanHallucinations } from '@/server/hallucination';
 
 export const maxDuration = 60;
 
-export async function POST() {
-  try {
-    const session = await requireSession();
-    await hydrateEnvFromConfig();
-    const result = await scanHallucinations(session.tenantId);
-    return NextResponse.json(result);
-  } catch (err) {
-    return handleRouteError(err);
-  }
-}
+export const POST = route('tools.hallucination', async (req) => {
+  const actor = await requireActor({ active: true });
+  await enforceRateLimit(req, LIMITS.tool, `tenant:${actor.tenantId}`);
+  void ClientError;
+  void readJson;
+  await hydrateEnvFromConfig();
+  return NextResponse.json(await scanHallucinations(actor.tenantId));
+});

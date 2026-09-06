@@ -2,15 +2,12 @@ import { Activity, Bot, Timer, DollarSign } from 'lucide-react';
 import type { ComprehensiveAnalytics } from '@/server/dashboard-analytics';
 
 export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health'] }) {
-  const { errorRate, mockRate, avgLatencyMs, totalCostUsd } = health;
+  const { errorRate, mockRate, avgLatencyMs, totalCostUsd, costUnknownRuns, nativeGroundingRate } = health;
 
-  const errorColor =
-    errorRate === 0 ? 'text-positive' : errorRate < 10 ? 'text-warning' : 'text-danger';
+  const errorColor = errorRate === 0 ? 'text-positive' : errorRate < 10 ? 'text-warning' : 'text-danger';
 
-  const fmtPct = (n: number) =>
-    `${(Math.round(n * 10) / 10).toLocaleString('tr-TR')}%`;
-  const fmtMs = (n: number) =>
-    `${Math.round(n).toLocaleString('tr-TR')} ms`;
+  const fmtPct = (n: number) => `${(Math.round(n * 10) / 10).toLocaleString('tr-TR')}%`;
+  const fmtMs = (n: number) => `${Math.round(n).toLocaleString('tr-TR')} ms`;
   const fmtUsd = (n: number) =>
     `$${(Math.round(n * 100) / 100).toLocaleString('tr-TR', {
       minimumFractionDigits: 2,
@@ -27,9 +24,7 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
             <Activity className="w-4 h-4 text-brand" />
             <span className="eyebrow">Hata Oranı</span>
           </div>
-          <div className={`mt-2 font-display text-[20px] tabular ${errorColor}`}>
-            {fmtPct(errorRate)}
-          </div>
+          <div className={`mt-2 font-display text-[20px] tabular ${errorColor}`}>{fmtPct(errorRate)}</div>
         </div>
 
         <div className="rounded-[10px] bg-paper-4 p-4 flex flex-col justify-center">
@@ -37,13 +32,9 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
             <Bot className="w-4 h-4 text-brand" />
             <span className="eyebrow">Mock Yanıt</span>
           </div>
-          <div className="mt-2 font-display text-[20px] tabular text-ink">
-            {fmtPct(mockRate)}
-          </div>
+          <div className="mt-2 font-display text-[20px] tabular text-ink">{fmtPct(mockRate)}</div>
           {mockRate > 0 && (
-            <div className="mt-1 text-[11px] leading-snug text-ink-faint">
-              Gerçek API anahtarı eksik olabilir
-            </div>
+            <div className="mt-1 text-[11px] leading-snug text-warning">Sahte (mock) veri — gerçek ölçüm değil</div>
           )}
         </div>
 
@@ -52,9 +43,7 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
             <Timer className="w-4 h-4 text-brand" />
             <span className="eyebrow">Ort. Gecikme</span>
           </div>
-          <div className="mt-2 font-display text-[20px] tabular text-ink">
-            {fmtMs(avgLatencyMs)}
-          </div>
+          <div className="mt-2 font-display text-[20px] tabular text-ink">{fmtMs(avgLatencyMs)}</div>
         </div>
 
         <div className="rounded-[10px] bg-paper-4 p-4 flex flex-col justify-center">
@@ -62,9 +51,15 @@ export function HealthPanel({ health }: { health: ComprehensiveAnalytics['health
             <DollarSign className="w-4 h-4 text-brand" />
             <span className="eyebrow">Toplam Maliyet</span>
           </div>
-          <div className="mt-2 font-display text-[20px] tabular text-ink">
-            {fmtUsd(totalCostUsd)}
-          </div>
+          <div className="mt-2 font-display text-[20px] tabular text-ink">{fmtUsd(totalCostUsd)}</div>
+          {costUnknownRuns > 0 && (
+            <div className="mt-1 text-[11px] leading-snug text-ink-faint">
+              {costUnknownRuns} çalıştırmanın maliyeti bilinmiyor (fiyat kataloğu dışı model)
+            </div>
+          )}
+          {nativeGroundingRate > 0 && (
+            <div className="mt-1 text-[11px] leading-snug text-ink-faint">%{nativeGroundingRate} web arama atıflı</div>
+          )}
         </div>
       </div>
     </div>

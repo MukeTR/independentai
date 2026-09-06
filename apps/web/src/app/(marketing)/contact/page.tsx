@@ -6,7 +6,8 @@ import { Mail, MessagesSquare, Newspaper, Briefcase } from 'lucide-react';
 
 export const metadata = buildMetadata({
   title: 'İletişim — Bize yazın',
-  description: 'Satış görüşmesi, destek, basın talepleri veya ortaklık önerileri. Independent AI ekibi 24 saat içinde döner.',
+  description:
+    'Satış görüşmesi, destek, basın talepleri veya ortaklık önerileri. Independent AI ekibi 24 saat içinde döner.',
   path: '/contact',
 });
 
@@ -37,13 +38,19 @@ const CHANNELS = [
 export default function Contact() {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'İletişim', href: '/contact' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'İletişim', href: '/contact' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
           <div className="eyebrow">İletişim</div>
           <h1 className="font-display text-[52px] lg:text-[68px] tracking-tight mt-4 leading-[1.02]">
-            Bize yazın.<br />
+            Bize yazın.
+            <br />
             <span className="text-brand">24 saat içinde döneriz.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
@@ -76,8 +83,10 @@ export default function Contact() {
       <Section eyebrow="Adres" title="Türkiye merkezliyiz." className="bg-paper-2/40">
         <div className="card p-7 max-w-2xl">
           <div className="text-[14px] text-ink leading-relaxed">
-            Independent AI<br />
-            (Şirket bilgileri lansman sonrası KVKK aydınlatma metninde yayınlanacak)<br />
+            Independent AI
+            <br />
+            (Şirket bilgileri lansman sonrası KVKK aydınlatma metninde yayınlanacak)
+            <br />
             <span className="text-ink-muted">Türkiye</span>
           </div>
           <div className="mt-5 pt-5 border-t-hairline border-hairline text-[12px] text-ink-faint font-mono">

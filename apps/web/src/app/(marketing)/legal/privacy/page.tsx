@@ -17,10 +17,15 @@ export default function Privacy() {
 
         <div className="space-y-8 text-[15px] leading-[1.7] text-ink">
           <Section h="1. Topladığımız veriler">
-            <strong>Hesap bilgisi:</strong> E-posta, şifre (scrypt ile hashlenmiş), şirket adı, web sitesi (opsiyonel).<br/>
-            <strong>Kullanım verisi:</strong> Eklediğiniz marka, alias\'lar, rakipler ve izlediğiniz prompt metinleri.<br/>
-            <strong>Türetilen veri:</strong> AI provider\'lardan gelen cevap metinleri, çıkartılan marka mention\'ları, metrikler.<br/>
-            <strong>Teknik veri:</strong> Sunucu logları (IP, tarayıcı, sayfa görüntülemeleri) — anonim agregat hariç birey bazlı saklamayız.
+            <strong>Hesap bilgisi:</strong> E-posta, şifre (scrypt ile hashlenmiş), şirket adı, web sitesi (opsiyonel).
+            <br />
+            <strong>Kullanım verisi:</strong> Eklediğiniz marka, alias\'lar, rakipler ve izlediğiniz prompt metinleri.
+            <br />
+            <strong>Türetilen veri:</strong> AI provider\'lardan gelen cevap metinleri, çıkartılan marka mention\'ları,
+            metrikler.
+            <br />
+            <strong>Teknik veri:</strong> Sunucu logları (IP, tarayıcı, sayfa görüntülemeleri) — anonim agregat hariç
+            birey bazlı saklamayız.
           </Section>
 
           <Section h="2. Verilerinizi neden kullanırız">
@@ -34,21 +39,25 @@ export default function Privacy() {
           </Section>
 
           <Section h="3. AI provider'larla paylaşım">
-            Sadece izlediğiniz prompt metni AI provider\'lara (OpenAI, Anthropic, Google) gönderilir. Bu metinler, ilgili
-            sağlayıcının gizlilik politikasına tabidir. Hesap bilgileriniz, kullanıcı bilgileriniz, marka aliasları
-            gibi diğer hiçbir veri provider\'a gönderilmez.
+            Sadece izlediğiniz prompt metni AI provider\'lara (OpenAI, Anthropic, Google) gönderilir. Bu metinler,
+            ilgili sağlayıcının gizlilik politikasına tabidir. Hesap bilgileriniz, kullanıcı bilgileriniz, marka
+            aliasları gibi diğer hiçbir veri provider\'a gönderilmez.
           </Section>
 
           <Section h="4. Üçüncü taraf hizmetler">
-            <strong>Hosting:</strong> Vercel (web), Supabase (Postgres) — Frankfurt, Almanya (AB).<br/>
-            <strong>AI:</strong> OpenAI, Anthropic, Google — sadece prompt metni gönderilir.<br/>
+            <strong>Hosting:</strong> Vercel (web), Supabase (Postgres) — Frankfurt, Almanya (AB).
+            <br />
+            <strong>AI:</strong> OpenAI, Anthropic, Google — sadece prompt metni gönderilir.
+            <br />
             <strong>Analitik:</strong> Şu an üçüncü taraf analytics kullanmıyoruz.
           </Section>
 
           <Section h="5. Veri saklama süresi">
             Hesabınız aktif olduğu sürece verileriniz saklanır. Hesabınızı silmek isterseniz{' '}
-            <a href="/contact" className="text-brand-deep hover:underline">destek</a>'e yazın, 30 gün içinde tüm verileriniz
-            geri dönüşümsüz silinir (yedeklerden de).
+            <a href="/contact" className="text-brand-deep hover:underline">
+              destek
+            </a>
+            'e yazın, 30 gün içinde tüm verileriniz geri dönüşümsüz silinir (yedeklerden de).
           </Section>
 
           <Section h="6. KVKK hakları">
@@ -60,7 +69,9 @@ export default function Privacy() {
               <li>Silme veya yok etme talebi</li>
               <li>İşlemeye itiraz etme</li>
             </ul>
-            <a href="/legal/kvkk" className="text-brand-deep hover:underline mt-3 inline-block">→ Detaylı KVKK aydınlatması</a>
+            <a href="/legal/kvkk" className="text-brand-deep hover:underline mt-3 inline-block">
+              → Detaylı KVKK aydınlatması
+            </a>
           </Section>
 
           <Section h="7. Güvenlik">
@@ -69,7 +80,10 @@ export default function Privacy() {
           </Section>
 
           <Section h="8. İletişim">
-            Sorularınız için: <a href="mailto:destek@independentai.space" className="text-brand-deep hover:underline">destek@independentai.space</a>
+            Sorularınız için:{' '}
+            <a href="mailto:destek@independentai.space" className="text-brand-deep hover:underline">
+              destek@independentai.space
+            </a>
           </Section>
         </div>
       </Container>

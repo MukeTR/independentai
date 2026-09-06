@@ -3,7 +3,7 @@
  * (Faz 1) Mevcut ModelRun / BrandMention / Citation verisinden türetilir.
  */
 import { prisma } from './prisma';
-import { PROVIDER_LABELS } from '@independentai/shared';
+import { PROVIDER_LABELS, SENTIMENT_SCORE } from '@independentai/shared';
 
 function sinceDays(days: number): Date {
   const d = new Date();
@@ -76,19 +76,30 @@ export async function getBacklinkTargets(tenantId: string, days = 60, limit = 20
 export type RadarEntity = {
   name: string;
   isOwn: boolean;
-  visibility: number;   // % run'da göründü
-  mentions: number;     // toplam bahis (normalize edilmemiş)
-  sentiment: number;    // 0-100
-  position: number;     // 0-100 (erken bahis = yüksek)
-  recommend: number;    // % RECOMMENDED
+  visibility: number; // % run'da göründü
+  mentions: number; // toplam bahis (normalize edilmemiş)
+  sentiment: number; // 0-100
+  position: number; // 0-100 (erken bahis = yüksek)
+  recommend: number; // % RECOMMENDED
 };
-
-const SENTIMENT_SCORE = { POSITIVE: 100, NEUTRAL: 50, NEGATIVE: 0 } as const;
 
 export async function getRadarData(tenantId: string, days = 30): Promise<{ entities: RadarEntity[]; axes: string[] }> {
   const runs = await prisma.modelRun.findMany({
-    where: { prompt: { tenantId }, runDate: { gte: sinceDays(days) }, errorMessage: null },
-    include: { mentions: true },
+    where: { prompt: { tenantId }, runDate: { gte: sinceDays(days) }, status: 'SUCCESS' },
+    select: {
+      id: true,
+      mentions: {
+        select: {
+          isOwnBrand: true,
+          isCompetitor: true,
+          mentionName: true,
+          sentiment: true,
+          position: true,
+          mentionType: true,
+        },
+      },
+    },
+    take: 3000,
   });
   const totalRuns = runs.length || 1;
 
@@ -144,8 +155,8 @@ function getOrInit<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
 export type VisibilityGap = {
   promptId: string;
   promptText: string;
-  competitors: string[];   // bu promptta öne çıkan rakipler
-  providers: string[];     // hangi modellerde markanız yoktu
+  competitors: string[]; // bu promptta öne çıkan rakipler
+  providers: string[]; // hangi modellerde markanız yoktu
 };
 
 /**
@@ -153,9 +164,16 @@ export type VisibilityGap = {
  */
 export async function getVisibilityGaps(tenantId: string, days = 30, limit = 15): Promise<VisibilityGap[]> {
   const runs = await prisma.modelRun.findMany({
-    where: { prompt: { tenantId }, runDate: { gte: sinceDays(days) }, errorMessage: null },
-    include: { mentions: true, prompt: true },
+    where: { prompt: { tenantId }, runDate: { gte: sinceDays(days) }, status: 'SUCCESS' },
+    select: {
+      id: true,
+      promptId: true,
+      provider: true,
+      mentions: { select: { isOwnBrand: true, isCompetitor: true, mentionName: true } },
+      prompt: { select: { text: true } },
+    },
     orderBy: { runDate: 'desc' },
+    take: 3000,
   });
 
   // Sadece her (prompt × provider) için EN SON çalıştırmayı dikkate al — böylece 30 gün
@@ -172,7 +190,12 @@ export async function getVisibilityGaps(tenantId: string, days = 30, limit = 15)
   const byPrompt = new Map<string, G>();
 
   for (const r of latest.values()) {
-    const g = getOrInit(byPrompt, r.promptId, () => ({ text: r.prompt.text, ownSeen: false, comps: new Set<string>(), missing: new Set<string>() }));
+    const g = getOrInit(byPrompt, r.promptId, () => ({
+      text: r.prompt.text,
+      ownSeen: false,
+      comps: new Set<string>(),
+      missing: new Set<string>(),
+    }));
     const ownHere = r.mentions.some((m) => m.isOwnBrand);
     if (ownHere) g.ownSeen = true;
     const compsHere = r.mentions.filter((m) => m.isCompetitor);

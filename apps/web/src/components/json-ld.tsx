@@ -3,12 +3,7 @@ import { SITE_URL, BRAND_NAME, ORG_ID, WEBSITE_ID } from '@/lib/seo';
 type Json = Record<string, unknown> | unknown[];
 
 export function JsonLd({ data }: { data: Json }) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
 }
 
 export function OrganizationJsonLd() {

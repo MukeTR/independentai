@@ -26,10 +26,10 @@ export default async function AdminHome() {
         <MetricCard
           label="AI maliyet (toplam)"
           value={`$${stats.totalCostUsd.toFixed(3)}`}
-          hint="Tahmini — sadece kayıtlı"
+          hint={`Fiyatı bilinen run'lar; ${stats.costUnknownRuns} run maliyeti bilinmiyor`}
         />
-        <MetricCard label="Aktif AI provider" value={3} hint="OpenAI · Anthropic · Google" />
-        <MetricCard label="Cron" value="02:00 TR" hint="Her gün" tone="positive" />
+        <MetricCard label="AI provider" value={3} hint="OpenAI · Anthropic · Google (durum: Sistem)" />
+        <MetricCard label="Cron" value="~02:00 TR" hint="Her gece ±1 saat, zincirleme" tone="positive" />
       </div>
 
       {/* Recent tenants */}
@@ -65,9 +65,13 @@ export default async function AdminHome() {
                 </div>
                 <div className="text-right">
                   <div className="text-[12px] text-ink-muted">
-                    {trialDaysLeft > 30 ? <span className="text-positive">trial: {trialDaysLeft}g</span> :
-                     trialDaysLeft > 7 ? <span className="text-warning">trial: {trialDaysLeft}g</span> :
-                     <span className="text-danger">trial: {trialDaysLeft}g</span>}
+                    {trialDaysLeft > 30 ? (
+                      <span className="text-positive">trial: {trialDaysLeft}g</span>
+                    ) : trialDaysLeft > 7 ? (
+                      <span className="text-warning">trial: {trialDaysLeft}g</span>
+                    ) : (
+                      <span className="text-danger">trial: {trialDaysLeft}g</span>
+                    )}
                   </div>
                   <div className="text-[10px] text-ink-faint font-mono">
                     {new Date(t.createdAt).toLocaleDateString('tr-TR')}

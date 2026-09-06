@@ -16,11 +16,7 @@ function Delta({ value, unit = 'puan' }: { value: number; unit?: string }) {
   const up = rounded > 0;
   const Icon = up ? ArrowUp : ArrowDown;
   return (
-    <span
-      className={`inline-flex items-center gap-0.5 text-[11px] font-mono ${
-        up ? 'text-positive' : 'text-danger'
-      }`}
-    >
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-mono ${up ? 'text-positive' : 'text-danger'}`}>
       <Icon className="w-3 h-3" />
       <span className="tabular">
         {up ? '+' : ''}
@@ -30,15 +26,7 @@ function Delta({ value, unit = 'puan' }: { value: number; unit?: string }) {
   );
 }
 
-function Stat({
-  label,
-  value,
-  delta,
-}: {
-  label: string;
-  value: React.ReactNode;
-  delta?: React.ReactNode;
-}) {
+function Stat({ label, value, delta }: { label: string; value: React.ReactNode; delta?: React.ReactNode }) {
   return (
     <div className="flex flex-col justify-between gap-2 px-4 py-3 first:pl-0">
       <div className="eyebrow">{label}</div>

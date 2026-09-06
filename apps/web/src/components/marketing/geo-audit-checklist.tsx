@@ -4,13 +4,21 @@ import { useState, useMemo } from 'react';
 import { ClipboardCheck, Download, Sparkles } from 'lucide-react';
 
 const STEPS = [
-  { id: 's1', label: 'Kategori sorularını listele (10-15 adet, marka-içermez)', hint: 'Müşterilerinizin AI\'a sorabileceği sorular' },
-  { id: 's2', label: 'Her soruyu 3 modelde (ChatGPT, Claude, Gemini) çalıştır', hint: 'Manuel veya Independent AI ile' },
+  {
+    id: 's1',
+    label: 'Kategori sorularını listele (10-15 adet, marka-içermez)',
+    hint: "Müşterilerinizin AI'a sorabileceği sorular",
+  },
+  {
+    id: 's2',
+    label: 'Her soruyu 3 modelde (ChatGPT, Claude, Gemini) çalıştır',
+    hint: 'Manuel veya Independent AI ile',
+  },
   { id: 's3', label: 'Markanızın geçtiği soruları işaretle → baseline %', hint: 'Visibility Score hesabı' },
   { id: 's4', label: 'Geçmediğiniz sorularda hangi rakipler geçiyor not et', hint: 'Rakip listesi çıkar' },
   { id: 's5', label: 'Geçtiğiniz sorularda pozisyon + sentiment', hint: '1.sıra mı, ton pozitif mi?' },
   { id: 's6', label: 'llms.txt durumu: var mı, güncel mi?', hint: 'sitenizin.com/llms.txt kontrolü' },
-  { id: 's7', label: 'robots.txt\'te AI bot\'larına explicit allow var mı?', hint: 'GPTBot, ClaudeBot, PerplexityBot' },
+  { id: 's7', label: "robots.txt'te AI bot'larına explicit allow var mı?", hint: 'GPTBot, ClaudeBot, PerplexityBot' },
   { id: 's8', label: 'Yapılandırılmış veri (JSON-LD) durumu', hint: 'Organization, FAQPage, BreadcrumbList' },
   { id: 's9', label: 'Son 12 ayda bağımsız sitelerde mention sayısı', hint: 'Quick search ile' },
   { id: 's10', label: 'Wikipedia varlığınız var mı?', hint: 'Markanız için sayfa kontrolü' },
@@ -74,9 +82,13 @@ export function GeoAuditChecklist() {
       <div className="px-7 py-5">
         <div className="space-y-4">
           {STEPS.map((step, i) => (
-            <div key={step.id} className={`border-hairline border rounded-lg p-4 transition ${checked[step.id] ? 'bg-paper-2/50' : ''}`}>
+            <div
+              key={step.id}
+              className={`border-hairline border rounded-lg p-4 transition ${checked[step.id] ? 'bg-paper-2/50' : ''}`}
+            >
               <button
                 type="button"
+                aria-pressed={!!checked[step.id]}
                 onClick={() => toggle(step.id)}
                 className="flex items-start gap-3 text-left w-full"
               >

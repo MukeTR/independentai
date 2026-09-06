@@ -51,10 +51,11 @@ export default async function AdminTenants() {
                   <td className="px-5 py-3 text-right tabular">{t._count.competitors}</td>
                   <td className="px-5 py-3 text-right tabular">{t._count.prompts}</td>
                   <td className="px-5 py-3">
-                    <span className={
-                      trialDaysLeft > 30 ? 'text-positive' :
-                      trialDaysLeft > 7 ? 'text-warning' : 'text-danger'
-                    }>
+                    <span
+                      className={
+                        trialDaysLeft > 30 ? 'text-positive' : trialDaysLeft > 7 ? 'text-warning' : 'text-danger'
+                      }
+                    >
                       {trialDaysLeft}g
                     </span>
                   </td>

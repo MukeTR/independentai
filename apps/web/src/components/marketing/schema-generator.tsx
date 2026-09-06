@@ -7,7 +7,7 @@ const DEFAULT = {
   name: 'Acme Yazılım',
   url: 'https://acme.com',
   logo: 'https://acme.com/logo.png',
-  description: 'KOBİ\'ler için bulut tabanlı muhasebe yazılımı',
+  description: "KOBİ'ler için bulut tabanlı muhasebe yazılımı",
   founded: '2018',
   email: 'info@acme.com',
   phone: '+90 212 555 00 00',
@@ -51,10 +51,7 @@ export function SchemaGenerator() {
   const [copied, setCopied] = useState(false);
 
   const output = useMemo(() => buildSchema(form), [form]);
-  const wrappedOutput = useMemo(
-    () => `<script type="application/ld+json">\n${output}\n</script>`,
-    [output],
-  );
+  const wrappedOutput = useMemo(() => `<script type="application/ld+json">\n${output}\n</script>`, [output]);
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm({ ...form, [k]: v });
@@ -88,7 +85,9 @@ export function SchemaGenerator() {
         <Code className="w-5 h-5 text-brand" />
         <div>
           <div className="font-display text-[18px] tracking-tight">Organization Schema Generator</div>
-          <div className="text-[11px] text-ink-faint font-mono">JSON-LD üret · HTML\'ine yapıştır · AI gözünde netleş</div>
+          <div className="text-[11px] text-ink-faint font-mono">
+            JSON-LD üret · HTML\'ine yapıştır · AI gözünde netleş
+          </div>
         </div>
       </div>
 
@@ -101,20 +100,40 @@ export function SchemaGenerator() {
             </div>
             <div>
               <label className="eyebrow block mb-2">Kuruluş yılı</label>
-              <input className="input" value={form.founded} onChange={(e) => set('founded', e.target.value)} placeholder="2018" />
+              <input
+                className="input"
+                value={form.founded}
+                onChange={(e) => set('founded', e.target.value)}
+                placeholder="2018"
+              />
             </div>
           </div>
           <div>
             <label className="eyebrow block mb-2">URL *</label>
-            <input className="input" value={form.url} onChange={(e) => set('url', e.target.value)} placeholder="https://..." />
+            <input
+              className="input"
+              value={form.url}
+              onChange={(e) => set('url', e.target.value)}
+              placeholder="https://..."
+            />
           </div>
           <div>
             <label className="eyebrow block mb-2">Logo URL</label>
-            <input className="input" value={form.logo} onChange={(e) => set('logo', e.target.value)} placeholder="https://.../logo.png" />
+            <input
+              className="input"
+              value={form.logo}
+              onChange={(e) => set('logo', e.target.value)}
+              placeholder="https://.../logo.png"
+            />
           </div>
           <div>
             <label className="eyebrow block mb-2">Açıklama</label>
-            <textarea rows={2} className="input resize-none" value={form.description} onChange={(e) => set('description', e.target.value)} />
+            <textarea
+              rows={2}
+              className="input resize-none"
+              value={form.description}
+              onChange={(e) => set('description', e.target.value)}
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -131,7 +150,12 @@ export function SchemaGenerator() {
             </div>
             <div>
               <label className="eyebrow block mb-2">Ülke (ISO)</label>
-              <input className="input" value={form.country} onChange={(e) => set('country', e.target.value)} placeholder="TR" />
+              <input
+                className="input"
+                value={form.country}
+                onChange={(e) => set('country', e.target.value)}
+                placeholder="TR"
+              />
             </div>
           </div>
           <div>
@@ -153,7 +177,10 @@ export function SchemaGenerator() {
             {wrappedOutput}
           </pre>
           <div className="px-7 py-4 border-t-hairline border-hairline flex items-center gap-3 flex-wrap">
-            <button onClick={copyToClipboard} className="btn-primary !py-2 !px-4 inline-flex items-center gap-2 text-[13px]">
+            <button
+              onClick={copyToClipboard}
+              className="btn-primary !py-2 !px-4 inline-flex items-center gap-2 text-[13px]"
+            >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? 'Kopyalandı!' : 'HTML kopyala'}
             </button>
@@ -170,8 +197,21 @@ export function SchemaGenerator() {
         <ol className="text-[12.5px] text-ink-muted space-y-1.5 list-decimal list-inside">
           <li>Üstteki formu kendi şirket bilgilerinizle doldurun.</li>
           <li>"HTML kopyala" ile çıkan kodu kopyalayın.</li>
-          <li>Web sitenizin <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">&lt;head&gt;</code> tag\'inin içine yapıştırın.</li>
-          <li><a href="https://search.google.com/test/rich-results" className="text-brand-deep underline" target="_blank" rel="noreferrer">Google Rich Results Test</a> ile doğrulayın.</li>
+          <li>
+            Web sitenizin <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">&lt;head&gt;</code>{' '}
+            tag\'inin içine yapıştırın.
+          </li>
+          <li>
+            <a
+              href="https://search.google.com/test/rich-results"
+              className="text-brand-deep underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Google Rich Results Test
+            </a>{' '}
+            ile doğrulayın.
+          </li>
         </ol>
       </div>
     </div>

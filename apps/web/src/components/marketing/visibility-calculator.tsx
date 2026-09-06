@@ -31,7 +31,9 @@ export function VisibilityCalculator() {
         <Calculator className="w-5 h-5 text-brand" />
         <div>
           <div className="font-display text-[18px] tracking-tight">AI Visibility Score Hesaplayıcı</div>
-          <div className="text-[11px] text-ink-faint font-mono">Formülünü canlı uygula · sektör benchmark ile karşılaştır</div>
+          <div className="text-[11px] text-ink-faint font-mono">
+            Formülünü canlı uygula · sektör benchmark ile karşılaştır
+          </div>
         </div>
       </div>
 
@@ -83,7 +85,7 @@ export function VisibilityCalculator() {
               onChange={(e) => setBrandMentions(Math.max(0, Number(e.target.value)))}
               className="input"
             />
-            <div className="text-[10.5px] text-ink-faint mt-1">Independent AI dashboard\'undan veya manuel sayım</div>
+            <div className="text-[10.5px] text-ink-faint mt-1">Independent AI panelinden veya manuel sayım</div>
           </div>
           <div>
             <label className="eyebrow block mb-2">Rakiplerin toplam mention sayısı</label>
@@ -107,11 +109,15 @@ export function VisibilityCalculator() {
               <div className="flex items-baseline justify-between mb-2">
                 <div className="text-[11px] text-ink-faint uppercase tracking-wider">Visibility Score</div>
                 <div className={`font-display text-[42px] tabular ${benchmark.color}`}>
-                  {result.visibility}<span className="text-[18px] text-ink-faint">%</span>
+                  {result.visibility}
+                  <span className="text-[18px] text-ink-faint">%</span>
                 </div>
               </div>
               <div className="h-2 rounded-full bg-paper-4 overflow-hidden">
-                <div className="h-full bg-brand transition-all duration-500" style={{ width: `${result.visibility}%` }} />
+                <div
+                  className="h-full bg-brand transition-all duration-500"
+                  style={{ width: `${result.visibility}%` }}
+                />
               </div>
               <div className="flex items-center gap-2 mt-3">
                 <TrendingUp className={`w-3.5 h-3.5 ${benchmark.color}`} />
@@ -124,26 +130,36 @@ export function VisibilityCalculator() {
               <div className="flex items-baseline justify-between mb-2">
                 <div className="text-[11px] text-ink-faint uppercase tracking-wider">Share of Voice</div>
                 <div className="font-display text-[36px] tabular">
-                  {result.sov}<span className="text-[16px] text-ink-faint">%</span>
+                  {result.sov}
+                  <span className="text-[16px] text-ink-faint">%</span>
                 </div>
               </div>
               <div className="h-2 rounded-full bg-paper-4 overflow-hidden">
                 <div className="h-full bg-ink transition-all duration-500" style={{ width: `${result.sov}%` }} />
               </div>
-              <div className="text-[12px] text-ink-muted mt-3">
-                Rakiplerle birlikte toplam içindeki payınız
-              </div>
+              <div className="text-[12px] text-ink-muted mt-3">Rakiplerle birlikte toplam içindeki payınız</div>
             </div>
 
             <div className="border-hairline border rounded-lg p-4 bg-paper-3">
               <div className="text-[11px] text-ink-faint uppercase tracking-wider mb-2">Detay</div>
               <dl className="text-[12px] space-y-1.5">
-                <div className="flex justify-between"><dt className="text-ink-muted">Toplam run</dt><dd className="font-mono tabular">{result.totalRuns.toLocaleString('tr-TR')}</dd></div>
-                <div className="flex justify-between"><dt className="text-ink-muted">Marka mention</dt><dd className="font-mono tabular">{brandMentions.toLocaleString('tr-TR')}</dd></div>
-                <div className="flex justify-between"><dt className="text-ink-muted">Rakip mention</dt><dd className="font-mono tabular">{competitorMentions.toLocaleString('tr-TR')}</dd></div>
+                <div className="flex justify-between">
+                  <dt className="text-ink-muted">Toplam run</dt>
+                  <dd className="font-mono tabular">{result.totalRuns.toLocaleString('tr-TR')}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-ink-muted">Marka mention</dt>
+                  <dd className="font-mono tabular">{brandMentions.toLocaleString('tr-TR')}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-ink-muted">Rakip mention</dt>
+                  <dd className="font-mono tabular">{competitorMentions.toLocaleString('tr-TR')}</dd>
+                </div>
                 <div className="flex justify-between border-t-hairline border-hairline pt-1.5 mt-1.5">
                   <dt className="text-ink">Toplam mention</dt>
-                  <dd className="font-mono tabular text-ink">{(brandMentions + competitorMentions).toLocaleString('tr-TR')}</dd>
+                  <dd className="font-mono tabular text-ink">
+                    {(brandMentions + competitorMentions).toLocaleString('tr-TR')}
+                  </dd>
                 </div>
               </dl>
             </div>
@@ -153,8 +169,8 @@ export function VisibilityCalculator() {
 
       <div className="px-7 py-4 border-t-hairline border-hairline bg-paper-2/40">
         <p className="text-[12px] text-ink-muted">
-          <strong className="text-ink">Sektör benchmarkı:</strong> B2B SaaS 30-60% normal, 70+ sektör lideri. E-ticaret 40-70% normal, 80+ dominasyon.
-          Yerel hizmet 20-50% normal.
+          <strong className="text-ink">Sektör benchmarkı:</strong> B2B SaaS 30-60% normal, 70+ sektör lideri. E-ticaret
+          40-70% normal, 80+ dominasyon. Yerel hizmet 20-50% normal.
         </p>
       </div>
     </div>

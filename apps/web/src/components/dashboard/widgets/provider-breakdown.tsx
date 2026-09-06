@@ -1,10 +1,6 @@
 import type { ComprehensiveAnalytics } from '@/server/dashboard-analytics';
 
-export function ProviderBreakdown({
-  byProvider,
-}: {
-  byProvider: ComprehensiveAnalytics['byProvider'];
-}) {
+export function ProviderBreakdown({ byProvider }: { byProvider: ComprehensiveAnalytics['byProvider'] }) {
   const fmtPct = (n: number) => `${(n ?? 0).toFixed(0)}%`;
 
   return (
@@ -23,12 +19,8 @@ export function ProviderBreakdown({
                 className="flex h-full flex-col rounded-[12px] border border-hairline bg-brand-glow/40 p-4"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-[13px] text-ink">
-                    {p.provider}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-wide text-ink-faint">
-                    {p.runs} run
-                  </span>
+                  <span className="font-display text-[13px] text-ink">{p.provider}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-wide text-ink-faint">{p.runs} run</span>
                 </div>
 
                 <div className="mt-3 font-display text-[22px] tabular tracking-tight text-ink">
@@ -36,19 +28,13 @@ export function ProviderBreakdown({
                 </div>
 
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-paper-4">
-                  <div
-                    className="h-full rounded-full bg-brand"
-                    style={{ width: `${visibility}%` }}
-                  />
+                  <div className="h-full rounded-full bg-brand" style={{ width: `${visibility}%` }} />
                 </div>
 
                 <div className="mt-auto pt-3 flex items-center justify-between font-mono text-[11px] tabular text-ink-muted">
                   <span>{p.mentions} bahsetme</span>
                   <span>
-                    ort. sıra{' '}
-                    <span className="text-ink">
-                      {p.avgPosition != null ? p.avgPosition.toFixed(1) : '—'}
-                    </span>
+                    ort. sıra <span className="text-ink">{p.avgPosition != null ? p.avgPosition.toFixed(1) : '—'}</span>
                   </span>
                 </div>
               </div>

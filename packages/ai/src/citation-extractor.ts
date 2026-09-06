@@ -9,7 +9,8 @@ export type ExtractedCitation = {
   title?: string;
 };
 
-const URL_RE = /https?:\/\/[^\s<>()\[\]"']+/gi;
+// Parantezlere izin verilir (Wikipedia linkleri); dengesiz kapanışlar trimTrailingPunct ile kırpılır.
+const URL_RE = /https?:\/\/[^\s<>"'\[\]]+/gi;
 
 /** Cümle sonu noktalamasını kırpar ama dengeli parantez/köşeli ayraçları korur (örn. Wikipedia linkleri). */
 function trimTrailingPunct(raw: string): string {
@@ -69,12 +70,8 @@ export function extractCitations(
 }
 
 /** Domain bazında agregasyon — Top Citation Sources widget'ı için. */
-export function aggregateByDomain(
-  citations: { domain: string }[],
-): { domain: string; count: number }[] {
+export function aggregateByDomain(citations: { domain: string }[]): { domain: string; count: number }[] {
   const map = new Map<string, number>();
   for (const c of citations) map.set(c.domain, (map.get(c.domain) ?? 0) + 1);
-  return [...map.entries()]
-    .map(([domain, count]) => ({ domain, count }))
-    .sort((a, b) => b.count - a.count);
+  return [...map.entries()].map(([domain, count]) => ({ domain, count })).sort((a, b) => b.count - a.count);
 }

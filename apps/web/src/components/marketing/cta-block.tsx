@@ -9,7 +9,7 @@ export function CtaBlock({
       İlk 6 ay tüm kullanıcılara <span className="text-brand">tamamen ücretsiz.</span>
     </>
   ),
-  body = 'Kayıt ol, markanı tanıt, sorular ekle. Her sabah uyandığında dashboardun seni bekliyor olacak.',
+  body = 'Kayıt ol, markanı tanıt, sorular ekle. Her sabah uyandığında panelin seni bekliyor olacak.',
   primaryHref = '/register',
   primaryLabel = 'Hemen ücretsiz başla',
   secondaryHref = '/pricing',
@@ -31,7 +31,8 @@ export function CtaBlock({
             className="absolute -top-32 -right-32 w-[480px] h-[480px] rounded-full"
             style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.12), transparent 70%)' }}
           />
-          <div className="absolute -bottom-24 -left-24 w-[360px] h-[360px] rounded-full"
+          <div
+            className="absolute -bottom-24 -left-24 w-[360px] h-[360px] rounded-full"
             style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.08), transparent 70%)' }}
           />
           <div className="relative max-w-3xl">

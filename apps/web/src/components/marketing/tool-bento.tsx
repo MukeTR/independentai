@@ -1,26 +1,50 @@
 import Link from 'next/link';
 import {
-  Gauge, ShieldAlert, PenLine, FileSearch, GitFork, KeyRound, Link2,
-  FileText, Bot, Code, Calculator, ClipboardCheck, CheckCircle2, ArrowRight,
+  Gauge,
+  ShieldAlert,
+  PenLine,
+  FileSearch,
+  GitFork,
+  KeyRound,
+  Link2,
+  FileText,
+  Bot,
+  Code,
+  Calculator,
+  ClipboardCheck,
+  CheckCircle2,
+  ArrowRight,
 } from 'lucide-react';
 import { Reveal } from './reveal';
 
 type Tool = { icon: typeof Gauge; title: string; desc: string; cat: string };
 
 // Mirrors dock-nav.tsx TOOLS — the in-app GEO toolbox, framed for marketing.
-const FEATURED: { icon: typeof Gauge; cat: string; title: string; desc: string; visual: 'gauge' | 'alert' | 'write' }[] = [
+const FEATURED: {
+  icon: typeof Gauge;
+  cat: string;
+  title: string;
+  desc: string;
+  visual: 'gauge' | 'alert' | 'write';
+}[] = [
   {
-    icon: Gauge, cat: 'Denetim', title: 'GEO Audit',
+    icon: Gauge,
+    cat: 'Denetim',
+    title: 'GEO Audit',
     desc: 'Herhangi bir URL’yi tarar, yapay zekaya hazırlık skorunu 0-100 olarak verir — başlık yapısı, şema, içerik netliği, atıf edilebilirlik.',
     visual: 'gauge',
   },
   {
-    icon: ShieldAlert, cat: 'Denetim', title: 'Halüsinasyon Tespiti',
+    icon: ShieldAlert,
+    cat: 'Denetim',
+    title: 'Halüsinasyon Tespiti',
     desc: 'Modellerin markanız hakkında uydurduğu yanlış bilgileri yakalar. Yanlış fiyat, yanlış özellik, yanlış konum — düzeltilmeden önce görün.',
     visual: 'alert',
   },
   {
-    icon: PenLine, cat: 'Üretici', title: 'AEO İçerik Yazıcı',
+    icon: PenLine,
+    cat: 'Üretici',
+    title: 'AEO İçerik Yazıcı',
     desc: 'Hedef soruya yapay zekaların alıntılayacağı şekilde yapılandırılmış, atıf-dostu içerik taslağı üretir. GEO için yazılmış metin.',
     visual: 'write',
   },
@@ -40,9 +64,9 @@ const TOOLS: Tool[] = [
 ];
 
 const CAT_COLOR: Record<string, string> = {
-  'Denetim': 'text-brand-deep',
-  'Keşif': 'text-positive',
-  'Üretici': 'text-warning',
+  Denetim: 'text-brand-deep',
+  Keşif: 'text-positive',
+  Üretici: 'text-warning',
 };
 
 export function ToolBento() {
@@ -61,7 +85,9 @@ export function ToolBento() {
               </div>
               <h3 className="font-display text-[22px] mt-5 leading-tight">{f.title}</h3>
               <p className="text-[13.5px] text-ink-muted mt-2.5 leading-relaxed flex-1">{f.desc}</p>
-              <div className="mt-6"><FeaturedVisual kind={f.visual} /></div>
+              <div className="mt-6">
+                <FeaturedVisual kind={f.visual} />
+              </div>
             </div>
           </Reveal>
         ))}
@@ -74,7 +100,9 @@ export function ToolBento() {
             <div className="card p-4 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center justify-between">
                 <t.icon className="w-[18px] h-[18px] text-brand" />
-                <span className={`text-[9px] font-mono uppercase tracking-wider ${CAT_COLOR[t.cat]} opacity-70`}>{t.cat}</span>
+                <span className={`text-[9px] font-mono uppercase tracking-wider ${CAT_COLOR[t.cat]} opacity-70`}>
+                  {t.cat}
+                </span>
               </div>
               <div className="text-[13.5px] text-ink mt-3 leading-tight font-medium">{t.title}</div>
               <div className="text-[11.5px] text-ink-faint mt-1 leading-snug">{t.desc}</div>
@@ -88,7 +116,10 @@ export function ToolBento() {
           <Link href="/register" className="btn-primary inline-flex items-center gap-2">
             13 aracın tümünü ücretsiz dene <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link href="/features" className="inline-flex items-center gap-1.5 text-[14px] text-brand-deep hover:text-brand">
+          <Link
+            href="/features"
+            className="inline-flex items-center gap-1.5 text-[14px] text-brand-deep hover:text-brand"
+          >
             Tüm özellik detayları <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -117,7 +148,9 @@ function FeaturedVisual({ kind }: { kind: 'gauge' | 'alert' | 'write' }) {
         <div className="flex items-center gap-2 text-[11px] text-danger font-mono">
           <span className="w-1.5 h-1.5 rounded-full bg-danger" /> 2 yanlış bilgi tespit edildi
         </div>
-        <div className="text-[11.5px] text-ink-muted mt-2 leading-snug line-through opacity-70">“Ücretsiz planı yok”</div>
+        <div className="text-[11.5px] text-ink-muted mt-2 leading-snug line-through opacity-70">
+          “Ücretsiz planı yok”
+        </div>
         <div className="text-[11.5px] text-ink mt-0.5 leading-snug">→ İlk 6 ay tüm özellikler ücretsiz</div>
       </div>
     );

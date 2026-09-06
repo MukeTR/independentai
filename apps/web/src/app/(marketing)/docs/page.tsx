@@ -15,12 +15,12 @@ const SECTIONS = [
   {
     icon: Rocket,
     title: 'Hızlı başlangıç',
-    description: '5 dakikada kayıt, onboarding ve ilk dashboard.',
+    description: '5 dakikada kayıt, onboarding ve ilk panel.',
     items: [
       { t: 'Hesap oluşturma', href: '#account' },
       { t: 'Onboarding (3 adım)', href: '#onboarding' },
       { t: 'İlk promptu ekleme', href: '#first-prompt' },
-      { t: 'Dashboard\'u okuma', href: '#reading-dashboard' },
+      { t: 'Paneli okuma', href: '#reading-dashboard' },
     ],
   },
   {
@@ -48,19 +48,18 @@ const SECTIONS = [
   {
     icon: KeyRound,
     title: 'API referansı',
-    description: 'REST API endpoint\'leri ve örnekleri.',
+    description: 'Public API v1 — salt-okunur görünürlük verisi, Bearer token, 60 istek/dk.',
     items: [
       { t: 'Kimlik doğrulama', href: '/docs/api#auth' },
-      { t: 'Brands API', href: '/docs/api#brands' },
-      { t: 'Prompts API', href: '/docs/api#prompts' },
-      { t: 'Metrics API', href: '/docs/api#metrics' },
+      { t: 'GET /api/v1/visibility', href: '/docs/api#endpoint' },
+      { t: 'Rate limit', href: '/docs/api#rate-limit' },
+      { t: 'Hatalar ve örnekler', href: '/docs/api#errors' },
     ],
-    badge: 'yakında',
   },
   {
     icon: Webhook,
     title: 'Webhooks',
-    description: 'Olay tabanlı entegrasyonlar.',
+    description: 'Olay tabanlı entegrasyonlar — planlanıyor, henüz yok.',
     items: [
       { t: 'Webhook kurulumu', href: '/docs/webhooks' },
       { t: 'Olay tipleri', href: '/docs/webhooks#events' },
@@ -84,7 +83,12 @@ const SECTIONS = [
 export default function Docs() {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Dokümantasyon', href: '/docs' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Dokümantasyon', href: '/docs' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
@@ -93,7 +97,7 @@ export default function Docs() {
             Independent AI\'ı <span className="text-brand">en iyi şekilde kullanın.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Kurulum, kullanım ve ileri seviye teknik dokümanlar. API ve webhooks yakında.
+            Kurulum, kullanım ve ileri seviye teknik dokümanlar. Public API yayında; webhooks yakında.
           </p>
         </Container>
       </section>
@@ -112,7 +116,10 @@ export default function Docs() {
                 <ul className="space-y-2 mt-5">
                   {s.items.map((i) => (
                     <li key={i.t}>
-                      <Link href={i.href} className="text-[13px] text-ink-muted hover:text-brand-deep inline-flex items-center gap-1.5 transition">
+                      <Link
+                        href={i.href}
+                        className="text-[13px] text-ink-muted hover:text-brand-deep inline-flex items-center gap-1.5 transition"
+                      >
                         <ArrowRight className="w-3 h-3" />
                         {i.t}
                       </Link>
@@ -129,14 +136,30 @@ export default function Docs() {
       <Section id="account" eyebrow="Hızlı başlangıç" title="5 dakikada başlangıç." className="bg-paper-2/40">
         <div className="space-y-10">
           {[
-            { id: 'account', n: '01', t: 'Hesap oluştur',
-              c: 'İndependentai.space/register adresine gidin. Email, şifre, şirket adı yeterli. Kredi kartı bilgisi istenmez. 6 ay tüm özellikler ücretsiz.' },
-            { id: 'onboarding', n: '02', t: 'Onboarding (3 adım)',
-              c: '1) Marka adınızı + 3-5 alternatif yazımı (alias) girin. 2) 3-5 rakip ekleyin. 3) İzlemek istediğiniz 3-5 örnek soruyu yazın. Süre: ~2 dakika.' },
-            { id: 'first-prompt', n: '03', t: 'İlk promptunu ekle',
-              c: 'Dashboard\'da "Promptlar" sekmesi. Müşterilerinizin AI\'ya sorabileceği soruları yazın. Örn: "Restoranlar için en iyi POS yazılımı". "Şimdi çalıştır" butonu ile hemen sonuç görebilirsin.' },
-            { id: 'reading-dashboard', n: '04', t: 'Dashboard\'u oku',
-              c: 'Görünürlük skoru = soruların % kaçında markanız geçti. Share of Voice = sizin + rakiplerin toplam mention\'ı içinde sizin payınız. Trend = son 30 günde değişim. Modellere göre = ChatGPT vs Claude vs Gemini.' },
+            {
+              id: 'account',
+              n: '01',
+              t: 'Hesap oluştur',
+              c: 'İndependentai.space/register adresine gidin. Email, şifre, şirket adı yeterli. Kredi kartı bilgisi istenmez. 6 ay tüm özellikler ücretsiz.',
+            },
+            {
+              id: 'onboarding',
+              n: '02',
+              t: 'Onboarding (3 adım)',
+              c: '1) Marka adınızı + 3-5 alternatif yazımı (alias) girin. 2) 3-5 rakip ekleyin. 3) İzlemek istediğiniz 3-5 örnek soruyu yazın. Süre: ~2 dakika.',
+            },
+            {
+              id: 'first-prompt',
+              n: '03',
+              t: 'İlk promptunu ekle',
+              c: 'Panelde "Promptlar" sekmesi. Müşterilerinizin AI\'a sorabileceği soruları yazın. Örn: "Restoranlar için en iyi POS yazılımı". "Şimdi çalıştır" butonu ile hemen sonuç görebilirsin.',
+            },
+            {
+              id: 'reading-dashboard',
+              n: '04',
+              t: 'Paneli oku',
+              c: "Görünürlük skoru = soruların % kaçında markanız geçti. Share of Voice = sizin + rakiplerin toplam mention'ı içinde sizin payınız. Trend = son 30 günde değişim. Modellere göre = ChatGPT vs Claude vs Gemini.",
+            },
           ].map((s) => (
             <div key={s.id} id={s.id} className="border-l-2 border-brand/40 pl-6">
               <div className="font-mono text-[11px] tracking-eyebrow text-brand">{s.n}</div>

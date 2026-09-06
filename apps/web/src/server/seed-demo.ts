@@ -11,8 +11,16 @@ const DEMO_EMAIL = 'demo@independentai.space';
 const DEMO_PASSWORD = 'demo1234';
 
 const CITATION_DOMAINS = [
-  'linkedin.com', 'g2.com', 'capterra.com', 'reddit.com', 'trustpilot.com',
-  'medium.com', 'youtube.com', 'quora.com', 'producthunt.com', 'trendyol.com',
+  'linkedin.com',
+  'g2.com',
+  'capterra.com',
+  'reddit.com',
+  'trustpilot.com',
+  'medium.com',
+  'youtube.com',
+  'quora.com',
+  'producthunt.com',
+  'trendyol.com',
 ];
 
 const PROVIDERS: { provider: AiProvider; modelName: string }[] = [
@@ -49,7 +57,13 @@ async function runChunked<T>(items: (() => Promise<T>)[], size = 20): Promise<vo
   }
 }
 
-export async function seedDemoData(): Promise<{ tenantId: string; runs: number; days: number; email: string; password: string }> {
+export async function seedDemoData(): Promise<{
+  tenantId: string;
+  runs: number;
+  days: number;
+  email: string;
+  password: string;
+}> {
   // 1) Demo tenant'ı bul/oluştur (kullanıcı e-postasıyla)
   const existingUser = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
   let tenantId: string;
@@ -84,7 +98,13 @@ export async function seedDemoData(): Promise<{ tenantId: string; runs: number; 
 
   // 2) Marka + rakipler + promptlar
   const ownBrand = await prisma.brand.create({
-    data: { tenantId, name: 'KarPanel', aliases: ['Kar Panel', 'karpanel.com'], website: 'https://karpanel.com', isOwn: true },
+    data: {
+      tenantId,
+      name: 'KarPanel',
+      aliases: ['Kar Panel', 'karpanel.com'],
+      website: 'https://karpanel.com',
+      isOwn: true,
+    },
   });
   for (const c of COMPETITORS) await prisma.competitor.create({ data: { tenantId, ...c } });
 
@@ -113,7 +133,16 @@ export async function seedDemoData(): Promise<{ tenantId: string; runs: number; 
         tasks.push(() => {
           if (errored) {
             return prisma.modelRun.create({
-              data: { promptId: prompt.id, provider, modelName: 'error', responseText: '', errorMessage: 'rate_limit', latencyMs: 0, runDate, isMocked: false },
+              data: {
+                promptId: prompt.id,
+                provider,
+                modelName: 'error',
+                responseText: '',
+                errorMessage: 'rate_limit',
+                latencyMs: 0,
+                runDate,
+                isMocked: false,
+              },
             });
           }
 
@@ -123,31 +152,64 @@ export async function seedDemoData(): Promise<{ tenantId: string; runs: number; 
             ? `${prompt.text} için KarPanel öne çıkıyor; ayrıca Adisyo ve simpra da değerlendirilebilir. KarPanel Uber Eats entegrasyonuyla reçete bazlı kar-zarar sunar.`
             : `${prompt.text} için Adisyo, Logo Restoran ve simpra önerilebilir.`;
 
-          const mentions: { mentionName: string; isOwnBrand?: boolean; isCompetitor?: boolean; brandId?: string; position: number; sentiment: Sentiment; mentionType: MentionType; snippet: string }[] = [];
+          const mentions: {
+            mentionName: string;
+            isOwnBrand?: boolean;
+            isCompetitor?: boolean;
+            brandId?: string;
+            position: number;
+            sentiment: Sentiment;
+            mentionType: MentionType;
+            snippet: string;
+          }[] = [];
           let pos = 1;
           if (ownMentioned) {
             mentions.push({
-              brandId: ownBrand.id, mentionName: 'KarPanel', isOwnBrand: true, position: pos++,
-              sentiment, mentionType, snippet: 'KarPanel Uber Eats entegrasyonuyla reçete bazlı kar-zarar sunar.',
+              brandId: ownBrand.id,
+              mentionName: 'KarPanel',
+              isOwnBrand: true,
+              position: pos++,
+              sentiment,
+              mentionType,
+              snippet: 'KarPanel Uber Eats entegrasyonuyla reçete bazlı kar-zarar sunar.',
             });
           }
           const comps = ownMentioned ? ['Adisyo', 'simpra'] : ['Adisyo', 'Logo Restoran', 'simpra'];
           for (const cname of comps) {
-            mentions.push({ mentionName: cname, isCompetitor: true, position: pos++, sentiment: 'NEUTRAL', mentionType: 'LISTED', snippet: `${cname} Türkiye'de yaygın kullanılan çözümlerden biri.` });
+            mentions.push({
+              mentionName: cname,
+              isCompetitor: true,
+              position: pos++,
+              sentiment: 'NEUTRAL',
+              mentionType: 'LISTED',
+              snippet: `${cname} Türkiye'de yaygın kullanılan çözümlerden biri.`,
+            });
           }
 
           // citation'lar (domain havuzundan 2-3)
           const nCit = 2 + (idx % 2);
           const citations = Array.from({ length: nCit }, (_, k) => {
             const domain = pick(CITATION_DOMAINS, idx + k);
-            return { tenantId, url: `https://${domain}/karpanel-inceleme`, domain, title: `${domain} kaynağı`, runDate };
+            return {
+              tenantId,
+              url: `https://${domain}/karpanel-inceleme`,
+              domain,
+              title: `${domain} kaynağı`,
+              runDate,
+            };
           });
 
           return prisma.modelRun.create({
             data: {
-              promptId: prompt.id, provider, modelName, responseText,
-              tokensUsed: 200 + (idx % 120), costUsd: 0.0006 + (idx % 10) * 0.0001,
-              latencyMs: 700 + (idx % 1400), runDate, isMocked: false,
+              promptId: prompt.id,
+              provider,
+              modelName,
+              responseText,
+              tokensUsed: 200 + (idx % 120),
+              costUsd: 0.0006 + (idx % 10) * 0.0001,
+              latencyMs: 700 + (idx % 1400),
+              runDate,
+              isMocked: false,
               mentions: { create: mentions },
               citationLinks: { create: citations },
             },

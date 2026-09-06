@@ -17,7 +17,7 @@ const PROVIDER_NOTES: Record<Provider, { how: string; tips: string[] }> = {
     tips: [
       'Reddit ve sektör forumlarındaki organik bahsedilmeleri artırın — ChatGPT bunlara ağırlık verir.',
       'Karşılaştırma ve "en iyi X" listelerinde yer alın; ChatGPT bu formatları özetlemeyi sever.',
-      'Bing Webmaster Tools üzerinden indekslenmenizi hızlandırın (web arama Bing\'i kullanır).',
+      "Bing Webmaster Tools üzerinden indekslenmenizi hızlandırın (web arama Bing'i kullanır).",
     ],
   },
   ANTHROPIC: {
@@ -32,7 +32,7 @@ const PROVIDER_NOTES: Record<Provider, { how: string; tips: string[] }> = {
     how: 'Gemini, Google arama altyapısı ve Knowledge Graph ile en sıkı entegre modeldir. Markanın entity olarak tanınması (Knowledge Panel, tutarlı NAP, schema.org) görünürlüğü doğrudan belirler.',
     tips: [
       'Organization schema.org işaretlemesi ve tutarlı marka bilgisi (NAP) ekleyin.',
-      'Google\'da güçlü organik sıralama, Gemini görünürlüğünüzü besler — klasik SEO hâlâ önemli.',
+      "Google'da güçlü organik sıralama, Gemini görünürlüğünüzü besler — klasik SEO hâlâ önemli.",
       'Wikidata/Wikipedia ve güvenilir dizinlerde entity sinyallerinizi güçlendirin.',
     ],
   },
@@ -53,7 +53,12 @@ export function RankCheckerPage({
 }) {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: `${label} Rank Checker`, href: path }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: `${label} Rank Checker`, href: path },
+        ]}
+      />
       <Section className="pt-16 lg:pt-24">
         <Container>
           <div className="max-w-3xl mx-auto text-center">
@@ -62,8 +67,8 @@ export function RankCheckerPage({
               Markanız <span style={{ color: accent }}>{label}</span>'de görünüyor mu?
             </h1>
             <p className="text-[16px] text-ink-muted mt-5">
-              Markanızı ve müşterilerinizin sorabileceği bir soruyu girin. {label}'e gerçek zamanlı soralım,
-              markanızın anılıp anılmadığını, kaçıncı sırada geçtiğini ve yerine kimlerin önerildiğini gösterelim.
+              Markanızı ve müşterilerinizin sorabileceği bir soruyu girin. {label}'e gerçek zamanlı soralım, markanızın
+              anılıp anılmadığını, kaçıncı sırada geçtiğini ve yerine kimlerin önerildiğini gösterelim.
             </p>
           </div>
 
@@ -84,9 +89,9 @@ export function RankCheckerPage({
               verir; ama görünürlük zamanla ve modeller arası değişir.
             </p>
             <p className="text-[15px] text-ink-muted mt-4 leading-relaxed">
-              Independent AI bu fotoğrafı sürekli çeker: ChatGPT, Claude ve Gemini'de günlük takip, rakip karşılaştırması,
-              sentiment ve trend analizi. Eksik kaldığınız soruları ve hangi kaynaklara atıf verildiğini gösterir;
-              GEO Audit ile sayfanızı puanlar. İlk 6 ay tüm kullanıcılara ücretsiz.
+              Independent AI bu fotoğrafı sürekli çeker: ChatGPT, Claude ve Gemini'de günlük takip, rakip
+              karşılaştırması, sentiment ve trend analizi. Eksik kaldığınız soruları ve hangi kaynaklara atıf
+              verildiğini gösterir; GEO Audit ile sayfanızı puanlar. İlk 6 ay tüm kullanıcılara ücretsiz.
             </p>
 
             <h3 className="font-display text-[20px] tracking-tight mt-10">{label} markaları nasıl seçiyor?</h3>
@@ -96,7 +101,9 @@ export function RankCheckerPage({
             <ul className="mt-3 space-y-2.5">
               {PROVIDER_NOTES[provider].tips.map((tip, i) => (
                 <li key={i} className="flex gap-3 text-[15px] text-ink-muted leading-relaxed">
-                  <span className="shrink-0 font-mono text-[12px] mt-1" style={{ color: accent }}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className="shrink-0 font-mono text-[12px] mt-1" style={{ color: accent }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
                   <span>{tip}</span>
                 </li>
               ))}

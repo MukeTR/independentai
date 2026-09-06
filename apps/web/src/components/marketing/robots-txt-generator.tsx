@@ -46,12 +46,15 @@ export function RobotsTxtGenerator() {
     lines.push('');
     lines.push('User-Agent: *');
     lines.push('Allow: /');
-    const disallows = disallowText.split('\n').map((s) => s.trim()).filter(Boolean);
+    const disallows = disallowText
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean);
     for (const d of disallows) lines.push(`Disallow: ${d}`);
     lines.push('');
 
     // AI bots
-    lines.push('# AI / LLM crawler\'ları');
+    lines.push("# AI / LLM crawler'ları");
     for (const bot of AI_BOTS) {
       const allowed = aiBotsState[bot.id];
       lines.push(`User-Agent: ${bot.name}`);
@@ -62,7 +65,7 @@ export function RobotsTxtGenerator() {
     // Search bots — only if any are disabled (default allow)
     const explicitSearch = SEARCH_BOTS.filter((b) => !searchBotsState[b.id]);
     if (explicitSearch.length > 0) {
-      lines.push('# Arama motoru bot\'ları (explicit kapalı)');
+      lines.push("# Arama motoru bot'ları (explicit kapalı)");
       for (const bot of explicitSearch) {
         lines.push(`User-Agent: ${bot.name}`);
         lines.push('Disallow: /');
@@ -114,7 +117,9 @@ export function RobotsTxtGenerator() {
         <Bot className="w-5 h-5 text-brand" />
         <div>
           <div className="font-display text-[18px] tracking-tight">robots.txt Generator</div>
-          <div className="text-[11px] text-ink-faint font-mono">AI bot\'ları dahil · GEO uyumlu · sitemap referans\'lı</div>
+          <div className="text-[11px] text-ink-faint font-mono">
+            AI bot\'ları dahil · GEO uyumlu · sitemap referans\'lı
+          </div>
         </div>
       </div>
 
@@ -125,14 +130,29 @@ export function RobotsTxtGenerator() {
             <div className="flex items-center justify-between mb-3">
               <label className="eyebrow">AI / LLM crawler\'ları</label>
               <div className="flex gap-2">
-                <button type="button" onClick={() => toggleAll('ai', true)} className="text-[10px] text-brand-deep hover:text-brand font-mono">hepsini aç</button>
+                <button
+                  type="button"
+                  onClick={() => toggleAll('ai', true)}
+                  className="text-[10px] text-brand-deep hover:text-brand font-mono"
+                >
+                  hepsini aç
+                </button>
                 <span className="text-ink-faint">·</span>
-                <button type="button" onClick={() => toggleAll('ai', false)} className="text-[10px] text-ink-faint hover:text-ink font-mono">hepsini kapat</button>
+                <button
+                  type="button"
+                  onClick={() => toggleAll('ai', false)}
+                  className="text-[10px] text-ink-faint hover:text-ink font-mono"
+                >
+                  hepsini kapat
+                </button>
               </div>
             </div>
             <div className="space-y-2">
               {AI_BOTS.map((bot) => (
-                <label key={bot.id} className="flex items-start gap-3 cursor-pointer hover:bg-paper-2/50 px-2 py-1.5 rounded">
+                <label
+                  key={bot.id}
+                  className="flex items-start gap-3 cursor-pointer hover:bg-paper-2/50 px-2 py-1.5 rounded"
+                >
                   <input
                     type="checkbox"
                     checked={aiBotsState[bot.id] ?? false}
@@ -156,7 +176,10 @@ export function RobotsTxtGenerator() {
             </div>
             <div className="space-y-2">
               {SEARCH_BOTS.map((bot) => (
-                <label key={bot.id} className="flex items-start gap-3 cursor-pointer hover:bg-paper-2/50 px-2 py-1.5 rounded">
+                <label
+                  key={bot.id}
+                  className="flex items-start gap-3 cursor-pointer hover:bg-paper-2/50 px-2 py-1.5 rounded"
+                >
                   <input
                     type="checkbox"
                     checked={searchBotsState[bot.id] ?? false}
@@ -206,7 +229,10 @@ export function RobotsTxtGenerator() {
             {output}
           </pre>
           <div className="px-7 py-4 border-t-hairline border-hairline flex items-center gap-3 flex-wrap">
-            <button onClick={copyToClipboard} className="btn-primary !py-2 !px-4 inline-flex items-center gap-2 text-[13px]">
+            <button
+              onClick={copyToClipboard}
+              className="btn-primary !py-2 !px-4 inline-flex items-center gap-2 text-[13px]"
+            >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? 'Kopyalandı!' : 'Kopyala'}
             </button>
@@ -222,9 +248,12 @@ export function RobotsTxtGenerator() {
         <div className="flex items-start gap-3">
           <Sparkles className="w-4 h-4 text-brand mt-0.5 shrink-0" />
           <div className="text-[12.5px] text-ink-muted leading-relaxed">
-            Dosyayı sitenizin köküne yükleyin: <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">https://siteniz.com/robots.txt</code>
-            {' '}— GPTBot, ClaudeBot, PerplexityBot gibi AI crawler\'ları explicit allow ederek
-            GEO görünürlüğünüzü maksimuma çıkarın.
+            Dosyayı sitenizin köküne yükleyin:{' '}
+            <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">
+              https://siteniz.com/robots.txt
+            </code>{' '}
+            — GPTBot, ClaudeBot, PerplexityBot gibi AI crawler\'ları explicit allow ederek GEO görünürlüğünüzü maksimuma
+            çıkarın.
           </div>
         </div>
       </div>

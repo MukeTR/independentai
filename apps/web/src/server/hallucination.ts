@@ -8,8 +8,8 @@ import { completeJSON, hasLLM } from '@independentai/ai';
 export type Hallucination = {
   modelRunId: string;
   provider: string;
-  claim: string;       // AI'ın yanlış iddiası
-  correction: string;  // doğrusu
+  claim: string; // AI'ın yanlış iddiası
+  correction: string; // doğrusu
   severity: 'Yüksek' | 'Orta' | 'Düşük';
 };
 
@@ -39,7 +39,7 @@ export async function scanHallucinations(tenantId: string): Promise<Hallucinatio
     where: {
       prompt: { tenantId },
       runDate: { gte: since },
-      errorMessage: null,
+      status: 'SUCCESS',
       mentions: { some: { isOwnBrand: true } },
     },
     orderBy: { runDate: 'desc' },

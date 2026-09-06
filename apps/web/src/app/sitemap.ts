@@ -8,52 +8,64 @@ import { POSTS } from '@/data/blog-posts';
  *   canonical, "discovered, not indexed" tuzağını giderir.
  * - Statik sayfalarda SABİT lastmod (her deploy'da değişen new Date() değil) — Google'ın
  *   lastmod sinyaline güvenini korur.
- * - "Yakında" stub'ları (docs/api, docs/webhooks) noindex olduğu için listelenmez.
+ * - "Yakında" stub'ı (docs/webhooks) noindex olduğu için listelenmez; docs/api artık gerçek doküman.
+ * - lastmod sayfa bazlı ve içerik tabanlıdır: yalnızca metni gerçekten değişen sayfa bump edilir.
  */
 
-// Statik içeriğin gerçekten en son değiştiği tarih. Deploy'da değişmemeli; içerik
-// güncellenince elle bump edilir (sahte tazelik churn'ünü önler).
+// Statik içeriğin varsayılan "en son değişti" tarihi. Deploy'da değişmemeli; bir sayfanın
+// içeriği güncellenince o sayfanın `lastmod` alanı elle bump edilir (sahte tazelik churn'ünü önler).
 const STATIC_LASTMOD = '2026-06-14';
+// 2026-09-06: Public API dokümantasyonu, yetenek matrisine göre dürüstlük düzeltmeleri.
+const CLAIMS_REVISION = '2026-09-06';
 
 const PAGE_SIZE = 12;
 
-const STATIC_PAGES = [
+type StaticPage = {
+  path: string;
+  priority: number;
+  change: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
+  /** İçeriğin en son değiştiği tarih (ISO). Boşsa STATIC_LASTMOD. */
+  lastmod?: string;
+};
+
+const STATIC_PAGES: StaticPage[] = [
   // Core marketing
-  { path: '/', priority: 1.0, change: 'weekly' as const },
-  { path: '/features', priority: 0.8, change: 'weekly' as const },
-  { path: '/pricing', priority: 0.8, change: 'monthly' as const },
-  { path: '/how-it-works', priority: 0.7, change: 'monthly' as const },
-  { path: '/use-cases', priority: 0.7, change: 'monthly' as const },
+  { path: '/', priority: 1.0, change: 'weekly', lastmod: CLAIMS_REVISION },
+  { path: '/features', priority: 0.8, change: 'weekly', lastmod: CLAIMS_REVISION },
+  { path: '/pricing', priority: 0.8, change: 'monthly', lastmod: CLAIMS_REVISION },
+  { path: '/how-it-works', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
+  { path: '/use-cases', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
 
   // Company
-  { path: '/about', priority: 0.5, change: 'monthly' as const },
-  { path: '/contact', priority: 0.4, change: 'yearly' as const },
+  { path: '/about', priority: 0.5, change: 'monthly' },
+  { path: '/contact', priority: 0.4, change: 'yearly' },
 
   // Blog
-  { path: '/blog', priority: 0.7, change: 'daily' as const },
-  { path: '/blog/arsiv', priority: 0.6, change: 'weekly' as const },
+  { path: '/blog', priority: 0.7, change: 'daily' },
+  { path: '/blog/arsiv', priority: 0.6, change: 'weekly' },
 
   // Resources
-  { path: '/resources', priority: 0.7, change: 'monthly' as const },
-  { path: '/resources/geo-101', priority: 0.7, change: 'monthly' as const },
-  { path: '/resources/glossary', priority: 0.6, change: 'monthly' as const },
+  { path: '/resources', priority: 0.7, change: 'monthly' },
+  { path: '/resources/geo-101', priority: 0.7, change: 'monthly' },
+  { path: '/resources/glossary', priority: 0.6, change: 'monthly' },
 
-  // Docs (yalnızca canlı olanlar — api/webhooks "yakında" stub'ları noindex)
-  { path: '/docs', priority: 0.5, change: 'monthly' as const },
+  // Docs (yalnızca canlı olanlar — docs/webhooks "yakında" stub'ı noindex)
+  { path: '/docs', priority: 0.5, change: 'monthly', lastmod: CLAIMS_REVISION },
+  { path: '/docs/api', priority: 0.6, change: 'monthly', lastmod: CLAIMS_REVISION },
 
   // Ücretsiz public araçlar (lead-gen)
-  { path: '/arac/chatgpt-rank-checker', priority: 0.7, change: 'monthly' as const },
-  { path: '/arac/claude-rank-checker', priority: 0.7, change: 'monthly' as const },
-  { path: '/arac/gemini-rank-checker', priority: 0.7, change: 'monthly' as const },
+  { path: '/arac/chatgpt-rank-checker', priority: 0.7, change: 'monthly' },
+  { path: '/arac/claude-rank-checker', priority: 0.7, change: 'monthly' },
+  { path: '/arac/gemini-rank-checker', priority: 0.7, change: 'monthly' },
 
   // Changelog
-  { path: '/changelog', priority: 0.4, change: 'weekly' as const },
+  { path: '/changelog', priority: 0.4, change: 'weekly', lastmod: CLAIMS_REVISION },
 
   // Legal
-  { path: '/legal/privacy', priority: 0.2, change: 'yearly' as const },
-  { path: '/legal/terms', priority: 0.2, change: 'yearly' as const },
-  { path: '/legal/kvkk', priority: 0.2, change: 'yearly' as const },
-  { path: '/legal/cookies', priority: 0.2, change: 'yearly' as const },
+  { path: '/legal/privacy', priority: 0.2, change: 'yearly' },
+  { path: '/legal/terms', priority: 0.2, change: 'yearly' },
+  { path: '/legal/kvkk', priority: 0.2, change: 'yearly' },
+  { path: '/legal/cookies', priority: 0.2, change: 'yearly' },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -61,7 +73,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.map((page) => ({
     url: `${SITE_URL}${page.path}`,
-    lastModified: staticLastmod,
+    lastModified: page.lastmod ? new Date(page.lastmod) : staticLastmod,
     changeFrequency: page.change,
     priority: page.priority,
   }));
@@ -71,15 +83,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
    * Her sayfa kendi kendine canonical olduğu için indekslenebilir gerçek hedeflerdir.
    */
   const totalPages = Math.ceil(POSTS.length / PAGE_SIZE);
-  const blogPagination: MetadataRoute.Sitemap = Array.from(
-    { length: Math.max(totalPages - 1, 0) },
-    (_, index) => ({
-      url: `${SITE_URL}/blog/sayfa/${index + 2}`,
-      lastModified: staticLastmod,
-      changeFrequency: 'weekly',
-      priority: 0.3,
-    }),
-  );
+  const blogPagination: MetadataRoute.Sitemap = Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => ({
+    url: `${SITE_URL}/blog/sayfa/${index + 2}`,
+    lastModified: staticLastmod,
+    changeFrequency: 'weekly',
+    priority: 0.3,
+  }));
 
   /**
    * Blog yazıları — lastmod gerçek yayın tarihinden (sabit, dürüst).

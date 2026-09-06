@@ -1,51 +1,47 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { NextResponse } from 'next/server';
+import { route } from '@/server/route';
+import { readJson, ClientError } from '@/server/errors';
 import { prisma } from '@/server/prisma';
-import { getSession } from '@/server/session';
+import { getActor } from '@/server/authz';
 import { hydrateEnvFromConfig } from '@/server/system-config';
-import { runGeoAudit } from '@/server/geo-audit';
-import { rateLimit, clientIp } from '@/server/rate-limit';
+import { runGeoAudit, normalizeAuditUrl } from '@/server/geo-audit';
+import { parsePublicUrl, UnsafeUrlError } from '@/server/safe-fetch';
+import { enforceRateLimit, LIMITS } from '@/server/rate-limit';
+import { log } from '@/server/logger';
 
 export const maxDuration = 60;
 
-const schema = z.object({ url: z.string().min(3).max(300) });
+export const POST = route('tools.geo_audit', async (req) => {
+  const actor = await getActor();
+  if (actor) await enforceRateLimit(req, LIMITS.tool, `tenant:${actor.tenantId}`);
+  else await enforceRateLimit(req, LIMITS.publicAudit);
 
-export async function POST(req: NextRequest) {
+  const body = await readJson<{ url?: unknown }>(req);
+  const raw = typeof body.url === 'string' ? body.url : '';
+  if (raw.length < 3 || raw.length > 300) throw new ClientError('Geçersiz URL');
+  const url = normalizeAuditUrl(raw);
   try {
-    const session = await getSession();
-    // Public lead-magnet: giriş yoksa IP başına saatlik limit (DoS + LLM maliyet koruması)
-    if (!session && rateLimit(`geo-audit:${clientIp(req)}`, 10, 60 * 60 * 1000)) {
-      return NextResponse.json({ message: 'Saatlik limit aşıldı. Tam erişim için kayıt olun.' }, { status: 429 });
-    }
-
-    const body = await req.json();
-    const parsed = schema.safeParse(body);
-    if (!parsed.success) return NextResponse.json({ message: 'Geçersiz URL' }, { status: 400 });
-
-    await hydrateEnvFromConfig(); // LLM comprehension pass'i için key'ler
-    const result = await runGeoAudit(parsed.data.url);
-
-    // Sonucu kaydet — best-effort: DB yazımı patlasa bile kullanıcı denetim sonucunu alır.
-    try {
-      await prisma.audit.create({
-        data: {
-          tenantId: session?.tenantId ?? null,
-          kind: 'GEO',
-          url: result.url,
-          overallScore: result.overallScore,
-          breakdown: result.breakdown,
-          findings: result.findings,
-        },
-      });
-    } catch (e) {
-      console.error('[geo-audit persist]', e);
-    }
-
-    return NextResponse.json(result);
+    parsePublicUrl(url);
   } catch (err) {
-    return NextResponse.json(
-      { message: err instanceof Error ? err.message : 'Denetim başarısız' },
-      { status: 500 },
-    );
+    throw new ClientError(err instanceof UnsafeUrlError ? err.message : 'Geçersiz URL');
   }
-}
+
+  await hydrateEnvFromConfig();
+  const result = await runGeoAudit(url);
+
+  try {
+    await prisma.audit.create({
+      data: {
+        tenantId: actor?.tenantId ?? null,
+        kind: 'GEO',
+        url: result.url,
+        overallScore: result.overallScore,
+        breakdown: result.breakdown,
+        findings: result.findings,
+      },
+    });
+  } catch (err) {
+    log.error('geo-audit.persist_failed', { err });
+  }
+  return NextResponse.json(result);
+});

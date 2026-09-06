@@ -16,37 +16,37 @@ import { ArrowLeft, Sparkles } from 'lucide-react';
 // AI'a doğrudan konuşmak isteyen okuyucu için inline tool.
 const INLINE_TOOLS: Record<string, { title: string; body: string; component: React.ComponentType }> = {
   'llms-txt-rehberi-2026': {
-    title: 'Kendi llms.txt\'ini şimdi oluştur',
+    title: "Kendi llms.txt'ini şimdi oluştur",
     body: 'Aşağıdaki interaktif araç ile markanın bilgilerini gir, llms.txt dosyanı anında indir. 30 saniyede hazır.',
     component: LlmsTxtGenerator,
   },
   'llms-txt-nedir-nasil-kurulur': {
     title: 'llms.txt jeneratörü',
-    body: 'Formu doldur, kendi markana özel llms.txt\'ini anında üret ve indir.',
+    body: "Formu doldur, kendi markana özel llms.txt'ini anında üret ve indir.",
     component: LlmsTxtGenerator,
   },
   'ai-seo-checklist-2026': {
-    title: '25 maddelik checklist\'i şimdi kontrol et',
+    title: "25 maddelik checklist'i şimdi kontrol et",
     body: 'Aşağıdaki interaktif checklist ile sitenizin GEO sağlığını ölç. Skor + indirilebilir rapor.',
     component: AiSeoChecklist,
   },
   'ai-visibility-score-nasil-hesaplanir': {
-    title: 'Kendi Visibility Score\'unu hesapla',
+    title: "Kendi Visibility Score'unu hesapla",
     body: 'Promptlarınızı ve mention sayılarınızı gir, anlık Visibility Score + Share of Voice çıktısı al.',
     component: VisibilityCalculator,
   },
   'ai-gorunurlugu-icin-structured-data-rehberi': {
     title: 'Organization JSON-LD üret',
-    body: 'Şirket bilgilerinizi gir, schema.org formatında JSON-LD\'nizi anında üret ve HTML\'inize ekle.',
+    body: "Şirket bilgilerinizi gir, schema.org formatında JSON-LD'nizi anında üret ve HTML'inize ekle.",
     component: SchemaGenerator,
   },
   'schema-markup-geoya-katki-saglar-mi': {
     title: 'Organization Schema Generator',
-    body: 'Schema markup\'ı düşünmek yerine üret. Form doldur, HTML\'e yapıştır.',
+    body: "Schema markup'ı düşünmek yerine üret. Form doldur, HTML'e yapıştır.",
     component: SchemaGenerator,
   },
   'geo-audit-nasil-yapilir': {
-    title: 'GEO Audit\'ini şimdi başlat',
+    title: "GEO Audit'ini şimdi başlat",
     body: '10 adımlık denetimi sayfayı kapatmadan tamamla. Notlarınla beraber markdown rapor olarak indir.',
     component: GeoAuditChecklist,
   },
@@ -117,12 +117,14 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <span className="text-[12px] text-ink-faint font-mono">{post.readTimeMin} dk okuma</span>
               <span className="text-[12px] text-ink-faint">·</span>
               <time dateTime={post.publishedAt} className="text-[12px] text-ink-faint">
-                {new Date(post.publishedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {new Date(post.publishedAt).toLocaleDateString('tr-TR', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
               </time>
             </div>
-            <h1 className="font-display text-[40px] lg:text-[52px] tracking-tight mt-5 leading-[1.05]">
-              {post.title}
-            </h1>
+            <h1 className="font-display text-[40px] lg:text-[52px] tracking-tight mt-5 leading-[1.05]">{post.title}</h1>
             <p className="text-[17px] text-ink-muted mt-5 leading-relaxed">{post.excerpt}</p>
             <div className="text-[12px] text-ink-faint mt-6">
               {post.author.name} · <span className="font-mono">{post.author.role}</span>
@@ -133,15 +135,29 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {post.body.map((b, i) => {
               switch (b.type) {
                 case 'h2':
-                  return <h2 key={i} className="font-display text-[26px] tracking-tight mt-10 mb-2">{b.text}</h2>;
+                  return (
+                    <h2 key={i} className="font-display text-[26px] tracking-tight mt-10 mb-2">
+                      {b.text}
+                    </h2>
+                  );
                 case 'h3':
-                  return <h3 key={i} className="font-display text-[20px] tracking-tight mt-8 mb-1">{b.text}</h3>;
+                  return (
+                    <h3 key={i} className="font-display text-[20px] tracking-tight mt-8 mb-1">
+                      {b.text}
+                    </h3>
+                  );
                 case 'p':
-                  return <p key={i} className="text-ink-muted">{b.text}</p>;
+                  return (
+                    <p key={i} className="text-ink-muted">
+                      {b.text}
+                    </p>
+                  );
                 case 'ul':
                   return (
                     <ul key={i} className="list-disc pl-6 space-y-2 text-ink-muted">
-                      {b.items?.map((it, j) => <li key={j}>{it}</li>)}
+                      {b.items?.map((it, j) => (
+                        <li key={j}>{it}</li>
+                      ))}
                     </ul>
                   );
                 case 'quote':
@@ -188,7 +204,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               {getRelatedPosts(post.slug, 6).map((p) => (
                 <Link key={p.slug} href={`/blog/${p.slug}`} className="block hover:text-brand-deep transition py-1">
                   <div className="text-[15px] leading-snug">{p.title}</div>
-                  <div className="text-[11px] text-ink-faint font-mono mt-1">{p.category} · {p.readTimeMin} dk</div>
+                  <div className="text-[11px] text-ink-faint font-mono mt-1">
+                    {p.category} · {p.readTimeMin} dk
+                  </div>
                 </Link>
               ))}
             </div>

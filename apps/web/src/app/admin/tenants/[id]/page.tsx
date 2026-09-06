@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireSuperAdmin, getTenantDetail } from '@/server/admin';
+import { computeEntitlement } from '@/server/entitlement';
+import { TenantPlanForm } from './plan-form';
 
 export default async function AdminTenantDetail({ params }: { params: Promise<{ id: string }> }) {
   await requireSuperAdmin();
@@ -8,14 +10,14 @@ export default async function AdminTenantDetail({ params }: { params: Promise<{ 
   const tenant = await getTenantDetail(id);
   if (!tenant) notFound();
 
-  const trialDaysLeft = Math.max(
-    0,
-    Math.ceil((tenant.trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-  );
+  const ent = computeEntitlement({ plan: tenant.plan, trialEndsAt: tenant.trialEndsAt });
+  const trialDaysLeft = ent.trialDaysLeft;
 
   return (
     <div className="max-w-5xl">
-      <Link href="/admin/tenants" className="text-[12px] text-ink-faint hover:text-ink">← Tenants</Link>
+      <Link href="/admin/tenants" className="text-[12px] text-ink-faint hover:text-ink">
+        ← Tenants
+      </Link>
       <div className="eyebrow mt-4">Tenant</div>
       <h1 className="font-display text-[36px] tracking-tight mt-2">{tenant.name}</h1>
       <div className="flex items-center gap-3 mt-3 text-[12px] text-ink-muted font-mono">
@@ -26,9 +28,17 @@ export default async function AdminTenantDetail({ params }: { params: Promise<{ 
         <span className={trialDaysLeft > 30 ? 'text-positive' : trialDaysLeft > 7 ? 'text-warning' : 'text-danger'}>
           trial: {trialDaysLeft} gün kaldı
         </span>
+        <span>·</span>
+        <span>plan: {tenant.plan}</span>
+        <span>·</span>
+        <span className={ent.active ? 'text-positive' : 'text-danger'}>{ent.active ? 'aktif' : 'salt-okunur'}</span>
+        <span>·</span>
+        <span>{tenant.onboardingCompletedAt ? 'kurulum tamam' : 'kurulum eksik'}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-5 mt-8">
+      <TenantPlanForm tenantId={tenant.id} plan={tenant.plan} trialEndsAt={tenant.trialEndsAt.toISOString()} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8">
         {/* Users */}
         <div className="card p-6">
           <div className="eyebrow">Kullanıcılar ({tenant.users.length})</div>
@@ -59,10 +69,14 @@ export default async function AdminTenantDetail({ params }: { params: Promise<{ 
             ))}
           </div>
           <div className="mt-5">
-            <div className="text-[11px] text-ink-faint uppercase tracking-wider mb-2">Rakipler ({tenant.competitors.length})</div>
+            <div className="text-[11px] text-ink-faint uppercase tracking-wider mb-2">
+              Rakipler ({tenant.competitors.length})
+            </div>
             <div className="flex flex-wrap gap-2">
               {tenant.competitors.map((c) => (
-                <span key={c.id} className="chip comp">{c.name}</span>
+                <span key={c.id} className="chip comp">
+                  {c.name}
+                </span>
               ))}
             </div>
           </div>

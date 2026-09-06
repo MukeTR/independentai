@@ -13,7 +13,8 @@ const TOTAL_PAGES = Math.max(1, Math.ceil(POSTS.length / PAGE_SIZE));
 
 export const metadata = buildMetadata({
   title: 'Blog — GEO, AI ve marka stratejisi',
-  description: 'GEO (Generative Engine Optimization), AI brand visibility ve dijital pazarlama hakkında detaylı yazılar.',
+  description:
+    'GEO (Generative Engine Optimization), AI brand visibility ve dijital pazarlama hakkında detaylı yazılar.',
   path: '/blog',
 });
 
@@ -23,7 +24,12 @@ export default function Blog() {
 
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Blog', href: '/blog' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Blog', href: '/blog' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
@@ -32,8 +38,8 @@ export default function Blog() {
             GEO, AI ve <span className="text-brand">marka stratejisi</span> üzerine.
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Independent AI ekibinden uzun-formda araştırmalar, pratik rehberler ve sektörel görüşler.
-            Türkiye pazarında GEO&apos;nun nasıl evrildiğini buradan takip edin.
+            Independent AI ekibinden uzun-formda araştırmalar, pratik rehberler ve sektörel görüşler. Türkiye pazarında
+            GEO&apos;nun nasıl evrildiğini buradan takip edin.
           </p>
           <Link
             href="/blog/arsiv"

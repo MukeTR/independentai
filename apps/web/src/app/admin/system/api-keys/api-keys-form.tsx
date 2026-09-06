@@ -108,9 +108,7 @@ export function ApiKeysForm({ initial }: { initial: ConfigStatus[] }) {
                     <Server className="w-3 h-3" /> Vercel env
                   </span>
                 )}
-                {cfg.source === 'none' && (
-                  <span className="chip comp !text-[10px]">tanımsız → mock mode</span>
-                )}
+                {cfg.source === 'none' && <span className="chip comp !text-[10px]">tanımsız → mock mode</span>}
               </div>
               <div className="text-[11.5px] text-ink-faint font-mono mt-1">
                 {cfg.key} · {cfg.help}
@@ -134,7 +132,11 @@ export function ApiKeysForm({ initial }: { initial: ConfigStatus[] }) {
                 type={shown[cfg.key] ? 'text' : 'password'}
                 value={values[cfg.key] ?? ''}
                 onChange={(e) => setValues({ ...values, [cfg.key]: e.target.value })}
-                placeholder={cfg.source !== 'none' ? 'Yeni değer girersen mevcut üzerine yazılır...' : `${cfg.pattern} ile başlayan key\'i yapıştır`}
+                placeholder={
+                  cfg.source !== 'none'
+                    ? 'Yeni değer girersen mevcut üzerine yazılır...'
+                    : `${cfg.pattern} ile başlayan key'i yapıştır`
+                }
                 className="input !pr-12 font-mono text-[12.5px]"
               />
               <button
@@ -160,7 +162,7 @@ export function ApiKeysForm({ initial }: { initial: ConfigStatus[] }) {
                 onClick={() => clearKey(cfg.key)}
                 disabled={saving === cfg.key}
                 className="btn-secondary !py-2 !px-3 inline-flex items-center gap-1.5 text-[13px] !text-danger hover:!border-danger disabled:opacity-50"
-                title="DB\'den sil (Vercel env varsa fallback)"
+                title="DB'den sil (Vercel env varsa fallback)"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

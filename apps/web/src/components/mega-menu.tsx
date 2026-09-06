@@ -44,13 +44,21 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
           onMouseLeave={schedulePanelClose}
         >
           <button
+            type="button"
+            aria-haspopup="true"
+            aria-expanded={open === p.label}
+            onClick={() => (open === p.label ? setOpen(null) : openPanel(p.label))}
+            onFocus={() => openPanel(p.label)}
             className={cn(
               'inline-flex items-center gap-1.5 px-3.5 py-2 text-[14px] rounded-lg transition',
               open === p.label ? 'text-ink bg-paper-3' : 'text-ink-muted hover:text-ink',
             )}
           >
             {p.label}
-            <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', open === p.label && 'rotate-180')} />
+            <ChevronDown
+              aria-hidden
+              className={cn('w-3.5 h-3.5 transition-transform', open === p.label && 'rotate-180')}
+            />
           </button>
 
           {open === p.label && (
@@ -60,7 +68,7 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
               onMouseLeave={schedulePanelClose}
             >
               <div
-                className="card bg-paper-3 p-7 w-[720px] grid grid-cols-12 gap-6 shadow-[0_24px_60px_-20px_rgba(20,17,13,0.18)]"
+                className="card bg-paper-3 p-7 w-[min(92vw,720px)] max-w-[calc(100vw-2rem)] grid grid-cols-12 gap-6 shadow-[0_24px_60px_-20px_rgba(20,17,13,0.18)]"
                 style={{ animation: 'rise 220ms cubic-bezier(0.22, 1, 0.36, 1) both' }}
               >
                 <div className={cn('grid gap-6', p.featured ? 'col-span-8 grid-cols-2' : 'col-span-12 grid-cols-3')}>
@@ -93,8 +101,7 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
                     href={p.featured.href}
                     className="col-span-4 relative rounded-xl p-5 overflow-hidden group"
                     style={{
-                      background:
-                        'linear-gradient(135deg, rgba(79,70,229,0.08), rgba(79,70,229,0.02))',
+                      background: 'linear-gradient(135deg, rgba(79,70,229,0.08), rgba(79,70,229,0.02))',
                       border: '0.5px solid rgba(79,70,229,0.18)',
                     }}
                   >
@@ -103,7 +110,10 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
                     <p className="text-[12.5px] text-ink-muted mt-2 leading-relaxed">{p.featured.body}</p>
                     <div className="inline-flex items-center gap-1.5 text-[12px] text-brand-deep mt-4 font-medium">
                       {p.featured.cta}
-                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+                      <ArrowUpRight
+                        aria-hidden
+                        className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition"
+                      />
                     </div>
                   </Link>
                 )}

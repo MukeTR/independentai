@@ -41,11 +41,16 @@ const TABLES = [
 type TableName = (typeof TABLES)[number];
 
 function delegate(client: PrismaClient, table: TableName) {
-  return (client as unknown as Record<TableName, {
-    findMany: (args?: unknown) => Promise<Record<string, unknown>[]>;
-    createMany: (args: { data: Record<string, unknown>[]; skipDuplicates: boolean }) => Promise<{ count: number }>;
-    count: () => Promise<number>;
-  }>)[table];
+  return (
+    client as unknown as Record<
+      TableName,
+      {
+        findMany: (args?: unknown) => Promise<Record<string, unknown>[]>;
+        createMany: (args: { data: Record<string, unknown>[]; skipDuplicates: boolean }) => Promise<{ count: number }>;
+        count: () => Promise<number>;
+      }
+    >
+  )[table];
 }
 
 async function main() {

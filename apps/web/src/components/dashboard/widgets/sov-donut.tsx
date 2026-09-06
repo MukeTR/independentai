@@ -35,10 +35,7 @@ export function SovDonut({
   const accounted = top.reduce((sum, s) => sum + s.value, own);
   const remainder = Math.max(0, 100 - accounted);
 
-  const slices: Slice[] = [
-    { name: 'Markanız', value: own, color: BRAND },
-    ...top,
-  ];
+  const slices: Slice[] = [{ name: 'Markanız', value: own, color: BRAND }, ...top];
   if (remainder > 0.5) {
     slices.push({ name: 'Diğer', value: remainder, color: OTHER });
   }
@@ -87,38 +84,25 @@ export function SovDonut({
                   }}
                   itemStyle={{ color: '#14110D', padding: 0 }}
                   labelStyle={{ display: 'none' }}
-                  formatter={(value: number, name: string) => [
-                    `${value.toFixed(1)}%`,
-                    name,
-                  ]}
+                  formatter={(value: number, name: string) => [`${value.toFixed(1)}%`, name]}
                 />
               </PieChart>
             </ResponsiveContainer>
 
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display tabular text-[28px] leading-none text-ink">
-                {own.toFixed(1)}%
-              </span>
+              <span className="font-display tabular text-[28px] leading-none text-ink">{own.toFixed(1)}%</span>
               <span className="mt-1 text-[11px] text-ink-faint">sizin payınız</span>
             </div>
           </div>
 
           <ul className="flex flex-col justify-center space-y-2">
             {slices.map((s) => (
-              <li
-                key={s.name}
-                className="flex items-center justify-between gap-3 text-sm"
-              >
+              <li key={s.name} className="flex items-center justify-between gap-3 text-sm">
                 <span className="flex min-w-0 items-center gap-2">
-                  <span
-                    className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-                    style={{ background: s.color }}
-                  />
+                  <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ background: s.color }} />
                   <span className="truncate text-ink-muted">{s.name}</span>
                 </span>
-                <span className="tabular font-mono text-[12px] text-ink">
-                  {s.value.toFixed(1)}%
-                </span>
+                <span className="tabular font-mono text-[12px] text-ink">{s.value.toFixed(1)}%</span>
               </li>
             ))}
           </ul>

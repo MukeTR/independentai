@@ -24,7 +24,9 @@ export default async function AdminUsers() {
           <tbody className="divide-y divide-hairline">
             {users.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center py-12 text-ink-muted">Henüz kullanıcı yok.</td>
+                <td colSpan={4} className="text-center py-12 text-ink-muted">
+                  Henüz kullanıcı yok.
+                </td>
               </tr>
             )}
             {users.map((u) => (

@@ -63,13 +63,19 @@ export function GeoAuditScanner({ defaultUrl = '' }: { defaultUrl?: string }) {
           placeholder="https://siteniz.com/sayfa"
           className="input flex-1"
         />
-        <button type="submit" disabled={loading} className="btn-primary inline-flex items-center gap-2 whitespace-nowrap">
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary inline-flex items-center gap-2 whitespace-nowrap"
+        >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           {loading ? 'Taranıyor…' : 'Denetle'}
         </button>
       </form>
 
-      {error && <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>}
+      {error && (
+        <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>
+      )}
 
       {result && (
         <div className="mt-8">
@@ -133,11 +139,23 @@ function ScoreRing({ score }: { score: number }) {
     <div className="relative w-[140px] h-[140px]">
       <svg width="140" height="140" className="-rotate-90">
         <circle cx="70" cy="70" r={r} fill="none" stroke="#E5E1D8" strokeWidth="10" />
-        <circle cx="70" cy="70" r={r} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
-          strokeDasharray={c} strokeDashoffset={offset} className="transition-all duration-700" />
+        <circle
+          cx="70"
+          cy="70"
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="10"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          className="transition-all duration-700"
+        />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-[34px] tabular" style={{ color }}>{score}</span>
+        <span className="font-display text-[34px] tabular" style={{ color }}>
+          {score}
+        </span>
         <span className="text-[10px] text-ink-faint">/100</span>
       </div>
     </div>

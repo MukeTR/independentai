@@ -1,23 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { requireSession, handleRouteError } from '@/server/session';
+import { NextResponse } from 'next/server';
+import { route } from '@/server/route';
+import { readJson, ClientError } from '@/server/errors';
+import { requireActor } from '@/server/authz';
 import { hydrateEnvFromConfig } from '@/server/system-config';
+import { enforceRateLimit, LIMITS } from '@/server/rate-limit';
 import { findPromptIdeas } from '@/server/keyword-finder';
 
 export const maxDuration = 60;
 
-const schema = z.object({ topic: z.string().min(2).max(120), industry: z.string().max(80).optional() });
-
-export async function POST(req: NextRequest) {
-  try {
-    await requireSession();
-    const parsed = schema.safeParse(await req.json());
-    if (!parsed.success) return NextResponse.json({ message: 'Geçersiz konu' }, { status: 400 });
-
-    await hydrateEnvFromConfig();
-    const ideas = await findPromptIdeas(parsed.data.topic, parsed.data.industry);
-    return NextResponse.json({ ideas });
-  } catch (err) {
-    return handleRouteError(err);
-  }
-}
+export const POST = route('tools.keyword_finder', async (req) => {
+  const actor = await requireActor({ active: true });
+  await enforceRateLimit(req, LIMITS.tool, `tenant:${actor.tenantId}`);
+  const body = await readJson<{ topic?: unknown; industry?: unknown }>(req);
+  const topic = typeof body.topic === 'string' ? body.topic.trim() : '';
+  if (topic.length < 2 || topic.length > 120) throw new ClientError('Konu 2-120 karakter olmalı');
+  const industry = typeof body.industry === 'string' ? body.industry.trim().slice(0, 80) : undefined;
+  await hydrateEnvFromConfig();
+  return NextResponse.json({ ideas: await findPromptIdeas(topic, industry || undefined) });
+});

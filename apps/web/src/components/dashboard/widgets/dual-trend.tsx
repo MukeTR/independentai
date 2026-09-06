@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { ComprehensiveAnalytics } from '@/server/dashboard-analytics';
 
 type DualTrendProps = {
@@ -103,9 +94,7 @@ export function DualTrend({ trend }: DualTrendProps) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="mt-6 flex h-[200px] items-center justify-center text-[13px] text-ink-faint">
-          Henüz veri yok
-        </div>
+        <div className="mt-6 flex h-[200px] items-center justify-center text-[13px] text-ink-faint">Henüz veri yok</div>
       )}
     </div>
   );

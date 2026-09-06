@@ -58,12 +58,18 @@ export default async function BlogPaginated({ params }: { params: Promise<{ page
           <Link href="/blog" className="inline-flex items-center gap-1.5 text-[12px] text-ink-faint hover:text-ink">
             <ArrowLeft className="w-3 h-3" /> Blog
           </Link>
-          <div className="eyebrow mt-6">Sayfa {n} / {TOTAL_PAGES}</div>
+          <div className="eyebrow mt-6">
+            Sayfa {n} / {TOTAL_PAGES}
+          </div>
           <h1 className="font-display text-[40px] lg:text-[52px] tracking-tight mt-3 leading-[1.04]">
             GEO, AI ve <span className="text-brand">marka stratejisi</span>
           </h1>
           <p className="text-[15px] text-ink-muted mt-5">
-            Tüm yazıları tek sayfada görmek için <Link href="/blog/arsiv" className="text-brand-deep underline underline-offset-2">arşive</Link> göz atın.
+            Tüm yazıları tek sayfada görmek için{' '}
+            <Link href="/blog/arsiv" className="text-brand-deep underline underline-offset-2">
+              arşive
+            </Link>{' '}
+            göz atın.
           </p>
         </Container>
       </section>

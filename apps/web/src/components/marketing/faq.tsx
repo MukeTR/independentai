@@ -16,19 +16,18 @@ export function Faq({ items, defaultOpen = 0 }: { items: FaqItem[]; defaultOpen?
           <button
             key={i}
             type="button"
+            aria-expanded={isOpen}
             onClick={() => setOpen(isOpen ? null : i)}
             className="w-full text-left p-6 hover:bg-paper-2 transition group"
           >
             <div className="flex items-start justify-between gap-4">
               <span className="font-display text-[17px] tracking-tight">{item.question}</span>
               <span className="shrink-0 mt-1 text-ink-faint group-hover:text-brand transition">
-                {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                {isOpen ? <Minus className="w-4 h-4" aria-hidden /> : <Plus className="w-4 h-4" aria-hidden />}
               </span>
             </div>
             {isOpen && (
-              <p className="text-[14px] text-ink-muted mt-3 leading-relaxed whitespace-pre-line">
-                {item.answer}
-              </p>
+              <p className="text-[14px] text-ink-muted mt-3 leading-relaxed whitespace-pre-line">{item.answer}</p>
             )}
           </button>
         );

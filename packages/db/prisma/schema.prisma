@@ -26,6 +26,11 @@ model Tenant {
   locale      String   @default("tr")
   // 6 aylık ücretsiz lansman: kayıt tarihi + 6 ay
   trialEndsAt DateTime
+  // Ücretli plan (6 ay sonrası). LAUNCH = lansman dönemi; fiyat/ödeme sağlayıcısı henüz yok,
+  // bu yüzden STARTER/GROWTH yalnızca super admin tarafından elle atanır.
+  plan        PlanTier @default(LAUNCH)
+  // Onboarding (marka + ilk sorular) atomik olarak tamamlandığında set edilir.
+  onboardingCompletedAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -33,8 +38,15 @@ model Tenant {
   brands      Brand[]
   prompts     Prompt[]
   competitors Competitor[]
+  invites     TeamInvite[]
 
   @@index([trialEndsAt])
+}
+
+enum PlanTier {
+  LAUNCH
+  STARTER
+  GROWTH
 }
 
 model User {
@@ -53,8 +65,15 @@ model User {
   isSuperAdmin  Boolean  @default(false)
   tenantId      String
   tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // E-posta doğrulama (OAuth ile gelen doğrulanmış e-postalar otomatik set edilir).
+  emailVerifiedAt DateTime?
+  // Oturum iptali: JWT içindeki "sv" claim'i bununla eşleşmezse oturum geçersizdir.
+  sessionVersion Int      @default(1)
+  lastLoginAt   DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  authTokens    AuthToken[]
 
   @@index([oauthProvider, oauthSub])
   @@index([tenantId])
@@ -111,6 +130,8 @@ model Prompt {
   language  String       @default("tr")
   category  String?      // örn. "discovery", "comparison", "review"
   isActive  Boolean      @default(true)
+  // Metin her değiştiğinde artar; run kayıtları hangi sürümle üretildiğini taşır.
+  version   Int          @default(1)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
@@ -137,12 +158,48 @@ model ModelRun {
   runDate      DateTime   @default(now())
   isMocked     Boolean    @default(false)
   errorMessage String?
+  // Hata sınıfı: auth | rate_limit | timeout | server | invalid | unknown
+  errorCode    String?
+
+  // ── İş/kuyruk alanları ──
+  origin        RunOrigin @default(MANUAL)   // manual | initial (prompt eklenince) | cron
+  status        RunStatus @default(SUCCESS)
+  // Cron için: (promptId, provider, gün, deneme) tekilliği. Manuel/initial run'larda null.
+  dedupeKey     String?   @unique
+  scheduledFor  DateTime? // cron günü (UTC 00:00) — tarihsel yorumlama için
+  attempt       Int       @default(1)
+  leaseExpiresAt DateTime?
+  completedAt   DateTime?
+  promptVersion Int?
+  locale        String?
+
+  // ── Ölçüm meta ──
+  inputTokens   Int?
+  outputTokens  Int?
+  // native (provider web search/grounding) | text (yalnızca metindeki linkler) | none
+  groundingMode String?
+  webSearchCount Int?
 
   mentions      BrandMention[]
   citationLinks Citation[]
 
   @@index([promptId, runDate])
   @@index([provider, runDate])
+  @@index([status, scheduledFor])
+  @@index([promptId, provider, runDate])
+}
+
+enum RunOrigin {
+  MANUAL
+  INITIAL
+  CRON
+}
+
+enum RunStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  ERROR
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -190,6 +247,7 @@ model BrandMention {
 
   @@index([modelRunId])
   @@index([brandId])
+  @@index([modelRunId, isOwnBrand])
 }
 
 enum Sentiment {
@@ -270,7 +328,10 @@ model AlertConfig {
   id                      String   @id @default(cuid())
   tenantId                String   @unique
   emailEnabled            Boolean  @default(true)
+  // AES-256-GCM ile şifreli saklanır (slackWebhookEncrypted=true). Eski düz metin satırlar
+  // ilk yazımda şifrelenir.
   slackWebhookUrl         String?
+  slackWebhookEncrypted   Boolean  @default(false)
   weeklyReportEnabled     Boolean  @default(true)
   visibilityDropThreshold Int      @default(15) // puan düşüşü eşiği
   lastNotifiedAt          DateTime? // son haftalık rapor
@@ -302,8 +363,125 @@ model ApiToken {
   name       String
   tokenHash  String    @unique // sha256(token)
   prefix     String    // "iai_live_xxxx" gösterim için ilk karakterler
+  scopes     String[]  @default(["read:visibility"])
+  createdById String?
   lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
   createdAt  DateTime  @default(now())
 
   @@index([tenantId])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  TeamInvite (ekip daveti — OWNER/ADMIN davet eder, e-posta ile kabul edilir)
+// ───────────────────────────────────────────────────────────────
+
+model TeamInvite {
+  id          String    @id @default(cuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email       String    // normalize (lowercase)
+  role        UserRole  @default(VIEWER)
+  tokenHash   String    @unique // sha256(token) — token yalnızca davet linkinde
+  invitedById String?
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AuthToken (şifre sıfırlama + e-posta doğrulama — tek kullanımlık, hash'li)
+// ───────────────────────────────────────────────────────────────
+
+model AuthToken {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      AuthTokenKind
+  tokenHash String        @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([userId, kind])
+}
+
+enum AuthTokenKind {
+  PASSWORD_RESET
+  EMAIL_VERIFY
+}
+
+// ───────────────────────────────────────────────────────────────
+//  RateLimitBucket — serverless'ta instance'lar arası tutarlı sabit-pencere sayaç.
+//  Redis'e ihtiyaç duymadan (Vercel Hobby + Supabase) dağıtık limit sağlar.
+// ───────────────────────────────────────────────────────────────
+
+model RateLimitBucket {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AuditLog — güvenlik açısından önemli eylemler (token, üye, silme, admin)
+// ───────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String?
+  actorUserId String?
+  action      String   // örn. "api_token.create", "member.remove", "tenant.delete"
+  targetType  String?
+  targetId    String?
+  meta        Json?
+  ip          String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([action, createdAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  RunBatch — cron / manuel toplu çalıştırma gözlemi (admin ekranı)
+// ───────────────────────────────────────────────────────────────
+
+model RunBatch {
+  id          String    @id @default(cuid())
+  origin      RunOrigin
+  hop         Int       @default(0)   // zincirleme tetiklemede kaçıncı halka
+  startedAt   DateTime  @default(now())
+  finishedAt  DateTime?
+  enqueued    Int       @default(0)
+  processed   Int       @default(0)
+  failed      Int       @default(0)
+  remaining   Int       @default(0)
+  note        String?
+  triggeredBy String?   // "vercel-cron" | "chain" | user.id
+
+  @@index([startedAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  NotificationLog — e-posta/Slack teslimat kaydı (retry ve destek için)
+// ───────────────────────────────────────────────────────────────
+
+model NotificationLog {
+  id                String   @id @default(cuid())
+  tenantId          String?
+  kind              String   // weekly_report | drop_alert | slack_test | invite | password_reset | email_verify
+  channel           String   // email | slack
+  status            String   // sent | failed | skipped
+  recipient         String?  // maskelenmiş alıcı (e-posta: a***@x.com)
+  providerMessageId String?
+  error             String?
+  createdAt         DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([kind, createdAt])
 }

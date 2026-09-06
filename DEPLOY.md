@@ -1,144 +1,139 @@
 # Deploy — Independent AI (independentai.space)
 
-Tüm yığını **iki ücretsiz servis** ile çalıştırıyoruz: Vercel + Supabase. Toplam aylık maliyet: $0 (AI provider API kullanımı hariç). Worker / Redis yok — Vercel Cron + Next.js Route Handlers her şeyi hallediyor.
-
-## Mimari (Vercel-only)
+Topoloji: **Cloudflare (DNS/proxy) → Vercel (fra1, Next.js) → Supabase Postgres (eu-central-1)**.
+Worker / Redis yok. Cron + kuyruk + rate limit Postgres üzerinde.
 
 ```
-                  ┌───────────────────────────────────────┐
-                  │     independentai.space (Vercel)      │
-                  │  ┌─────────────┐    ┌──────────────┐  │
-                  │  │  Next.js    │    │  /api/cron/  │  │
-                  │  │  web + API  │────│  daily-run   │  │
-                  │  └─────────────┘    └──────────────┘  │
-                  └──────────────┬────────────────────────┘
-                                 │ Prisma
-                                 ▼
-                  ┌──────────────────────────────┐
-                  │  Supabase Postgres (free)    │
-                  │  eu-central-1 · Frankfurt    │
-                  │  pooler:6543 (runtime)       │
-                  │  pooler:5432 (şema/migrate)  │
-                  └──────────────────────────────┘
-                                 │
-                                 ▼  doğrudan API çağrısı
-                  OpenAI · Anthropic · Google Gemini
+  kullanıcı ──HTTPS──▶ Cloudflare proxy ──▶ Vercel fra1 (Next.js 15, Functions ≤300s)
+                                                │  Prisma (pooler 6543, pgbouncer)
+                                                ▼
+                                   Supabase Postgres eu-central-1 (Frankfurt)
+                                                │
+                                                ▼  HTTPS
+                                   OpenAI · Anthropic · Google Gemini · Resend · Slack
 ```
 
-## 0. Servis hesapları (5 dakika)
+## 0. Hesaplar
 
-| Servis | Ne için | Free tier | Link |
-|---|---|---|---|
-| **Vercel** | Web + API + Cron | Hobby sınırsız (1 cron/gün yeter) | vercel.com |
-| **Supabase** | Postgres | 500 MB | supabase.com |
-| **OpenAI / Anthropic / Google** | AI API keys | pay-as-you-go (yoksa mock) | her birinin dashboard'u |
+| Servis                      | Ne için                                                | Plan                                          |
+| --------------------------- | ------------------------------------------------------ | --------------------------------------------- |
+| Vercel                      | Web + API + Cron                                       | Hobby yeterli (cron günde 1, fonksiyon 300 s) |
+| Supabase                    | Postgres (`independentai`, ref `pvxwwwomgjhnbhtulins`) | Free                                          |
+| Cloudflare                  | DNS + proxy (mevcut)                                   | Free                                          |
+| OpenAI / Anthropic / Google | AI anahtarları (en az biri)                            | pay-as-you-go                                 |
+| Resend                      | E-posta (şifre sıfırlama, davet, rapor)                | Free                                          |
 
-> Şu an: production Supabase projesi `independentai` (ref `pvxwwwomgjhnbhtulins`, eu-central-1) canlıda. Veri 26 Ağu 2026'da Neon'dan birebir taşındı; Neon artık kullanılmıyor.
+## 1. Veritabanı (migration-first)
 
----
+`prisma db push` **production'da kullanılmaz**. Şema değişiklikleri `packages/db/prisma/migrations` altında.
 
-## 1. Supabase Postgres
-
-Proje: **independentai** — `eu-central-1` (Frankfurt), ref `pvxwwwomgjhnbhtulins`.
-
-Supabase iki farklı bağlantı ucu verir ve **ikisi de gerekli**:
-
-| Değişken | Port | Mod | Ne için |
-|---|---|---|---|
-| `DATABASE_URL` | 6543 | transaction pooler | Uygulama runtime'ı. Serverless'te bağlantı patlamasını önler. Prisma için `?pgbouncer=true&connection_limit=1` **şart**. |
-| `DIRECT_URL` | 5432 | session pooler | `prisma db push` / `migrate`. Pooler transaction modunda DDL çalışmaz. |
-
-> `db.<ref>.supabase.co` doğrudan host'u **yalnızca IPv6** dinliyor; Vercel ve çoğu CI IPv4 olduğu için
-> `DIRECT_URL` olarak da pooler host'unun **5432** portunu kullanıyoruz (`aws-0-eu-central-1.pooler.supabase.com`).
-
-Bağlantı adreslerini almak için: Supabase Dashboard → Project Settings → Database → Connection string.
-
-Şema yayını:
-```bash
-DIRECT_URL='<supabase-5432-url>' pnpm --filter @independentai/db push
-```
-> Production'a seed atma (demo veri prod'a sızmasın diye). Kullanıcılar register oldukça gerçek veri akacak.
-
-### Neon'dan veri taşıma (tek seferlik, tamamlandı)
+### İlk geçiş (tek seferlik — mevcut prod şeması `db push` ile oluşturulmuştu)
 
 ```bash
-# 1) Hedefte şema
-DIRECT_URL='<supabase-5432>' pnpm --filter @independentai/db push
+# 1) Baseline'ı "uygulanmış" olarak işaretle (0_init mevcut şemaya eşdeğerdir; hiçbir şey çalıştırmaz)
+DATABASE_URL='<pooler-6543>' DIRECT_URL='<pooler-5432>' pnpm --filter @independentai/db exec prisma migrate resolve --applied 0_init
 
-# 2) Kuru çalışma — sadece sayar
-SOURCE_DATABASE_URL='<neon-url>' TARGET_DATABASE_URL='<supabase-5432>' \
-  npx tsx scripts/migrate-to-supabase.ts
+# 2) Yeni migration'ı uygula (yeni tablolar/kolonlar + veri backfill; geriye uyumlu, kesinti yok)
+DATABASE_URL='<pooler-6543>' DIRECT_URL='<pooler-5432>' pnpm db:migrate:deploy
 
-# 3) Gerçek kopya (idempotent — yarıda kalırsa tekrar çalıştırılabilir)
-SOURCE_DATABASE_URL='<neon-url>' TARGET_DATABASE_URL='<supabase-5432>' \
-  npx tsx scripts/migrate-to-supabase.ts --apply
+# 3) Drift kontrolü (boş çıktı = şema == DB)
+DATABASE_URL='<pooler-6543>' DIRECT_URL='<pooler-5432>' pnpm --filter @independentai/db exec prisma migrate diff \
+  --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --exit-code
 ```
 
-## 2. Vercel deploy
+> Önce **yedek al**: Supabase Dashboard → Database → Backups (Free tier günlük yedek) ya da
+> `pg_dump "$DIRECT_URL" -Fc -f pre-migration.dump`.
 
-1. vercel.com → **New Project** → GitHub: `MukeTR/independentai`
-2. **Root Directory** → `apps/web`
-3. **Build & Output Settings** otomatik tanınır (`vercel.json` mevcut), ama:
-   - Build command: `cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @independentai/db generate && pnpm --filter @independentai/db build && pnpm --filter @independentai/shared build && pnpm --filter @independentai/ai build && pnpm --filter @independentai/web build`
-   - Install: `echo skip`
-   - Output: `.next`
-4. **Environment Variables:**
-   ```
-   DATABASE_URL=<supabase-pooler-6543-url>   # ?pgbouncer=true&connection_limit=1
-   DIRECT_URL=<supabase-pooler-5432-url>
-   JWT_SECRET=<32+ karakter rastgele, openssl rand -hex 32>
-   CRON_SECRET=<rastgele, Vercel cron'unu sadece bu tetikleyebilsin>
-   NEXT_PUBLIC_SITE_URL=https://independentai.space
-
-   # Opsiyonel — yoksa mock çalışır
-   OPENAI_API_KEY=
-   ANTHROPIC_API_KEY=
-   GOOGLE_API_KEY=
-
-   # Opsiyonel — e-posta raporları (yoksa gönderim sessizce atlanır)
-   RESEND_API_KEY=
-   EMAIL_FROM=Independent AI <bildirim@independentai.space>
-   ```
-5. **Function Region** → Settings → Functions → `Frankfurt (fra1)`.
-   Veri tabanı Frankfurt'ta; fonksiyonlar US'te kalırsa her sorgu Atlantik'i geçer.
-6. Deploy
-
-## 3. Domain — independentai.space
-
-1. Vercel → Project Settings → Domains → "Add" → `independentai.space` ve `www.independentai.space`
-2. DNS sağlayıcında:
-   - `A` record: `@` → `76.76.21.21`
-   - `CNAME`: `www` → `cname.vercel-dns.com`
-3. 5-30 dk içinde SSL otomatik bağlanır
-
-## 4. Vercel Cron
-
-`vercel.json`'da zaten tanımlı: `/api/cron/daily-run` her gün `0 23 * * *` (UTC 23:00 = TR 02:00).  
-Vercel kendi authorize header'ı ekler (`Bearer $CRON_SECRET`); endpoint bu olmadan istek kabul etmez.
-
-İlk deploy sonrası Vercel Dashboard → Settings → Cron Jobs'tan çalıştığını gör.
-
-## 5. Sağlık kontrolü
+### Sonraki değişiklikler
 
 ```bash
-curl https://independentai.space                                    # 200 (landing)
-curl https://independentai.space/api/auth/me                        # 401 (token yok — beklenen)
-curl -H "Authorization: Bearer $CRON_SECRET" \
-     https://independentai.space/api/cron/daily-run                 # 200, "processed: N"
+pnpm --filter @independentai/db exec prisma migrate dev --name <ad>   # yerelde üretir
+pnpm db:migrate:deploy                                                # CI/prod'da uygular
 ```
 
-## Function timeout notları
+### Rollback
 
-Vercel Hobby: function başına **max 60s**. 
-- `/api/prompts/[id]/run` paralelde 3 modeli çağırır → 10-20s (mock) / 5-15s (gerçek).
-- `/api/cron/daily-run` aktif prompt sayısı × 3-5s. 10+ prompt birikirse cron timeout'a takılır. O noktada cron'u parçalı yaparız (her promptu ayrı job, queue tablosu üzerinden).
+- `20260906120000_launch_hardening` yalnızca **ekler** (kolon/tablo/enum) ve backfill yapar; eski kod yeni kolonlarla
+  çalışır. Uygulama rollback'i için Vercel'de önceki deployment'ı "Promote" etmek yeterlidir; DB geri alınmaz.
+- DB'yi de geri almak gerekirse: `pg_restore` ile yedeği yükle **veya** `packages/db/prisma/migrations/<ad>/down.sql`
+  (elle yazılır; bu migration için: `ALTER TABLE ... DROP COLUMN` + `DROP TABLE` sırası dokümandaki tablo listesinin tersidir).
 
----
+## 2. Vercel
 
-## Sonraki
+1. New Project → GitHub `MukeTR/independentai`, Root Directory `apps/web` (`vercel.json` mevcut).
+2. **Functions region: Frankfurt (fra1)** (DB Frankfurt'ta).
+3. Node.js 22 (Project Settings → General).
+4. Environment Variables (Production + Preview ayrı değerlerle):
 
-- [ ] Trial sona ererken email bildirim (Resend free tier)
-- [ ] Iyzico subscription billing (6 ay sonrası için)
-- [ ] Perplexity + Grok adapter'ı
-- [ ] LLM-based brand mention extraction (daha akıllı)
-- [ ] Cron'u prompt başına job'a böl (>50 prompt için)
+```
+DATABASE_URL, DIRECT_URL              # Supabase (bkz. .env.example)
+JWT_SECRET                            # 32+ karakter (openssl rand -hex 32)
+CONFIG_ENCRYPTION_KEY                 # önerilir; yoksa JWT_SECRET türetilir
+CRON_SECRET                           # 16+ karakter
+NEXT_PUBLIC_SITE_URL=https://independentai.space
+OPENAI_API_KEY / ANTHROPIC_API_KEY / GOOGLE_API_KEY   # en az biri (ya da /admin/system/api-keys'ten DB'ye)
+AI_WEB_SEARCH=1                       # native atıflar (maliyet: bkz. docs/METRICS.md)
+RESEND_API_KEY, EMAIL_FROM            # e-posta
+GOOGLE_OAUTH_* / LINKEDIN_OAUTH_*     # opsiyonel
+TRIAL_GRACE_DAYS=7
+IAI_ALLOW_MOCK=0                      # production'da 0
+```
+
+5. Deploy. Build: `pnpm run vercel-build` (Prisma generate + turbo build).
+
+### Cron (vercel.json)
+
+| Yol                       | Zaman        | Not                                                                                                  |
+| ------------------------- | ------------ | ---------------------------------------------------------------------------------------------------- |
+| `/api/cron/daily-run`     | `0 23 * * *` | Hobby: günde 1, ±59 dk. Bütçe 230 s; kalan iş **zincirleme** (`?hop=n`) kendini tetikler (≤12 halka) |
+| `/api/cron/weekly-report` | `0 6 * * 1`  | Idempotent (`lastNotifiedAt`), zincirleme (≤6)                                                       |
+
+Vercel `Authorization: Bearer $CRON_SECRET` gönderir; uç sabit zamanlı karşılaştırma yapar.
+Zincirleme tetikleme `NEXT_PUBLIC_SITE_URL` üzerinden yapılır — **doğru domain olmalı**.
+
+## 3. Cloudflare
+
+- DNS: `independentai.space` → Vercel (`A 76.76.21.21`, `CNAME www → cname.vercel-dns.com`), proxy açık.
+- **Access-Control-Allow-Origin: \*** canlıda görülüyor ama repoda yok → Cloudflare **Transform Rules / Response
+  Header** ayarından geliyor. Kaldırın: yalnızca `/api/v1/*` CORS verir (uygulama kendi yazar).
+- Rate limit istemci IP'si için uygulama `cf-connecting-ip`'yi okur (sonra `x-real-ip`, `x-forwarded-for`).
+  Cloudflare'i devre dışı bırakırsanız davranış aynı kalır (Vercel başlıkları).
+- Güvenlik başlıkları (CSP nonce, HSTS, X-Frame-Options, Permissions-Policy) uygulamadan gelir; Cloudflare'de
+  tekrarlanmasına gerek yok.
+
+## 4. Deploy sonrası doğrulama
+
+```bash
+S=https://independentai.space
+curl -s $S/api/health                                   # {"status":"ok","db":"ok",...}
+curl -sI $S/ | grep -iE 'content-security-policy|x-frame|access-control'   # CSP var, CORS yok
+curl -s -o /dev/null -w '%{http_code}\n' $S/api/cron/daily-run             # 401
+curl -s -H "Authorization: Bearer $CRON_SECRET" $S/api/cron/daily-run      # 200 {"enqueued":..,"processed":..}
+curl -s $S/docs/api | grep -c noindex                                      # 0
+curl -s $S/sitemap.xml | grep -c '/docs/api'                               # 1
+```
+
+Admin: `/admin/system` → provider "live", model adı, fiyat "katalogda", kuyruk 0 bekleyen, bildirim logları.
+
+## 5. Production checklist (her deploy)
+
+- [ ] `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build` yeşil (CI)
+- [ ] Migration uygulandı ve drift yok (§1)
+- [ ] Env: `JWT_SECRET` ≥32, `CRON_SECRET`, en az bir AI anahtarı, `RESEND_API_KEY`, `IAI_ALLOW_MOCK` boş/0
+- [ ] `/api/health` 200, cron 401/200, CSP başlığı var
+- [ ] `/admin/system`: provider live, mock kapalı, kuyruk temiz
+- [ ] Cloudflare CORS header kaldırıldı
+- [ ] Kayıt → onboarding → panel akışı canlıda elle 1 kez denendi (mobil + masaüstü)
+
+## 6. Sır rotasyonu
+
+- `JWT_SECRET`: değişince tüm oturumlar düşer (beklenen). `CONFIG_ENCRYPTION_KEY` ayrı tanımlıysa şifreli değerler etkilenmez.
+- `CONFIG_ENCRYPTION_KEY`: yeni değeri yaz, eskisini `CONFIG_ENCRYPTION_KEY_PREVIOUS`'a taşı; `/admin/system/api-keys`'ten
+  anahtarları yeniden kaydet (yeni anahtarla şifrelenir); sonra PREVIOUS'ı kaldır.
+- `CRON_SECRET`: Vercel env'de değiştir → redeploy.
+- API tokenları: kullanıcı panelden yeni token üretir, eskisini iptal eder (audit log'da izlenir).
+
+## Fonksiyon süreleri
+
+Vercel (fluid compute): Hobby **300 s** varsayılan ve maksimum. Rotalar: cron 300 s, prompt run/onboarding 120 s,
+araçlar 60 s. Provider çağrısı başına 40 s zaman aşımı + 1 retry (rate_limit/timeout/server).
