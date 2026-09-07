@@ -24,21 +24,25 @@ export type RateLimitResult = {
   resetAt: Date;
 };
 
-/** Tek atomik UPSERT: pencere geçtiyse sıfırla, geçmediyse artır. */
-export async function consume(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
+/**
+ * Tek atomik UPSERT: pencere geçtiyse sıfırla, geçmediyse artır.
+ * `cost` > 1 ise tek istek birden çok birim harcar (örn. toplu olay gönderimi).
+ */
+export async function consume(key: string, limit: number, windowMs: number, cost = 1): Promise<RateLimitResult> {
   const now = new Date();
   const resetAt = new Date(now.getTime() + windowMs);
+  const units = Math.max(1, Math.floor(cost));
   try {
     const rows = await prisma.$queryRaw<{ count: number; resetAt: Date }[]>`
       INSERT INTO "RateLimitBucket" ("key", "count", "resetAt")
-      VALUES (${key}, 1, ${resetAt})
+      VALUES (${key}, ${units}, ${resetAt})
       ON CONFLICT ("key") DO UPDATE SET
-        "count"   = CASE WHEN "RateLimitBucket"."resetAt" <= ${now} THEN 1 ELSE "RateLimitBucket"."count" + 1 END,
+        "count"   = CASE WHEN "RateLimitBucket"."resetAt" <= ${now} THEN ${units} ELSE "RateLimitBucket"."count" + ${units} END,
         "resetAt" = CASE WHEN "RateLimitBucket"."resetAt" <= ${now} THEN ${resetAt} ELSE "RateLimitBucket"."resetAt" END
       RETURNING "count", "resetAt"
     `;
     const row = rows[0];
-    if (!row) return { allowed: true, limit, remaining: limit - 1, resetAt };
+    if (!row) return { allowed: true, limit, remaining: Math.max(0, limit - units), resetAt };
     const count = Number(row.count);
     return { allowed: count <= limit, limit, remaining: Math.max(0, limit - count), resetAt: row.resetAt };
   } catch (err) {

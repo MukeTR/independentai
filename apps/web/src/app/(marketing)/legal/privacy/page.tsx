@@ -13,7 +13,7 @@ export default function Privacy() {
       <Container className="max-w-3xl prose">
         <div className="eyebrow">Yasal</div>
         <h1 className="font-display text-[48px] tracking-tight mt-3 mb-4">Gizlilik Politikası</h1>
-        <p className="text-[12px] text-ink-faint font-mono mb-12">Son güncelleme: 2026-05-22</p>
+        <p className="text-[12px] text-ink-faint font-mono mb-12">Son güncelleme: 2026-09-07</p>
 
         <div className="space-y-8 text-[15px] leading-[1.7] text-ink">
           <Section h="1. Topladığımız veriler">
@@ -26,6 +26,35 @@ export default function Privacy() {
             <br />
             <strong>Teknik veri:</strong> Sunucu logları (IP, tarayıcı, sayfa görüntülemeleri) — anonim agregat hariç
             birey bazlı saklamayız.
+          </Section>
+
+          <Section h="1b. AI Discovery Sensor (siteye eklenen ölçüm script'i)">
+            Sitenize <code className="font-mono text-[13px]">sensor/v1.js</code> script'ini eklerseniz, ziyaretçi
+            davranışının <strong>sınırlı ve kişisel veri içermeyen</strong> bir özetini toplarız.
+            <br />
+            <strong>Toplanan:</strong> sayfa yolu (query string ve hash olmadan), yönlendiren sitenin yalnızca alan adı
+            (tam URL değil), olay tipi (sayfa görüntüleme, tıklama, form gönderimi gibi), site sahibinin tanımladığı
+            varlık etiketi ve hedef, olay zamanı, SDK sürümü ve izin verilen UTM alanları (kaynak, ortam, kampanya).
+            <br />
+            <strong>Toplanmayan:</strong> çerez, kalıcı ziyaretçi kimliği, parmak izi (fingerprint), form veya sayfa
+            metni, oturum kaydı (session replay), e-posta/telefon gibi kişisel veriler ve kalıcı IP adresi. Ham IP
+            yalnızca isteğin doğrulanması ve hız sınırı için anlık kullanılır, hiçbir telemetri kaydına yazılmaz.
+            <br />
+            <strong>Oturum:</strong> ziyaretçiyi tanımak için çerez kullanılmaz; sayfa sekmesinde yaşayan, en fazla 12
+            saatlik anonim bir oturum anahtarı üretilir. Benzersiz kişi sayısı iddia edilmez.
+            <br />
+            <strong>Sunucu/edge telemetrisi:</strong> site sahibi isterse AI crawler isteklerini (bot adı, yol, HTTP
+            durumu) imzalı bir kanaldan gönderir. Bu kayıtlar ziyaretçi değil, otomatik bot istekleridir.
+            <br />
+            <strong>Ziyaretçi bildirimi:</strong> site sahibi isteğe bağlı mini formu açarsa, ziyaretçinin gönüllü
+            olarak yazdığı metin saklanır; içindeki e-posta/telefon benzeri veriler kayıttan önce temizlenir.
+            <br />
+            <strong>Saklama:</strong> ham olaylar site sahibinin seçtiği süre kadar (varsayılan 90 gün, en az 7)
+            tutulur, sonra otomatik silinir; yalnızca kişisel veri içermeyen günlük toplamlar kalır. Site silindiğinde
+            tüm telemetri verisi birlikte silinir.
+            <br />
+            <strong>Sorumluluk:</strong> script'i kendi sitesine ekleyen müşteri, kendi ziyaretçilerine karşı veri
+            sorumlusudur; kendi gizlilik metnini güncellemekle yükümlüdür. Bu metin hukuki uygunluk garantisi vermez.
           </Section>
 
           <Section h="2. Verilerinizi neden kullanırız">

@@ -46,6 +46,7 @@ model Tenant {
   agencyWorkspace  AgencyWorkspace? // bir ajansın müşteri çalışma alanıysa
   storeConnections StoreConnection[]
   reportShares     ReportShare[]
+  trackedSites     TrackedSite[]
 
   @@index([trialEndsAt])
   @@index([kind])
@@ -150,7 +151,8 @@ model Prompt {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  runs ModelRun[]
+  runs         ModelRun[]
+  attributions PromptAttribution[]
 
   @@index([tenantId, isActive])
 }
@@ -821,4 +823,345 @@ model PublicScan {
 
   @@index([expiresAt])
   @@index([urlHash, kind, createdAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AI Discovery Sensor (Faz S) — her tür web sitesine kurulabilen ölçüm
+//
+//  İki ayrı kanal, asla karıştırılmaz:
+//    • Browser SDK  → AiAcquisitionSession + AiJourneyEvent (gerçek insan ziyareti / AI referral)
+//    • Server/edge  → AiCrawlerEvent (JavaScript çalıştırmayan crawler/fetcher istekleri)
+//  Sentetik görünürlük testleri zaten ModelRun'dır; burada saklanmaz.
+//
+//  Gizlilik: çerez yok, PII yok, ham IP yok, query string yok. Ham olaylar kısa süre saklanır
+//  (TrackedSite.retentionDays), uzun vadeli sayımlar AiTrafficRollup'ta tutulur.
+// ───────────────────────────────────────────────────────────────
+
+model TrackedSite {
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // "example.com" (host, küçük harf, port yok) ve kanonik origin "https://example.com"
+  domain           String
+  normalizedOrigin String
+  // Ek kabul edilen origin'ler (www, alt alan adı, staging). Exact eşleşme; wildcard yok.
+  allowedOrigins   String[]          @default([])
+  status           TrackedSiteStatus @default(PENDING)
+
+  // Public write key: yalnızca olay YAZAR. Ham anahtar saklanmaz.
+  publicKeyHash      String  @unique
+  publicKeyPrefix    String // gösterilebilir ön ek, örn. "iais_7f3a…"
+  // Server/edge ingest secret (HMAC imzası doğrulanabilsin diye AES-GCM ile ŞİFRELİ saklanır;
+  // özet yeterli olmaz çünkü imza paylaşılan sırla yeniden hesaplanır). Ayrı rotate edilir.
+  ingestSecretEnc    String?
+  ingestSecretPrefix String?
+
+  // "script" | "gtm" | "wordpress" | "nextjs" | "cloudflare" | "server" | "other"
+  installMethod String?
+  // Varsayılan hedef şablonu seçimi için: "saas" | "service" | "media" | "education" | "marketplace" | "ecommerce" | "other"
+  siteKind      String?
+
+  verifiedAt         DateTime?
+  lastBrowserEventAt DateTime?
+  lastServerEventAt  DateTime?
+  lastSdkVersion     String?
+  // Ham olay saklama süresi (gün). Rollup'lar kalır.
+  retentionDays      Int       @default(90)
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  goals        SiteGoal[]
+  sessions     AiAcquisitionSession[]
+  events       AiJourneyEvent[]
+  crawlerHits  AiCrawlerEvent[]
+  rollups      AiTrafficRollup[]
+  attributions PromptAttribution[]
+
+  @@unique([tenantId, domain])
+  @@index([tenantId, status])
+  @@index([status, lastBrowserEventAt])
+}
+
+enum TrackedSiteStatus {
+  PENDING // kurulum bekliyor (henüz olay gelmedi)
+  ACTIVE
+  PAUSED // ölçüm durduruldu; veri korunur
+  REVOKED // anahtarlar iptal; ingest reddedilir
+}
+
+// Sektörden bağımsız dönüşüm tanımı. Kod yazmadan URL ile hedef tanımlanabilir.
+model SiteGoal {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  name           String
+  type           GoalType
+  matchMethod    GoalMatch
+  // matchMethod'a göre biri dolu: PATH → pathPattern ("/tesekkurler", "/rezervasyon/*"),
+  // EVENT → eventName ("demo_request"), DATA_ATTRIBUTE → attributeValue (data-iai-event değeri)
+  pathPattern    String?
+  eventName      String?
+  attributeValue String?
+
+  defaultValue Decimal? @db.Decimal(12, 2)
+  currency     String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions AiAcquisitionSession[]
+  events   AiJourneyEvent[]
+
+  @@unique([trackedSiteId, name])
+  @@index([trackedSiteId, isActive])
+}
+
+enum GoalType {
+  SIGN_UP
+  LEAD
+  DEMO
+  CONTACT
+  BOOKING
+  APPLICATION
+  SUBSCRIBE
+  PURCHASE
+  CUSTOM
+}
+
+enum GoalMatch {
+  EVENT
+  PATH
+  DATA_ATTRIBUTE
+}
+
+// Bir ziyaretin kaynağı ve yolculuğu. Çerezsiz: sessionKey kısa ömürlü, siteye özel, anonim.
+model AiAcquisitionSession {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  // İstemcinin ürettiği anonim oturum kimliği (kişi kimliği DEĞİL; benzersiz kişi iddiası üretilmez).
+  sessionKey   String
+  sourceClass  SourceClass @default(OTHER)
+  // AI kaynağı: "openai" | "anthropic" | "google" | "perplexity" | "microsoft" | ...
+  provider     String?
+  referrerHost String?
+  landingPath  String
+
+  firstSeenAt DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  convertedAt DateTime?
+  goalId      String?
+  goal        SiteGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  value       Decimal?  @db.Decimal(12, 2)
+  currency    String?
+  eventCount  Int       @default(0)
+  expiresAt   DateTime
+
+  events       AiJourneyEvent[]
+  attributions PromptAttribution[]
+
+  @@unique([trackedSiteId, sessionKey])
+  @@index([tenantId, firstSeenAt])
+  @@index([trackedSiteId, sourceClass, firstSeenAt])
+  @@index([expiresAt])
+}
+
+enum SourceClass {
+  AI_REFERRAL
+  DIRECT
+  ORGANIC
+  OTHER
+}
+
+model AiJourneyEvent {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  sessionId String?
+  session   AiAcquisitionSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  // İstemcinin ürettiği eventId; site kapsamında tekil (tekrar teslim yok sayılır).
+  dedupeKey String        @unique
+  type      SiteEventType
+  path      String
+
+  // Sektör bağımsız varlık: "article" | "service" | "product" | "listing" | "course" | "location" | ...
+  entityType  String?
+  entityId    String?
+  entityLabel String?
+
+  goalId   String?
+  goal     SiteGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  value    Decimal?  @db.Decimal(12, 2)
+  currency String?
+
+  sdkVersion String?
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  expiresAt  DateTime
+
+  @@index([tenantId, occurredAt])
+  @@index([trackedSiteId, type, occurredAt])
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+enum SiteEventType {
+  PAGE_VIEW
+  CONTENT_VIEW
+  CTA_CLICK
+  FORM_START
+  FORM_SUBMIT
+  SIGN_UP
+  DEMO_REQUEST
+  PHONE_CLICK
+  BOOKING
+  APPLICATION
+  SUBSCRIBE
+  PRODUCT_VIEW
+  ADD_TO_CART
+  PURCHASE
+  CUSTOM
+}
+
+// Ziyaretçinin hangi soru/niyetle geldiği. Üç kaynak asla karıştırılmaz.
+model PromptAttribution {
+  id            String       @id @default(cuid())
+  tenantId      String
+  trackedSiteId String?
+  trackedSite   TrackedSite? @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  sessionId String?
+  session   AiAcquisitionSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  // Eşleşen izlenen soru (varsa)
+  promptId  String?
+  prompt    Prompt?               @relation(fields: [promptId], references: [id], onDelete: SetNull)
+
+  source       AttributionSource
+  // Normalize niyet kümesi: "recommendation" | "comparison" | "pricing" | "alternative" | "how_to" | "local" | "other"
+  intent       String?
+  // 0-100. Eşiğin altında kayıt üretilmez (sahte kesinlik yok).
+  confidence   Int               @default(0)
+  // Açıklanabilirlik: hangi sinyal ne kadar katkı verdi
+  evidence     Json?
+  // Yalnızca USER_REPORTED: ziyaretçinin yazdığı metin (PII temizlenmiş, kısaltılmış)
+  reportedText String?           @db.Text
+  provider     String?
+
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([trackedSiteId, source, createdAt])
+  @@index([sessionId])
+  @@index([promptId])
+}
+
+enum AttributionSource {
+  USER_REPORTED // ziyaretçi kendisi bildirdi
+  INFERRED // açıklanabilir tahmin (confidence + evidence)
+  SYNTHETIC // Independent AI'ın kendi ölçümü (ModelRun) — gerçek ziyaretçi promptu değil
+}
+
+// Doğrulanabilir bot kaydı (versiyonlu). Yalnızca user-agent eşleşmesi "verified" saymaz.
+model AiBotIdentity {
+  id                 String     @id @default(cuid())
+  canonicalId        String     @unique // "openai.gptbot"
+  operator           String // "OpenAI"
+  displayName        String
+  purpose            BotPurpose @default(OTHER)
+  // Resmî dokümanda geçen user-agent parçaları
+  userAgents         String[]   @default([])
+  // "edge" | "ip_range" | "reverse_dns" | "signature" | "none"
+  verificationMethod String     @default("none")
+  reverseDnsSuffixes String[]   @default([])
+  docsUrl            String?
+  registryVersion    Int        @default(1)
+  isActive           Boolean    @default(true)
+  updatedAt          DateTime   @updatedAt
+
+  hits AiCrawlerEvent[]
+
+  @@index([isActive])
+}
+
+enum BotPurpose {
+  TRAINING
+  SEARCH
+  ASSISTANT
+  AGENT
+  OTHER
+}
+
+model AiCrawlerEvent {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  dedupeKey String         @unique
+  botId     String?
+  bot       AiBotIdentity? @relation(fields: [botId], references: [id], onDelete: SetNull)
+
+  operator           String?
+  canonicalBotId     String?
+  purpose            BotPurpose        @default(OTHER)
+  verification       VerificationLevel @default(UNVERIFIED)
+  // "edge" | "ip_range" | "reverse_dns" | "signature" | "user_agent"
+  verificationMethod String?
+
+  path        String
+  status      Int?
+  contentType String?
+  // Telemetriyi gönderen katman: "cloudflare" | "vercel" | "nginx" | "server"
+  source      String
+
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  expiresAt  DateTime
+
+  @@index([tenantId, occurredAt])
+  @@index([trackedSiteId, verification, occurredAt])
+  @@index([trackedSiteId, canonicalBotId, occurredAt])
+  @@index([expiresAt])
+}
+
+enum VerificationLevel {
+  VERIFIED // edge/IP/reverse DNS/imza ile kanıtlandı
+  PROBABLE // güçlü ama kanıtlanmamış (yalnız UA + tutarlı ağ sinyali)
+  UNVERIFIED // yalnızca user-agent iddiası
+}
+
+// Uzun vadeli sayımlar. Ham olaylar retention ile silinir; bunlar kalır.
+model AiTrafficRollup {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  // "hour" | "day"
+  granularity String
+  bucketStart DateTime
+  // "referral" | "crawler" | "event" | "goal"
+  kind        String
+  // Boyutların kanonik özeti (NULL'lu unique tuzağına düşmemek için tek alan)
+  dimKey      String
+  dims        Json
+
+  count        Int @default(0)
+  sessionCount Int @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([trackedSiteId, granularity, bucketStart, kind, dimKey])
+  @@index([tenantId, granularity, bucketStart])
+  @@index([trackedSiteId, kind, bucketStart])
 }

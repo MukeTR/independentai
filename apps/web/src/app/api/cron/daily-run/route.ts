@@ -3,6 +3,8 @@ import { runDuePrompts } from '@/server/run-prompt';
 import { runDailyDropAlerts } from '@/server/notify';
 import { pruneRateLimitBuckets } from '@/server/rate-limit';
 import { enqueueDailyCatalogSyncs, processCatalogSyncs, type SyncStats } from '@/server/commerce/catalog-sync';
+import { runDiscoveryMaintenance, type RollupStats } from '@/server/discovery/rollup';
+import { seedBotRegistry } from '@/server/discovery/crawler-ingest';
 import { cronSecret, siteUrl } from '@/server/env';
 import { log } from '@/server/logger';
 import { cronAuthorized } from '@/server/cron-auth';
@@ -36,6 +38,18 @@ export async function GET(req: NextRequest) {
       log.warn('cron.catalog_sync_failed', { err });
     }
   }
+  // AI Discovery bakımı: gün bazlı rollup + saklama süresi dolmuş ham olayların temizliği.
+  // Prompt ve katalog turlarından sonra, kalan bütçede; hata turu durdurmaz.
+  let discovery: RollupStats | { skipped: true } = { skipped: true };
+  if (runs.remaining === 0 && Date.now() < startedAt + 250_000) {
+    try {
+      if (hop === 0) await seedBotRegistry();
+      discovery = await runDiscoveryMaintenance({ deadlineAt: startedAt + 285_000 });
+    } catch (err) {
+      log.warn('cron.discovery_failed', { err });
+    }
+  }
+
   const catalogRemaining = 'remaining' in catalog ? catalog.remaining : 0;
 
   let alerts: Awaited<ReturnType<typeof runDailyDropAlerts>> | { skipped: true } = { skipped: true };
@@ -64,10 +78,11 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  log.info('cron.daily_run', { hop, ...runs, catalog, alerts, willChain, durationMs: Date.now() - startedAt });
+  log.info('cron.daily_run', { hop, ...runs, catalog, discovery, alerts, willChain, durationMs: Date.now() - startedAt });
   return NextResponse.json({
     ...runs,
     catalog,
+    discovery,
     alerts,
     hop,
     willChain,

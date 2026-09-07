@@ -110,6 +110,38 @@ export const CAPABILITIES: Capability[] = [
   },
   { key: 'activity_feed', label: 'Aktivite akışı', status: 'live' },
 
+  // ── AI Discovery Sensor ──
+  {
+    key: 'discovery_sensor',
+    label: 'AI Discovery Sensor (siteye tek satır script)',
+    status: 'beta',
+    note: 'Her tür sitede çalışır (SaaS, hizmet, medya, eğitim, pazar yeri, e-ticaret); çerezsiz ve PII toplamaz',
+  },
+  {
+    key: 'discovery_referral',
+    label: 'AI kaynaklı gerçek ziyaret ölçümü (ChatGPT, Claude, Gemini, Perplexity, Copilot)',
+    status: 'beta',
+    note: 'Yalnızca tam hostname eşleşmesiyle; referrer yoksa AI tahmini yapılmaz',
+  },
+  {
+    key: 'discovery_crawler',
+    label: 'AI crawler ölçümü (sunucu/edge telemetrisi)',
+    status: 'beta',
+    note: "Cloudflare Worker veya Next.js middleware ile; yalnızca user-agent eşleşmesi 'doğrulanmış' sayılmaz",
+  },
+  {
+    key: 'discovery_goals',
+    label: 'Sektörden bağımsız hedef ve dönüşüm takibi',
+    status: 'beta',
+    note: 'Kayıt, demo, form, telefon, rezervasyon, başvuru, abonelik veya satış; kod yazmadan URL ile tanımlanır',
+  },
+  {
+    key: 'prompt_attribution',
+    label: 'Prompt kaynağı ayrımı (bildirilen / tahmin / sentetik)',
+    status: 'beta',
+    note: 'Gerçek prompt yalnızca ziyaretçi bildirirse bilinir; tahminler güven ve kanıtla gösterilir',
+  },
+
   // ── Yol haritası ──
   {
     key: 'multi_brand',

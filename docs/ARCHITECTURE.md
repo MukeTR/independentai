@@ -123,6 +123,58 @@ app_role, session_version, agency_id, topics[]`.
   UNIQUE ile dedupe; 200 hemen, işleme `after()`; Ticimax webhook desteklemez → günlük senkron.
 - v1 yalnızca ürün/kategori/mağaza meta; sipariş/müşteri/ödeme verisi çekilmez.
 
+## AI Discovery Sensor (Faz S)
+
+Her tür web sitesine (SaaS, hizmet, klinik, eğitim, turizm, medya, pazar yeri, e-ticaret, plain HTML/WordPress/SPA)
+tek satır script ile kurulan ölçüm katmanı. E-ticaret yalnızca bir hedef şablonudur; çekirdek model ürün/katalog/sipariş
+varlığı gerektirmez.
+
+### İki ayrı kanal (asla karıştırılmaz)
+
+| Kanal       | Kaynak                                                                   | Ne ölçer                                                                              | Neyi ölçemez                          |
+| ----------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------------- |
+| Browser SDK | `/sensor/v1.js` → `/api/collect/v1/{event,batch}`                        | AI ürününden gelen **gerçek insan** ziyareti, sayfa/varlık etkileşimi, hedef dönüşümü | JavaScript çalıştırmayan crawler'ları |
+| Server/edge | Cloudflare Worker / Next.js middleware → `/api/collect/v1/server` (HMAC) | AI crawler/fetcher **istekleri** (bot, yol, durum, doğrulama seviyesi)                | Tarayıcı içi etkileşimi               |
+
+Üçüncü bir ölçüm zaten vardır ve panelde ayrı gösterilir: **sentetik** görünürlük testleri (`ModelRun`) — bunlar
+Independent AI'ın kendi sorduğu sorulardır, gerçek ziyaretçi değildir.
+
+### Güvenlik zinciri (collector)
+
+1. Gövde boyutu (16 KB tarayıcı / 256 KB sunucu) ve zod şeması
+2. Public key → `TrackedSite` (sha256 özetiyle arama; ham anahtar saklanmaz). Public key **yalnızca yazar**.
+3. Site durumu: `PAUSED`/`REVOKED` reddedilir
+4. `Origin` başlığı allowlist'te mi — **exact eşleşme**, wildcard/substring yok; CORS yanıtı yalnızca o origin'i
+   yansıtır (`Vary: Origin`, credential yok). SDK `text/plain` gövdeyle gönderir → önden yoklama (preflight) yok.
+5. Hız sınırı: site 600/dk, IP 240/dk, küresel 60.000/dk + plan bazlı aylık olay kotası (`sensorEventsPerMonth`)
+6. Zaman kayması (ileri 5 dk / geri 24 saat) ve `eventId` tekilliği (tekrar teslim yok sayılır)
+7. Normalizasyon: query/hash düşürülür, referrer yalnızca **host**'a indirilir, e-posta/telefon/token kalıpları
+   temizlenir, uzunluklar sınırlanır
+
+Sunucu kanalı ayrıca `X-IAI-Timestamp` + `X-IAI-Signature` (HMAC-SHA256, gövde+zaman damgası) ister; ingest sırrı
+AES-GCM ile şifreli saklanır (imza yeniden hesaplanabilmeli). Ham erişim logu, Cookie, Authorization ve kalıcı IP
+kabul edilmez; `ip` alanı yalnızca ters DNS doğrulaması için anlıktır ve **yazılmaz**.
+
+### Bot doğrulama
+
+`edge sinyali → resmî IP aralığı → ters DNS + ileri doğrulama → imza → yalnızca user-agent`. Son basamak asla
+`VERIFIED` üretmez. `Google-Extended` ve `Applebot-Extended` ayrı crawler değil, robots kontrol token'larıdır: ziyaret
+kaydı oluşturmazlar. Ters DNS sorguları 1,5 sn zaman aşımı ve 6 saatlik önbellekle, yanıt sonrası (`after()`) yapılır.
+
+### Veri modeli ve saklama
+
+`TrackedSite` (anahtarlar, origin allowlist, sağlık, retention) · `SiteGoal` (PATH/EVENT/DATA_ATTRIBUTE) ·
+`AiAcquisitionSession` (çerezsiz, 12 saatlik anonim gruplama; benzersiz kişi iddiası yok) · `AiJourneyEvent` ·
+`AiCrawlerEvent` · `PromptAttribution` (USER_REPORTED | INFERRED | SYNTHETIC) · `AiBotIdentity` · `AiTrafficRollup`.
+
+Ham olaylar site başına `retentionDays` (varsayılan 90, en az 7) sonra silinir; gün bazlı `AiTrafficRollup` satırları
+kalır. Rollup ve temizlik günlük cron'un (`/api/cron/daily-run`) kalan bütçesinde idempotent çalışır.
+
+### Realtime
+
+`discovery.updated` (site başına en fazla 10 sn'de bir, toplu), `discovery.goal` (dönüşüm), `sensor.health` (kurulum
+doğrulandı/bozuldu). Her sayfa görüntüleme yayınlanmaz. Tenant/ajans topic yetkisi mevcut RLS ile aynıdır.
+
 ## Test stratejisi
 
 - Unit (vitest): çıkarım, fiyat/maliyet, SSRF, normalizasyon, entitlement, JWT/şifre/şifreleme, hata biçimi, metrikler.
@@ -130,6 +182,6 @@ app_role, session_version, agency_id, topics[]`.
   kuyruk idempotency/lease/retry, cron ucu, token yaşam döngüsü, rate limit, Slack şifreleme, ekip, hesap silme/export,
   araç SSRF/limit; ajans erişim çözümleme ve cross-tenant izolasyon; Realtime yayınları (yerel `realtime` stub şeması,
   `tests/integration/realtime-stub.sql`) ve RLS fonksiyonu; katalog senkron motoru (sahte bağlayıcı); webhook HMAC/dedupe.
-  Production adresi reddedilir.
+  Production adresi reddedilir. Discovery: collector yetki/origin/dedupe/hedef/imza testleri ve PII-IP sızmama kanıtı.
 - E2E (Playwright, masaüstü + mobil Chromium): kayıt→onboarding→panel, giriş/çıkış, soru ekle/çalıştır, rakip,
   Viewer reddi, token oluştur/kullan/iptal, public araç limiti, mobil taşma, 404, güvenlik başlıkları.

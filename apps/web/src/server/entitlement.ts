@@ -32,6 +32,10 @@ export type Entitlement = {
     storeConnections: number;
     /** Katalogdan senkronlanacak en fazla ürün */
     catalogProducts: number;
+    /** AI Discovery: izlenen site (sensor) sayısı */
+    trackedSites: number;
+    /** Site başına aylık kabul edilen ham olay üst sınırı (adil kullanım) */
+    sensorEventsPerMonth: number;
   };
 };
 
@@ -48,6 +52,8 @@ const LIMITS: Record<PlanTier, Entitlement['limits']> = {
     manualRunsPerDay: 60,
     storeConnections: 2,
     catalogProducts: 5000,
+    trackedSites: 3,
+    sensorEventsPerMonth: 250_000,
   },
   STARTER: {
     ownBrands: 1,
@@ -58,6 +64,8 @@ const LIMITS: Record<PlanTier, Entitlement['limits']> = {
     manualRunsPerDay: 30,
     storeConnections: 1,
     catalogProducts: 2000,
+    trackedSites: 1,
+    sensorEventsPerMonth: 250_000,
   },
   GROWTH: {
     ownBrands: 5,
@@ -68,6 +76,8 @@ const LIMITS: Record<PlanTier, Entitlement['limits']> = {
     manualRunsPerDay: 300,
     storeConnections: 10,
     catalogProducts: 50000,
+    trackedSites: 10,
+    sensorEventsPerMonth: 2_000_000,
   },
 };
 

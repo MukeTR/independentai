@@ -60,6 +60,14 @@ vi.mock('react', async (importOriginal) => {
 });
 
 const TABLES = [
+  'AiTrafficRollup',
+  'PromptAttribution',
+  'AiJourneyEvent',
+  'AiCrawlerEvent',
+  'AiAcquisitionSession',
+  'SiteGoal',
+  'TrackedSite',
+  'AiBotIdentity',
   'PublicScan',
   'IntegrationWebhookDelivery',
   'CatalogSync',

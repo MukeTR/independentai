@@ -77,3 +77,23 @@ Günlük cron 23:00 UTC (±59 dk, Vercel Hobby). `scheduledFor` = UTC gün başl
 Mağaza AI görünürlük testi, ürün sayfası testi ve AI crawler testi **bu dosyadaki görünürlük metriklerinden bağımsız**,
 deterministik crawl-only skorlardır (0-100; alt skor ağırlıkları ve bulgu kataloğu `docs/COMMERCE_SCORING.md`).
 Katalog tabanlı hazırlık skoru bağlı mağazanın `CatalogProduct` verisinden hesaplanır ve her gerçek `syncedAt` damgası taşır.
+
+## AI Discovery Sensor metrikleri
+
+Bu bölüm sensör ölçümleri içindir; yukarıdaki görünürlük/SoV formüllerinden **bağımsızdır** ve onlarla toplanmaz.
+
+| Metrik                                     | Tanım                                                                          | Ne DEĞİLDİR                                                           |
+| ------------------------------------------ | ------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| AI kaynaklı ziyaret (`aiReferralSessions`) | Referrer host'u kayıtlı bir AI ürününe ait olan oturum sayısı                  | Benzersiz kişi sayısı değildir (çerezsiz, 12 saatlik anonim gruplama) |
+| AI crawler isteği (`crawlerHits`)          | Sunucu/edge'den bildirilen bot istekleri                                       | Ziyaret, öneri veya satış değildir                                    |
+| Sentetik ölçüm (`syntheticRuns`)           | Independent AI'ın kendi çalıştırdığı `ModelRun` sayısı                         | Gerçek ziyaretçi değildir                                             |
+| Dönüşüm                                    | Oturumda bir `SiteGoal` ilk kez eşleştiğinde                                   | Aynı oturumda aynı hedef tekrar sayılmaz                              |
+| Huni                                       | AI ziyaret → sitede etkileşim (`eventCount > 1`) → hedefe ulaşan oturum        | Aşamalar arası oran, kişi bazlı dönüşüm oranı değildir                |
+| Doğrulanmış crawler                        | `VERIFIED`: edge sinyali, resmî IP aralığı, ters DNS veya imza ile kanıtlanmış | Yalnızca user-agent eşleşmesi `UNVERIFIED` sayılır                    |
+
+**Oturum penceresi:** 12 saat; aynı `sessionKey` bu süre içinde tek ziyaret sayılır. **Kaynak sınıfı** yalnızca tam
+hostname eşleşmesiyle belirlenir; referrer yoksa `DIRECT`, arama motoruysa `ORGANIC`, tanınmayan host `OTHER`'dır.
+UTM yalnızca referrer yokken ve tanınan bir AI adıysa dikkate alınır.
+
+**Prompt kaynağı** üç ayrı değerdir ve toplanmaz: `USER_REPORTED` (ziyaretçi bildirdi), `INFERRED` (güven skorlu,
+kanıtlı tahmin; eşik altında kayıt üretilmez), `SYNTHETIC` (bizim ölçümümüz).

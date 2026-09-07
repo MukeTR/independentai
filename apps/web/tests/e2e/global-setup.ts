@@ -8,6 +8,14 @@ import path from 'node:path';
 import { PrismaClient } from '@prisma/client';
 
 const TABLES = [
+  'AiTrafficRollup',
+  'PromptAttribution',
+  'AiJourneyEvent',
+  'AiCrawlerEvent',
+  'AiAcquisitionSession',
+  'SiteGoal',
+  'TrackedSite',
+  'AiBotIdentity',
   'PublicScan',
   'IntegrationWebhookDelivery',
   'CatalogSync',

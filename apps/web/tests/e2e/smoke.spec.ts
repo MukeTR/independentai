@@ -108,8 +108,11 @@ test('giriş: yanlış şifre hata, doğru şifre panel; soru ekle ve çalışt�
   await expect(page.getByRole('status').filter({ hasText: 'Soru eklendi' })).toBeVisible();
   await expect(page.getByRole('link', { name: /E2E için en iyi POS/ })).toBeVisible({ timeout: 20_000 });
 
-  // Detay + şimdi çalıştır (mock)
-  await page.getByRole('link', { name: /E2E için en iyi POS/ }).click();
+  // Detay + şimdi çalıştır (mock). Liste, ekleme sonrası router.refresh ile yeniden render edilir;
+  // tıklama o ana denk gelirse gezinme iptal olur → href'i okuyup doğrudan git (yarış yok).
+  const detailHref = await page.getByRole('link', { name: /E2E için en iyi POS/ }).getAttribute('href');
+  expect(detailHref).toMatch(/\/dashboard\/prompts\/.+/);
+  await page.goto(detailHref!);
   await expect(page).toHaveURL(/\/dashboard\/prompts\//);
   // Soru eklenince ilk ölçüm otomatik başlar; sayfa kendini yeniler ve MOCK etiketli sonuçlar görünür.
   await expect(page.getByText(/MOCK/).first()).toBeVisible({ timeout: 60_000 });

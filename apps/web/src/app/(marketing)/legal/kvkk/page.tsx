@@ -31,6 +31,10 @@ export default function Kvkk() {
               c: 'Ad-soyad (opsiyonel), e-posta adresi, şirket adı, web sitesi, IP adresi ve oturum logları. Kredi kartı bilgisi şu an istenmemektedir.',
             },
             {
+              h: 'AI Discovery Sensor verisi',
+              c: "Müşterimiz kendi sitesine ölçüm script'ini eklerse, o sitenin ziyaretçilerine ait çerezsiz ve kişisel veri içermeyen olay özetleri işlenir: sayfa yolu (query string olmadan), yönlendiren sitenin alan adı, olay tipi, site sahibinin tanımladığı hedef/varlık etiketi ve zaman. Çerez, kalıcı ziyaretçi kimliği, parmak izi, form/sayfa metni ve kalıcı IP saklanmaz; ham IP yalnızca isteğin doğrulanması sırasında anlık kullanılır. Ham kayıtlar site sahibinin belirlediği sürede (varsayılan 90 gün) silinir. Bu veride veri sorumlusu, script'i ekleyen müşteridir; Independent AI veri işleyen sıfatıyla hareket eder.",
+            },
+            {
               h: 'İşleme amaçları',
               c: 'Üyelik hesabınızı oluşturmak, hizmeti sunmak, faturalandırma (gelecekte), destek talepleri, yasal yükümlülükler.',
             },
