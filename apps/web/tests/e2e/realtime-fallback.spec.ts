@@ -7,9 +7,8 @@
  * Koşturma koordinatörde (bkz. tests/e2e/README.md). Bu dosya yalnızca yazıldı, çalıştırılmadı.
  */
 import { test, expect, type Page } from '@playwright/test';
+import { testIp } from './ip';
 
-// Giriş rate limiti (IP başına 10/15 dk) dosyalar arasında paylaşılmasın: her spec kendi sahte IP'sini gönderir.
-test.use({ extraHTTPHeaders: { 'x-forwarded-for': '203.0.113.23' } });
 import { PrismaClient } from '@prisma/client';
 import { randomBytes, scryptSync } from 'node:crypto';
 
@@ -58,6 +57,11 @@ test.skip(
   !!process.env.NEXT_PUBLIC_SUPABASE_URL,
   'Bu senaryo Realtime env YOKKEN çalışır (fallback davranışı); env varsa atlanır.',
 );
+
+// Her teste kendi sahte IP'si: IP başına hız sınırı sayaçları testler arasında birikmesin.
+test.beforeEach(async ({ page }, testInfo) => {
+  await page.setExtraHTTPHeaders({ 'x-forwarded-for': testIp(testInfo) });
+});
 
 test('Realtime yokken: "Canlı" rozeti yok (rozet yok veya "30 sn"); token ucu enabled:false', async ({
   page,

@@ -4,9 +4,8 @@
  * Gerçek Next sunucusu (3200) + izole test DB; dışarı ağ çağrısı yapılmaz (meta doğrulama tetiklenmez).
  */
 import { test, expect, type Page } from '@playwright/test';
+import { testIp } from './ip';
 
-// Giriş rate limiti (IP başına 10/15 dk) dosyalar arasında paylaşılmasın: her spec kendi sahte IP'sini gönderir.
-test.use({ extraHTTPHeaders: { 'x-forwarded-for': '203.0.113.31' } });
 import { PrismaClient } from '@prisma/client';
 import { randomBytes, scryptSync } from 'node:crypto';
 
@@ -53,6 +52,11 @@ async function login(page: Page, email: string) {
 }
 
 test.describe.configure({ mode: 'serial' });
+
+// Her teste kendi sahte IP'si: IP başına hız sınırı sayaçları testler arasında birikmesin.
+test.beforeEach(async ({ page }, testInfo) => {
+  await page.setExtraHTTPHeaders({ 'x-forwarded-for': testIp(testInfo) });
+});
 
 test('boş durum → site ekle → snippet görünür → kurulum uyarısı → URL tabanlı hedef', async ({ page }) => {
   const { email, tenant } = await seedOwner();

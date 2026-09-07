@@ -3,14 +3,17 @@
  * /dashboard'a geç → portföye geri. (Yazıldı; çalıştırma sahibi tarafından yapılır.)
  */
 import { test, expect } from '@playwright/test';
-
-// Giriş rate limiti (IP başına 10/15 dk) dosyalar arasında paylaşılmasın: her spec kendi sahte IP'sini gönderir.
-test.use({ extraHTTPHeaders: { 'x-forwarded-for': '203.0.113.21' } });
+import { testIp } from './ip';
 
 const stamp = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 const PASSWORD = 'e2eSifre1234';
 
 test.describe.configure({ mode: 'serial' });
+
+// Her teste kendi sahte IP'si: IP başına hız sınırı sayaçları testler arasında birikmesin.
+test.beforeEach(async ({ page }, testInfo) => {
+  await page.setExtraHTTPHeaders({ 'x-forwarded-for': testIp(testInfo) });
+});
 
 test('kayıt → ajans onboarding → boş portföy → müşteri oluştur → panele geç → portföye dön', async ({ page }) => {
   const email = `ajans-${stamp()}@test.local`;
