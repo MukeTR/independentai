@@ -18,11 +18,25 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": [],
+      "env": ["IAI_TEST_MODE", "IAI_ALLOW_MOCK", "CI"]
     },
     "test:integration": {
       "dependsOn": ["^build"],
-      "cache": false
+      "cache": false,
+      "env": [
+        "TEST_DATABASE_URL",
+        "DATABASE_URL",
+        "DIRECT_URL",
+        "JWT_SECRET",
+        "CRON_SECRET",
+        "IAI_TEST_MODE",
+        "IAI_ALLOW_MOCK",
+        "IAI_LOG_SILENT",
+        "NEXT_PUBLIC_SITE_URL",
+        "REALTIME_PUBLISH",
+        "CI"
+      ]
     }
   }
 }
