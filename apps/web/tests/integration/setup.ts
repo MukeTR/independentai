@@ -39,19 +39,16 @@ vi.mock('next/headers', () => ({
   headers: async () => new Headers(),
 }));
 
-// ── after(): testte hemen (ama asenkron) çalıştır; flushAfter ile beklenir ──
-const pendingAfter: Promise<unknown>[] = [];
-(globalThis as unknown as { __iaiAfter: Promise<unknown>[] }).__iaiAfter = pendingAfter;
+// ── after(): üretimdeki gibi YANIT GÖNDERİLDİKTEN sonra çalışır; testte `flushAfter()` tetikler.
+// (Eskiden mikrogörevde hemen koşuyordu; hızlı makinede iş, sonraki isteğe kadar bitip yarış üretiyordu.)
+const pendingAfter: (() => unknown)[] = [];
+(globalThis as unknown as { __iaiAfter: (() => unknown)[] }).__iaiAfter = pendingAfter;
 vi.mock('next/server', async (importOriginal) => {
   const mod = await importOriginal<Record<string, unknown>>();
   return {
     ...mod,
     after: (fn: () => unknown) => {
-      pendingAfter.push(
-        Promise.resolve()
-          .then(fn)
-          .catch(() => undefined),
-      );
+      pendingAfter.push(fn);
     },
   };
 });

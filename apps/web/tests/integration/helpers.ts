@@ -5,7 +5,7 @@ import { hashPassword } from '@/server/password';
 
 type Role = 'OWNER' | 'ADMIN' | 'VIEWER';
 const jar = (globalThis as unknown as { __iaiJar: { token: string | null; ws: string | null } }).__iaiJar;
-const pendingAfter = (globalThis as unknown as { __iaiAfter: Promise<unknown>[] }).__iaiAfter;
+const pendingAfter = (globalThis as unknown as { __iaiAfter: (() => unknown)[] }).__iaiAfter;
 
 let seq = 0;
 export function uniq(prefix = 'u'): string {
@@ -106,8 +106,18 @@ export async function call(
   };
 }
 
+/** Bekleyen `after()` işlerini çalıştırır. İç içe kuyruğa alınanlar da (zincirleme) boşalana kadar sürer. */
 export async function flushAfter() {
-  await Promise.all(pendingAfter.splice(0, pendingAfter.length));
+  for (let round = 0; round < 10 && pendingAfter.length; round += 1) {
+    const fns = pendingAfter.splice(0, pendingAfter.length);
+    await Promise.all(
+      fns.map((fn) =>
+        Promise.resolve()
+          .then(fn)
+          .catch(() => undefined),
+      ),
+    );
+  }
 }
 
 export { prisma };
