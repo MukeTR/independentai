@@ -30,7 +30,7 @@ import {
   type RunPromptOutput,
 } from '@independentai/ai';
 import {
-  Prisma,
+  type Prisma,
   type AiProvider,
   type Sentiment,
   type MentionType,
@@ -42,6 +42,7 @@ import { mockAllowed } from './env';
 import { log } from './logger';
 import { ConflictError } from './errors';
 import { computeEntitlement } from './entitlement';
+import { utcTs } from './sql';
 import { publishForTenant } from './realtime';
 
 export const PROVIDER_TIMEOUT_MS = 40_000;
@@ -83,11 +84,8 @@ function dayKey(d: Date): string {
  * Ham SQL'de Date parametresi. Prisma `DateTime` kolonları saat dilimsiz `timestamp(3)` (UTC değer) iken
  * `$queryRaw` Date parametrelerini `timestamptz` gönderir; doğrudan karşılaştırma oturum saat dilimine
  * (yerelde Europe/Istanbul) bağımlı yanlış sonuç verir. Parametre UTC'ye çevrilip naive'e düşürülür.
- * (Aynı kalıp: server/commerce/catalog-sync.ts `utcTs` — döngüsel import olmasın diye burada yerel.)
+ * Tek kaynak: `server/sql.ts`.
  */
-function utcTs(d: Date): Prisma.Sql {
-  return Prisma.sql`(${d}::timestamptz AT TIME ZONE 'UTC')`;
-}
 
 type RunResult = { ok: boolean; errorCode?: string; tenantId?: string };
 

@@ -13,7 +13,9 @@ import { encrypt } from '@/server/crypto';
 
 const ORIGIN = 'https://ornek.com';
 
-async function seedSite(opts: { status?: 'PENDING' | 'ACTIVE' | 'PAUSED' | 'REVOKED'; secret?: string; domain?: string } = {}) {
+async function seedSite(
+  opts: { status?: 'PENDING' | 'ACTIVE' | 'PAUSED' | 'REVOKED'; secret?: string; domain?: string } = {},
+) {
   const { tenant, user } = await createTenant();
   const publicKey = `${PUBLIC_KEY_PREFIX}${uniq('k')}${'a'.repeat(20)}`;
   const domain = opts.domain ?? `${uniq('d')}.example`;
@@ -33,7 +35,14 @@ async function seedSite(opts: { status?: 'PENDING' | 'ACTIVE' | 'PAUSED' | 'REVO
 }
 
 function event(over: Record<string, unknown> = {}) {
-  return { id: uniq('evt') + '12345678', sid: uniq('sid') + '1234567', t: 'page_view', p: '/', ts: Date.now(), ...over };
+  return {
+    id: uniq('evt') + '12345678',
+    sid: uniq('sid') + '1234567',
+    t: 'page_view',
+    p: '/',
+    ts: Date.now(),
+    ...over,
+  };
 }
 
 async function send(publicKey: string, events: unknown, headers: Record<string, string> = {}) {
@@ -176,13 +185,35 @@ describe('tarayıcı collector — doğrulama ve dedupe', () => {
     expect([400, 413]).toContain(r.status);
   });
 
+  it('site hız sınırı dolduğunda 429 + Retry-After döner ve olay yazılmaz', async () => {
+    const { site, publicKey } = await seedSite();
+    // Kovayı sınıra kadar doldur (600/dk); sonraki istek reddedilmeli.
+    await prisma.rateLimitBucket.create({
+      data: { key: `collect:site:${site.id}`, count: 600, resetAt: new Date(Date.now() + 60_000) },
+    });
+    const r = await send(publicKey, [event()]);
+    expect(r.status).toBe(429);
+    expect(r.json.code).toBe('rate_limited');
+    expect(r.headers.get('retry-after')).toBeTruthy();
+    await flushAfter();
+    expect(await prisma.aiJourneyEvent.count({ where: { trackedSiteId: site.id } })).toBe(0);
+  });
+
+  it('aylık kota dolduğunda 429 quota_exceeded döner', async () => {
+    const { site, publicKey } = await seedSite();
+    await prisma.rateLimitBucket.create({
+      data: { key: `collect:quota:${site.id}`, count: 250_000, resetAt: new Date(Date.now() + 30 * 86_400_000) },
+    });
+    const r = await send(publicKey, [event()]);
+    expect(r.status).toBe(429);
+    expect(r.json.code).toBe('quota_exceeded');
+  });
+
   it('PII ve ham IP hiçbir kayda yazılmaz', async () => {
     const { site, publicKey } = await seedSite();
-    await send(
-      publicKey,
-      [event({ p: '/hesap/ali@ornek.com', el: 'Ali Veli +90 532 111 22 33', et: 'profile' })],
-      { 'x-forwarded-for': '203.0.113.77' },
-    );
+    await send(publicKey, [event({ p: '/hesap/ali@ornek.com', el: 'Ali Veli +90 532 111 22 33', et: 'profile' })], {
+      'x-forwarded-for': '203.0.113.77',
+    });
     await flushAfter();
     const rows = await prisma.aiJourneyEvent.findMany({ where: { trackedSiteId: site.id } });
     const dump = JSON.stringify(rows);
@@ -213,7 +244,9 @@ describe('hedef dönüşümü', () => {
     await send(publicKey, [event({ sid, p: '/tesekkurler' })]);
     await flushAfter();
 
-    const session = await prisma.aiAcquisitionSession.findFirstOrThrow({ where: { trackedSiteId: site.id, sessionKey: sid } });
+    const session = await prisma.aiAcquisitionSession.findFirstOrThrow({
+      where: { trackedSiteId: site.id, sessionKey: sid },
+    });
     expect(session.convertedAt).not.toBeNull();
     expect(session.goalId).toBe(goal.id);
     expect(session.provider).toBe('anthropic');
@@ -265,7 +298,16 @@ describe('sunucu/edge collector', () => {
   it('geçerli imza → 202 ve crawler kaydı; edge doğrulaması VERIFIED yapar', async () => {
     const { site, publicKey } = await seedSite({ secret: SECRET });
     const r = await sendServer(publicKey, {
-      hits: [{ id: `${uniq('h')}12345678`, ua: 'Mozilla/5.0 (compatible; GPTBot/1.2)', path: '/urun/1?x=1', status: 200, verified: true, src: 'cloudflare' }],
+      hits: [
+        {
+          id: `${uniq('h')}12345678`,
+          ua: 'Mozilla/5.0 (compatible; GPTBot/1.2)',
+          path: '/urun/1?x=1',
+          status: 200,
+          verified: true,
+          src: 'cloudflare',
+        },
+      ],
     });
     expect(r.status).toBe(202);
     await flushAfter();
@@ -292,7 +334,11 @@ describe('sunucu/edge collector', () => {
     await sendServer(publicKey, {
       hits: [
         { id: `${uniq('h')}12345678`, ua: 'Google-Extended', path: '/' },
-        { id: `${uniq('h')}12345678`, ua: 'Mozilla/5.0 (Windows NT 10.0; rv:120.0) Gecko/20100101 Firefox/120.0', path: '/' },
+        {
+          id: `${uniq('h')}12345678`,
+          ua: 'Mozilla/5.0 (Windows NT 10.0; rv:120.0) Gecko/20100101 Firefox/120.0',
+          path: '/',
+        },
       ],
     });
     await flushAfter();
@@ -301,7 +347,11 @@ describe('sunucu/edge collector', () => {
 
   it('imza yanlışsa 401; zaman damgası eskiyse 401; sır yoksa 403', async () => {
     const { publicKey } = await seedSite({ secret: SECRET });
-    const bad = await sendServer(publicKey, { hits: [{ id: `${uniq('h')}12345678`, ua: 'GPTBot', path: '/' }] }, { secret: 'yanlis-sir-degeri-123456' });
+    const bad = await sendServer(
+      publicKey,
+      { hits: [{ id: `${uniq('h')}12345678`, ua: 'GPTBot', path: '/' }] },
+      { secret: 'yanlis-sir-degeri-123456' },
+    );
     expect(bad.status).toBe(401);
     expect(bad.json.code).toBe('bad_signature');
 

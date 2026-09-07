@@ -172,6 +172,26 @@ Panel canlı güncellemeleri (ölçüm tamamlandı, ekip/ajans değişti, katalo
 - **ikas / Ticimax:** sunucu env'i gerekmez; mağaza sahibi panelden kimlik bilgisi girer (AES-256-GCM ile saklanır). Ayrıntı: `docs/IKAS.md`, `docs/TICIMAX.md`, `docs/INTEGRATIONS.md`.
 - Katalog senkronu günlük cron'un (`/api/cron/daily-run`) kalan bütçesinde işlenir; ayrı cron yok (Hobby: günde 1 tetikleme).
 
+## 10. AI Discovery Sensor
+
+Sensör **ek ortam değişkeni gerektirmez**: SDK uygulamanın kendi origin'inden (`/sensor/v1.js`) servis edilir,
+collector aynı alan adındadır. Deploy sırasında dikkat edilecekler:
+
+- **Build**: SDK derlenmiş dosyası `pnpm build` sırasında üretilir. CI'da `pnpm build` çalıştığı için ayrı adım yok;
+  üretimden sonra `curl -sI https://independentai.space/sensor/v1.js` 200 ve `content-type: application/javascript`
+  dönmelidir.
+- **Bot kaydı**: ilk cron turunda (`/api/cron/daily-run`, hop=0) `AiBotIdentity` tablosu tohumlanır. Elle tetiklemek
+  için cron'u `Authorization: Bearer $CRON_SECRET` ile çağırmak yeterlidir.
+- **Cron bütçesi**: rollup + saklama temizliği prompt ve katalog turlarından sonra kalan bütçede çalışır; yanıt
+  gövdesindeki `discovery` alanı kaç site işlendiğini ve kaç ham kaydın silindiğini gösterir.
+- **Müşteri tarafı CSP**: script'i ekleyen müşterinin kendi sitesinde `script-src https://independentai.space` ve
+  `connect-src https://independentai.space` gerekebilir (`docs/SENSOR_INSTALL.md`).
+- **Sunucu/edge kanalı**: Cloudflare Worker veya Next.js middleware kurulumu müşteriye aittir; ingest sırrı panelden
+  bir kez gösterilir, AES-GCM ile şifreli saklanır. `CONFIG_ENCRYPTION_KEY` rotasyonunda sır yeniden üretilmelidir
+  (eski değer çözülemezse panel "yeniden üret" der).
+- **Veri büyümesi**: ham olaylar site başına `retentionDays` (varsayılan 90) sonunda silinir; izleme için
+  `AiJourneyEvent`/`AiCrawlerEvent` satır sayısı ve günlük cron'un `discovery.deletedEvents` değeri takip edilir.
+
 ## 9. Go-live runbook (sıra bozulmaz; her adımın kanıtı final rapora yazılır)
 
 | #   | Adım                 | Komut / yer                                                                                                                                      | Geçme ölçütü                                                 |

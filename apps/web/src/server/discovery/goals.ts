@@ -31,7 +31,10 @@ export const GOAL_TYPES = [
 export const GOAL_MATCHES = ['EVENT', 'PATH', 'DATA_ATTRIBUTE'] as const satisfies readonly GoalMatch[];
 
 /** Site türüne göre hazır hedef paketleri (kullanıcı isterse tek tıkla ekler). */
-export const GOAL_TEMPLATES: Record<string, { name: string; type: GoalType; matchMethod: GoalMatch; eventName?: string; pathPattern?: string }[]> = {
+export const GOAL_TEMPLATES: Record<
+  string,
+  { name: string; type: GoalType; matchMethod: GoalMatch; eventName?: string; pathPattern?: string }[]
+> = {
   saas: [
     { name: 'Kayıt', type: 'SIGN_UP', matchMethod: 'EVENT', eventName: 'sign_up' },
     { name: 'Demo talebi', type: 'DEMO', matchMethod: 'EVENT', eventName: 'demo_request' },
@@ -100,7 +103,9 @@ export function pathMatches(pattern: string, path: string): boolean {
   const normPattern = normalizePath(p === '' ? '/' : p).toLowerCase();
   const normPath = path.toLowerCase();
   if (pattern.endsWith('*')) {
-    return normPattern === '/' ? true : normPath === normPattern || normPath.startsWith(`${normPattern}/`) || normPath.startsWith(normPattern);
+    return normPattern === '/'
+      ? true
+      : normPath === normPattern || normPath.startsWith(`${normPattern}/`) || normPath.startsWith(normPattern);
   }
   return normPath === normPattern;
 }
@@ -170,7 +175,13 @@ function cleanGoalInput(input: Record<string, unknown>) {
       : Number.isFinite(Number(valueRaw)) && Number(valueRaw) >= 0
         ? Number(valueRaw)
         : null;
-  const currency = typeof input.currency === 'string' ? input.currency.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) || null : null;
+  const currency =
+    typeof input.currency === 'string'
+      ? input.currency
+          .toUpperCase()
+          .replace(/[^A-Z]/g, '')
+          .slice(0, 3) || null
+      : null;
 
   return { name, type, matchMethod, pathPattern, eventName, attributeValue, defaultValue, currency };
 }
@@ -180,7 +191,11 @@ export async function listGoals(tenantId: string, trackedSiteId: string): Promis
   return goals.map(toGoalView);
 }
 
-export async function createGoal(actor: Actor, trackedSiteId: string, input: Record<string, unknown>): Promise<GoalView> {
+export async function createGoal(
+  actor: Actor,
+  trackedSiteId: string,
+  input: Record<string, unknown>,
+): Promise<GoalView> {
   const site = await getOwnedSite(actor, trackedSiteId);
   const data = cleanGoalInput(input);
   const count = await prisma.siteGoal.count({ where: { trackedSiteId: site.id } });
@@ -200,7 +215,10 @@ export async function updateGoal(actor: Actor, goalId: string, input: Record<str
   const goal = await prisma.siteGoal.findFirst({ where: { id: goalId, tenantId: actor.tenantId } });
   if (!goal) throw new NotFoundError('Hedef bulunamadı');
   if (input.isActive !== undefined && Object.keys(input).length === 1) {
-    const updated = await prisma.siteGoal.update({ where: { id: goal.id }, data: { isActive: input.isActive === true } });
+    const updated = await prisma.siteGoal.update({
+      where: { id: goal.id },
+      data: { isActive: input.isActive === true },
+    });
     return toGoalView(updated);
   }
   const data = cleanGoalInput({ ...goal, ...input });

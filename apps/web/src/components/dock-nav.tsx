@@ -28,6 +28,7 @@ import {
   CheckCircle2,
   ChevronUp,
   Plug,
+  Radar,
   Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -37,6 +38,7 @@ const NAV = [
   { href: '/dashboard/prompts', label: 'İzlenen Sorular', icon: MessageSquare },
   { href: '/dashboard/competitors', label: 'Rakipler', icon: Swords },
   { href: '/dashboard/integrations', label: 'Entegrasyonlar', icon: Plug },
+  { href: '/dashboard/discovery', label: 'AI Trafiği', icon: Radar },
 ];
 
 const TOOLS: { href: string; label: string; desc: string; icon: typeof Gauge; cat: string }[] = [

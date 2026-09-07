@@ -36,7 +36,10 @@ const WIRE_TO_ENUM = new Map<string, SiteEventName>(SITE_EVENT_TYPES.map((t) => 
 
 export function toEventType(wire: unknown): SiteEventName | null {
   if (typeof wire !== 'string') return null;
-  const key = wire.trim().toLowerCase().replace(/[\s-]+/g, '_');
+  const key = wire
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
   return WIRE_TO_ENUM.get(key) ?? null;
 }
 
@@ -217,7 +220,12 @@ export function normalizeEvent(raw: IncomingEvent, now = Date.now()): NormalizeR
       entityId: safeToken(raw.ei, MAX_ID),
       entityLabel: safeToken(raw.el, MAX_LABEL),
       value: raw.v ?? null,
-      currency: raw.c ? raw.c.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) || null : null,
+      currency: raw.c
+        ? raw.c
+            .toUpperCase()
+            .replace(/[^A-Z]/g, '')
+            .slice(0, 3) || null
+        : null,
       sdkVersion: safeToken(raw.sv, 20),
       utm: Object.keys(utm).length ? utm : null,
     },

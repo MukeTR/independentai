@@ -96,7 +96,8 @@ export function classifySource(input: {
   if (host) {
     const provider = HOST_TO_PROVIDER.get(host);
     if (provider) return { sourceClass: 'AI_REFERRAL', provider, referrerHost: host, reason: 'ai_referrer' };
-    if (SEARCH_HOSTS.has(host)) return { sourceClass: 'ORGANIC', provider: null, referrerHost: host, reason: 'search_referrer' };
+    if (SEARCH_HOSTS.has(host))
+      return { sourceClass: 'ORGANIC', provider: null, referrerHost: host, reason: 'search_referrer' };
     return { sourceClass: 'OTHER', provider: null, referrerHost: host, reason: 'other_referrer' };
   }
 

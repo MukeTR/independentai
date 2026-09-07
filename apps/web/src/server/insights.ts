@@ -2,8 +2,10 @@
  * GEO insight sorguları — Rekabet Radarı, Top Citation Sources, Görünürlük Boşluğu.
  * (Faz 1) Mevcut ModelRun / BrandMention / Citation verisinden türetilir.
  */
+import type { GoalType } from '@independentai/db';
 import { prisma } from './prisma';
 import { PROVIDER_LABELS, SENTIMENT_SCORE } from '@independentai/shared';
+import { contextTokens, meaningfulWords, wordMatchesTokens } from './discovery/attribution';
 
 function sinceDays(days: number): Date {
   const d = new Date();
@@ -214,4 +216,279 @@ export async function getVisibilityGaps(tenantId: string, days = 30, limit = 15)
       providers: [...g.missing],
     }))
     .slice(0, limit);
+}
+
+// ─────────── Görünürlük Boşluğu × Gerçek Trafik (AI Discovery Sensor) ───────────
+
+/**
+ * Hedef türünün stratejik ağırlığı. E-ticaret dışı sitelerde "ciro" yoktur; değer
+ * lead/demo/başvuru/abonelik cinsinden ifade edilir. Ağırlıklar sabittir ve UI'da açıklanır.
+ */
+const GOAL_STRATEGIC_WEIGHT: Record<GoalType, number> = {
+  PURCHASE: 100,
+  DEMO: 90,
+  LEAD: 85,
+  APPLICATION: 80,
+  BOOKING: 80,
+  SIGN_UP: 70,
+  SUBSCRIBE: 60,
+  CONTACT: 55,
+  CUSTOM: 40,
+};
+
+const GOAL_OUTCOME_LABEL: Record<GoalType, string> = {
+  PURCHASE: 'satış',
+  DEMO: 'demo talebi',
+  LEAD: 'potansiyel müşteri',
+  APPLICATION: 'başvuru',
+  BOOKING: 'randevu',
+  SIGN_UP: 'kayıt',
+  SUBSCRIBE: 'abonelik',
+  CONTACT: 'iletişim',
+  CUSTOM: 'hedef',
+};
+
+export type PrioritizedGap = {
+  promptId: string;
+  text: string;
+  /** Bu soruda öne çıkan rakipler */
+  competitors: string[];
+  /** Markanın görünmediği AI ürünleri */
+  missingProviders: string[];
+  /** Sorunun konusuyla örtüşen gerçek ziyaret ilgisi */
+  trafficSignal: {
+    sessions: number;
+    entityViews: number;
+    matchedPaths: string[];
+    matchedEntities: string[];
+    score: number;
+  };
+  /** Bu ilgiden doğan hedef tamamlamaları (ciro değil; sektöre göre lead/demo/başvuru) */
+  goalSignal: {
+    conversions: number;
+    topGoal: string | null;
+    goalType: GoalType | null;
+    score: number;
+    /** Kullanıcıya gösterilecek değer ifadesi — e-ticaret dışında ciro yazılmaz */
+    valueLabel: string | null;
+  };
+  /** 0-100 öncelik puanı */
+  priority: number;
+  rationale: string;
+};
+
+/**
+ * Mevcut görünürlük boşluklarını **gerçek trafik sinyaliyle** sıralar.
+ *
+ * Formül (çarpımsal, açıklanabilir):
+ *   `gapBase`        = 40 + min(30, rakip×6) + min(30, eksik sağlayıcı×10)   → 40..100
+ *   `trafficCarpani` = 0,6 + 0,4 × (bu sorunun konusuyla örtüşen ziyaret ilgisi / en yüksek ilgi)
+ *   `hedefCarpani`   = 0,8 + 0,2 × (örtüşen hedef tamamlamalarının stratejik değeri / en yüksek değer)
+ *   `priority`       = gapBase × trafficCarpani × hedefCarpani
+ *
+ * Trafik sinyali yoksa boşluk yine listelenir (çarpan 0,6) — ölçüm yokluğu "fırsat yok"
+ * anlamına gelmez; yalnızca sıralamada geri düşer. `getVisibilityGaps` mantığı değiştirilmez.
+ */
+export async function prioritizeGapsWithTraffic(
+  tenantId: string,
+  opts: { siteId?: string | null; days?: number; limit?: number } = {},
+): Promise<PrioritizedGap[]> {
+  const days = Math.min(180, Math.max(1, Math.floor(opts.days ?? 30)));
+  const limit = Math.min(50, Math.max(1, Math.floor(opts.limit ?? 15)));
+  const since = sinceDays(days);
+
+  const gaps = await getVisibilityGaps(tenantId, days, 50);
+  if (gaps.length === 0) return [];
+
+  // Site kapsamı: yalnızca tenant'ın kendi siteleri (cross-tenant sızıntı yok).
+  const sites = await prisma.trackedSite.findMany({
+    where: { tenantId, ...(opts.siteId ? { id: opts.siteId } : {}) },
+    select: { id: true, siteKind: true },
+  });
+  const siteIds = sites.map((s) => s.id);
+  // Ciro/sepet dili YALNIZCA kapsamdaki tüm siteler e-ticaretse kullanılır.
+  const isCommerce = sites.length > 0 && sites.every((s) => s.siteKind === 'ecommerce');
+
+  const [landingRows, entityRows, convertedSessions] = siteIds.length
+    ? await Promise.all([
+        prisma.aiAcquisitionSession.groupBy({
+          by: ['landingPath'],
+          where: { tenantId, trackedSiteId: { in: siteIds }, sourceClass: 'AI_REFERRAL', firstSeenAt: { gte: since } },
+          _count: { _all: true },
+          orderBy: { _count: { landingPath: 'desc' } },
+          take: 200,
+        }),
+        prisma.aiJourneyEvent.groupBy({
+          by: ['entityLabel'],
+          where: {
+            tenantId,
+            trackedSiteId: { in: siteIds },
+            entityLabel: { not: null },
+            occurredAt: { gte: since },
+          },
+          _count: { _all: true },
+          orderBy: { _count: { entityLabel: 'desc' } },
+          take: 200,
+        }),
+        prisma.aiAcquisitionSession.findMany({
+          where: {
+            tenantId,
+            trackedSiteId: { in: siteIds },
+            sourceClass: 'AI_REFERRAL',
+            firstSeenAt: { gte: since },
+            convertedAt: { not: null },
+            goalId: { not: null },
+          },
+          select: { landingPath: true, value: true, goal: { select: { name: true, type: true } } },
+          take: 2000,
+        }),
+      ])
+    : [[], [], []];
+
+  const paths = landingRows.map((r) => ({
+    path: r.landingPath,
+    sessions: r._count._all,
+    tokens: contextTokens(r.landingPath),
+  }));
+  const entities = entityRows
+    .filter((r): r is typeof r & { entityLabel: string } => !!r.entityLabel)
+    .map((r) => ({ label: r.entityLabel, views: r._count._all, tokens: meaningfulWords(r.entityLabel, 8) }));
+
+  type Row = {
+    gap: VisibilityGap;
+    words: string[];
+    sessions: number;
+    entityViews: number;
+    matchedPaths: string[];
+    matchedEntities: string[];
+    conversions: number;
+    goalValue: number;
+    goalCounts: Map<string, { type: GoalType; count: number }>;
+    revenue: number;
+  };
+
+  const rows: Row[] = gaps.map((gap) => {
+    const words = meaningfulWords(gap.promptText);
+    const row: Row = {
+      gap,
+      words,
+      sessions: 0,
+      entityViews: 0,
+      matchedPaths: [],
+      matchedEntities: [],
+      conversions: 0,
+      goalValue: 0,
+      goalCounts: new Map(),
+      revenue: 0,
+    };
+    if (words.length === 0) return row;
+
+    const matchedPathSet = new Set<string>();
+    for (const p of paths) {
+      if (!words.some((w) => wordMatchesTokens(w, p.tokens))) continue;
+      row.sessions += p.sessions;
+      matchedPathSet.add(p.path);
+      if (row.matchedPaths.length < 5) row.matchedPaths.push(p.path);
+    }
+    for (const e of entities) {
+      if (!words.some((w) => wordMatchesTokens(w, e.tokens))) continue;
+      row.entityViews += e.views;
+      if (row.matchedEntities.length < 5) row.matchedEntities.push(e.label);
+    }
+    for (const s of convertedSessions) {
+      if (!matchedPathSet.has(s.landingPath) || !s.goal) continue;
+      row.conversions += 1;
+      row.goalValue += GOAL_STRATEGIC_WEIGHT[s.goal.type];
+      row.revenue += s.value ? Number(s.value) : 0;
+      const acc = row.goalCounts.get(s.goal.name) ?? { type: s.goal.type, count: 0 };
+      acc.count += 1;
+      row.goalCounts.set(s.goal.name, acc);
+    }
+    return row;
+  });
+
+  const interestOf = (r: Row) => r.sessions + r.entityViews * 0.25;
+  const maxInterest = Math.max(...rows.map(interestOf), 0);
+  const maxGoalValue = Math.max(...rows.map((r) => r.goalValue), 0);
+
+  return rows
+    .map((r) => {
+      const gapBase = 40 + Math.min(30, r.gap.competitors.length * 6) + Math.min(30, r.gap.providers.length * 10);
+      const trafficNorm = maxInterest > 0 ? interestOf(r) / maxInterest : 0;
+      const goalNorm = maxGoalValue > 0 ? r.goalValue / maxGoalValue : 0;
+      const priority = Math.round(gapBase * (0.6 + 0.4 * trafficNorm) * (0.8 + 0.2 * goalNorm));
+
+      const top = [...r.goalCounts.entries()].sort((a, b) => b[1].count - a[1].count)[0] ?? null;
+      const outcome = top ? GOAL_OUTCOME_LABEL[top[1].type] : null;
+      const valueLabel = !top
+        ? null
+        : isCommerce && r.revenue > 0
+          ? `${r.conversions} ${outcome} · ≈ ${Math.round(r.revenue).toLocaleString('tr-TR')} değerinde`
+          : `${r.conversions} ${outcome}`;
+
+      return {
+        promptId: r.gap.promptId,
+        text: r.gap.promptText,
+        competitors: r.gap.competitors,
+        missingProviders: r.gap.providers,
+        trafficSignal: {
+          sessions: r.sessions,
+          entityViews: r.entityViews,
+          matchedPaths: r.matchedPaths,
+          matchedEntities: r.matchedEntities,
+          score: Math.round(trafficNorm * 100),
+        },
+        goalSignal: {
+          conversions: r.conversions,
+          topGoal: top ? top[0] : null,
+          goalType: top ? top[1].type : null,
+          score: Math.round(goalNorm * 100),
+          valueLabel,
+        },
+        priority,
+        rationale: buildGapRationale({
+          competitors: r.gap.competitors,
+          providers: r.gap.providers,
+          sessions: r.sessions,
+          entityViews: r.entityViews,
+          matchedPaths: r.matchedPaths,
+          valueLabel,
+        }),
+      } satisfies PrioritizedGap;
+    })
+    .sort(
+      (a, b) =>
+        b.priority - a.priority ||
+        b.trafficSignal.sessions - a.trafficSignal.sessions ||
+        a.promptId.localeCompare(b.promptId),
+    )
+    .slice(0, limit);
+}
+
+/** Öncelik açıklaması — sayılar nereden geliyor, kullanıcı görebilsin. */
+function buildGapRationale(input: {
+  competitors: string[];
+  providers: string[];
+  sessions: number;
+  entityViews: number;
+  matchedPaths: string[];
+  valueLabel: string | null;
+}): string {
+  const parts: string[] = [];
+  parts.push(
+    input.competitors.length > 0
+      ? `Bu soruda ${input.competitors.slice(0, 3).join(', ')} görünüyor, markanız görünmüyor`
+      : 'Bu soruda markanız görünmüyor',
+  );
+  if (input.providers.length > 0) parts.push(`${input.providers.join(', ')} tarafında eksiksiniz`);
+  if (input.sessions > 0) {
+    const where = input.matchedPaths.length ? ` (${input.matchedPaths.slice(0, 2).join(', ')})` : '';
+    parts.push(`aynı konuyla ilgili ${input.sessions} AI kaynaklı ziyaret ölçüldü${where}`);
+  } else if (input.entityViews > 0) {
+    parts.push(`aynı konudaki içerik ${input.entityViews} kez görüntülendi`);
+  } else {
+    parts.push('bu konuda henüz ölçülmüş AI ziyareti yok, sıralamada geride tutuldu');
+  }
+  if (input.valueLabel) parts.push(`bu ilgiden ${input.valueLabel} doğdu`);
+  return `${parts.join('; ')}.`;
 }

@@ -10,7 +10,15 @@ import globals from 'globals';
  */
 export default tseslint.config(
   {
-    ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts', 'playwright-report/**', 'test-results/**', 'coverage/**'],
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'src/generated/**',
+      'next-env.d.ts',
+      'playwright-report/**',
+      'test-results/**',
+      'coverage/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

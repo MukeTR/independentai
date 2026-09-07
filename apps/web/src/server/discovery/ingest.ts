@@ -54,7 +54,8 @@ export async function authorizeSite(publicKey: string, origin: string | null): P
   if (!site) throw new IngestError(401, 'invalid_key', 'Geçersiz site anahtarı');
   if (site.status === 'REVOKED') throw new IngestError(403, 'revoked', 'Site anahtarı iptal edilmiş');
   if (site.status === 'PAUSED') throw new IngestError(403, 'paused', 'Ölçüm duraklatılmış');
-  if (!originAllowed(site, origin)) throw new IngestError(403, 'origin_not_allowed', 'Origin bu site için kayıtlı değil');
+  if (!originAllowed(site, origin))
+    throw new IngestError(403, 'origin_not_allowed', 'Origin bu site için kayıtlı değil');
   return site;
 }
 
@@ -62,17 +63,30 @@ export async function authorizeSite(publicKey: string, origin: string | null): P
 export async function enforceCollectorLimits(site: TrackedSite, ip: string, count: number): Promise<void> {
   const perSite = await consume(`collect:site:${site.id}`, 600, 60_000);
   if (!perSite.allowed) {
-    throw new IngestError(429, 'rate_limited', 'Çok fazla olay', Math.ceil((perSite.resetAt.getTime() - Date.now()) / 1000));
+    throw new IngestError(
+      429,
+      'rate_limited',
+      'Çok fazla olay',
+      Math.ceil((perSite.resetAt.getTime() - Date.now()) / 1000),
+    );
   }
   const perIp = await consume(`collect:ip:${ip}`, 240, 60_000);
   if (!perIp.allowed) {
-    throw new IngestError(429, 'rate_limited', 'Çok fazla olay', Math.ceil((perIp.resetAt.getTime() - Date.now()) / 1000));
+    throw new IngestError(
+      429,
+      'rate_limited',
+      'Çok fazla olay',
+      Math.ceil((perIp.resetAt.getTime() - Date.now()) / 1000),
+    );
   }
   const global = await consume('collect:__global__', 60_000, 60_000);
   if (!global.allowed) throw new IngestError(429, 'rate_limited', 'Sistem yoğun', 30);
 
   // Aylık adil kullanım (plan tavanı). Kayan 30 günlük kova; sayaç DB'de tutulur.
-  const tenant = await prisma.tenant.findUnique({ where: { id: site.tenantId }, select: { plan: true, trialEndsAt: true } });
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: site.tenantId },
+    select: { plan: true, trialEndsAt: true },
+  });
   if (tenant) {
     const cap = computeEntitlement(tenant).limits.sensorEventsPerMonth;
     const monthly = await consume(`collect:quota:${site.id}`, cap, 30 * 86_400_000, count);
@@ -131,7 +145,11 @@ export type StoredEvent = {
  * Tek olayı yazar. Aynı `dedupeKey` ikinci kez gelirse `null` döner (tekrar teslim yok sayılır).
  * Aynı oturumda aynı hedef ikinci kez tetiklenirse olay yazılır ama dönüşüm sayılmaz.
  */
-export async function storeEvent(site: TrackedSite, goals: SiteGoal[], event: NormalizedEvent): Promise<StoredEvent | null> {
+export async function storeEvent(
+  site: TrackedSite,
+  goals: SiteGoal[],
+  event: NormalizedEvent,
+): Promise<StoredEvent | null> {
   const goal = matchGoal(goals, event);
   const expiresAt = new Date(event.occurredAt.getTime() + site.retentionDays * 86_400_000);
 

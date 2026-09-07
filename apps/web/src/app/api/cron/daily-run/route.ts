@@ -78,7 +78,15 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  log.info('cron.daily_run', { hop, ...runs, catalog, discovery, alerts, willChain, durationMs: Date.now() - startedAt });
+  log.info('cron.daily_run', {
+    hop,
+    ...runs,
+    catalog,
+    discovery,
+    alerts,
+    willChain,
+    durationMs: Date.now() - startedAt,
+  });
   return NextResponse.json({
     ...runs,
     catalog,

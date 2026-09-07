@@ -12,7 +12,13 @@ import { createHash } from 'node:crypto';
 import { prisma } from '../prisma';
 import { log } from '../logger';
 
-export type RollupStats = { sites: number; rows: number; deletedEvents: number; deletedSessions: number; deletedCrawls: number };
+export type RollupStats = {
+  sites: number;
+  rows: number;
+  deletedEvents: number;
+  deletedSessions: number;
+  deletedCrawls: number;
+};
 
 export function dayStart(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
@@ -147,7 +153,9 @@ export async function rollupSiteDay(site: { id: string; tenantId: string }, day:
 }
 
 /** Süresi geçmiş ham kayıtları siler (rollup'lar kalır). */
-export async function purgeExpired(limitPerTable = 20_000): Promise<{ events: number; sessions: number; crawls: number }> {
+export async function purgeExpired(
+  limitPerTable = 20_000,
+): Promise<{ events: number; sessions: number; crawls: number }> {
   const now = new Date();
   const events = await prisma.aiJourneyEvent.deleteMany({ where: { expiresAt: { lt: now } } });
   const crawls = await prisma.aiCrawlerEvent.deleteMany({ where: { expiresAt: { lt: now } } });

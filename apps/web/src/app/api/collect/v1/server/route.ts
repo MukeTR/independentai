@@ -3,7 +3,12 @@ import { log } from '@/server/logger';
 import { collectorError, parseJson, readRawBody } from '@/server/discovery/http';
 import { IngestError } from '@/server/discovery/ingest';
 import { resolveSiteByPublicKey } from '@/server/discovery/sites';
-import { ServerBatchSchema, enforceServerLimits, ingestServerHits, verifyServerRequest } from '@/server/discovery/crawler-ingest';
+import {
+  ServerBatchSchema,
+  enforceServerLimits,
+  ingestServerHits,
+  verifyServerRequest,
+} from '@/server/discovery/crawler-ingest';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;

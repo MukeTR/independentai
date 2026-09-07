@@ -147,7 +147,10 @@ export async function ingestServerHits(site: TrackedSite, hits: ServerHit[]): Pr
     const occurredAt = new Date(hit.ts && Math.abs(now - hit.ts) < 7 * 86_400_000 ? hit.ts : now);
     const dedupeKey = `${site.id}:${hit.id}`;
     try {
-      const bot = await prisma.aiBotIdentity.findUnique({ where: { canonicalId: verdict.bot.canonicalId }, select: { id: true } });
+      const bot = await prisma.aiBotIdentity.findUnique({
+        where: { canonicalId: verdict.bot.canonicalId },
+        select: { id: true },
+      });
       await prisma.aiCrawlerEvent.create({
         data: {
           tenantId: site.tenantId,

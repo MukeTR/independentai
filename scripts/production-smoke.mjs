@@ -122,6 +122,29 @@ for (const p of [
   );
   check('shopify webhook geçersiz HMAC → 401', w.status === 401, `status ${w.status}`);
 }
+// ── AI Discovery Sensor (salt-okunur; hiçbir olay yazılmaz) ──
+{
+  const js = await req('GET', '/sensor/v1.js');
+  check('sensor SDK 200', js.status === 200, `status ${js.status}`);
+  check(
+    'sensor SDK doğru content-type + nosniff',
+    /javascript/i.test(js.headers.get('content-type') ?? '') && js.headers.get('x-content-type-options') === 'nosniff',
+    js.headers.get('content-type') ?? 'yok',
+  );
+  check('sensor SDK çerez kullanmıyor', !/document\.cookie/.test(js.text));
+
+  const badKey = await req(
+    'POST',
+    '/api/collect/v1/event',
+    { k: 'iais_gecersiz_anahtar_smoke_xxxxx', e: [{ id: 'smoke-12345678', sid: 'smoke-1234567', t: 'page_view' }] },
+    { headers: { origin: 'https://smoke.example' } },
+  );
+  check('collector geçersiz anahtar → 401', badKey.status === 401, `status ${badKey.status}`);
+
+  const noSig = await req('POST', '/api/collect/v1/server', { hits: [] }, { headers: { 'x-iai-key': 'iais_x' } });
+  check('sunucu collector imzasız → 401', noSig.status === 401, `status ${noSig.status}`);
+}
+
 {
   // Araç çağrısı Audit/PublicScan satırı yazar → yalnızca SMOKE_WRITE=1 ile (production'da "production-smoke" dışı veri yazılmaz).
   if (write) {

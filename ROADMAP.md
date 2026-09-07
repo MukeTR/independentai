@@ -26,6 +26,10 @@ Tek kaynak: `packages/shared/src/capabilities.ts` (pazarlama sayfaları ve panel
 - Katalog tabanlı AI hazırlık skoru, katalogdan doğrulanabilir marka gerçekleri (zaman damgalı), ticari izleme soru önerileri
 - Gerçek zamanlı panel: Supabase Realtime private kanallar + RLS; yapılandırılmadığında 30 sn polling
 - AI ürün açıklaması / SSS yazıcı (provider anahtarı gerekir)
+- AI Discovery Sensor: tek satır script ile AI kaynaklı gerçek ziyaret ölçümü; sunucu/edge kanalıyla AI crawler
+  istekleri; sektörden bağımsız hedef ve dönüşüm takibi; çerezsiz ve PII'siz
+- Prompt kaynağı ayrımı: ziyaretçi bildirimi (USER_REPORTED), açıklanabilir tahmin (INFERRED; güven eşiği altında
+  kayıt üretilmez), sentetik ölçüm (SYNTHETIC = kendi ModelRun'larımız)
 - Sentiment (heuristik + LLM sınıflandırma)
 - Atıf kaynakları: provider native web arama (OpenAI web_search, Anthropic web_search, Gemini googleSearch);
   `AI_WEB_SEARCH=0` ise yalnızca metin içi linkler
@@ -53,3 +57,9 @@ Tek kaynak: `packages/shared/src/capabilities.ts` (pazarlama sayfaları ve panel
   birkaç zincir turu sürebilir. Plan tavanı: LAUNCH 5.000 ürün.
 - Ticimax webhook sunmaz → değişiklikler günlük senkronda yansır. ikas webhook imzasız → payload'a güvenilmez, ürün API'den yeniden çekilir.
 - Realtime, Supabase projesinde SQL politikalarının uygulanmasını ve "public access" kapalı olmasını gerektirir (`DEPLOY.md §7`).
+- Sensör: JavaScript çalıştırmayan crawler'lar yalnızca sunucu/edge bağlantısıyla görülür; tek başına script yeterli
+  değildir ve panelde bu ayrım açıkça gösterilir.
+- Gerçek ziyaretçi promptu AI platformlarınca gönderilmez: yalnızca ziyaretçi bildirirse bilinir; aksi hâlde güven
+  skorlu tahmin gösterilir, eşik altında hiçbir tahmin üretilmez.
+- Ham sensör olayları site başına saklama süresi (varsayılan 90 gün) sonunda silinir; uzun vadede yalnızca gün bazlı
+  toplamlar kalır.

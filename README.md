@@ -21,19 +21,23 @@ geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız, üçünc
 | E-ticaret araçları: mağaza AI görünürlük, ürün sayfası, AI crawler testi                   | live    |
 | Mağaza bağlantıları: Shopify (OAuth) · ikas · Ticimax — salt-okunur katalog                | beta    |
 | Gerçek zamanlı panel (Supabase Realtime; yoksa 30 sn polling)                              | beta    |
+| AI Discovery Sensor: siteye tek satır script, AI kaynaklı gerçek ziyaret + crawler ölçümü  | beta    |
+| Sektörden bağımsız hedef/dönüşüm takibi (kayıt, demo, form, rezervasyon, başvuru, satış)   | beta    |
+| Prompt kaynağı ayrımı: ziyaretçi bildirimi / açıklanabilir tahmin / sentetik ölçüm         | beta    |
 | Sentiment (LLM destekli), native web-arama atıfları, AI ürün açıklama yazıcı               | beta    |
 | Çoklu marka, giden Webhooks, PDF rapor, Perplexity/Grok, ücretli planlar, beyaz etiket     | roadmap |
 
 ## Stack
 
-| Katman           | Teknoloji                                                                      |
-| ---------------- | ------------------------------------------------------------------------------ |
-| Web + API + Cron | Next.js 15 App Router, React 19, Vercel Functions/Cron (fra1)                  |
-| DB               | Supabase Postgres (eu-central-1) + Prisma 5, migration-first                   |
-| Canlı güncelleme | Supabase Realtime (private Broadcast + RLS), token `/api/realtime/token`       |
-| Commerce         | Shopify GraphQL Admin (OAuth), ikas GraphQL (client credentials), Ticimax SOAP |
-| AI               | OpenAI / Anthropic / Google adapter'ları (native web arama)                    |
-| Test             | Vitest (unit + integration, izole Postgres), Playwright (E2E)                  |
+| Katman           | Teknoloji                                                                       |
+| ---------------- | ------------------------------------------------------------------------------- |
+| Web + API + Cron | Next.js 15 App Router, React 19, Vercel Functions/Cron (fra1)                   |
+| DB               | Supabase Postgres (eu-central-1) + Prisma 5, migration-first                    |
+| Canlı güncelleme | Supabase Realtime (private Broadcast + RLS), token `/api/realtime/token`        |
+| Sensor           | `/sensor/v1.js` tarayıcı SDK'sı (çerezsiz, PII'siz) + imzalı sunucu/edge ingest |
+| Commerce         | Shopify GraphQL Admin (OAuth), ikas GraphQL (client credentials), Ticimax SOAP  |
+| AI               | OpenAI / Anthropic / Google adapter'ları (native web arama)                     |
+| Test             | Vitest (unit + integration, izole Postgres), Playwright (E2E)                   |
 
 Mimari: tek deploy. Tüm API `apps/web/src/app/api/*`. Worker/Redis yok: kuyruk ModelRun satırlarında
 (`FOR UPDATE SKIP LOCKED` lease), rate limit Postgres tablosunda. Ayrıntı: `docs/ARCHITECTURE.md`.
@@ -84,6 +88,8 @@ export TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:5499/independentai_test
 - `docs/BLOG_AUDIT.md` — blog içerik denetimi
 - `docs/AGENCY.md` — ajans modeli, roller, erişim çözümleme, paylaşım linkleri
 - `docs/REALTIME.md` — Supabase Realtime mimarisi, RLS, token akışı, fallback
+- `docs/AI_DISCOVERY.md` — sensör ölçüm modeli, prompt kaynakları, gizlilik
+- `docs/SENSOR_INSTALL.md` — kurulum yöntemleri (HTML, GTM, WordPress, Next.js, Cloudflare Worker…)
 - `docs/INTEGRATIONS.md` — bağlayıcı sözleşmesi, senkron motoru, durum makinesi
 - `docs/SHOPIFY.md` · `docs/IKAS.md` · `docs/TICIMAX.md` — platform kurulum ve kapsam
 - `docs/COMMERCE_SCORING.md` — e-ticaret araçlarının skor/bulgu kataloğu

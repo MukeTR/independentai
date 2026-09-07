@@ -262,10 +262,20 @@ export function verifyBot(userAgent: string | null | undefined, signals: EdgeSig
       reason: 'control_token_only', // örn. Google-Extended: ayrı crawler değil
     };
   }
-  if (signals.edgeVerified) return { bot, verification: 'VERIFIED', method: 'edge', ignore: false, reason: 'edge_verified_bot' };
-  if (signals.ipRangeVerified) return { bot, verification: 'VERIFIED', method: 'ip_range', ignore: false, reason: 'official_ip_range' };
-  if (signals.reverseDnsVerified) return { bot, verification: 'VERIFIED', method: 'reverse_dns', ignore: false, reason: 'reverse_dns_forward_confirmed' };
-  if (signals.signatureVerified) return { bot, verification: 'VERIFIED', method: 'signature', ignore: false, reason: 'request_signature' };
+  if (signals.edgeVerified)
+    return { bot, verification: 'VERIFIED', method: 'edge', ignore: false, reason: 'edge_verified_bot' };
+  if (signals.ipRangeVerified)
+    return { bot, verification: 'VERIFIED', method: 'ip_range', ignore: false, reason: 'official_ip_range' };
+  if (signals.reverseDnsVerified)
+    return {
+      bot,
+      verification: 'VERIFIED',
+      method: 'reverse_dns',
+      ignore: false,
+      reason: 'reverse_dns_forward_confirmed',
+    };
+  if (signals.signatureVerified)
+    return { bot, verification: 'VERIFIED', method: 'signature', ignore: false, reason: 'request_signature' };
 
   // Doğrulama sinyali yok. Operatörün doğrulanabilir bir yöntemi varsa "iddia edilmiş ama
   // kanıtlanmamış" (PROBABLE değil) demek daha dürüst: UNVERIFIED.

@@ -100,7 +100,10 @@ describe('olay normalizasyonu', () => {
 
 describe('AI kaynak sınıflandırması', () => {
   it('bilinen AI hostlarını tam eşleşmeyle tanır', () => {
-    expect(classifySource({ referrerHost: 'chatgpt.com' })).toMatchObject({ sourceClass: 'AI_REFERRAL', provider: 'openai' });
+    expect(classifySource({ referrerHost: 'chatgpt.com' })).toMatchObject({
+      sourceClass: 'AI_REFERRAL',
+      provider: 'openai',
+    });
     expect(classifySource({ referrerHost: 'https://claude.ai/chat/123' })).toMatchObject({ provider: 'anthropic' });
     expect(classifySource({ referrerHost: 'gemini.google.com' })).toMatchObject({ provider: 'google' });
   });
@@ -118,7 +121,10 @@ describe('AI kaynak sınıflandırması', () => {
   });
 
   it('UTM yalnızca referrer YOKKEN ve tanınan adla AI sayılır', () => {
-    expect(classifySource({ utm: { utm_source: 'chatgpt' } })).toMatchObject({ sourceClass: 'AI_REFERRAL', reason: 'utm_ai' });
+    expect(classifySource({ utm: { utm_source: 'chatgpt' } })).toMatchObject({
+      sourceClass: 'AI_REFERRAL',
+      reason: 'utm_ai',
+    });
     expect(classifySource({ utm: { utm_source: 'newsletter' } }).sourceClass).toBe('DIRECT');
     // Referrer varsa gerçek referrer kazanır (UTM uydurulabilir)
     expect(classifySource({ referrerHost: 'google.com', utm: { utm_source: 'chatgpt' } }).sourceClass).toBe('ORGANIC');
@@ -152,9 +158,18 @@ describe('bot doğrulama', () => {
 
   it('edge/IP/ters DNS/imza sinyalleri VERIFIED yapar', () => {
     expect(verifyBot('GPTBot/1.0', { edgeVerified: true })).toMatchObject({ verification: 'VERIFIED', method: 'edge' });
-    expect(verifyBot('GPTBot/1.0', { ipRangeVerified: true })).toMatchObject({ verification: 'VERIFIED', method: 'ip_range' });
-    expect(verifyBot('Googlebot/2.1', { reverseDnsVerified: true })).toMatchObject({ verification: 'VERIFIED', method: 'reverse_dns' });
-    expect(verifyBot('PerplexityBot/1.0', { signatureVerified: true })).toMatchObject({ verification: 'VERIFIED', method: 'signature' });
+    expect(verifyBot('GPTBot/1.0', { ipRangeVerified: true })).toMatchObject({
+      verification: 'VERIFIED',
+      method: 'ip_range',
+    });
+    expect(verifyBot('Googlebot/2.1', { reverseDnsVerified: true })).toMatchObject({
+      verification: 'VERIFIED',
+      method: 'reverse_dns',
+    });
+    expect(verifyBot('PerplexityBot/1.0', { signatureVerified: true })).toMatchObject({
+      verification: 'VERIFIED',
+      method: 'signature',
+    });
   });
 
   it('Google-Extended ayrı ziyaret üretmez (kontrol token’ı)', () => {

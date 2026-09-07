@@ -47,7 +47,14 @@ export type DiscoveryOverview = {
   byProvider: { provider: string; label: string; sessions: number; conversions: number }[];
   topLandingPages: { path: string; sessions: number; conversions: number }[];
   topEntities: { entityType: string | null; entityId: string | null; label: string | null; views: number }[];
-  goals: { id: string; name: string; type: string; conversions: number; value: number | null; currency: string | null }[];
+  goals: {
+    id: string;
+    name: string;
+    type: string;
+    conversions: number;
+    value: number | null;
+    currency: string | null;
+  }[];
   events: { type: string; count: number }[];
   funnel: { stage: string; label: string; count: number }[];
   crawler: {
@@ -95,15 +102,28 @@ export async function getDiscoveryOverview(
   const siteFilter = siteId ? { trackedSiteId: siteId } : {};
   const window = { gte: range.from, lte: range.to };
 
-  const [sessionGroups, convertedCount, providerRows, landingRows, entityRows, eventGroups, goalRows, crawlerGroups, crawlerPaths, crawlerLast, syntheticRuns] =
-    await Promise.all([
-      prisma.aiAcquisitionSession.groupBy({
-        by: ['sourceClass'],
-        where: { tenantId, ...siteFilter, firstSeenAt: window },
-        _count: { _all: true },
-      }),
-      prisma.aiAcquisitionSession.count({ where: { tenantId, ...siteFilter, firstSeenAt: window, convertedAt: { not: null } } }),
-      prisma.$queryRaw<{ provider: string | null; sessions: bigint; conversions: bigint }[]>`
+  const [
+    sessionGroups,
+    convertedCount,
+    providerRows,
+    landingRows,
+    entityRows,
+    eventGroups,
+    goalRows,
+    crawlerGroups,
+    crawlerPaths,
+    crawlerLast,
+    syntheticRuns,
+  ] = await Promise.all([
+    prisma.aiAcquisitionSession.groupBy({
+      by: ['sourceClass'],
+      where: { tenantId, ...siteFilter, firstSeenAt: window },
+      _count: { _all: true },
+    }),
+    prisma.aiAcquisitionSession.count({
+      where: { tenantId, ...siteFilter, firstSeenAt: window, convertedAt: { not: null } },
+    }),
+    prisma.$queryRaw<{ provider: string | null; sessions: bigint; conversions: bigint }[]>`
         SELECT "provider",
                COUNT(*)::bigint AS sessions,
                COUNT("convertedAt")::bigint AS conversions
@@ -113,7 +133,7 @@ export async function getDiscoveryOverview(
           AND "sourceClass" = 'AI_REFERRAL'
           AND "firstSeenAt" BETWEEN ${range.from} AND ${range.to}
         GROUP BY "provider" ORDER BY sessions DESC LIMIT 20`,
-      prisma.$queryRaw<{ landingPath: string; sessions: bigint; conversions: bigint }[]>`
+    prisma.$queryRaw<{ landingPath: string; sessions: bigint; conversions: bigint }[]>`
         SELECT "landingPath",
                COUNT(*)::bigint AS sessions,
                COUNT("convertedAt")::bigint AS conversions
@@ -123,7 +143,9 @@ export async function getDiscoveryOverview(
           AND "sourceClass" = 'AI_REFERRAL'
           AND "firstSeenAt" BETWEEN ${range.from} AND ${range.to}
         GROUP BY "landingPath" ORDER BY sessions DESC LIMIT 15`,
-      prisma.$queryRaw<{ entityType: string | null; entityId: string | null; entityLabel: string | null; views: bigint }[]>`
+    prisma.$queryRaw<
+      { entityType: string | null; entityId: string | null; entityLabel: string | null; views: bigint }[]
+    >`
         SELECT "entityType", "entityId", MAX("entityLabel") AS "entityLabel", COUNT(*)::bigint AS views
         FROM "AiJourneyEvent"
         WHERE "tenantId" = ${tenantId}
@@ -131,12 +153,14 @@ export async function getDiscoveryOverview(
           AND "entityType" IS NOT NULL
           AND "occurredAt" BETWEEN ${range.from} AND ${range.to}
         GROUP BY "entityType", "entityId" ORDER BY views DESC LIMIT 15`,
-      prisma.aiJourneyEvent.groupBy({
-        by: ['type'],
-        where: { tenantId, ...siteFilter, occurredAt: window },
-        _count: { _all: true },
-      }),
-      prisma.$queryRaw<{ id: string; name: string; type: string; conversions: bigint; value: number | null; currency: string | null }[]>`
+    prisma.aiJourneyEvent.groupBy({
+      by: ['type'],
+      where: { tenantId, ...siteFilter, occurredAt: window },
+      _count: { _all: true },
+    }),
+    prisma.$queryRaw<
+      { id: string; name: string; type: string; conversions: bigint; value: number | null; currency: string | null }[]
+    >`
         SELECT g."id", g."name", g."type"::text AS type,
                COUNT(DISTINCT e."sessionId")::bigint AS conversions,
                SUM(e."value")::float8 AS value,
@@ -147,25 +171,25 @@ export async function getDiscoveryOverview(
         WHERE g."tenantId" = ${tenantId}
           AND (g."trackedSiteId" = ${siteId} OR ${siteId}::text IS NULL)
         GROUP BY g."id", g."name", g."type" ORDER BY conversions DESC LIMIT 20`,
-      prisma.aiCrawlerEvent.groupBy({
-        by: ['canonicalBotId', 'operator', 'purpose', 'verification'],
-        where: { tenantId, ...siteFilter, occurredAt: window },
-        _count: { _all: true },
-      }),
-      prisma.$queryRaw<{ path: string; hits: bigint }[]>`
+    prisma.aiCrawlerEvent.groupBy({
+      by: ['canonicalBotId', 'operator', 'purpose', 'verification'],
+      where: { tenantId, ...siteFilter, occurredAt: window },
+      _count: { _all: true },
+    }),
+    prisma.$queryRaw<{ path: string; hits: bigint }[]>`
         SELECT "path", COUNT(*)::bigint AS hits
         FROM "AiCrawlerEvent"
         WHERE "tenantId" = ${tenantId}
           AND ("trackedSiteId" = ${siteId} OR ${siteId}::text IS NULL)
           AND "occurredAt" BETWEEN ${range.from} AND ${range.to}
         GROUP BY "path" ORDER BY hits DESC LIMIT 15`,
-      prisma.aiCrawlerEvent.findFirst({
-        where: { tenantId, ...siteFilter },
-        orderBy: { occurredAt: 'desc' },
-        select: { occurredAt: true },
-      }),
-      prisma.modelRun.count({ where: { prompt: { tenantId }, runDate: window, status: 'SUCCESS' } }),
-    ]);
+    prisma.aiCrawlerEvent.findFirst({
+      where: { tenantId, ...siteFilter },
+      orderBy: { occurredAt: 'desc' },
+      select: { occurredAt: true },
+    }),
+    prisma.modelRun.count({ where: { prompt: { tenantId }, runDate: window, status: 'SUCCESS' } }),
+  ]);
 
   const sessions = { ...EMPTY_SESSIONS, converted: convertedCount };
   for (const g of sessionGroups) {
@@ -173,7 +197,10 @@ export async function getDiscoveryOverview(
     sessions[sourceBucket(g.sourceClass)] += g._count._all;
   }
 
-  const byBotMap = new Map<string, { bot: string; operator: string | null; purpose: string; hits: number; verified: number }>();
+  const byBotMap = new Map<
+    string,
+    { bot: string; operator: string | null; purpose: string; hits: number; verified: number }
+  >();
   let crawlerTotal = 0;
   let crawlerVerified = 0;
   for (const c of crawlerGroups) {
@@ -259,7 +286,11 @@ export async function listRecentSessions(
     take: limit + 1,
     include: {
       goal: { select: { name: true } },
-      events: { orderBy: { occurredAt: 'asc' }, take: 8, select: { type: true, path: true, entityLabel: true, occurredAt: true } },
+      events: {
+        orderBy: { occurredAt: 'asc' },
+        take: 8,
+        select: { type: true, path: true, entityLabel: true, occurredAt: true },
+      },
     },
   });
   const items = rows.slice(0, limit).map((s) => ({

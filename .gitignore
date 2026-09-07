@@ -21,3 +21,6 @@ coverage
 # Yerel çalışma dosyaları (public repoya girmez)
 CLAUDE_*.md
 docs/PRICING_RESEARCH_*.md
+
+# Başka bir aracın ürettiği yerel görseller (bu depoya ait değil)
+.codex-artifacts/

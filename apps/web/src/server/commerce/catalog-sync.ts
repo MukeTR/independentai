@@ -18,6 +18,7 @@ import { log } from '../logger';
 import { dayBucket } from '../run-prompt';
 import { computeEntitlement } from '../entitlement';
 import { publishForTenant } from '../realtime';
+import { utcTs } from '../sql';
 import { getConnector } from './registry';
 import { decryptCredentials, encryptCredentials } from './credentials';
 import { CommerceError, normalizeCommerceError, USER_MESSAGES } from './errors';
@@ -110,14 +111,7 @@ export async function enqueueDailyCatalogSyncs(): Promise<number> {
 
 // ───────────── İşleme ─────────────
 
-/**
- * Ham SQL'de zaman parametresi: Prisma `DateTime` kolonlarına UTC'yi saat dilimsiz `timestamp(3)` olarak yazar,
- * ham parametreyi ise `timestamptz` tipinde gönderir. Doğrudan karşılaştırma oturum saat dilimine bağlı yanlış
- * sonuç verir (yerelde Europe/Istanbul). Bu yüzden parametre UTC naive timestamp'e çevrilir.
- */
-export function utcTs(d: Date) {
-  return Prisma.sql`(${d}::timestamptz AT TIME ZONE 'UTC')`;
-}
+export { utcTs } from '../sql';
 
 async function claimSync(): Promise<CatalogSync | null> {
   const now = new Date();

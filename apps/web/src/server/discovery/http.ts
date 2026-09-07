@@ -42,14 +42,21 @@ export function corsHeaders(origin: string | null, allowed: boolean): Record<str
 /** Site bilinmeden önce hata dönerken bile iç detay sızdırmaz. */
 export function collectorError(err: unknown, origin: string | null): NextResponse {
   if (err instanceof IngestError) {
-    const res = NextResponse.json({ ok: false, code: err.code }, { status: err.status, headers: corsHeaders(origin, false) });
+    const res = NextResponse.json(
+      { ok: false, code: err.code },
+      { status: err.status, headers: corsHeaders(origin, false) },
+    );
     if (err.retryAfterSec) res.headers.set('Retry-After', String(err.retryAfterSec));
     return res;
   }
   return NextResponse.json({ ok: false, code: 'internal' }, { status: 500, headers: corsHeaders(origin, false) });
 }
 
-export function collectorOk(body: Record<string, unknown>, site: TrackedSite | null, origin: string | null): NextResponse {
+export function collectorOk(
+  body: Record<string, unknown>,
+  site: TrackedSite | null,
+  origin: string | null,
+): NextResponse {
   const allowed = !!site && !!origin;
   return NextResponse.json({ ok: true, ...body }, { status: 202, headers: corsHeaders(origin, allowed) });
 }

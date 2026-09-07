@@ -16,6 +16,7 @@ import { createHash } from 'node:crypto';
 import { prisma } from './prisma';
 import { RateLimitedError } from './errors';
 import { log } from './logger';
+import { utcTs } from './sql';
 
 export type RateLimitResult = {
   allowed: boolean;
@@ -35,10 +36,10 @@ export async function consume(key: string, limit: number, windowMs: number, cost
   try {
     const rows = await prisma.$queryRaw<{ count: number; resetAt: Date }[]>`
       INSERT INTO "RateLimitBucket" ("key", "count", "resetAt")
-      VALUES (${key}, ${units}, ${resetAt})
+      VALUES (${key}, ${units}, ${utcTs(resetAt)})
       ON CONFLICT ("key") DO UPDATE SET
-        "count"   = CASE WHEN "RateLimitBucket"."resetAt" <= ${now} THEN ${units} ELSE "RateLimitBucket"."count" + ${units} END,
-        "resetAt" = CASE WHEN "RateLimitBucket"."resetAt" <= ${now} THEN ${resetAt} ELSE "RateLimitBucket"."resetAt" END
+        "count"   = CASE WHEN "RateLimitBucket"."resetAt" <= ${utcTs(now)} THEN ${units} ELSE "RateLimitBucket"."count" + ${units} END,
+        "resetAt" = CASE WHEN "RateLimitBucket"."resetAt" <= ${utcTs(now)} THEN ${utcTs(resetAt)} ELSE "RateLimitBucket"."resetAt" END
       RETURNING "count", "resetAt"
     `;
     const row = rows[0];

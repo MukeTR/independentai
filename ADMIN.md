@@ -87,3 +87,20 @@ gerekir; yalnızca `demo@independentai.space` tenant'ına dokunur.
 - `pnpm db:realtime:check` → fonksiyon/politika/RLS durumu. `enabled:false` dönen `/api/realtime/token` = env eksik
   (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, imzalama anahtarı).
 - Kullanıcı "canlı" rozeti görmüyor ama panel çalışıyorsa polling fallback devrede; kritik değildir.
+
+## AI Discovery Sensor
+
+- **Site durumları**: `PENDING` (kurulum bekliyor) → `ACTIVE` (ilk geçerli olay geldi) · `PAUSED` (olay kabul edilmez,
+  veri korunur) · `REVOKED` (anahtar iptal, ingest reddedilir). İptal edilen site yeniden açılamaz; yeni anahtar üretilir.
+- **Anahtarlar**: public key yalnızca yazar (siteye gömülür, herkes görebilir), DB'de sha256 özeti tutulur. Sunucu/edge
+  ingest sırrı AES-GCM ile şifreli saklanır ve panelde bir kez gösterilir. `CONFIG_ENCRYPTION_KEY` değişirse sır
+  yeniden üretilmelidir.
+- **Sık sorun**: "olay gelmiyor" → (1) origin allowlist'te mi (exact eşleşme, wildcard yok), (2) site PAUSED/REVOKED mi,
+  (3) aylık kota (`sensorEventsPerMonth`) dolmuş mu — collector 429 `quota_exceeded` döner, (4) müşterinin CSP'si
+  `connect-src`/`script-src` izni veriyor mu.
+- **"Crawler görünmüyor"**: tarayıcı script'i JavaScript çalıştırmayan botları göremez; sunucu/edge kanalı kurulmalıdır.
+  Panelde browser/server sağlığı ayrı gösterilir.
+- **Doğrulama seviyeleri**: yalnızca user-agent eşleşmesi `UNVERIFIED`'dır ve öyle etiketlenir; `VERIFIED` için edge
+  sinyali, resmî IP aralığı, ters DNS veya imza gerekir. `Google-Extended`/`Applebot-Extended` ziyaret üretmez.
+- **Veri temizliği**: ham olaylar `retentionDays` sonunda cron'da silinir; gün bazlı `AiTrafficRollup` kalır. Site
+  silinirse tüm telemetri cascade ile gider.

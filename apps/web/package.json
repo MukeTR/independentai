@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build:sensor": "node scripts/build-sensor.mjs",
+    "build": "pnpm run build:sensor && next build",
     "dev": "next dev -p 3200",
     "start": "next start -p 3200",
     "lint": "eslint . --max-warnings=0",
@@ -39,6 +40,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "autoprefixer": "^10.5.5",
+    "esbuild": "^0.28.2",
     "eslint": "^9.39.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^15.15.0",

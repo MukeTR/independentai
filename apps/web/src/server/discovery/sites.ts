@@ -75,9 +75,16 @@ export function computeHealth(site: TrackedSite, now = Date.now()): SiteHealth {
   const browser = browserAge === Infinity ? 'missing' : browserAge > STALE_MS ? 'stale' : 'ok';
   const server = serverAge === Infinity ? 'missing' : serverAge > STALE_MS ? 'stale' : 'ok';
   const hints: string[] = [];
-  if (browser === 'missing') hints.push('Script sitede bulunamadı: snippet <head> içine eklenmiş ve sayfa yayında olmalı.');
-  if (browser === 'stale') hints.push('Son 48 saatte tarayıcı olayı gelmedi; snippet kaldırılmış veya reklam engelleyici/CSP bloklamış olabilir.');
-  if (server === 'missing') hints.push('Crawler ölçümü için sunucu/edge bağlantısı gerekir: JavaScript çalıştırmayan botlar script ile görülemez.');
+  if (browser === 'missing')
+    hints.push('Script sitede bulunamadı: snippet <head> içine eklenmiş ve sayfa yayında olmalı.');
+  if (browser === 'stale')
+    hints.push(
+      'Son 48 saatte tarayıcı olayı gelmedi; snippet kaldırılmış veya reklam engelleyici/CSP bloklamış olabilir.',
+    );
+  if (server === 'missing')
+    hints.push(
+      'Crawler ölçümü için sunucu/edge bağlantısı gerekir: JavaScript çalıştırmayan botlar script ile görülemez.',
+    );
   if (site.status === 'PAUSED') hints.push('Ölçüm duraklatıldı; yeni olay kabul edilmiyor.');
   if (site.status === 'REVOKED') hints.push('Anahtarlar iptal edildi; ingest reddediliyor.');
   return { browser, server, verified: !!site.verifiedAt, hints };
@@ -214,7 +221,13 @@ export async function createSite(
 export async function updateSite(
   actor: Actor,
   id: string,
-  patch: { status?: unknown; allowedOrigins?: unknown; retentionDays?: unknown; siteKind?: unknown; installMethod?: unknown },
+  patch: {
+    status?: unknown;
+    allowedOrigins?: unknown;
+    retentionDays?: unknown;
+    siteKind?: unknown;
+    installMethod?: unknown;
+  },
   req?: Request,
 ): Promise<TrackedSiteView> {
   const site = await getOwnedSite(actor, id);
@@ -255,12 +268,20 @@ export async function updateSite(
 }
 
 /** Public key'i döndürür (eski anahtar anında geçersizdir). */
-export async function rotatePublicKey(actor: Actor, id: string, req?: Request): Promise<{ publicKey: string; site: TrackedSiteView }> {
+export async function rotatePublicKey(
+  actor: Actor,
+  id: string,
+  req?: Request,
+): Promise<{ publicKey: string; site: TrackedSiteView }> {
   const site = await getOwnedSite(actor, id);
   const key = newKey(PUBLIC_KEY_PREFIX);
   const updated = await prisma.trackedSite.update({
     where: { id: site.id },
-    data: { publicKeyHash: key.hash, publicKeyPrefix: key.display, status: site.status === 'REVOKED' ? 'PENDING' : site.status },
+    data: {
+      publicKeyHash: key.hash,
+      publicKeyPrefix: key.display,
+      status: site.status === 'REVOKED' ? 'PENDING' : site.status,
+    },
   });
   await audit({
     action: 'discovery.key_rotate',
@@ -273,7 +294,11 @@ export async function rotatePublicKey(actor: Actor, id: string, req?: Request): 
   return { publicKey: key.key, site: toView(updated) };
 }
 
-export async function rotateIngestSecret(actor: Actor, id: string, req?: Request): Promise<{ secret: string; site: TrackedSiteView }> {
+export async function rotateIngestSecret(
+  actor: Actor,
+  id: string,
+  req?: Request,
+): Promise<{ secret: string; site: TrackedSiteView }> {
   const site = await getOwnedSite(actor, id);
   const key = newKey(INGEST_SECRET_PREFIX);
   const updated = await prisma.trackedSite.update({
@@ -318,14 +343,8 @@ export async function verifyByMetaTag(actor: Actor, id: string): Promise<{ verif
   const token = verificationToken(site);
   const res = await safeFetch(site.normalizedOrigin, { timeout: 10_000 }).catch(() => null);
   if (!res || !res.ok) return { verified: false, reason: 'site_unreachable' };
-  const re = new RegExp(
-    `<meta[^>]+name=["']independentai-site-verification["'][^>]+content=["']${token}["']`,
-    'i',
-  );
-  const reAlt = new RegExp(
-    `<meta[^>]+content=["']${token}["'][^>]+name=["']independentai-site-verification["']`,
-    'i',
-  );
+  const re = new RegExp(`<meta[^>]+name=["']independentai-site-verification["'][^>]+content=["']${token}["']`, 'i');
+  const reAlt = new RegExp(`<meta[^>]+content=["']${token}["'][^>]+name=["']independentai-site-verification["']`, 'i');
   if (!re.test(res.text) && !reAlt.test(res.text)) return { verified: false, reason: 'meta_tag_not_found' };
   await prisma.trackedSite.update({ where: { id: site.id }, data: { verifiedAt: new Date() } });
   return { verified: true, reason: 'meta_tag' };
@@ -338,7 +357,10 @@ export async function resolveSiteByPublicKey(rawKey: string): Promise<TrackedSit
 }
 
 /** Origin allowlist kontrolü — exact eşleşme; wildcard veya substring yok. */
-export function originAllowed(site: Pick<TrackedSite, 'normalizedOrigin' | 'allowedOrigins'>, origin: string | null): boolean {
+export function originAllowed(
+  site: Pick<TrackedSite, 'normalizedOrigin' | 'allowedOrigins'>,
+  origin: string | null,
+): boolean {
   if (!origin) return false;
   const norm = normalizeOrigin(origin);
   if (!norm) return false;
