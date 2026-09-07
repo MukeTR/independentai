@@ -123,10 +123,13 @@ for (const p of [
   check('shopify webhook geçersiz HMAC → 401', w.status === 401, `status ${w.status}`);
 }
 {
-  const r = await req('POST', '/api/tools/ai-crawler', { url: 'https://example.com' }, { timeout: 45_000 });
-  check('public ai-crawler aracı 200/429', r.status === 200 || r.status === 429, `status ${r.status}`);
+  // Araç çağrısı Audit/PublicScan satırı yazar → yalnızca SMOKE_WRITE=1 ile (production'da "production-smoke" dışı veri yazılmaz).
+  if (write) {
+    const r = await req('POST', '/api/tools/ai-crawler', { url: 'https://example.com' }, { timeout: 45_000 });
+    check('public ai-crawler aracı 200/429', r.status === 200 || r.status === 429, `status ${r.status}`);
+  }
   const s = await req('POST', '/api/tools/geo-audit', { url: 'http://127.0.0.1/' });
-  check('SSRF adresi reddedildi (400)', s.status === 400, `status ${s.status}`);
+  check('SSRF adresi reddedildi (400, fetch/yazma yok)', s.status === 400, `status ${s.status}`);
 }
 
 // ── Yazma akışı (yalnızca SMOKE_WRITE=1): kendi hesabını açar ve siler ──
