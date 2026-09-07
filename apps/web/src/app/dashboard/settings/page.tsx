@@ -4,6 +4,7 @@ import { prisma } from '@/server/prisma';
 import { BrandSettingsForm } from './brand-settings-form';
 import { TeamManager } from '@/components/dashboard/team-manager';
 import { AccountSection } from '@/components/dashboard/account-section';
+import { ActivityFeed } from '@/components/dashboard/activity-feed';
 
 export const metadata = { title: 'Ayarlar' };
 
@@ -44,11 +45,24 @@ export default async function SettingsPage() {
           Üyeler ve davetler
         </h2>
         <p className="text-[14px] text-ink-muted mt-2">
-          Owner her şeyi yapar, Admin içerik ekler/siler, Viewer yalnızca görür. Lansmanda en fazla{' '}
-          {actor.entitlement.limits.members} üye.
+          Sahip her şeyi yapar (sahipliği devredebilir), Yönetici içerik ekler/siler ve davet gönderir, Görüntüleyici
+          yalnızca görür. Bu planda en fazla {actor.entitlement.limits.members} üye.
         </p>
         <div className="mt-6">
           <TeamManager />
+        </div>
+      </section>
+
+      <section aria-labelledby="activity-h">
+        <div className="eyebrow">Aktivite</div>
+        <h2 id="activity-h" className="font-display text-[24px] tracking-tight mt-2">
+          Hesap hareketleri
+        </h2>
+        <p className="text-[14px] text-ink-muted mt-2">
+          Ekip, ayar ve güvenlik işlemlerinin kaydı. Kim, ne zaman, ne yaptı — e-posta ve IP gösterilmez.
+        </p>
+        <div className="mt-6">
+          <ActivityFeed />
         </div>
       </section>
 

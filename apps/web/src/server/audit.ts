@@ -9,6 +9,7 @@ import { clientIp } from './rate-limit';
 export type AuditInput = {
   action: string;
   tenantId?: string | null;
+  agencyId?: string | null;
   actorUserId?: string | null;
   targetType?: string;
   targetId?: string;
@@ -22,6 +23,7 @@ export async function audit(input: AuditInput): Promise<void> {
       data: {
         action: input.action,
         tenantId: input.tenantId ?? null,
+        agencyId: input.agencyId ?? null,
         actorUserId: input.actorUserId ?? null,
         targetType: input.targetType,
         targetId: input.targetId,

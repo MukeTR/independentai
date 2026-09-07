@@ -14,10 +14,14 @@ import {
   ClipboardCheck,
   CheckCircle2,
   ArrowRight,
+  Store,
+  PackageSearch,
+  Radar,
+  Tags,
 } from 'lucide-react';
 import { Reveal } from './reveal';
 
-type Tool = { icon: typeof Gauge; title: string; desc: string; cat: string };
+type Tool = { icon: typeof Gauge; title: string; desc: string; cat: string; href?: string };
 
 // Mirrors dock-nav.tsx TOOLS — the in-app GEO toolbox, framed for marketing.
 const FEATURED: {
@@ -61,12 +65,42 @@ const TOOLS: Tool[] = [
   { icon: Bot, cat: 'Üretici', title: 'robots.txt', desc: 'Crawler kurallarını üret' },
   { icon: Code, cat: 'Üretici', title: 'Schema', desc: 'JSON-LD markup üret' },
   { icon: Calculator, cat: 'Üretici', title: 'Visibility Hesap.', desc: 'Score + Share of Voice formülü' },
+  // Herkese açık e-ticaret araçları (kayıt gerekmez)
+  {
+    icon: Store,
+    cat: 'E-ticaret',
+    title: 'E-ticaret AI Görünürlük',
+    desc: 'Mağazanı 6 eksende puanla',
+    href: '/arac/e-ticaret-ai-gorunurluk-testi',
+  },
+  {
+    icon: PackageSearch,
+    cat: 'E-ticaret',
+    title: 'Ürün Sayfası Testi',
+    desc: 'Product şeması + cevap uyumu',
+    href: '/arac/urun-sayfasi-testi',
+  },
+  {
+    icon: Radar,
+    cat: 'E-ticaret',
+    title: 'AI Crawler Testi',
+    desc: 'robots.txt bot matrisi',
+    href: '/arac/ai-crawler-testi',
+  },
+  {
+    icon: Tags,
+    cat: 'E-ticaret',
+    title: 'Ürün Açıklama Yazıcı',
+    desc: 'Yalnızca gerçeklerle AI metin',
+    href: '/arac/urun-aciklama-yazici',
+  },
 ];
 
 const CAT_COLOR: Record<string, string> = {
   Denetim: 'text-brand-deep',
   Keşif: 'text-positive',
   Üretici: 'text-warning',
+  'E-ticaret': 'text-brand',
 };
 
 export function ToolBento() {
@@ -95,9 +129,9 @@ export function ToolBento() {
 
       {/* Remaining tools — compact grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 mt-5">
-        {TOOLS.map((t, i) => (
-          <Reveal key={t.title} delay={i * 45}>
-            <div className="card p-4 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+        {TOOLS.map((t, i) => {
+          const body = (
+            <>
               <div className="flex items-center justify-between">
                 <t.icon className="w-[18px] h-[18px] text-brand" />
                 <span className={`text-[9px] font-mono uppercase tracking-wider ${CAT_COLOR[t.cat]} opacity-70`}>
@@ -106,15 +140,27 @@ export function ToolBento() {
               </div>
               <div className="text-[13.5px] text-ink mt-3 leading-tight font-medium">{t.title}</div>
               <div className="text-[11.5px] text-ink-faint mt-1 leading-snug">{t.desc}</div>
-            </div>
-          </Reveal>
-        ))}
+            </>
+          );
+          const cls = 'card p-4 h-full hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300';
+          return (
+            <Reveal key={t.title} delay={i * 45}>
+              {t.href ? (
+                <Link href={t.href} className={`${cls} block`} aria-label={`${t.title} — ücretsiz, kayıt gerekmez`}>
+                  {body}
+                </Link>
+              ) : (
+                <div className={cls}>{body}</div>
+              )}
+            </Reveal>
+          );
+        })}
       </div>
 
       <Reveal delay={120}>
         <div className="mt-9 flex items-center gap-4 flex-wrap">
           <Link href="/register" className="btn-primary inline-flex items-center gap-2">
-            13 aracın tümünü ücretsiz dene <ArrowRight className="w-4 h-4" />
+            17 aracın tümünü ücretsiz dene <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="/features"

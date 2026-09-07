@@ -3,10 +3,23 @@
  * ve migration'ların uygulandığını doğrular. Production adresi kabul edilmez.
  */
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { PrismaClient } from '@prisma/client';
 
 const TABLES = [
+  'PublicScan',
+  'IntegrationWebhookDelivery',
+  'CatalogSync',
+  'CatalogProduct',
+  'StoreConnection',
+  'ReportShare',
+  'AgencyLinkRequest',
+  'AgencyInvite',
+  'WorkspaceAccess',
+  'AgencyWorkspace',
+  'AgencyMembership',
+  'AgencyAccount',
   'BrandMention',
   'Citation',
   'ModelRun',
@@ -39,6 +52,19 @@ export default async function globalSetup() {
     stdio: 'pipe',
   });
   const prisma = new PrismaClient({ datasources: { db: { url } } });
+  const sql = readFileSync(path.resolve(__dirname, '../integration/realtime-stub.sql'), 'utf8');
+  for (const stmt of sql
+    .split(/;\s*\n/)
+    .map((x) =>
+      x
+        .split('\n')
+        .filter((l) => !l.trim().startsWith('--'))
+        .join('\n')
+        .trim(),
+    )
+    .filter(Boolean)) {
+    await prisma.$executeRawUnsafe(stmt);
+  }
   await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${TABLES.map((t) => `"${t}"`).join(', ')} RESTART IDENTITY CASCADE`);
   await prisma.$disconnect();
 }

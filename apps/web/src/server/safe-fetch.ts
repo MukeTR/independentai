@@ -209,6 +209,8 @@ export type SafeFetchResult = {
   /** Gövde (MAX_BODY_BYTES'ta kesilmiş olabilir) */
   text: string;
   truncated: boolean;
+  /** Takip edilen yönlendirme zinciri (her hop doğrulanmıştır); boş = yönlendirme yok */
+  redirects: { from: string; to: string; status: number }[];
 };
 
 export type SafeFetchInit = {
@@ -266,6 +268,7 @@ export async function safeFetch(rawUrl: string, init: SafeFetchInit = {}): Promi
   const { timeout = 12_000, headers = {}, maxBytes = MAX_BODY_BYTES, method = 'GET' } = init;
   let current = parsePublicUrl(rawUrl).toString();
   const deadline = Date.now() + timeout;
+  const redirects: SafeFetchResult['redirects'] = [];
 
   for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
     const remaining = deadline - Date.now();
@@ -302,8 +305,18 @@ export async function safeFetch(rawUrl: string, init: SafeFetchInit = {}): Promi
         /* yoksay */
       }
       if (!loc)
-        return { status: res.status, ok: false, url: current, headers: res.headers, text: '', truncated: false };
-      current = parsePublicUrl(new URL(loc, current).toString()).toString(); // her hop yeniden doğrulanır
+        return {
+          status: res.status,
+          ok: false,
+          url: current,
+          headers: res.headers,
+          text: '',
+          truncated: false,
+          redirects,
+        };
+      const next = parsePublicUrl(new URL(loc, current).toString()).toString(); // her hop yeniden doğrulanır
+      redirects.push({ from: current, to: next, status: res.status });
+      current = next;
       continue;
     }
 
@@ -315,7 +328,15 @@ export async function safeFetch(rawUrl: string, init: SafeFetchInit = {}): Promi
       } catch {
         /* yoksay */
       }
-      return { status: res.status, ok: false, url: current, headers: res.headers, text: '', truncated: false };
+      return {
+        status: res.status,
+        ok: false,
+        url: current,
+        headers: res.headers,
+        text: '',
+        truncated: false,
+        redirects,
+      };
     }
     const declared = Number(res.headers.get('content-length') ?? 0);
     if (declared > maxBytes * 4) {
@@ -325,11 +346,19 @@ export async function safeFetch(rawUrl: string, init: SafeFetchInit = {}): Promi
       } catch {
         /* yoksay */
       }
-      return { status: res.status, ok: false, url: current, headers: res.headers, text: '', truncated: true };
+      return {
+        status: res.status,
+        ok: false,
+        url: current,
+        headers: res.headers,
+        text: '',
+        truncated: true,
+        redirects,
+      };
     }
     try {
       const { text, truncated } = await readCapped(res, maxBytes, ctrl.signal);
-      return { status: res.status, ok: res.ok, url: current, headers: res.headers, text, truncated };
+      return { status: res.status, ok: res.ok, url: current, headers: res.headers, text, truncated, redirects };
     } catch {
       return null;
     } finally {

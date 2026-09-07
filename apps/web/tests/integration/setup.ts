@@ -21,13 +21,18 @@ process.env.DATABASE_URL = TEST_URL;
 process.env.DIRECT_URL = TEST_URL;
 
 // ── Oturum çerezi mock'u ──
-type CookieJar = { token: string | null };
-const jar: CookieJar = { token: null };
+type CookieJar = { token: string | null; ws: string | null };
+const jar: CookieJar = { token: null, ws: null };
 (globalThis as unknown as { __iaiJar: CookieJar }).__iaiJar = jar;
 
 vi.mock('next/headers', () => ({
   cookies: async () => ({
-    get: (name: string) => (name === 'iai_token' && jar.token ? { name, value: jar.token } : undefined),
+    get: (name: string) =>
+      name === 'iai_token' && jar.token
+        ? { name, value: jar.token }
+        : name === 'iai_ws' && jar.ws
+          ? { name, value: jar.ws }
+          : undefined,
     set: () => {},
     delete: () => {},
   }),
@@ -58,6 +63,18 @@ vi.mock('react', async (importOriginal) => {
 });
 
 const TABLES = [
+  'PublicScan',
+  'IntegrationWebhookDelivery',
+  'CatalogSync',
+  'CatalogProduct',
+  'StoreConnection',
+  'ReportShare',
+  'AgencyLinkRequest',
+  'AgencyInvite',
+  'WorkspaceAccess',
+  'AgencyWorkspace',
+  'AgencyMembership',
+  'AgencyAccount',
   'BrandMention',
   'Citation',
   'ModelRun',
@@ -80,19 +97,36 @@ const TABLES = [
   'Tenant',
 ];
 
-beforeAll(() => {
+beforeAll(async () => {
   const dbDir = path.resolve(__dirname, '../../../../packages/db');
   execSync('npx prisma migrate deploy', {
     cwd: dbDir,
     env: { ...process.env, DATABASE_URL: TEST_URL, DIRECT_URL: TEST_URL },
     stdio: 'pipe',
   });
+  // Supabase realtime şeması yerelde yok: realtime.send() stub'ı (tests/integration/realtime-stub.sql)
+  const { readFileSync } = await import('node:fs');
+  const { prisma } = await import('@/server/prisma');
+  const sql = readFileSync(path.resolve(__dirname, 'realtime-stub.sql'), 'utf8');
+  for (const stmt of sql
+    .split(/;\s*\n/)
+    .map((x) =>
+      x
+        .split('\n')
+        .filter((l) => !l.trim().startsWith('--'))
+        .join('\n')
+        .trim(),
+    )
+    .filter(Boolean)) {
+    await prisma.$executeRawUnsafe(stmt);
+  }
 });
 
 beforeEach(async () => {
   const { prisma } = await import('@/server/prisma');
   await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${TABLES.map((t) => `"${t}"`).join(', ')} RESTART IDENTITY CASCADE`);
   jar.token = null;
+  jar.ws = null;
   pendingAfter.length = 0;
   const { drainOutbox } = await import('@/server/mailer');
   drainOutbox();

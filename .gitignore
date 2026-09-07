@@ -16,3 +16,4 @@ supabase/.temp
 apps/web/playwright-report
 apps/web/test-results
 coverage
+.migration-dry-run/

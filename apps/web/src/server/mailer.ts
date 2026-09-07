@@ -8,6 +8,7 @@
 import { prisma } from './prisma';
 import { isTestEnv, siteUrl } from './env';
 import { log, maskEmail } from './logger';
+import { publishForTenant } from './realtime';
 
 export type Outgoing = { channel: 'email' | 'slack'; to: string; subject?: string; body: string; kind: string };
 const outbox: Outgoing[] = [];
@@ -15,6 +16,11 @@ export function drainOutbox(): Outgoing[] {
   return outbox.splice(0, outbox.length);
 }
 
+/**
+ * Teslimat kaydı (NotificationLog) + tenant'a `notification.delivered` Realtime yayını.
+ * Yayın yalnızca sent/failed için (skipped = yapılandırma eksik, gürültü üretmesin) ve payload'da
+ * alıcı/e-posta/webhook YOK: entityId (log id), channel, status, kind.
+ */
 async function record(input: {
   tenantId?: string | null;
   kind: string;
@@ -25,7 +31,7 @@ async function record(input: {
   error?: string | null;
 }) {
   try {
-    await prisma.notificationLog.create({
+    const row = await prisma.notificationLog.create({
       data: {
         tenantId: input.tenantId ?? null,
         kind: input.kind,
@@ -35,7 +41,17 @@ async function record(input: {
         providerMessageId: input.providerMessageId ?? null,
         error: input.error ? input.error.slice(0, 500) : null,
       },
+      select: { id: true },
     });
+    if (input.tenantId && input.status !== 'skipped') {
+      await publishForTenant(input.tenantId, {
+        event: 'notification.delivered',
+        entityId: row.id,
+        channel: input.channel,
+        status: input.status,
+        kind: input.kind,
+      });
+    }
   } catch (err) {
     log.error('notify.log_failed', { err });
   }

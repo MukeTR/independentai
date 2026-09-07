@@ -58,3 +58,22 @@ sentiment sınıflandırma çağrısı. Katalogda olmayan model için **`null` =
 ## Zaman
 
 Günlük cron 23:00 UTC (±59 dk, Vercel Hobby). `scheduledFor` = UTC gün başlangıcı. Trend grafikleri UTC gün anahtarı kullanır.
+
+## Portföy (ajans)
+
+- Müşteri kartındaki görünürlük ve SoV, o müşterinin tenant'ı için **yukarıdaki formüllerle** (son 30 gün) hesaplanır;
+  yeni formül yok.
+- **Portföy ortalaması** = müşteri başına **eşit ağırlıklı** aritmetik ortalama (büyük katalog/çok soru baskın olmaz).
+  Veri üretmemiş (idle) müşteriler ortalamaya girmez. UI tooltip'i bunu belirtir.
+- **Δ7** = son 7 günün görünürlüğü − önceki 7 günün görünürlüğü; önceki pencerede <3 geçerli run varsa Δ=0 (gösterilmez).
+  **Δ30** aynı mantıkla 30/30.
+- **Sağlık:** `idle` (run yok) · `critical` (7 günde ≥3 hatalı run **veya** mağaza bağlantısı ERROR **veya** Δ7 ≤ −15) ·
+  `warn` (hatalı run >0 **veya** Δ7 ≤ −5 **veya** son denetimde ≥3 "fail" bulgu) · aksi halde `good`.
+- Özet sayaçları: `rising` (Δ7 ≥ +5), `falling` (Δ7 ≤ −5), `critical`, `failedRuns7d` toplamı, `syncIssues`
+  (lastErrorCode dolu bağlantı sayısı). Kaynak: `server/agency.ts → listClientCards/summarizePortfolio`.
+
+## Commerce hazırlık skorları
+
+Mağaza AI görünürlük testi, ürün sayfası testi ve AI crawler testi **bu dosyadaki görünürlük metriklerinden bağımsız**,
+deterministik crawl-only skorlardır (0-100; alt skor ağırlıkları ve bulgu kataloğu `docs/COMMERCE_SCORING.md`).
+Katalog tabanlı hazırlık skoru bağlı mağazanın `CatalogProduct` verisinden hesaplanır ve her gerçek `syncedAt` damgası taşır.

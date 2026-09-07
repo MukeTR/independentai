@@ -63,3 +63,27 @@ gerekir; yalnızca `demo@independentai.space` tenant'ına dokunur.
 - Silme: `Ayarlar → Hesabı sil` (OWNER, "HESABIMI SİL" onayı) tüm tenant verisini geri dönüşsüz siler; audit log'a
   yalnızca tenant adı/id yazılır.
 - Loglar kişisel veri maskeler (e-posta `a***@x.com`, token/anahtar/webhook `[redacted]`).
+
+## Ajans hesapları
+
+- `Tenant.kind = AGENCY` olan tenant'lar ajans ev hesabıdır; müşteriler `AgencyWorkspace` ile bağlıdır. Ajans planı
+  (`AgencyAccount.plan`: LAUNCH/STUDIO/SCALE) yalnızca süper admin tarafından değiştirilir; fiyat yoktur.
+- Limitler (`entitlement.ts`): LAUNCH 5 koltuk / 10 müşteri / 20 paylaşım linki; STUDIO 15/40/100; SCALE 100/500/1000.
+- Sorun giderme: kullanıcı "müşteriyi göremiyorum" → `AgencyMembership.allClients` veya `WorkspaceAccess` satırı var mı,
+  `AgencyWorkspace.status` ARCHIVED mi? Erişim değişimi `sessionVersion` artırır; kullanıcı yeniden giriş yapmalıdır.
+
+## Katalog senkronu ve entegrasyonlar
+
+- İş satırları `CatalogSync` (PENDING/RUNNING/SUCCESS/ERROR, `attempt`, `errorCode`, `leaseExpiresAt`). Günlük cron
+  (`/api/cron/daily-run`) prompt turundan sonra kalan bütçede işler; `catalog` alanı yanıtta görünür.
+- Takılı iş: `status=RUNNING` ve `leaseExpiresAt` geçmiş → sonraki tetiklemede otomatik yeniden alınır; elle müdahale gerekmez.
+- Bağlantı `ERROR` + `lastErrorCode=AUTH_INVALID|AUTH_EXPIRED|SCOPE_MISSING` → kullanıcı panelden yeniden bağlanmalı.
+  `LIMIT_EXCEEDED` → plan sınırı; katalog kısmen senkron.
+- `credentialsEnc` yalnızca DB'de ve şifreli; admin ekranları göstermez. Kimlik bilgisi silme = bağlantıyı kesme.
+- Realtime yayın hataları `realtime.publish_failed` log satırı olarak düşer; iş akışını durdurmaz.
+
+## Realtime
+
+- `pnpm db:realtime:check` → fonksiyon/politika/RLS durumu. `enabled:false` dönen `/api/realtime/token` = env eksik
+  (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, imzalama anahtarı).
+- Kullanıcı "canlı" rozeti görmüyor ama panel çalışıyorsa polling fallback devrede; kritik değildir.

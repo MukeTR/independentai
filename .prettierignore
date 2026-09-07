@@ -9,3 +9,6 @@ playwright-report
 test-results
 coverage
 *.tsbuildinfo
+
+# Yerel prompt dosyaları (depoya girmez)
+CLAUDE_*.md

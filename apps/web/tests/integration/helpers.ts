@@ -4,7 +4,7 @@ import { signSession } from '@/server/jwt';
 import { hashPassword } from '@/server/password';
 
 type Role = 'OWNER' | 'ADMIN' | 'VIEWER';
-const jar = (globalThis as unknown as { __iaiJar: { token: string | null } }).__iaiJar;
+const jar = (globalThis as unknown as { __iaiJar: { token: string | null; ws: string | null } }).__iaiJar;
 const pendingAfter = (globalThis as unknown as { __iaiAfter: Promise<unknown>[] }).__iaiAfter;
 
 let seq = 0;
@@ -61,6 +61,11 @@ export async function loginAs(user: { id: string; tenantId: string; email: strin
 }
 export function logout() {
   jar.token = null;
+  jar.ws = null;
+}
+/** Ajans üyesi için aktif müşteri çalışma alanı çerezi (iai_ws) — tenantId veya null */
+export function setWorkspace(tenantId: string | null) {
+  jar.ws = tenantId;
 }
 
 type Handler = (req: NextRequest, ctx: { params: Promise<Record<string, string>> }) => Promise<Response>;

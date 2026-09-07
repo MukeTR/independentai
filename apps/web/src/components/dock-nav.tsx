@@ -27,6 +27,8 @@ import {
   Calculator,
   CheckCircle2,
   ChevronUp,
+  Plug,
+  Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
@@ -34,6 +36,7 @@ const NAV = [
   { href: '/dashboard', label: 'Genel Bakış', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/prompts', label: 'İzlenen Sorular', icon: MessageSquare },
   { href: '/dashboard/competitors', label: 'Rakipler', icon: Swords },
+  { href: '/dashboard/integrations', label: 'Entegrasyonlar', icon: Plug },
 ];
 
 const TOOLS: { href: string; label: string; desc: string; icon: typeof Gauge; cat: string }[] = [
@@ -128,6 +131,8 @@ export function DockNav({
     role?: string;
     tenant: { name: string; trialDaysLeft: number; plan?: string; active?: boolean };
     isSuperAdmin?: boolean;
+    /** Kullanıcı bir ajansın üyesi → "Ajans" (/agency) kısayolu */
+    agency?: boolean;
   };
 }) {
   const pathname = usePathname();
@@ -203,7 +208,7 @@ export function DockNav({
 
       {/* The dock */}
       <div
-        className="flex items-center gap-1 px-2.5 py-2 rounded-2xl border border-hairline shadow-xl translate-y-2 group-hover/dock:translate-y-0 transition-transform duration-300 max-w-[calc(100vw-16px)] overflow-x-auto"
+        className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2.5 py-2 rounded-2xl border border-hairline shadow-xl sm:translate-y-2 sm:group-hover/dock:translate-y-0 transition-transform duration-300 max-w-[calc(100vw-16px)] overflow-x-auto"
         style={{
           background: 'rgba(251,249,244,0.82)',
           backdropFilter: 'blur(20px)',
@@ -214,7 +219,7 @@ export function DockNav({
           <DockItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={isActive(n.href, n.exact)} />
         ))}
 
-        <div className="w-px h-7 bg-hairline mx-0.5" />
+        <div className="hidden sm:block w-px h-7 bg-hairline mx-0.5" />
 
         {/* Tools trigger */}
         <button
@@ -239,17 +244,21 @@ export function DockNav({
           <Tooltip>Araçlar</Tooltip>
         </button>
 
-        <div className="w-px h-7 bg-hairline mx-0.5" />
+        <div className="hidden sm:block w-px h-7 bg-hairline mx-0.5" />
 
         {SECONDARY.map((n) => (
           <DockItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={isActive(n.href)} />
         ))}
 
+        {user.agency && (
+          <DockItem href="/agency" label="Ajans" icon={Building2} active={pathname.startsWith('/agency')} accent />
+        )}
+
         {user.isSuperAdmin && (
           <DockItem href="/admin" label="Super Admin" icon={Sparkles} active={pathname.startsWith('/admin')} accent />
         )}
 
-        <div className="w-px h-7 bg-hairline mx-0.5" />
+        <div className="hidden sm:block w-px h-7 bg-hairline mx-0.5" />
 
         {/* Trial + user + logout */}
         <Link
@@ -270,7 +279,7 @@ export function DockNav({
           type="button"
           onClick={logout}
           aria-label="Çıkış yap"
-          className="relative w-11 h-11 rounded-xl flex items-center justify-center text-ink-faint hover:bg-danger/10 hover:text-danger transition group/btn"
+          className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-ink-faint hover:bg-danger/10 hover:text-danger transition group/btn"
         >
           <LogOut className="w-[17px] h-[17px]" aria-hidden />
           <Tooltip>Çıkış</Tooltip>
@@ -299,7 +308,7 @@ function DockItem({
       aria-label={label}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'relative w-11 h-11 rounded-xl flex items-center justify-center transition-all hover:-translate-y-0.5 group/btn',
+        'relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all hover:-translate-y-0.5 group/btn',
         active
           ? accent
             ? 'bg-brand-glow text-brand-deep'

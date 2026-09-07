@@ -4,20 +4,20 @@
 
 ## Özet
 
-| Kontrol                                     | Önce | Sonra |
-| ------------------------------------------- | ---- | ----- |
-| Toplam yazı                                 | 84   | 84    |
-| Yinelenen slug                              | 0    | 0     |
-| Yinelenen başlık (birebir)                  | 0    | 0     |
-| Yakın-yinelenen başlık çifti                | 2    | 2     |
-| İnce içerik (< 350 kelime)                  | 66   | 66    |
-| Eski/emekli model adı (hata)                | 0    | 0     |
-| Eskimeye yüz tutmuş model referansı (uyarı) | 4    | 0     |
-| Perplexity/Grok "izliyoruz" iddiası         | 0    | 0     |
-| Bayat yıl iddiası / geçmişte kalmış vaat    | 11   | 9     |
-| Geçersiz veya gelecek publishedAt           | 0    | 0     |
-| Gövdede iç link yok                         | 80   | 80    |
-| Kaynaksız sayısal iddia (toplam cümle)      | 49   | 49    |
+| Kontrol                                     | Adet |
+| ------------------------------------------- | ---- |
+| Toplam yazı                                 | 84   |
+| Yinelenen slug                              | 0    |
+| Yinelenen başlık (birebir)                  | 0    |
+| Yakın-yinelenen başlık çifti                | 2    |
+| İnce içerik (< 350 kelime)                  | 66   |
+| Eski/emekli model adı (hata)                | 0    |
+| Eskimeye yüz tutmuş model referansı (uyarı) | 0    |
+| Perplexity/Grok "izliyoruz" iddiası         | 0    |
+| Bayat yıl iddiası / geçmişte kalmış vaat    | 9    |
+| Geçersiz veya gelecek publishedAt           | 0    |
+| Gövdede iç link yok                         | 80   |
+| Kaynaksız sayısal iddia (toplam cümle)      | 49   |
 
 > Not: Blog gövdesi düz metin blokları (`p`/`h2`/`ul`…) olarak render edilir; gövde içinde tıklanabilir link desteği yoktur.
 > "İç link yok" kontrolü metinde geçen `/blog/…`, `/features`, `/pricing`, `/resources/…` yollarını arar. Şablon tarafında
@@ -286,3 +286,19 @@ Slug değişmedi, yazı silinmedi, gövde yeniden yazılmadı; yalnızca eskimi�
 - **Kaynaksız iddialar (49 cümle):** yüzdeli iddialara kaynak adı + yıl ekleyin ya da "kendi panel verimize göre" diye netleştirin; link desteği gelince URL ekleyin.
 - **Bayat yıl iddiaları (9):** "2025 itibarıyla … soruyor" gibi cümleleri "2025'ten bu yana" / "2026 itibarıyla" biçimine editör elden geçirsin.
 - **Model adları:** yeni yazılarda sürümlü model adı yerine ürün adı (ChatGPT, Claude, Gemini) kullanın; sürüm gerekiyorsa güncel olanı yazın (GPT-5 / GPT-4o mini, Claude Haiku 4.5 / Sonnet 4.6, Gemini 2.5 Flash / Pro).
+
+## Yeni iç link hedefleri (2026-09-06, go-live fazı)
+
+Blog gövdelerinde "iç link yok" bulgusunu kapatırken kullanılabilecek yeni sayfalar (hepsi indekslenebilir, canonical'lı):
+
+| Yol                                                             | Konu                                                               |
+| --------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `/solutions/ecommerce`                                          | E-ticaret için AI görünürlüğü (bağla → skor → izle → düzelt)       |
+| `/solutions/shopify` · `/solutions/ikas` · `/solutions/ticimax` | Platforma özel kurulum ve kapsam                                   |
+| `/solutions/agencies`                                           | Ajans çalışma alanları, roller, portföy, 3 alan adı ön-analiz      |
+| `/arac/e-ticaret-ai-gorunurluk-testi`                           | Mağaza AI görünürlük/hazırlık testi (ücretsiz, e-posta duvarı yok) |
+| `/arac/urun-sayfasi-testi`                                      | Ürün sayfası AI uygunluk testi                                     |
+| `/arac/ai-crawler-testi`                                        | AI crawler & indekslenebilirlik testi (robots matrisi)             |
+| `/arac/urun-aciklama-yazici`                                    | AI ürün açıklaması / SSS yazıcı (beta)                             |
+
+Kural değişmedi: blog sayısal iddia eklemez; skor/ağırlık açıklamaları için `docs/COMMERCE_SCORING.md`'ye bağlanır.

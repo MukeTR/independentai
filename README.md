@@ -10,24 +10,30 @@ geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız, üçünc
 
 ## Ne var, ne yok (tek kaynak: `packages/shared/src/capabilities.ts`)
 
-| Yetenek                                                            | Durum   |
-| ------------------------------------------------------------------ | ------- |
-| ChatGPT · Claude · Gemini takibi, günlük rerun, "şimdi çalıştır"   | live    |
-| Bahis, pozisyon, mention tipi, rakip takibi, Share of Voice        | live    |
-| E-posta + Slack uyarıları, haftalık rapor                          | live    |
-| Public API (`/api/v1/visibility`, token, 60 istek/dk)              | live    |
-| Ekip daveti ve roller (Owner / Admin / Viewer)                     | live    |
-| Sentiment (LLM destekli), native web-arama atıfları                | beta    |
-| Çoklu marka, Webhooks, PDF rapor, Perplexity/Grok, ücretli planlar | roadmap |
+| Yetenek                                                                                    | Durum   |
+| ------------------------------------------------------------------------------------------ | ------- |
+| ChatGPT · Claude · Gemini takibi, günlük rerun, "şimdi çalıştır"                           | live    |
+| Bahis, pozisyon, mention tipi, rakip takibi, Share of Voice                                | live    |
+| E-posta + Slack uyarıları, haftalık rapor                                                  | live    |
+| Public API (`/api/v1/visibility`, token, 60 istek/dk)                                      | live    |
+| Ekip: davet/yeniden gönderme, roller, sahiplik devri, aktivite akışı                       | live    |
+| Ajans çalışma alanları (Owner/Admin/Strategist/Analyst, portföy, imzalı paylaşım linkleri) | live    |
+| E-ticaret araçları: mağaza AI görünürlük, ürün sayfası, AI crawler testi                   | live    |
+| Mağaza bağlantıları: Shopify (OAuth) · ikas · Ticimax — salt-okunur katalog                | beta    |
+| Gerçek zamanlı panel (Supabase Realtime; yoksa 30 sn polling)                              | beta    |
+| Sentiment (LLM destekli), native web-arama atıfları, AI ürün açıklama yazıcı               | beta    |
+| Çoklu marka, giden Webhooks, PDF rapor, Perplexity/Grok, ücretli planlar, beyaz etiket     | roadmap |
 
 ## Stack
 
-| Katman           | Teknoloji                                                     |
-| ---------------- | ------------------------------------------------------------- |
-| Web + API + Cron | Next.js 15 App Router, React 19, Vercel Functions/Cron (fra1) |
-| DB               | Supabase Postgres (eu-central-1) + Prisma 5, migration-first  |
-| AI               | OpenAI / Anthropic / Google adapter'ları (native web arama)   |
-| Test             | Vitest (unit + integration, izole Postgres), Playwright (E2E) |
+| Katman           | Teknoloji                                                                      |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Web + API + Cron | Next.js 15 App Router, React 19, Vercel Functions/Cron (fra1)                  |
+| DB               | Supabase Postgres (eu-central-1) + Prisma 5, migration-first                   |
+| Canlı güncelleme | Supabase Realtime (private Broadcast + RLS), token `/api/realtime/token`       |
+| Commerce         | Shopify GraphQL Admin (OAuth), ikas GraphQL (client credentials), Ticimax SOAP |
+| AI               | OpenAI / Anthropic / Google adapter'ları (native web arama)                    |
+| Test             | Vitest (unit + integration, izole Postgres), Playwright (E2E)                  |
 
 Mimari: tek deploy. Tüm API `apps/web/src/app/api/*`. Worker/Redis yok: kuyruk ModelRun satırlarında
 (`FOR UPDATE SKIP LOCKED` lease), rate limit Postgres tablosunda. Ayrıntı: `docs/ARCHITECTURE.md`.
@@ -74,8 +80,15 @@ export TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:5499/independentai_test
 - `ADMIN.md` — süper admin, plan/deneme yönetimi, provider anahtarları, cron/kuyruk gözlemi
 - `ROADMAP.md` — durum ve planlar
 - `docs/ARCHITECTURE.md` — topoloji, kuyruk, güvenlik modeli, loglama/maskeleme, veri saklama
-- `docs/METRICS.md` — metrik tanımları (panel = API = rapor)
+- `docs/METRICS.md` — metrik tanımları (panel = API = rapor) + portföy toplulaştırması
 - `docs/BLOG_AUDIT.md` — blog içerik denetimi
+- `docs/AGENCY.md` — ajans modeli, roller, erişim çözümleme, paylaşım linkleri
+- `docs/REALTIME.md` — Supabase Realtime mimarisi, RLS, token akışı, fallback
+- `docs/INTEGRATIONS.md` — bağlayıcı sözleşmesi, senkron motoru, durum makinesi
+- `docs/SHOPIFY.md` · `docs/IKAS.md` · `docs/TICIMAX.md` — platform kurulum ve kapsam
+- `docs/COMMERCE_SCORING.md` — e-ticaret araçlarının skor/bulgu kataloğu
+- `supabase/realtime-policies.sql` — Realtime yetkilendirme (uygula: `pnpm db:realtime:apply`)
+- `scripts/` — `migration-dry-run.mjs`, `realtime-apply.mjs`, `production-smoke.mjs`
 
 ## Monorepo
 

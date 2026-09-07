@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sparkles, Plus, Bell, ChevronRight } from 'lucide-react';
 import { Logo } from './logo';
+import { WorkspaceSwitcher } from './agency/workspace-switcher';
 
 function sectionLabel(pathname: string): string {
   if (pathname === '/dashboard') return 'Komuta Merkezi';
@@ -13,6 +14,11 @@ function sectionLabel(pathname: string): string {
   if (pathname.startsWith('/dashboard/settings')) return 'Markam';
   if (pathname.startsWith('/dashboard/alerts')) return 'Uyarılar';
   if (pathname.startsWith('/dashboard/api')) return 'API Erişimi';
+  if (pathname.startsWith('/dashboard/integrations')) return 'Entegrasyonlar';
+  if (pathname === '/agency') return 'Ajans Portföyü';
+  if (pathname.startsWith('/agency/clients')) return 'Müşteriler';
+  if (pathname.startsWith('/agency/team')) return 'Ajans Ekibi';
+  if (pathname.startsWith('/agency/settings')) return 'Ajans Ayarları';
   return 'Panel';
 }
 
@@ -24,10 +30,17 @@ export function TopBar({
     role?: string;
     tenant: { name: string; trialDaysLeft: number; plan?: string; active?: boolean };
     isSuperAdmin?: boolean;
+    /**
+     * Ajans üyesi mi? true → çalışma alanı değiştirici; false → gizli; undefined (eski çağıranlar) →
+     * değiştirici kendini `/api/agency/workspaces` ile keşfeder (ajans değilse hiçbir şey çizmez).
+     */
+    agency?: boolean;
   };
 }) {
   const pathname = usePathname();
   const section = sectionLabel(pathname);
+  const inAgency = pathname.startsWith('/agency');
+  const settingsHref = inAgency ? '/agency/settings' : '/dashboard/settings';
 
   return (
     <header
@@ -35,29 +48,34 @@ export function TopBar({
       style={{ background: 'rgba(247,245,239,0.82)', backdropFilter: 'blur(16px)' }}
     >
       <div className="mx-auto max-w-[1280px] px-6 lg:px-10 h-14 flex items-center justify-between gap-4">
-        {/* Left: logo + bağlam başlığı (nav menüsü YOK — o dock'ta) */}
+        {/* Left: logo + bağlam başlığı + (ajans) çalışma alanı değiştirici */}
         <div className="flex items-center gap-3 min-w-0">
           <Logo className="shrink-0" />
           <ChevronRight className="w-3.5 h-3.5 text-ink-faint shrink-0 hidden sm:block" />
           <span className="text-[13.5px] text-ink-muted truncate hidden sm:block">{section}</span>
+          {user.agency !== false && <WorkspaceSwitcher className="ml-1 shrink-0" />}
         </div>
 
         {/* Right: hızlı aksiyon + bildirim + trial + admin + kullanıcı */}
         <div className="flex items-center gap-2 shrink-0">
-          <Link
-            href="/dashboard/prompts"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-ink text-paper-3 px-3 py-1.5 text-[12.5px] font-medium hover:bg-brand-deep transition"
-          >
-            <Plus className="w-3.5 h-3.5" /> Yeni Soru
-          </Link>
-          <Link
-            href="/dashboard/alerts"
-            className="w-8 h-8 rounded-full flex items-center justify-center text-ink-muted hover:bg-paper-4 hover:text-ink transition"
-            title="Uyarılar"
-            aria-label="Uyarılar ve raporlar"
-          >
-            <Bell className="w-4 h-4" aria-hidden />
-          </Link>
+          {!inAgency && (
+            <Link
+              href="/dashboard/prompts"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-ink text-paper-3 px-3 py-1.5 text-[12.5px] font-medium hover:bg-brand-deep transition"
+            >
+              <Plus className="w-3.5 h-3.5" /> Yeni Soru
+            </Link>
+          )}
+          {!inAgency && (
+            <Link
+              href="/dashboard/alerts"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-ink-muted hover:bg-paper-4 hover:text-ink transition"
+              title="Uyarılar"
+              aria-label="Uyarılar ve raporlar"
+            >
+              <Bell className="w-4 h-4" aria-hidden />
+            </Link>
+          )}
           {user.isSuperAdmin && (
             <Link
               href="/admin"
@@ -77,7 +95,7 @@ export function TopBar({
                 ? user.tenant.plan
                 : `${user.tenant.trialDaysLeft} gün`}
           </div>
-          <Link href="/dashboard/settings" className="flex items-center gap-2 group pl-1" aria-label="Ayarlar">
+          <Link href={settingsHref} className="flex items-center gap-2 group pl-1" aria-label="Ayarlar">
             <div className="text-right leading-tight hidden lg:block">
               <div className="text-[12px] text-ink max-w-[140px] truncate">{user.tenant.name}</div>
               <div className="text-[10px] text-ink-faint font-mono max-w-[140px] truncate">{user.email}</div>

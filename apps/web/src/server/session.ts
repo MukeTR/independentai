@@ -47,3 +47,29 @@ export function clearSessionCookie(response: NextResponse) {
     path: '/',
   });
 }
+
+// ───────────── Ajans çalışma alanı çerezi (iai_ws) ─────────────
+// Değer yalnızca bir ipucu: her istekte `getActor()` DB'de (AgencyWorkspace + erişim) doğrular.
+
+export const WORKSPACE_COOKIE_NAME = 'iai_ws';
+const WORKSPACE_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 gün
+
+export function setWorkspaceCookie(response: NextResponse, tenantId: string) {
+  response.cookies.set(WORKSPACE_COOKIE_NAME, tenantId, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: WORKSPACE_TTL_SECONDS,
+    path: '/',
+  });
+}
+
+export function clearWorkspaceCookie(response: NextResponse) {
+  response.cookies.set(WORKSPACE_COOKIE_NAME, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 0,
+    path: '/',
+  });
+}

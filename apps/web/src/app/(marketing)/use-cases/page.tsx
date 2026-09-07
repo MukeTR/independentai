@@ -28,8 +28,13 @@ const BY_INDUSTRY = [
     name: 'E-ticaret markaları',
     pain: '"En iyi spor ayakkabı markası" veya "kahve makinesi önerir misin" sorularında siz olmayabilirsiniz. Marka sıralamasında üst 3\'te değilseniz tıklama almıyorsunuz.',
     solution:
-      "Kategori sorularınızı sistematik izleyin. Yeni ürün lansmanlarında ay başında görünürlük baseline'ı alın, kampanya sonrası ölçün — etkisini AI cevaplarında somut görün.",
-    metrics: ['Kategori görünürlüğü', 'Pozisyon takibi', 'Kampanya öncesi/sonrası fark'],
+      'Kategori sorularınızı sistematik izleyin. Shopify, ikas veya Ticimax mağazanızı salt-okunur bağlayın: katalogdan AI hazırlık skoru, doğrulanabilir marka gerçekleri ve ticari izleme soruları çıkar. Ücretsiz mağaza, ürün sayfası ve AI crawler testleriyle başlayın; kampanya öncesi/sonrası farkı AI cevaplarında somut görün.',
+    metrics: [
+      'Kategori görünürlüğü',
+      'Mağaza bağlantısı (beta) + katalog hazırlık skoru',
+      'Ücretsiz mağaza / ürün sayfası / crawler testleri',
+      'Kampanya öncesi/sonrası fark',
+    ],
   },
   {
     id: 'restaurant',
@@ -46,8 +51,13 @@ const BY_INDUSTRY = [
     name: 'Dijital ajanslar',
     pain: 'Müşterileriniz "neden bizi öneri listesinde göremiyoruz" diye soracak — siz cevap veremezseniz başka ajansa gidecekler.',
     solution:
-      'Müşteri markanızın AI görünürlüğünü panelde takip edin; ekibinizi Owner / Admin / Viewer rolleriyle davet edin. Aylık raporlarınıza yeni bir KPI ekleyin: "Müşterinizin AI Visibility Score\'u". Tek hesapta birden fazla müşteri markası planlanıyor.',
-    metrics: ['Ekip rolleri (Owner / Admin / Viewer)', 'Aylık PDF rapor (yakında)', 'Çoklu marka (planlanıyor)'],
+      'Her müşteri için ayrı çalışma alanı açın veya mevcut hesabını sahibinin onayıyla bağlayın; ekibinizi Owner / Admin / Strategist / Analyst rolleriyle müşterilere atayın. Portföy ekranında tüm müşterilerin görünürlüğünü tek bakışta izleyin, imzalı paylaşım linkiyle raporu müşterinize gönderin. Ayrıntı: /solutions/agencies.',
+    metrics: [
+      'Müşteri çalışma alanları + portföy',
+      'Ajans rolleri ve atama',
+      'İmzalı rapor paylaşım linkleri',
+      'Aylık PDF rapor (yakında)',
+    ],
   },
   {
     id: 'enterprise',

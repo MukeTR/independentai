@@ -15,6 +15,10 @@ import {
   GitFork,
   ShieldAlert,
   PenLine,
+  Store,
+  PackageSearch,
+  Bot as BotIcon,
+  Tags,
 } from 'lucide-react';
 
 const TOOLS = [
@@ -109,9 +113,37 @@ const TOOLS = [
     desc: '25 maddelik interaktif checklist, kategori bazlı skor, rapor indir.',
     category: 'Denetim',
   },
+  {
+    href: '/dashboard/tools/ecommerce-visibility',
+    icon: Store,
+    title: 'E-ticaret AI Görünürlük Testi',
+    desc: 'Mağazanızı 6 eksende puanlar; bağlı katalog veri kalitesi ve ticari soru önerileriyle birlikte.',
+    category: 'E-ticaret',
+  },
+  {
+    href: '/dashboard/tools/product-page',
+    icon: PackageSearch,
+    title: 'Ürün Sayfası Testi',
+    desc: 'Product JSON-LD, açıklama özgünlüğü, görsel alt metni, SSS/özellik tablosu ve AI cevap uyumu.',
+    category: 'E-ticaret',
+  },
+  {
+    href: '/dashboard/tools/ai-crawler',
+    icon: BotIcon,
+    title: 'AI Crawler Testi',
+    desc: 'robots.txt bot matrisi (GPTBot, ClaudeBot, PerplexityBot…), noindex/canonical/sitemap/llms.txt.',
+    category: 'E-ticaret',
+  },
+  {
+    href: '/dashboard/tools/product-writer',
+    icon: Tags,
+    title: 'Ürün Açıklama Yazıcı',
+    desc: 'Yalnızca verdiğiniz özelliklerle açıklama + 5 SSS + meta + Product JSON-LD iskeleti.',
+    category: 'E-ticaret',
+  },
 ];
 
-const CATEGORIES = ['Denetim', 'Keşif', 'Üretici', 'Hesaplayıcı'];
+const CATEGORIES = ['Denetim', 'Keşif', 'Üretici', 'Hesaplayıcı', 'E-ticaret'];
 
 export default function ToolsHub() {
   return (
@@ -169,7 +201,23 @@ export default function ToolsHub() {
           <a href="/arac/gemini-rank-checker" className="text-brand-deep hover:text-brand underline">
             Gemini
           </a>{' '}
-          rank checker. Aklında olan bir araç var mı?{' '}
+          rank checker;{' '}
+          <a href="/arac/e-ticaret-ai-gorunurluk-testi" className="text-brand-deep hover:text-brand underline">
+            e-ticaret AI görünürlük
+          </a>
+          ,{' '}
+          <a href="/arac/urun-sayfasi-testi" className="text-brand-deep hover:text-brand underline">
+            ürün sayfası
+          </a>
+          ,{' '}
+          <a href="/arac/ai-crawler-testi" className="text-brand-deep hover:text-brand underline">
+            AI crawler
+          </a>{' '}
+          testleri ve{' '}
+          <a href="/arac/urun-aciklama-yazici" className="text-brand-deep hover:text-brand underline">
+            ürün açıklama yazıcı
+          </a>
+          . Aklında olan bir araç var mı?{' '}
           <a href="/contact" className="text-brand-deep hover:text-brand underline">
             İletişim
           </a>

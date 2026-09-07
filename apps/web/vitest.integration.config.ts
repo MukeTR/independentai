@@ -21,6 +21,7 @@ export default defineConfig({
       IAI_LOG_SILENT: '1',
       IAI_ALLOW_MOCK: '1',
       NODE_ENV: 'test',
+      REALTIME_PUBLISH: '1',
     },
   },
 });

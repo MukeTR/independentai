@@ -11,7 +11,20 @@ type Hallucination = {
   correction: string;
   severity: 'Yüksek' | 'Orta' | 'Düşük';
 };
-type Scan = { needsFacts: boolean; needsLLM: boolean; checked: number; hallucinations: Hallucination[] };
+type Scan = {
+  needsFacts: boolean;
+  needsLLM: boolean;
+  checked: number;
+  hallucinations: Hallucination[];
+  factSources?: { manual: number; catalog: number; catalogAsOf: string | null };
+  scannedAt?: string;
+};
+
+function fmtDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '' : d.toLocaleString('tr-TR', { dateStyle: 'medium', timeStyle: 'short' });
+}
 
 const PROVIDER_LABEL: Record<string, string> = { OPENAI: 'ChatGPT', ANTHROPIC: 'Claude', GOOGLE: 'Gemini' };
 
@@ -72,7 +85,8 @@ export function HallucinationTool() {
         <h3 className="font-display text-[16px]">Doğrulanmış Marka Gerçekleri</h3>
         <p className="text-[12.5px] text-ink-muted mt-1">
           AI'ın doğru bilmesi gereken kesin bilgiler — kuruluş yılı, fiyat, özellikler, konum. Bunlarla çelişen
-          cevapları yakalarız.
+          cevapları yakalarız. Bağlı bir mağaza kataloğunuz varsa ürün sayısı, kategoriler ve fiyat aralığı gibi
+          gerçekler senkron verisinden otomatik eklenir.
         </p>
         <form onSubmit={addFact} className="flex gap-2 mt-4">
           <input
@@ -105,18 +119,40 @@ export function HallucinationTool() {
       <div>
         <button
           onClick={runScan}
-          disabled={scanning || facts.length === 0}
+          disabled={scanning}
           className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
         >
           {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanSearch className="w-4 h-4" />}
           {scanning ? 'Cevaplar taranıyor…' : 'Halüsinasyon taraması başlat'}
         </button>
-        {facts.length === 0 && <p className="text-[12px] text-ink-faint mt-2">Önce en az bir marka gerçeği ekleyin.</p>}
+        {facts.length === 0 && (
+          <p className="text-[12px] text-ink-faint mt-2">
+            Manuel gerçek eklenmedi; bağlı katalog varsa tarama katalog gerçekleriyle yapılır.
+          </p>
+        )}
       </div>
 
       {scan && (
         <div>
-          {scan.needsLLM ? (
+          {scan.factSources && (scan.factSources.manual > 0 || scan.factSources.catalog > 0) && (
+            <p className="text-[12px] text-ink-faint mb-3" aria-live="polite">
+              Karşılaştırma tabanı: {scan.factSources.manual} manuel gerçek
+              {scan.factSources.catalog > 0 && (
+                <>
+                  {' '}
+                  + {scan.factSources.catalog} katalog gerçeği
+                  {scan.factSources.catalogAsOf && <> (katalog senkronu: {fmtDate(scan.factSources.catalogAsOf)})</>}
+                </>
+              )}
+              {scan.scannedAt && <> · tarama: {fmtDate(scan.scannedAt)}</>}
+            </p>
+          )}
+          {scan.needsFacts ? (
+            <Notice tone="warn">
+              Karşılaştırılacak gerçek yok. Manuel bir marka gerçeği ekleyin veya mağazanızı bağlayıp kataloğu
+              senkronlayın.
+            </Notice>
+          ) : scan.needsLLM ? (
             <Notice tone="warn">
               Tarama için bir AI sağlayıcı anahtarı (OpenAI/Anthropic/Google) gerekli. Süper admin panelinden ekleyin.
             </Notice>

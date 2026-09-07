@@ -2,6 +2,7 @@ import { NextResponse, after, type NextRequest } from 'next/server';
 import { runDuePrompts } from '@/server/run-prompt';
 import { runDailyDropAlerts } from '@/server/notify';
 import { pruneRateLimitBuckets } from '@/server/rate-limit';
+import { enqueueDailyCatalogSyncs, processCatalogSyncs, type SyncStats } from '@/server/commerce/catalog-sync';
 import { cronSecret, siteUrl } from '@/server/env';
 import { log } from '@/server/logger';
 import { cronAuthorized } from '@/server/cron-auth';
@@ -25,6 +26,18 @@ export async function GET(req: NextRequest) {
 
   const runs = await runDuePrompts({ deadlineAt, hop, triggeredBy: hop === 0 ? 'vercel-cron' : `chain-${hop}` });
 
+  // Katalog senkronu: prompt kuyruğu bitince kalan bütçeyle (idempotent; kaldığı yerden devam eder).
+  let catalog: SyncStats | { skipped: true } = { skipped: true };
+  if (runs.remaining === 0 && Date.now() < startedAt + 200_000) {
+    try {
+      if (hop === 0) await enqueueDailyCatalogSyncs();
+      catalog = await processCatalogSyncs({ deadlineAt: startedAt + 240_000 });
+    } catch (err) {
+      log.warn('cron.catalog_sync_failed', { err });
+    }
+  }
+  const catalogRemaining = 'remaining' in catalog ? catalog.remaining : 0;
+
   let alerts: Awaited<ReturnType<typeof runDailyDropAlerts>> | { skipped: true } = { skipped: true };
   if (runs.remaining === 0 && Date.now() < startedAt + 280_000) {
     alerts = await runDailyDropAlerts({ deadlineAt: startedAt + 285_000 });
@@ -35,7 +48,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const willChain = runs.remaining > 0 && hop < MAX_HOPS;
+  const willChain = (runs.remaining > 0 || catalogRemaining > 0) && hop < MAX_HOPS;
   if (willChain) {
     const next = `${siteUrl()}/api/cron/daily-run?hop=${hop + 1}`;
     after(async () => {
@@ -51,9 +64,10 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  log.info('cron.daily_run', { hop, ...runs, alerts, willChain, durationMs: Date.now() - startedAt });
+  log.info('cron.daily_run', { hop, ...runs, catalog, alerts, willChain, durationMs: Date.now() - startedAt });
   return NextResponse.json({
     ...runs,
+    catalog,
     alerts,
     hop,
     willChain,

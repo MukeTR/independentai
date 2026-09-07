@@ -17,6 +17,8 @@ import { POSTS } from '@/data/blog-posts';
 const STATIC_LASTMOD = '2026-06-14';
 // 2026-09-06: Public API dokümantasyonu, yetenek matrisine göre dürüstlük düzeltmeleri.
 const CLAIMS_REVISION = '2026-09-06';
+// 2026-09-06: Çözüm sayfaları (e-ticaret, Shopify, ikas, Ticimax) yayına alındı.
+const SOLUTIONS_REVISION = '2026-09-06';
 
 const PAGE_SIZE = 12;
 
@@ -35,6 +37,13 @@ const STATIC_PAGES: StaticPage[] = [
   { path: '/pricing', priority: 0.8, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/how-it-works', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/use-cases', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
+
+  // Çözümler (e-ticaret entegrasyonları; /solutions/agencies ayrı görevde eklenir)
+  { path: '/solutions', priority: 0.7, change: 'monthly', lastmod: SOLUTIONS_REVISION },
+  { path: '/solutions/ecommerce', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
+  { path: '/solutions/shopify', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
+  { path: '/solutions/ikas', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
+  { path: '/solutions/ticimax', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
 
   // Company
   { path: '/about', priority: 0.5, change: 'monthly' },
@@ -57,6 +66,11 @@ const STATIC_PAGES: StaticPage[] = [
   { path: '/arac/chatgpt-rank-checker', priority: 0.7, change: 'monthly' },
   { path: '/arac/claude-rank-checker', priority: 0.7, change: 'monthly' },
   { path: '/arac/gemini-rank-checker', priority: 0.7, change: 'monthly' },
+  // E-ticaret lead-magnet araçları (2026-09-06)
+  { path: '/arac/e-ticaret-ai-gorunurluk-testi', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
+  { path: '/arac/urun-sayfasi-testi', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
+  { path: '/arac/ai-crawler-testi', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
+  { path: '/arac/urun-aciklama-yazici', priority: 0.6, change: 'monthly', lastmod: CLAIMS_REVISION },
 
   // Changelog
   { path: '/changelog', priority: 0.4, change: 'weekly', lastmod: CLAIMS_REVISION },

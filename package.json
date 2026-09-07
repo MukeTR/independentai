@@ -21,7 +21,11 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,mjs}\"",
     "test": "turbo run test",
     "test:integration": "pnpm --filter @independentai/web test:integration",
-    "test:e2e": "pnpm --filter @independentai/web test:e2e"
+    "test:e2e": "pnpm --filter @independentai/web test:e2e",
+    "db:realtime:apply": "node scripts/realtime-apply.mjs",
+    "db:realtime:check": "node scripts/realtime-apply.mjs --check",
+    "db:migrate:dry-run": "node scripts/migration-dry-run.mjs",
+    "smoke:prod": "node scripts/production-smoke.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

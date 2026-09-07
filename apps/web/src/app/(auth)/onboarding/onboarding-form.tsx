@@ -2,11 +2,13 @@
 
 import { useId, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, X, ArrowRight } from 'lucide-react';
+import { Plus, X, ArrowRight, Building2, Briefcase } from 'lucide-react';
 import { apiFetch, errorMessage } from '@/lib/api-client';
+import { useHydrated } from '@/lib/use-hydrated';
 import { InlineAlert } from '@/components/ui/inline-alert';
 
 type Initial = { brandName: string; aliases: string[]; website: string; competitors: string[]; prompts: string[] };
+type Mode = 'brand' | 'agency';
 
 function TagInput({
   id,
@@ -82,15 +84,154 @@ function TagInput({
   );
 }
 
+/**
+ * "Nasıl kullanacaksın?" seçimi: varsayılan "Kendi markam" (mevcut 3 adımlı akış, ek tıklama yok).
+ * "Ajans" seçilirse ad + web sitesi ile POST /api/agency → /agency. Ajans seçeneği yalnızca verisiz,
+ * tek kişilik hesapta gösterilir (sunucu da aynı kuralı uygular).
+ */
+function ModePicker({
+  mode,
+  onChange,
+  allowAgency,
+}: {
+  mode: Mode;
+  onChange: (m: Mode) => void;
+  allowAgency: boolean;
+}) {
+  const name = useId();
+  const opts: { value: Mode; icon: typeof Building2; title: string; desc: string; disabled?: boolean }[] = [
+    { value: 'brand', icon: Building2, title: 'Kendi markam', desc: 'Tek marka, rakipler ve izlenen sorular.' },
+    {
+      value: 'agency',
+      icon: Briefcase,
+      title: 'Ajans olarak müşterilerim için',
+      desc: allowAgency
+        ? 'Çok müşterili portföy, ekip rolleri, paylaşım linkleri.'
+        : 'Yalnızca verisiz ve tek kişilik yeni hesapta seçilebilir.',
+      disabled: !allowAgency,
+    },
+  ];
+  return (
+    <fieldset className="mt-6">
+      <legend className="eyebrow mb-2">Nasıl kullanacaksın?</legend>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {opts.map((o) => (
+          <label
+            key={o.value}
+            className={`flex items-start gap-3 rounded-xl border p-3.5 cursor-pointer transition ${
+              mode === o.value ? 'border-brand bg-brand-glow' : 'border-hairline hover:border-ink'
+            } ${o.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <input
+              type="radio"
+              name={name}
+              value={o.value}
+              checked={mode === o.value}
+              disabled={o.disabled}
+              onChange={() => onChange(o.value)}
+              className="mt-1"
+            />
+            <span className="min-w-0">
+              <span className="flex items-center gap-1.5 text-[14px] text-ink">
+                <o.icon className="w-4 h-4 text-brand" aria-hidden /> {o.title}
+              </span>
+              <span className="block text-[12px] text-ink-faint mt-0.5">{o.desc}</span>
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function AgencySetup({ initialName, initialWebsite }: { initialName: string; initialWebsite: string }) {
+  const hydrated = useHydrated();
+  const router = useRouter();
+  const ids = { name: useId(), site: useId() };
+  const [name, setName] = useState(initialName);
+  const [website, setWebsite] = useState(initialWebsite);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (saving || !name.trim()) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await apiFetch('/api/agency', { method: 'POST', json: { name, website: website || undefined } });
+      router.push('/agency');
+      router.refresh();
+    } catch (err) {
+      setError(errorMessage(err, 'Ajans hesabı oluşturulamadı'));
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit}>
+      <h1 className="font-display text-[26px] sm:text-[28px] tracking-tight mt-6">Ajansınızı tanıtın</h1>
+      <p className="text-[14px] text-ink-muted mt-2">
+        Ajans hesabında marka verisi tutulmaz; her müşteri için ayrı çalışma alanı açar, ekibinizi rollerle davet
+        edersiniz. Lansman döneminde ücretsiz: 5 koltuk, 10 müşteri.
+      </p>
+      <div className="mt-7 space-y-4">
+        <div>
+          <label htmlFor={ids.name} className="eyebrow block mb-2">
+            Ajans adı
+          </label>
+          <input
+            id={ids.name}
+            className="input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            maxLength={80}
+            placeholder="Dipixel Media"
+          />
+        </div>
+        <div>
+          <label htmlFor={ids.site} className="eyebrow block mb-2">
+            Ajans web sitesi <span className="text-ink-faint normal-case tracking-normal">(opsiyonel)</span>
+          </label>
+          <input
+            id={ids.site}
+            className="input"
+            type="text"
+            inputMode="url"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            placeholder="ajans.com"
+          />
+        </div>
+      </div>
+      {error && <InlineAlert className="mt-4">{error}</InlineAlert>}
+      <div className="mt-9 flex justify-end">
+        <button
+          type="submit"
+          disabled={!hydrated || saving || !name.trim()}
+          className="btn-primary disabled:opacity-50 inline-flex items-center gap-2"
+          aria-busy={saving}
+        >
+          {saving ? 'Oluşturuluyor…' : 'Ajans hesabını oluştur'} <ArrowRight className="w-4 h-4" aria-hidden />
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export function OnboardingForm({
   initial,
   limits,
+  allowAgency = false,
 }: {
   initial: Initial;
   limits: { competitors: number; prompts: number };
+  allowAgency?: boolean;
 }) {
   const router = useRouter();
   const ids = { brand: useId(), alias: useId(), site: useId(), comp: useId(), prompt: useId() };
+  const [mode, setMode] = useState<Mode>('brand');
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [brandName, setBrandName] = useState(initial.brandName);
   const [aliases, setAliases] = useState<string[]>(initial.aliases);
@@ -118,6 +259,16 @@ export function OnboardingForm({
     }
   }
 
+  if (mode === 'agency') {
+    return (
+      <div className="card p-7 sm:p-9 rise-1">
+        <div className="eyebrow">Ajans kurulumu</div>
+        <ModePicker mode={mode} onChange={setMode} allowAgency={allowAgency} />
+        <AgencySetup initialName={initial.brandName} initialWebsite={initial.website} />
+      </div>
+    );
+  }
+
   return (
     <div className="card p-7 sm:p-9 rise-1">
       <ol className="flex items-center gap-3 mb-7" aria-label="Kurulum adımları">
@@ -138,7 +289,8 @@ export function OnboardingForm({
             if (brandName.trim()) setStep(2);
           }}
         >
-          <h1 className="font-display text-[26px] sm:text-[28px] tracking-tight mt-2">Markanızı tanıtın</h1>
+          <ModePicker mode={mode} onChange={setMode} allowAgency={allowAgency} />
+          <h1 className="font-display text-[26px] sm:text-[28px] tracking-tight mt-6">Markanızı tanıtın</h1>
           <p className="text-[14px] text-ink-muted mt-2">
             Yapay zekanın metninde markanızı tespit edebilmemiz için adınızı ve alternatif yazımlarını alalım.
           </p>

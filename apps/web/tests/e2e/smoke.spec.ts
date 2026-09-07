@@ -4,6 +4,9 @@
  * API token oluştur/kullan/iptal; public araç limiti; mobil gezinme; 404; güvenlik başlıkları.
  */
 import { test, expect, type Page } from '@playwright/test';
+
+// Giriş rate limiti (IP başına 10/15 dk) dosyalar arasında paylaşılmasın: her spec kendi sahte IP'sini gönderir.
+test.use({ extraHTTPHeaders: { 'x-forwarded-for': '203.0.113.24' } });
 import { PrismaClient } from '@prisma/client';
 import { randomBytes, scryptSync } from 'node:crypto';
 
@@ -102,7 +105,7 @@ test('giriş: yanlış şifre hata, doğru şifre panel; soru ekle ve çalışt�
   await page.goto('/dashboard/prompts');
   await page.getByRole('textbox', { name: 'İzlenecek soru' }).fill('E2E için en iyi POS yazılımı hangisi?');
   await page.getByRole('button', { name: 'Ekle' }).click();
-  await expect(page.getByRole('status')).toContainText('Soru eklendi');
+  await expect(page.getByRole('status').filter({ hasText: 'Soru eklendi' })).toBeVisible();
   await expect(page.getByRole('link', { name: /E2E için en iyi POS/ })).toBeVisible({ timeout: 20_000 });
 
   // Detay + şimdi çalıştır (mock)

@@ -3,34 +3,38 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { useRealtimeEvent, useRealtimeStatus } from '@/components/realtime-provider';
 
 type RunRow = { status: string; leaseExpiresAt: string | null };
 
+const POLL_LIVE_MS = 10_000; // canlı bağlantı varken emniyet yoklaması
+const POLL_FALLBACK_MS = 3_000; // canlı bağlantı yokken
+const MAX_TOTAL_MS = 180_000;
+
 /**
  * Devam eden ölçüm göstergesi.
- * Sunucu `inProgress` derken hafif JSON ucunu (GET /api/prompts/:id) 3 sn'de bir yoklar; tüm run'lar
- * bitince `router.refresh()` ile sayfayı tazeler. Tazeleme 8 sn içinde yansımazsa tam yenileme yapar
- * (router cache'e bağımlılığı kaldırır). Toplam süre ~3 dk ile sınırlıdır.
+ *  - Realtime: `run.completed` (entityId = promptId) gelir gelmez hafif JSON ucunu (GET /api/prompts/:id)
+ *    yoklar; tüm run'lar bitmişse `router.refresh()`.
+ *  - Polling fallback her zaman açık: canlı bağlantı varsa 10 sn, yoksa 3 sn. Toplam ~3 dk.
+ *  - Tazeleme 8 sn içinde yansımazsa tam yenileme (router cache'e bağımlılığı kaldırır).
  */
 export function RunProgress({ promptId, inProgress, count }: { promptId: string; inProgress: boolean; count: number }) {
   const router = useRouter();
   const [done, setDone] = useState(false);
   const refreshedAt = useRef<number | null>(null);
+  const checkRef = useRef<() => Promise<void>>(async () => undefined);
+  const { status } = useRealtimeStatus();
+  const live = status === 'live';
 
   useEffect(() => {
     if (!inProgress) return;
     let cancelled = false;
-    let ticks = 0;
-    const id = setInterval(async () => {
-      ticks += 1;
-      if (ticks > 60) {
-        clearInterval(id);
-        return;
-      }
-      if (refreshedAt.current && Date.now() - refreshedAt.current > 8000) {
-        window.location.reload();
-        return;
-      }
+    let inFlight = false;
+    const startedAt = Date.now();
+
+    const check = async () => {
+      if (cancelled || inFlight) return;
+      inFlight = true;
       try {
         const res = await fetch(`/api/prompts/${promptId}`, { cache: 'no-store', credentials: 'same-origin' });
         if (!res.ok) return;
@@ -50,13 +54,39 @@ export function RunProgress({ promptId, inProgress, count }: { promptId: string;
         }
       } catch {
         /* geçici ağ hatası — sonraki tik */
+      } finally {
+        inFlight = false;
       }
-    }, 3000);
+    };
+    checkRef.current = check;
+
+    const id = setInterval(
+      () => {
+        if (Date.now() - startedAt > MAX_TOTAL_MS) {
+          clearInterval(id);
+          return;
+        }
+        if (refreshedAt.current && Date.now() - refreshedAt.current > 8000) {
+          window.location.reload();
+          return;
+        }
+        void check();
+      },
+      live ? POLL_LIVE_MS : POLL_FALLBACK_MS,
+    );
+
     return () => {
       cancelled = true;
       clearInterval(id);
+      checkRef.current = async () => undefined;
     };
-  }, [inProgress, promptId, router]);
+  }, [inProgress, promptId, router, live]);
+
+  // Canlı olay: bu prompt'un bir run'ı bitti → beklemeden doğrula.
+  useRealtimeEvent('run.completed', (evt) => {
+    if (evt.entityId !== promptId) return;
+    void checkRef.current();
+  });
 
   if (!inProgress) return null;
   return (

@@ -30,7 +30,7 @@ import {
   type RunPromptOutput,
 } from '@independentai/ai';
 import {
-  type Prisma,
+  Prisma,
   type AiProvider,
   type Sentiment,
   type MentionType,
@@ -42,6 +42,7 @@ import { mockAllowed } from './env';
 import { log } from './logger';
 import { ConflictError } from './errors';
 import { computeEntitlement } from './entitlement';
+import { publishForTenant } from './realtime';
 
 export const PROVIDER_TIMEOUT_MS = 40_000;
 const LEASE_MS = 120_000;
@@ -78,8 +79,24 @@ function dayKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-/** Tek bir (run satırı) için provider çağrısı + çıkarım + kayıt. */
-async function executeRun(runId: string): Promise<{ ok: boolean; errorCode?: string }> {
+/**
+ * Ham SQL'de Date parametresi. Prisma `DateTime` kolonları saat dilimsiz `timestamp(3)` (UTC değer) iken
+ * `$queryRaw` Date parametrelerini `timestamptz` gönderir; doğrudan karşılaştırma oturum saat dilimine
+ * (yerelde Europe/Istanbul) bağımlı yanlış sonuç verir. Parametre UTC'ye çevrilip naive'e düşürülür.
+ * (Aynı kalıp: server/commerce/catalog-sync.ts `utcTs` — döngüsel import olmasın diye burada yerel.)
+ */
+function utcTs(d: Date): Prisma.Sql {
+  return Prisma.sql`(${d}::timestamptz AT TIME ZONE 'UTC')`;
+}
+
+type RunResult = { ok: boolean; errorCode?: string; tenantId?: string };
+
+/**
+ * Tek bir (run satırı) için provider çağrısı + çıkarım + kayıt.
+ * ModelRun sonucu (SUCCESS/ERROR) ile `run.completed` Realtime yayını AYNI transaction'da yazılır:
+ * rollback olursa hayalet olay kalmaz. Payload'a AI yanıt metni girmez (entityId/jobId/status/provider).
+ */
+async function executeRun(runId: string): Promise<RunResult> {
   const run = await prisma.modelRun.findUnique({
     where: { id: runId },
     include: { prompt: { select: { id: true, text: true, language: true, version: true, tenantId: true } } },
@@ -88,6 +105,15 @@ async function executeRun(runId: string): Promise<{ ok: boolean; errorCode?: str
   const tenantId = run.prompt.tenantId;
   const ctx = await tenantContext(tenantId);
   const adapter = getAdapter(run.provider, { allowMock: mockAllowed() });
+  const completedPayload = (status: 'SUCCESS' | 'ERROR', errorCode?: string) => ({
+    event: 'run.completed' as const,
+    entityId: run.prompt.id,
+    jobId: runId,
+    status,
+    provider: run.provider,
+    origin: run.origin,
+    ...(errorCode ? { errorCode } : {}),
+  });
 
   try {
     const out: RunPromptOutput = await adapter.run({
@@ -105,43 +131,46 @@ async function executeRun(runId: string): Promise<{ ok: boolean; errorCode?: str
 
     const totalCost = out.costUsd == null ? null : out.costUsd + (enrichCost ?? 0);
 
-    await prisma.modelRun.update({
-      where: { id: runId },
-      data: {
-        status: 'SUCCESS',
-        modelName: out.modelName,
-        responseText: out.text,
-        citations: citations.length ? citations : undefined,
-        tokensUsed: out.tokensUsed ?? null,
-        inputTokens: out.inputTokens ?? null,
-        outputTokens: out.outputTokens ?? null,
-        costUsd: totalCost,
-        latencyMs: out.latencyMs + enrichLatency,
-        isMocked: out.isMocked,
-        groundingMode: out.groundingMode,
-        webSearchCount: out.webSearchCount ?? null,
-        errorMessage: null,
-        errorCode: null,
-        completedAt: new Date(),
-        leaseExpiresAt: null,
-        mentions: {
-          deleteMany: {},
-          create: mentions.map((m) => ({
-            brandId: m.brandId,
-            mentionName: m.mentionName,
-            isOwnBrand: m.isOwnBrand,
-            isCompetitor: m.isCompetitor,
-            position: m.position,
-            sentiment: m.sentiment as Sentiment,
-            mentionType: m.mentionType as MentionType,
-            snippet: m.snippet,
-          })),
+    await prisma.$transaction(async (tx) => {
+      await tx.modelRun.update({
+        where: { id: runId },
+        data: {
+          status: 'SUCCESS',
+          modelName: out.modelName,
+          responseText: out.text,
+          citations: citations.length ? citations : undefined,
+          tokensUsed: out.tokensUsed ?? null,
+          inputTokens: out.inputTokens ?? null,
+          outputTokens: out.outputTokens ?? null,
+          costUsd: totalCost,
+          latencyMs: out.latencyMs + enrichLatency,
+          isMocked: out.isMocked,
+          groundingMode: out.groundingMode,
+          webSearchCount: out.webSearchCount ?? null,
+          errorMessage: null,
+          errorCode: null,
+          completedAt: new Date(),
+          leaseExpiresAt: null,
+          mentions: {
+            deleteMany: {},
+            create: mentions.map((m) => ({
+              brandId: m.brandId,
+              mentionName: m.mentionName,
+              isOwnBrand: m.isOwnBrand,
+              isCompetitor: m.isCompetitor,
+              position: m.position,
+              sentiment: m.sentiment as Sentiment,
+              mentionType: m.mentionType as MentionType,
+              snippet: m.snippet,
+            })),
+          },
+          citationLinks: {
+            deleteMany: {},
+            create: citations.map((c) => ({ tenantId, url: c.url, domain: c.domain, title: c.title })),
+          },
         },
-        citationLinks: {
-          deleteMany: {},
-          create: citations.map((c) => ({ tenantId, url: c.url, domain: c.domain, title: c.title })),
-        },
-      },
+      });
+      await publishForTenant(tenantId, completedPayload('SUCCESS'), tx);
     });
     log.info('run.success', {
       runId,
@@ -152,23 +181,26 @@ async function executeRun(runId: string): Promise<{ ok: boolean; errorCode?: str
       mocked: out.isMocked,
       costUsd: totalCost,
     });
-    return { ok: true };
+    return { ok: true, tenantId };
   } catch (err) {
     const code = err instanceof AiProviderError ? err.code : 'unknown';
     const message = err instanceof Error ? err.message.slice(0, 500) : String(err).slice(0, 500);
-    await prisma.modelRun.update({
-      where: { id: runId },
-      data: {
-        status: 'ERROR',
-        errorCode: code,
-        errorMessage: message,
-        modelName: run.modelName || 'error',
-        completedAt: new Date(),
-        leaseExpiresAt: null,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.modelRun.update({
+        where: { id: runId },
+        data: {
+          status: 'ERROR',
+          errorCode: code,
+          errorMessage: message,
+          modelName: run.modelName || 'error',
+          completedAt: new Date(),
+          leaseExpiresAt: null,
+        },
+      });
+      await publishForTenant(tenantId, completedPayload('ERROR', code), tx);
     });
     log.warn('run.error', { runId, provider: run.provider, tenantId, code });
-    return { ok: false, errorCode: code };
+    return { ok: false, errorCode: code, tenantId };
   }
 }
 
@@ -226,7 +258,9 @@ export async function runPromptOnce(
 
 /**
  * Bugünün (UTC) işlerini kuyruğa yazar. Yalnızca aktif tenant'ların (entitlement.active)
- * aktif promptları. createMany + skipDuplicates → tekrar çağrılması güvenlidir.
+ * aktif promptları. Ajans müşteri çalışma alanı PAUSED/ARCHIVED ise o tenant'ın promptları da
+ * alınmaz (duraklatılmış müşteri = ölçüm durur, maliyet üretmez).
+ * createMany + skipDuplicates → tekrar çağrılması güvenlidir.
  */
 export async function enqueueDailyRuns(
   bucket = dayBucket(),
@@ -237,7 +271,9 @@ export async function enqueueDailyRuns(
       id: true,
       version: true,
       language: true,
-      tenant: { select: { id: true, plan: true, trialEndsAt: true } },
+      tenant: {
+        select: { id: true, plan: true, trialEndsAt: true, agencyWorkspace: { select: { status: true } } },
+      },
     },
     orderBy: { createdAt: 'asc' },
   });
@@ -247,7 +283,9 @@ export async function enqueueDailyRuns(
   const skipped = new Set<string>();
   for (const p of prompts) {
     const ent = computeEntitlement({ plan: p.tenant.plan, trialEndsAt: p.tenant.trialEndsAt });
-    if (!ent.active) {
+    const wsStatus = p.tenant.agencyWorkspace?.status;
+    const workspaceBlocked = wsStatus === 'PAUSED' || wsStatus === 'ARCHIVED';
+    if (!ent.active || workspaceBlocked) {
       if (!skipped.has(p.tenant.id)) {
         skipped.add(p.tenant.id);
         skippedTenants++;
@@ -282,13 +320,13 @@ async function claimRuns(limit: number): Promise<string[]> {
   const rows = await prisma.$queryRaw<{ id: string }[]>`
     WITH picked AS (
       SELECT "id" FROM "ModelRun"
-      WHERE ("status" = 'PENDING' OR ("status" = 'RUNNING' AND "leaseExpiresAt" IS NOT NULL AND "leaseExpiresAt" < ${now}))
+      WHERE ("status" = 'PENDING' OR ("status" = 'RUNNING' AND "leaseExpiresAt" IS NOT NULL AND "leaseExpiresAt" < ${utcTs(now)}))
         AND "origin" = 'CRON'
       ORDER BY "scheduledFor" ASC NULLS LAST, "attempt" ASC, "runDate" ASC
       FOR UPDATE SKIP LOCKED
       LIMIT ${limit}
     )
-    UPDATE "ModelRun" m SET "status" = 'RUNNING', "leaseExpiresAt" = ${lease}, "runDate" = ${now}
+    UPDATE "ModelRun" m SET "status" = 'RUNNING', "leaseExpiresAt" = ${utcTs(lease)}, "runDate" = ${utcTs(now)}
     FROM picked WHERE m."id" = picked."id"
     RETURNING m."id"
   `;
@@ -332,7 +370,14 @@ export async function scheduleRetries(bucket = dayBucket()): Promise<number> {
   return res.count;
 }
 
-export type QueueStats = { processed: number; failed: number; remaining: number };
+export type TenantRunStats = { processed: number; failed: number };
+export type QueueStats = {
+  processed: number;
+  failed: number;
+  remaining: number;
+  /** Bu turda dokunulan tenant'lar (batch.completed yayını için) */
+  byTenant?: Record<string, TenantRunStats>;
+};
 
 /** Kuyruğu `deadlineAt`'e kadar, CLAIM_BATCH'lik paralel dilimlerle tüketir. */
 export async function processQueue(opts: { deadlineAt: number }): Promise<QueueStats> {
@@ -340,15 +385,30 @@ export async function processQueue(opts: { deadlineAt: number }): Promise<QueueS
   ctxCache.clear();
   let processed = 0;
   let failed = 0;
+  const byTenant: Record<string, TenantRunStats> = {};
   while (Date.now() + PROVIDER_TIMEOUT_MS + 5_000 < opts.deadlineAt) {
     const ids = await claimRuns(CLAIM_BATCH);
     if (!ids.length) break;
     const results = await Promise.all(ids.map((id) => executeRun(id)));
     processed += results.length;
     failed += results.filter((r) => !r.ok).length;
+    for (const r of results) {
+      if (!r.tenantId) continue;
+      const t = (byTenant[r.tenantId] ??= { processed: 0, failed: 0 });
+      t.processed += 1;
+      if (!r.ok) t.failed += 1;
+    }
   }
   const remaining = await prisma.modelRun.count({ where: { origin: 'CRON', status: 'PENDING' } });
-  return { processed, failed, remaining };
+  return { processed, failed, remaining, byTenant };
+}
+
+function mergeTenantStats(into: Record<string, TenantRunStats>, from?: Record<string, TenantRunStats>) {
+  for (const [tenantId, s] of Object.entries(from ?? {})) {
+    const t = (into[tenantId] ??= { processed: 0, failed: 0 });
+    t.processed += s.processed;
+    t.failed += s.failed;
+  }
 }
 
 /**
@@ -395,6 +455,8 @@ export async function runDuePrompts(opts: { deadlineAt: number; force?: boolean;
   let processed = first.processed;
   let failed = first.failed;
   let remaining = first.remaining;
+  const byTenant: Record<string, TenantRunStats> = {};
+  mergeTenantStats(byTenant, first.byTenant);
 
   if (remaining === 0 && Date.now() < opts.deadlineAt) {
     const retries = await scheduleRetries(bucket);
@@ -403,6 +465,7 @@ export async function runDuePrompts(opts: { deadlineAt: number; force?: boolean;
       processed += second.processed;
       failed += second.failed;
       remaining = second.remaining;
+      mergeTenantStats(byTenant, second.byTenant);
     }
   }
 
@@ -410,6 +473,20 @@ export async function runDuePrompts(opts: { deadlineAt: number; force?: boolean;
     where: { id: batch.id },
     data: { finishedAt: new Date(), enqueued, processed, failed, remaining },
   });
+  // Batch tamamlandı: bu turda run'ı işlenen her tenant'a (ve varsa ajansına) küçük bir özet yayını.
+  // Kalıcı durum RunBatch/ModelRun'da; yayın best-effort olduğu için transaction dışında, sırayla.
+  const batchStatus = remaining > 0 ? 'PARTIAL' : 'SUCCESS';
+  for (const [tenantId, s] of Object.entries(byTenant)) {
+    await publishForTenant(tenantId, {
+      event: 'batch.completed',
+      entityId: batch.id,
+      jobId: batch.id,
+      status: batchStatus,
+      processed: s.processed,
+      failed: s.failed,
+      hop: opts.hop ?? 0,
+    });
+  }
   return { batchId: batch.id, enqueued, processed, failed, remaining, total: enqueued + processed };
 }
 

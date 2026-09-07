@@ -4,6 +4,7 @@
  */
 import { prisma } from './prisma';
 import { completeJSON, hasLLM } from '@independentai/ai';
+import { combinedBrandFacts } from './commerce/brand-facts';
 
 export type Hallucination = {
   modelRunId: string;
@@ -18,17 +19,28 @@ export type HallucinationScan = {
   needsLLM: boolean;
   checked: number;
   hallucinations: Hallucination[];
+  /** Karşılaştırmada kullanılan gerçek kaynakları (manuel + bağlı katalog) ve katalog zaman damgası */
+  factSources: { manual: number; catalog: number; catalogAsOf: string | null };
+  scannedAt: string;
 };
 
 const SEVERITIES = ['Yüksek', 'Orta', 'Düşük'];
 
 export async function scanHallucinations(tenantId: string): Promise<HallucinationScan> {
-  const facts = await prisma.brandFact.findMany({ where: { tenantId } });
+  const scannedAt = new Date().toISOString();
+  // Manuel gerçekler + bağlı katalogdan türetilen gerçekler (ürün sayısı, kategoriler, fiyat aralığı…)
+  const combined = await combinedBrandFacts(tenantId);
+  const factSources = {
+    manual: combined.manualCount,
+    catalog: combined.catalogCount,
+    catalogAsOf: combined.catalogAsOf,
+  };
+  const facts = combined.facts;
   if (facts.length === 0) {
-    return { needsFacts: true, needsLLM: false, checked: 0, hallucinations: [] };
+    return { needsFacts: true, needsLLM: false, checked: 0, hallucinations: [], factSources, scannedAt };
   }
   if (!hasLLM()) {
-    return { needsFacts: false, needsLLM: true, checked: 0, hallucinations: [] };
+    return { needsFacts: false, needsLLM: true, checked: 0, hallucinations: [], factSources, scannedAt };
   }
 
   const since = new Date();
@@ -47,7 +59,9 @@ export async function scanHallucinations(tenantId: string): Promise<Hallucinatio
     select: { id: true, provider: true, responseText: true },
   });
 
-  const factList = facts.map((f) => `- ${f.fact}`).join('\n');
+  const factList = facts
+    .map((f) => `- ${f.fact}${f.source === 'catalog' && f.asOf ? ` (katalog verisi, ${f.asOf.slice(0, 10)})` : ''}`)
+    .join('\n');
   const hallucinations: Hallucination[] = [];
 
   for (const run of runs) {
@@ -79,5 +93,5 @@ Format: {"items":[{"claim":"AI'ın yanlış iddiası","correction":"doğrusu","s
     }
   }
 
-  return { needsFacts: false, needsLLM: false, checked: runs.length, hallucinations };
+  return { needsFacts: false, needsLLM: false, checked: runs.length, hallucinations, factSources, scannedAt };
 }

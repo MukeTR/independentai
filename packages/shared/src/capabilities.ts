@@ -53,14 +53,71 @@ export const CAPABILITIES: Capability[] = [
     status: 'live',
     note: 'Salt-okunur; token bazlı; 60 istek/dk',
   },
-  { key: 'team', label: 'Ekip daveti ve roller (Owner / Admin / Viewer)', status: 'live' },
+  {
+    key: 'team',
+    label: 'Ekip daveti ve roller (Owner / Admin / Viewer)',
+    status: 'live',
+    note: 'Davet yeniden gönderme, sahiplik devri, üyelerin son aktivitesi',
+  },
+
+  // ── E-ticaret entegrasyonları (v1: salt-okunur katalog; sipariş/müşteri/ödeme verisi çekilmez) ──
+  {
+    key: 'store_connect_shopify',
+    label: 'Shopify mağaza bağlantısı',
+    status: 'beta',
+    note: 'Salt-okunur ürün kataloğu; OAuth; webhooks; App Store listesinde değil — özel uygulama kurulumu gerekir',
+  },
+  {
+    key: 'store_connect_ikas',
+    label: 'ikas mağaza bağlantısı',
+    status: 'beta',
+    note: 'Salt-okunur ürün kataloğu; Client ID/Secret ile; webhook kaydı başarısızsa günlük senkron',
+  },
+  {
+    key: 'store_connect_ticimax',
+    label: 'Ticimax mağaza bağlantısı',
+    status: 'beta',
+    note: 'Günlük senkron; webhook yok',
+  },
+  { key: 'commerce_readiness', label: 'E-ticaret AI hazırlık skoru', status: 'live' },
+  { key: 'product_page_test', label: 'Ürün sayfası testi', status: 'live' },
+  { key: 'ai_crawler_test', label: 'AI crawler erişim testi', status: 'live' },
+  {
+    key: 'product_writer',
+    label: 'Ürün açıklama yazıcı (AI)',
+    status: 'beta',
+    note: 'Provider anahtarı gerekir',
+  },
+
+  // ── Ajans ve paylaşım ──
+  {
+    key: 'agency_workspaces',
+    label: 'Ajans çalışma alanları (çoklu müşteri)',
+    status: 'live',
+    note: 'Owner/Admin/Strategist/Analyst; koltuk ve müşteri limitleri',
+  },
+  {
+    key: 'share_links',
+    label: 'Paylaşılabilir rapor bağlantıları',
+    status: 'live',
+    note: 'İmzalı; beyaz etiket yok',
+  },
+  {
+    key: 'realtime',
+    label: 'Gerçek zamanlı panel güncellemeleri',
+    status: 'beta',
+    note: 'Supabase Realtime; yapılandırılmadığında 30 sn polling',
+  },
+  { key: 'activity_feed', label: 'Aktivite akışı', status: 'live' },
+
+  // ── Yol haritası ──
   {
     key: 'multi_brand',
     label: 'Çoklu marka (tek hesapta birden fazla kendi markası)',
     status: 'roadmap',
-    note: 'Lansmanda hesap başına 1 kendi markası',
+    note: 'Lansmanda hesap başına 1 kendi markası; ajanslar için çalışma alanları mevcut',
   },
-  { key: 'webhooks', label: 'Webhooks', status: 'roadmap' },
+  { key: 'webhooks', label: 'Giden webhooks (olay bildirimleri)', status: 'roadmap' },
   { key: 'pdf_report', label: 'Aylık PDF rapor', status: 'roadmap' },
   { key: 'perplexity', label: 'Perplexity / Grok takibi', status: 'roadmap' },
   {
@@ -88,7 +145,15 @@ export const LAUNCH_OFFER = {
   /** Teklifin yeni kayıtlara kapanma tarihi; null = açık. Deploy'da env LAUNCH_OFFER_ENDS_AT ile ayarlanır. */
   endsAt: (typeof process !== 'undefined' && process.env?.LAUNCH_OFFER_ENDS_AT) || null,
   /** "Adil kullanım" tavanları (entitlement.ts LAUNCH limitleriyle aynı) */
-  fairUse: { prompts: 200, competitors: 50, members: 5, apiTokens: 5, manualRunsPerDay: 60 },
+  fairUse: {
+    prompts: 200,
+    competitors: 50,
+    members: 5,
+    apiTokens: 5,
+    manualRunsPerDay: 60,
+    storeConnections: 2,
+    catalogProducts: 5000,
+  },
 } as const;
 
 export function launchOfferOpen(now = new Date()): boolean {
