@@ -17,3 +17,7 @@ apps/web/playwright-report
 apps/web/test-results
 coverage
 .migration-dry-run/
+
+# Yerel çalışma dosyaları (public repoya girmez)
+CLAUDE_*.md
+docs/PRICING_RESEARCH_*.md
