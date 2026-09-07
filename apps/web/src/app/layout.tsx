@@ -2,10 +2,17 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 
+/**
+ * Nonce tabanlı CSP (middleware) yalnızca dinamik render ile çalışır: statik prerender edilen HTML'de
+ * script'ler nonce taşımaz ve tarayıcı tüm script'leri engeller (hydration yok). Bu yüzden tüm sayfalar
+ * istek anında render edilir; blog/pazarlama sayfaları için ISR yerine CDN/Vercel edge önbelleği kullanılmaz.
+ */
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Independent AI — Yapay zekalarda markanız nasıl konumlanıyor?',
   description:
-    'ChatGPT, Claude ve Gemini\'nin alanınızla ilgili sorulara verdiği cevaplarda markanız geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız bir üçüncü taraf gözüyle ölçer.',
+    "ChatGPT, Claude ve Gemini'nin alanınızla ilgili sorulara verdiği cevaplarda markanız geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız bir üçüncü taraf gözüyle ölçer.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://independentai.space'),
   icons: {
     icon: '/icon.svg',

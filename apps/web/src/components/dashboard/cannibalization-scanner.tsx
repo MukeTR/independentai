@@ -48,10 +48,14 @@ export function CannibalizationScanner() {
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           {loading ? 'Analiz ediliyor…' : 'Kanibalizasyon analizi'}
         </button>
-        <p className="text-[11.5px] text-ink-faint">En fazla 15 sayfa analiz edilir. OpenAI anahtarı varsa gerçek embedding, yoksa yapısal benzerlik kullanılır.</p>
+        <p className="text-[11.5px] text-ink-faint">
+          En fazla 15 sayfa analiz edilir. OpenAI anahtarı varsa gerçek embedding, yoksa yapısal benzerlik kullanılır.
+        </p>
       </form>
 
-      {error && <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>}
+      {error && (
+        <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>
+      )}
 
       {result && (
         <div className="mt-8">
@@ -62,7 +66,8 @@ export function CannibalizationScanner() {
               <div>
                 <div className="font-display text-[15px]">Kanibalizasyon riski bulunamadı</div>
                 <p className="text-[13px] text-ink-muted mt-1">
-                  Analiz edilen sayfalar yeterince farklı konulara odaklı. Sayfalarınız aynı sorgu için birbiriyle yarışmıyor.
+                  Analiz edilen sayfalar yeterince farklı konulara odaklı. Sayfalarınız aynı sorgu için birbiriyle
+                  yarışmıyor.
                 </p>
               </div>
             </div>
@@ -78,12 +83,26 @@ export function CannibalizationScanner() {
                     <GitFork className="w-4 h-4 text-ink-faint" />
                   </div>
                   <div className="space-y-1.5">
-                    <a href={p.a} target="_blank" rel="noopener noreferrer" className="block text-[12.5px] text-ink hover:text-brand-deep truncate">{p.a}</a>
-                    <a href={p.b} target="_blank" rel="noopener noreferrer" className="block text-[12.5px] text-ink hover:text-brand-deep truncate">{p.b}</a>
+                    <a
+                      href={p.a}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-[12.5px] text-ink hover:text-brand-deep truncate"
+                    >
+                      {p.a}
+                    </a>
+                    <a
+                      href={p.b}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-[12.5px] text-ink hover:text-brand-deep truncate"
+                    >
+                      {p.b}
+                    </a>
                   </div>
                   <p className="text-[12px] text-ink-muted mt-3 leading-relaxed">
-                    Bu iki sayfa aynı konuya çok yakın. AI hangisini alıntılayacağına karar veremeyip ikisini de zayıflatabilir.
-                    Birini kanonik yapın, diğerini farklılaştırın veya birleştirin.
+                    Bu iki sayfa aynı konuya çok yakın. AI hangisini alıntılayacağına karar veremeyip ikisini de
+                    zayıflatabilir. Birini kanonik yapın, diğerini farklılaştırın veya birleştirin.
                   </p>
                 </div>
               ))}

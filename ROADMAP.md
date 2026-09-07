@@ -1,22 +1,65 @@
-# Independent AI — GEO Özellik Yol Haritası
+# Independent AI — Yol haritası ve durum
 
-Geoptie ve sektör (Peec, Otterly, Profound, Scrunch, Rankscale, Goodie, AthenaHQ, Knowatoa…) rakip analizine dayalı, faz faz uygulama planı.
+Tek kaynak: `packages/shared/src/capabilities.ts` (pazarlama sayfaları ve panel bu listeden beslenir).
 
-| Faz | Başlık | Durum |
-|-----|--------|-------|
-| 0 | Veri altyapısı: citation extraction, LLM sentiment + mention type, şema | ✅ |
-| 1 | Görsel hızlı kazanımlar: Rekabet Radarı, Top Citation Sources, Citation Gap | ✅ |
-| 2 | GEO Audit 0-100 (gerçek crawl + skor) | ✅ |
-| 3 | Lead-gen ücretsiz motor araçları (ChatGPT/Claude/Gemini rank checker) | ✅ |
-| 4 | İçerik Denetleyicisi (sayfa → aksiyon kartları) | ✅ |
-| 5 | Anahtar Kelime / Prompt Bulucu | ✅ |
-| 6 | Backlink Bulucu | ✅ |
-| 7 | Kanibalizasyon Denetleyici (embedding cosine) | ✅ |
-| 8 | Uyarılar & Raporlar (e-posta + Slack) | ✅ |
-| 9 | Farklılaştırıcılar: halüsinasyon tespiti, API token, AEO yazıcı | ✅ |
+## Canlı (live)
 
-## Mimari notlar
-- Crawler bağımlılıksız (regex tabanlı), Vercel Hobby 60s limitine uyumlu.
-- Embedding'ler Json olarak saklanır, cosine JS'te hesaplanır (pgvector gerekmez).
-- Tüm yeni AI çağrıları ucuz modelle (`classify`/`generate` helper'ları) yapılır, mock fallback'li.
-- Yeni modeller `tenantId` skalar alanıyla bağlanır (Tenant modelini şişirmemek için).
+| Yetenek                                                                                                                 | Notlar                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| ChatGPT · Claude · Gemini takibi                                                                                        | gpt-4o-mini / claude-haiku-4-5 / gemini-2.5-flash (env override)                    |
+| Günlük otomatik rerun + "şimdi çalıştır"                                                                                | Kuyruk + idempotency + zincirleme tetikleme                                         |
+| Bahis, pozisyon, mention tipi, rakipler, Share of Voice                                                                 | Türkçe duyarlı çıkarım; tanımlar `docs/METRICS.md`                                  |
+| E-posta + Slack uyarıları, haftalık rapor                                                                               | Teslimat logu; Slack webhook şifreli                                                |
+| Public API `/api/v1/visibility`                                                                                         | Token (SHA-256), scope, iptal/süre, 60 istek/dk, `/docs/api`                        |
+| Ekip: davet/yeniden gönderme/iptal, roller (Owner/Admin/Viewer), sahiplik devri, son aktivite, aktivite akışı           | Lansmanda 5 üye; son sahip korunur; erişim değişimi oturumu yeniler                 |
+| Ajans: müşteri çalışma alanları, Owner/Admin/Strategist/Analyst, atama, duraklat/arşivle, owner onaylı bağlama, portföy | LAUNCH: 5 koltuk / 10 müşteri; toplulaştırma `docs/METRICS.md`                      |
+| İmzalı rapor paylaşım linkleri                                                                                          | Süreli, iptal edilebilir, "Independent AI ile hazırlandı" imzalı (beyaz etiket yok) |
+| E-ticaret ücretsiz araçları: mağaza AI görünürlük testi, ürün sayfası testi, AI crawler testi                           | Crawl-only, deterministik, e-posta duvarı yok; `docs/COMMERCE_SCORING.md`           |
+| Hesap: e-posta doğrulama, şifre sıfırlama/değiştirme, tüm oturumları kapatma, veri dışa aktarma, hesap silme            | KVKK akışları                                                                       |
+| Deneme süresi sonu salt-okunur mod                                                                                      | Veri silinmez; süper admin plan/süre atar                                           |
+| 13 GEO aracı                                                                                                            | Public araçlar dağıtık rate limit altında                                           |
+
+## Beta
+
+- Mağaza bağlantıları (salt-okunur katalog): Shopify (OAuth, webhooks; özel uygulama — App Store'da değil), ikas
+  (client credentials, webhook URL anahtarı + yeniden çekme), Ticimax (SOAP, günlük senkron; webhook yok)
+- Katalog tabanlı AI hazırlık skoru, katalogdan doğrulanabilir marka gerçekleri (zaman damgalı), ticari izleme soru önerileri
+- Gerçek zamanlı panel: Supabase Realtime private kanallar + RLS; yapılandırılmadığında 30 sn polling
+- AI ürün açıklaması / SSS yazıcı (provider anahtarı gerekir)
+- AI Discovery Sensor: tek satır script ile AI kaynaklı gerçek ziyaret ölçümü; sunucu/edge kanalıyla AI crawler
+  istekleri; sektörden bağımsız hedef ve dönüşüm takibi; çerezsiz ve PII'siz
+- Prompt kaynağı ayrımı: ziyaretçi bildirimi (USER_REPORTED), açıklanabilir tahmin (INFERRED; güven eşiği altında
+  kayıt üretilmez), sentetik ölçüm (SYNTHETIC = kendi ModelRun'larımız)
+- Sentiment (heuristik + LLM sınıflandırma)
+- Atıf kaynakları: provider native web arama (OpenAI web_search, Anthropic web_search, Gemini googleSearch);
+  `AI_WEB_SEARCH=0` ise yalnızca metin içi linkler
+
+## Planlanan (kodda yok — pazarlamada "yakında")
+
+| Madde                                              | Bağımlılık / not                                                       |
+| -------------------------------------------------- | ---------------------------------------------------------------------- |
+| Çoklu marka (tek hesapta >1 kendi markası)         | Veri modeli hazır (`Brand.isOwn`), UI/analitik ayrımı gerekiyor        |
+| Webhooks (imzalı payload, retry, teslimat logu)    | NotificationLog altyapısı yeniden kullanılabilir                       |
+| Aylık PDF rapor                                    | Şablon + üretim işi                                                    |
+| Perplexity / Grok                                  | Adapter + fiyat kataloğu                                               |
+| Ücretli planlar ve ödeme                           | **İş kararı**: fiyatlar ve sağlayıcı (iyzico vb.) belirlenmedi         |
+| Prompt sürüm geçmişi UI                            | `Prompt.version` + `ModelRun.promptVersion` zaten kaydediliyor         |
+| Shopify App Store listesi                          | **İş kararı**: uyum webhook'ları + inceleme süreci (`docs/SHOPIFY.md`) |
+| Beyaz etiket (ajans)                               | STUDIO/SCALE planında; fiyat/plan kararı bekliyor                      |
+| Ürün ↔ koleksiyon eşlemesi, varyant düzeyi katalog | v1 yalnızca ürün düzeyi + ilk varyant kimlikleri                       |
+
+## Teknik borç / bilinen sınırlar
+
+- Blog: 66 ince içerik (<350 kelime), 9 tarihli iddia, 49 kaynaksız sayısal iddia — bkz. `docs/BLOG_AUDIT.md`.
+- Vercel Hobby cron ±59 dk sapma; kesin zamanlama Pro gerektirir.
+- Gemini grounding ücreti kotaya bağlı (1.500 istek/gün ücretsiz, sonra $35/1k); maliyet kataloğu üst sınır varsayar.
+- Katalog senkronu günlük cron'un kalan bütçesinde çalışır (Hobby: günde 1 tetikleme + zincir); çok büyük kataloglar
+  birkaç zincir turu sürebilir. Plan tavanı: LAUNCH 5.000 ürün.
+- Ticimax webhook sunmaz → değişiklikler günlük senkronda yansır. ikas webhook imzasız → payload'a güvenilmez, ürün API'den yeniden çekilir.
+- Realtime, Supabase projesinde SQL politikalarının uygulanmasını ve "public access" kapalı olmasını gerektirir (`DEPLOY.md §7`).
+- Sensör: JavaScript çalıştırmayan crawler'lar yalnızca sunucu/edge bağlantısıyla görülür; tek başına script yeterli
+  değildir ve panelde bu ayrım açıkça gösterilir.
+- Gerçek ziyaretçi promptu AI platformlarınca gönderilmez: yalnızca ziyaretçi bildirirse bilinir; aksi hâlde güven
+  skorlu tahmin gösterilir, eşik altında hiçbir tahmin üretilmez.
+- Ham sensör olayları site başına saklama süresi (varsayılan 90 gün) sonunda silinir; uzun vadede yalnızca gün bazlı
+  toplamlar kalır.

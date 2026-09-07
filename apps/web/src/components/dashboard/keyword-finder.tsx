@@ -69,15 +69,31 @@ export function KeywordFinder() {
   return (
     <div>
       <form onSubmit={find} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3">
-        <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Konu — örn. muhasebe yazılımı" className="input" />
-        <input value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="Sektör (opsiyonel) — örn. e-ticaret" className="input" />
-        <button type="submit" disabled={loading} className="btn-primary inline-flex items-center justify-center gap-2 whitespace-nowrap">
+        <input
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="Konu — örn. muhasebe yazılımı"
+          className="input"
+        />
+        <input
+          value={industry}
+          onChange={(e) => setIndustry(e.target.value)}
+          placeholder="Sektör (opsiyonel) — örn. e-ticaret"
+          className="input"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary inline-flex items-center justify-center gap-2 whitespace-nowrap"
+        >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           {loading ? 'Aranıyor…' : 'Prompt bul'}
         </button>
       </form>
 
-      {error && <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>}
+      {error && (
+        <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>
+      )}
 
       {ideas.length > 0 && (
         <div className="mt-8 space-y-2">
@@ -89,7 +105,11 @@ export function KeywordFinder() {
                   <span className="text-[10.5px] rounded px-1.5 py-0.5 bg-paper-3 text-ink-muted">{idea.intent}</span>
                   <span
                     className={`text-[10.5px] rounded px-1.5 py-0.5 ${
-                      idea.demand === 'Yüksek' ? 'bg-positive/10 text-positive' : idea.demand === 'Orta' ? 'bg-warning/10 text-warning' : 'bg-paper-3 text-ink-faint'
+                      idea.demand === 'Yüksek'
+                        ? 'bg-positive/10 text-positive'
+                        : idea.demand === 'Orta'
+                          ? 'bg-warning/10 text-warning'
+                          : 'bg-paper-3 text-ink-faint'
                     }`}
                   >
                     {idea.demand} talep

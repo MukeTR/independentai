@@ -1,10 +1,21 @@
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
-import { ZodError } from 'zod';
-import { signSession, verifySession, type SessionPayload } from './jwt';
+import { type NextResponse } from 'next/server';
+import { signSession, verifySession, SESSION_TTL_SECONDS, type SessionPayload } from './jwt';
+
+// Geriye dönük uyumluluk: eski import yolları bu modülden hata sınıflarını bekliyor.
+export {
+  ClientError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ConflictError,
+  handleRouteError,
+  jsonError,
+} from './errors';
 
 export const AUTH_COOKIE = 'iai_token';
 
+/** Çerezdeki JWT'yi doğrular (DB'ye gitmez). Yetki kararları için `getActor()` kullanın. */
 export async function getSession(): Promise<SessionPayload | null> {
   const store = await cookies();
   const token = store.get(AUTH_COOKIE)?.value;
@@ -16,50 +27,49 @@ export async function getSession(): Promise<SessionPayload | null> {
   }
 }
 
-export async function requireSession(): Promise<SessionPayload> {
-  const s = await getSession();
-  if (!s) throw new UnauthorizedError();
-  return s;
-}
-
 export async function setSessionCookie(response: NextResponse, payload: SessionPayload) {
   const token = await signSession(payload);
   response.cookies.set(AUTH_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: SESSION_TTL_SECONDS,
     path: '/',
   });
 }
 
-export class UnauthorizedError extends Error {
-  constructor() {
-    super('Unauthorized');
-  }
+export function clearSessionCookie(response: NextResponse) {
+  response.cookies.set(AUTH_COOKIE, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 0,
+    path: '/',
+  });
 }
 
-export function jsonError(message: string, status = 400) {
-  return NextResponse.json({ message }, { status });
+// ───────────── Ajans çalışma alanı çerezi (iai_ws) ─────────────
+// Değer yalnızca bir ipucu: her istekte `getActor()` DB'de (AgencyWorkspace + erişim) doğrular.
+
+export const WORKSPACE_COOKIE_NAME = 'iai_ws';
+const WORKSPACE_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 gün
+
+export function setWorkspaceCookie(response: NextResponse, tenantId: string) {
+  response.cookies.set(WORKSPACE_COOKIE_NAME, tenantId, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: WORKSPACE_TTL_SECONDS,
+    path: '/',
+  });
 }
 
-/** Kullanıcıya gösterilmesi güvenli, kasıtlı doğrulama hataları. */
-export class ClientError extends Error {}
-
-export function handleRouteError(err: unknown): NextResponse {
-  if (err instanceof UnauthorizedError) {
-    return NextResponse.json({ message: 'Yetkisiz' }, { status: 401 });
-  }
-  // Zod doğrulama hataları → 400, ilk anlamlı mesajla (güvenli, kullanıcıya gösterilir).
-  if (err instanceof ZodError) {
-    const msg = err.issues[0]?.message || 'Geçersiz giriş';
-    return NextResponse.json({ message: msg }, { status: 400 });
-  }
-  // Sadece açıkça "client-safe" işaretlenen hataların mesajı dışarı verilir.
-  if (err instanceof ClientError) {
-    return NextResponse.json({ message: err.message }, { status: 400 });
-  }
-  // Beklenmeyen hatalar: iç detayı loglanır, istemciye generic mesaj döner (bilgi sızıntısı yok).
-  console.error('[route error]', err);
-  return NextResponse.json({ message: 'İşlem sırasında bir hata oluştu' }, { status: 500 });
+export function clearWorkspaceCookie(response: NextResponse) {
+  response.cookies.set(WORKSPACE_COOKIE_NAME, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 0,
+    path: '/',
+  });
 }

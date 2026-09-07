@@ -1,0 +1,99 @@
+# Metrik tanımları (tek kaynak)
+
+Kod: `packages/shared/src/metrics.ts`. Panel, Public API (`/api/v1/visibility`), haftalık rapor ve düşüş uyarıları
+**aynı fonksiyonları** kullanır; farklı yüzeylerde farklı sonuç çıkamaz.
+
+## Çalıştırma (run) durumu
+
+Her `(soru × model)` ölçümü bir `ModelRun` satırıdır: `PENDING → RUNNING → SUCCESS | ERROR`.
+
+| Durum     | Paydaya girer mi | Açıklama                                                              |
+| --------- | ---------------- | --------------------------------------------------------------------- |
+| `SUCCESS` | Evet             | Model cevap verdi, bahis çıkarımı yapıldı                             |
+| `ERROR`   | **Hayır**        | Sağlayıcı hatası (`errorCode`: auth / rate_limit / timeout / server…) |
+| `PENDING` | Hayır            | Kuyrukta                                                              |
+| `RUNNING` | Hayır            | İşleniyor (lease süresi dolarsa yeniden claim edilir)                 |
+
+Mock (sahte) run'lar yalnızca yerel/dev'de üretilir ve UI'da **MOCK** etiketiyle gösterilir; production'da
+anahtarsız sağlayıcı `ERROR (not_configured)` üretir, sahte veri üretmez.
+
+## Bahis (mention)
+
+- Marka adı veya alias'ının kelime sınırlarıyla, Türkçe büyük/küçük harf duyarsız (İ/i, I/ı), Unicode NFC normalize
+  metinde geçmesi. Kesme işaretli ekler ("KarPanel'in") bahsi bozmaz. Domain alias'ları protokol/www'suz da eşleşir.
+- Aynı marka birden fazla geçerse **1 bahis** sayılır (`occurrences` ayrıca tutulur).
+- İç içe adlarda en uzun eşleşme kazanır ("Logo" vs "Logo Restoran").
+
+## Pozisyon
+
+Cevapta tanınan markaların (kendi + rakipler) **ilk geçiş sırasına** göre 1'den başlayan sıra. Düşük = iyi.
+
+## Formüller
+
+- **Görünürlük (visibility)** = kendi markanın en az bir kez geçtiği `SUCCESS` run sayısı / `SUCCESS` run sayısı × 100
+- **Share of Voice (SoV)** = kendi marka bahis sayısı / (kendi + rakip bahis sayısı) × 100
+  (run başına marka başına en fazla 1 bahis)
+- **Ortalama pozisyon** = kendi markanın geçtiği run'lardaki pozisyonların ortalaması
+- **Öneri oranı** = kendi bahislerinin % kaçı `RECOMMENDED`
+- **Sentiment** = heuristik + LLM sınıflandırma (beta); skor: POSITIVE 100 / NEUTRAL 50 / NEGATIVE 0
+
+## Atıf (citation) ve grounding
+
+`groundingMode`:
+
+| Değer    | Anlam                                                                                                  |
+| -------- | ------------------------------------------------------------------------------------------------------ |
+| `native` | Sağlayıcının web arama/grounding sonucu (OpenAI web_search, Anthropic web_search, Gemini googleSearch) |
+| `text`   | Yalnızca cevap metnindeki linkler (native arama kapalı veya desteklenmiyor)                            |
+| `none`   | Atıf verisi yok (mock)                                                                                 |
+
+`AI_WEB_SEARCH=0` ile native arama kapatılır; UI atıf kaynaklarını "metin içi linkler" olarak etiketler.
+
+## Maliyet
+
+`costUsd` = sağlayıcı token fiyatı (katalog: `packages/ai/src/models.ts`, tarihçeli) + web arama çağrı ücreti +
+sentiment sınıflandırma çağrısı. Katalogda olmayan model için **`null` = bilinmiyor** (0 değil). Panel ve admin
+"maliyeti bilinmeyen run" sayısını ayrıca gösterir.
+
+## Zaman
+
+Günlük cron 23:00 UTC (±59 dk, Vercel Hobby). `scheduledFor` = UTC gün başlangıcı. Trend grafikleri UTC gün anahtarı kullanır.
+
+## Portföy (ajans)
+
+- Müşteri kartındaki görünürlük ve SoV, o müşterinin tenant'ı için **yukarıdaki formüllerle** (son 30 gün) hesaplanır;
+  yeni formül yok.
+- **Portföy ortalaması** = müşteri başına **eşit ağırlıklı** aritmetik ortalama (büyük katalog/çok soru baskın olmaz).
+  Veri üretmemiş (idle) müşteriler ortalamaya girmez. UI tooltip'i bunu belirtir.
+- **Δ7** = son 7 günün görünürlüğü − önceki 7 günün görünürlüğü; önceki pencerede <3 geçerli run varsa Δ=0 (gösterilmez).
+  **Δ30** aynı mantıkla 30/30.
+- **Sağlık:** `idle` (run yok) · `critical` (7 günde ≥3 hatalı run **veya** mağaza bağlantısı ERROR **veya** Δ7 ≤ −15) ·
+  `warn` (hatalı run >0 **veya** Δ7 ≤ −5 **veya** son denetimde ≥3 "fail" bulgu) · aksi halde `good`.
+- Özet sayaçları: `rising` (Δ7 ≥ +5), `falling` (Δ7 ≤ −5), `critical`, `failedRuns7d` toplamı, `syncIssues`
+  (lastErrorCode dolu bağlantı sayısı). Kaynak: `server/agency.ts → listClientCards/summarizePortfolio`.
+
+## Commerce hazırlık skorları
+
+Mağaza AI görünürlük testi, ürün sayfası testi ve AI crawler testi **bu dosyadaki görünürlük metriklerinden bağımsız**,
+deterministik crawl-only skorlardır (0-100; alt skor ağırlıkları ve bulgu kataloğu `docs/COMMERCE_SCORING.md`).
+Katalog tabanlı hazırlık skoru bağlı mağazanın `CatalogProduct` verisinden hesaplanır ve her gerçek `syncedAt` damgası taşır.
+
+## AI Discovery Sensor metrikleri
+
+Bu bölüm sensör ölçümleri içindir; yukarıdaki görünürlük/SoV formüllerinden **bağımsızdır** ve onlarla toplanmaz.
+
+| Metrik                                     | Tanım                                                                          | Ne DEĞİLDİR                                                           |
+| ------------------------------------------ | ------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| AI kaynaklı ziyaret (`aiReferralSessions`) | Referrer host'u kayıtlı bir AI ürününe ait olan oturum sayısı                  | Benzersiz kişi sayısı değildir (çerezsiz, 12 saatlik anonim gruplama) |
+| AI crawler isteği (`crawlerHits`)          | Sunucu/edge'den bildirilen bot istekleri                                       | Ziyaret, öneri veya satış değildir                                    |
+| Sentetik ölçüm (`syntheticRuns`)           | Independent AI'ın kendi çalıştırdığı `ModelRun` sayısı                         | Gerçek ziyaretçi değildir                                             |
+| Dönüşüm                                    | Oturumda bir `SiteGoal` ilk kez eşleştiğinde                                   | Aynı oturumda aynı hedef tekrar sayılmaz                              |
+| Huni                                       | AI ziyaret → sitede etkileşim (`eventCount > 1`) → hedefe ulaşan oturum        | Aşamalar arası oran, kişi bazlı dönüşüm oranı değildir                |
+| Doğrulanmış crawler                        | `VERIFIED`: edge sinyali, resmî IP aralığı, ters DNS veya imza ile kanıtlanmış | Yalnızca user-agent eşleşmesi `UNVERIFIED` sayılır                    |
+
+**Oturum penceresi:** 12 saat; aynı `sessionKey` bu süre içinde tek ziyaret sayılır. **Kaynak sınıfı** yalnızca tam
+hostname eşleşmesiyle belirlenir; referrer yoksa `DIRECT`, arama motoruysa `ORGANIC`, tanınmayan host `OTHER`'dır.
+UTM yalnızca referrer yokken ve tanınan bir AI adıysa dikkate alınır.
+
+**Prompt kaynağı** üç ayrı değerdir ve toplanmaz: `USER_REPORTED` (ziyaretçi bildirdi), `INFERRED` (güven skorlu,
+kanıtlı tahmin; eşik altında kayıt üretilmez), `SYNTHETIC` (bizim ölçümümüz).

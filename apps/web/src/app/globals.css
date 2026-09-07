@@ -270,3 +270,13 @@ i, em, .italic { font-style: normal !important; }
   .text-shimmer { background-position: 0 center; }
   .auth-draw { stroke-dashoffset: 0; }
 }
+
+/* Erişilebilirlik: klavye odağı her yerde görünür */
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+.input:focus-visible { outline: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.skip-link { position: absolute; left: -999px; top: 8px; z-index: 100; background: var(--ink); color: var(--paper-3); padding: 8px 12px; border-radius: 8px; }
+.skip-link:focus { left: 8px; }
+/* Dokunma hedefi minimumu */
+@media (pointer: coarse) { .btn-primary, .btn-secondary { min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .rise-1, .rise-2, .rise-3, .rise-4, .rise-5 { animation: none !important; } }

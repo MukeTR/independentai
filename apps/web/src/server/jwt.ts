@@ -1,26 +1,45 @@
 import { SignJWT, jwtVerify } from 'jose';
+import { jwtSecret } from './env';
 
 export type SessionPayload = {
   userId: string;
   tenantId: string;
   email: string;
+  /** sessionVersion — kullanıcı tablosundaki değerle eşleşmezse oturum geçersizdir. */
+  sv: number;
 };
 
+export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14; // 14 gün
+const ISSUER = 'independentai.space';
+const AUDIENCE = 'iai-web';
+
 function getSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error('JWT_SECRET ortam değişkeni tanımlı değil');
-  return new TextEncoder().encode(secret);
+  return new TextEncoder().encode(jwtSecret());
 }
 
 export async function signSession(payload: SessionPayload): Promise<string> {
   return new SignJWT({ ...payload })
-    .setProtectedHeader({ alg: 'HS256' })
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setIssuer(ISSUER)
+    .setAudience(AUDIENCE)
     .setIssuedAt()
-    .setExpirationTime('30d')
+    .setExpirationTime(`${SESSION_TTL_SECONDS}s`)
     .sign(getSecret());
 }
 
 export async function verifySession(token: string): Promise<SessionPayload> {
-  const { payload } = await jwtVerify(token, getSecret());
-  return payload as unknown as SessionPayload;
+  const { payload } = await jwtVerify(token, getSecret(), {
+    algorithms: ['HS256'],
+    issuer: ISSUER,
+    audience: AUDIENCE,
+  });
+  if (typeof payload.userId !== 'string' || typeof payload.tenantId !== 'string') {
+    throw new Error('Geçersiz oturum yükü');
+  }
+  return {
+    userId: payload.userId,
+    tenantId: payload.tenantId,
+    email: typeof payload.email === 'string' ? payload.email : '',
+    sv: typeof payload.sv === 'number' ? payload.sv : 0,
+  };
 }

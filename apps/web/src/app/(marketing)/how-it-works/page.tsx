@@ -3,12 +3,12 @@ import { Section } from '@/components/section';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
-import { ArrowRight, MessagesSquare, Bot, GitBranch, Database, BarChart3 } from 'lucide-react';
-import Link from 'next/link';
+import { MessagesSquare, Bot, GitBranch, Database, BarChart3 } from 'lucide-react';
 
 export const metadata = buildMetadata({
   title: 'Nasıl çalışır — Veri akışı, sorgu hattı, ölçüm metodolojisi',
-  description: 'Sorgularınız nasıl çalışır, mention\'lar nasıl çıkartılır, metrikler nasıl hesaplanır — Independent AI\'ın altında ne var, açıkça anlatıyoruz.',
+  description:
+    "Sorgularınız nasıl çalışır, mention'lar nasıl çıkartılır, metrikler nasıl hesaplanır — Independent AI'ın altında ne var, açıkça anlatıyoruz.",
   path: '/how-it-works',
 });
 
@@ -23,46 +23,53 @@ const STAGES = [
     n: '02',
     icon: GitBranch,
     title: 'Multi-provider sorgu hattı',
-    body: 'Her aktif soru için sistem 3 paralel API çağrısı yapar: OpenAI (gpt-4o-mini, temperature 0.7), Anthropic (claude-haiku-4-5), Google (gemini-1.5-flash). Cevap metinleri ve metadata (token, latency, cost) kaydedilir.',
+    body: 'Her aktif soru için sistem 3 paralel API çağrısı yapar: OpenAI (gpt-4o-mini, temperature 0.7), Anthropic (claude-haiku-4-5), Google (gemini-2.5-flash). Cevap metinleri ve metadata (token, latency, cost) kaydedilir.',
   },
   {
     n: '03',
     icon: Bot,
     title: 'Marka mention extraction',
-    body: 'Cevap metinlerinde markanızın tüm aliasları regex + word-boundary kontrolü ile aranır. Her hit için: pozisyon (kaçıncı bahsedilen marka), tonal değerlendirme (heuristic: pozitif/nötr/negatif anahtar kelimeler), bağlam (±80 karakter snippet).',
+    body: 'Cevap metinlerinde markanızın tüm aliasları regex + word-boundary kontrolü ile aranır. Her hit için: pozisyon (kaçıncı bahsedilen marka), tonal değerlendirme (LLM destekli sınıflandırma — beta; sağlayıcı anahtarı yoksa heuristik), bağlam (±80 karakter snippet).',
   },
   {
     n: '04',
     icon: Database,
     title: 'Veri saklama',
-    body: 'Her ModelRun bir kayıt: prompt × model × tarih. Her run\'ın altında 0-N BrandMention. Postgres üzerinde saklanır, geçmiş tüm sorgular sorgulanabilir kalır. Veri 30 gün boyunca trend, 90+ gün arşivde.',
+    body: "Her ModelRun bir kayıt: prompt × model × tarih. Her run'ın altında 0-N BrandMention. Postgres üzerinde saklanır, geçmiş tüm sorgular sorgulanabilir kalır. Veri 30 gün boyunca trend, 90+ gün arşivde.",
   },
   {
     n: '05',
     icon: BarChart3,
     title: 'Metrik agregasyonu',
-    body: 'Dashboard\'a girince son 30 günlük tüm run\'lar agregate edilir. Görünürlük skoru: markanızın geçtiği run / toplam run. SoV: sizin mention / (sizin + rakipler). Trend: günlük gruplama. Modele göre dağılım: provider × görünürlük.',
+    body: "Panele girince son 30 günlük tüm run'lar agregate edilir. Görünürlük skoru: markanızın geçtiği başarılı run / başarılı run × 100. SoV: sizin mention / (sizin + rakipler) × 100. Hatalı run'lar paydaya girmez. Trend: günlük gruplama. Modele göre dağılım: provider × görünürlük. Aynı veriyi Public API ile de çekebilirsiniz.",
   },
 ];
 
 const DAILY_CRON = [
-  '02:00 (TR) - Vercel Cron tetiklenir',
-  '02:00:01 - Veri tabanından tüm aktif sorular çekilir',
-  '02:00:02 - Her soru × 3 model paralel çalıştırılır',
-  '02:00:30 - Sonuçlar BrandMention\'larla beraber DB\'ye yazılır',
-  '02:00:32 - Anomali kontrolü (yakında: email alert)',
+  '~02:00 (TR, ±1 saat) - Vercel Cron tetiklenir (23:00 UTC)',
+  '+1 sn - Veri tabanından tüm aktif sorular çekilir',
+  '+2 sn - Her soru × 3 model paralel çalıştırılır',
+  "+30 sn - Sonuçlar BrandMention'larla beraber DB'ye yazılır",
+  '+32 sn - Düşüş uyarısı kontrolü (e-posta/Slack)',
+  'Birikmiş işler zincirleme tetikleyiciyle tamamlanır',
 ];
 
 export default function HowItWorks() {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Nasıl çalışır', href: '/how-it-works' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Nasıl çalışır', href: '/how-it-works' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
           <div className="eyebrow">Nasıl çalışır</div>
           <h1 className="font-display text-[52px] lg:text-[68px] tracking-tight mt-4 leading-[1.02]">
-            Kara kutu değiliz.<br />
+            Kara kutu değiliz.
+            <br />
             <span className="text-brand">Altında ne var, açıkça anlatıyoruz.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
@@ -95,8 +102,8 @@ export default function HowItWorks() {
       {/* Daily cron diagram */}
       <Section
         eyebrow="Günlük akış"
-        title="Her gece 02:00'de ne oluyor?"
-        intro="Vercel Cron tarafından tetiklenen bir job, tüm aktif soruları paralel olarak yeniden çalıştırır. Sabah uyanmadan dashboardunuz hazırdır."
+        title="Her gece ~02:00'de ne oluyor?"
+        intro="Her gece yaklaşık 02:00'de (TR, ±1 saat) Vercel Cron tarafından tetiklenen bir job, tüm aktif soruları paralel olarak yeniden çalıştırır; kuyrukta kalan işler zincirleme tetikleyiciyle tamamlanır. Sabah uyanmadan paneliniz hazırdır."
         className="bg-paper-2/40"
       >
         <div className="card p-8">
@@ -118,34 +125,33 @@ export default function HowItWorks() {
             <div className="eyebrow">Neden 3 model?</div>
             <h3 className="font-display text-[19px] mt-3 leading-snug">Tek modelle gerçekçi ölçüm olmaz</h3>
             <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">
-              Kullanıcılar farklı modellerde farklı sorgular yapıyor. ChatGPT'de 1.sıradasınız diye Claude'da da
-              öyle olduğunuzu varsayamazsınız — bazen tam tersi. 3 model paralel sorgulayarak gerçek bir tablo
-              elde ediliyor.
+              Kullanıcılar farklı modellerde farklı sorgular yapıyor. ChatGPT'de 1.sıradasınız diye Claude'da da öyle
+              olduğunuzu varsayamazsınız — bazen tam tersi. 3 model paralel sorgulayarak gerçek bir tablo elde ediliyor.
             </p>
           </div>
           <div className="card p-7">
             <div className="eyebrow">Neden günde 1 kez?</div>
             <h3 className="font-display text-[19px] mt-3 leading-snug">AI cevapları stabil — daha sık ölçmek lüks</h3>
             <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">
-              Aynı modele aynı soruyu 1 saat içinde 10 kez sorduğunuzda cevap büyük ölçüde aynı kalıyor. Günlük
-              sıklık trend ölçmek için yeterli; daha sık sorgu = daha fazla maliyet, marjinal değer az.
+              Aynı modele aynı soruyu 1 saat içinde 10 kez sorduğunuzda cevap büyük ölçüde aynı kalıyor. Günlük sıklık
+              trend ölçmek için yeterli; daha sık sorgu = daha fazla maliyet, marjinal değer az.
             </p>
           </div>
           <div className="card p-7">
             <div className="eyebrow">Neden alias matching, LLM değil?</div>
             <h3 className="font-display text-[19px] mt-3 leading-snug">Hız, maliyet ve şeffaflık üçgeni</h3>
             <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">
-              Her cevabı bir LLM\'e "bu markadan bahsediyor mu" diye sormak çok pahalı + sonuçlar değişken olur.
-              Alias matching deterministik, hızlı, ucuz ve denetlenebilir. Düşük precision/recall ile sonuçlanırsa
-              LLM-tabanlı extraction'ı opsiyonel olarak ekleyeceğiz.
+              Her cevabı bir LLM\'e "bu markadan bahsediyor mu" diye sormak çok pahalı + sonuçlar değişken olur. Alias
+              matching deterministik, hızlı, ucuz ve denetlenebilir. Düşük precision/recall ile sonuçlanırsa LLM-tabanlı
+              extraction'ı opsiyonel olarak ekleyeceğiz.
             </p>
           </div>
           <div className="card p-7">
             <div className="eyebrow">Neden Türkçe öncelikli?</div>
             <h3 className="font-display text-[19px] mt-3 leading-snug">TR pazarında bağımsız bir oyuncu yok</h3>
             <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">
-              Profound, Otterly, Athena gibi global oyuncular Türkçe sorgulara da cevap veriyor ama Türk pazarına
-              özel yok. Biz TR markaları için, TR alias'ları için, TR'deki rakip dinamiklerine göre optimize ettik.
+              Profound, Otterly, Athena gibi global oyuncular Türkçe sorgulara da cevap veriyor ama Türk pazarına özel
+              yok. Biz TR markaları için, TR alias'ları için, TR'deki rakip dinamiklerine göre optimize ettik.
             </p>
           </div>
         </div>

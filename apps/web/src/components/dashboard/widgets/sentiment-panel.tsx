@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-} from 'recharts';
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import type { ComprehensiveAnalytics } from '@/server/dashboard-analytics';
 
 type Props = {
@@ -61,14 +55,9 @@ export function SentimentPanel({ sentiment, sentimentTrend }: Props) {
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
             {LEGEND.map((l) => (
               <div key={l.key} className="flex items-center gap-2">
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: l.color }}
-                />
+                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: l.color }} />
                 <span className="text-[12px] text-ink-muted">{l.label}</span>
-                <span className="font-mono tabular text-[12px] text-ink">
-                  {sentiment[l.key]}
-                </span>
+                <span className="font-mono tabular text-[12px] text-ink">{sentiment[l.key]}</span>
               </div>
             ))}
           </div>
@@ -76,20 +65,10 @@ export function SentimentPanel({ sentiment, sentimentTrend }: Props) {
           {sentimentTrend.length > 0 ? (
             <div className="mt-5 flex-1 min-h-[150px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={sentimentTrend}
-                  margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
-                >
+                <AreaChart data={sentimentTrend} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                   <defs>
                     {LEGEND.map((l) => (
-                      <linearGradient
-                        key={l.key}
-                        id={`sent-${l.key}`}
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
+                      <linearGradient key={l.key} id={`sent-${l.key}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor={l.color} stopOpacity={0.35} />
                         <stop offset="100%" stopColor={l.color} stopOpacity={0.06} />
                       </linearGradient>

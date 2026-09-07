@@ -1,5 +1,5 @@
 # Yerel geliştirme için offline fallback.
-# Önerilen: Neon free tier — bu dosyayı kullanma.
+# Önerilen: Supabase free tier — bu dosyayı kullanma.
 services:
   postgres:
     image: postgres:16-alpine

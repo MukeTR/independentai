@@ -16,7 +16,13 @@ export function MetricCard({
   className?: string;
 }) {
   const toneClass =
-    tone === 'brand' ? 'text-brand' : tone === 'positive' ? 'text-positive' : tone === 'warning' ? 'text-warning' : 'text-ink';
+    tone === 'brand'
+      ? 'text-brand'
+      : tone === 'positive'
+        ? 'text-positive'
+        : tone === 'warning'
+          ? 'text-warning'
+          : 'text-ink';
   return (
     <div className={cn('card p-6', className)}>
       <div className="eyebrow">{label}</div>

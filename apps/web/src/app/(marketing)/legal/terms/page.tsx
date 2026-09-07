@@ -27,7 +27,7 @@ export default function Terms() {
             },
             {
               h: '3. Kullanıcı sorumlulukları',
-              c: 'İzlediğiniz prompt metinleri AI provider\'lara aktarılır. Telif hakkı ihlali, kişisel veri içeren veya yasa dışı içerik gönderemezsiniz. Hesap güvenliği (güçlü şifre, paylaşmama) sizin sorumluluğunuzdadır.',
+              c: "İzlediğiniz prompt metinleri AI provider'lara aktarılır. Telif hakkı ihlali, kişisel veri içeren veya yasa dışı içerik gönderemezsiniz. Hesap güvenliği (güçlü şifre, paylaşmama) sizin sorumluluğunuzdadır.",
             },
             {
               h: '4. Bizim sorumluluğumuz',

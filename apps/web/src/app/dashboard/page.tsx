@@ -1,17 +1,19 @@
 import Link from 'next/link';
-import { requireSession } from '@/server/session';
+import { requirePageActor } from '@/server/authz';
 import { listPrompts, listCompetitors, listOwnBrands, getMe } from '@/server/repo';
 import { getComprehensiveAnalytics } from '@/server/dashboard-analytics';
 import { getRadarData, getTopCitationSources, getVisibilityGaps } from '@/server/insights';
-import { CompetitorRadar } from '@/components/dashboard/competitor-radar';
 import { CitationSources } from '@/components/dashboard/citation-sources';
 import { VisibilityGaps } from '@/components/dashboard/visibility-gaps';
 import { KpiRow } from '@/components/dashboard/widgets/kpi-row';
-import { DualTrend } from '@/components/dashboard/widgets/dual-trend';
-import { SovDonut } from '@/components/dashboard/widgets/sov-donut';
-import { SentimentPanel } from '@/components/dashboard/widgets/sentiment-panel';
 import { MentionTypeBar } from '@/components/dashboard/widgets/mention-type-bar';
-import { PositionHistogram } from '@/components/dashboard/widgets/position-histogram';
+import {
+  DualTrend,
+  SovDonut,
+  SentimentPanel,
+  PositionHistogram,
+  CompetitorRadar,
+} from '@/components/dashboard/lazy-charts';
 import { ProviderBreakdown } from '@/components/dashboard/widgets/provider-breakdown';
 import { CompetitorLeaderboard } from '@/components/dashboard/widgets/competitor-leaderboard';
 import { PromptPerformanceTable } from '@/components/dashboard/widgets/prompt-performance-table';
@@ -19,13 +21,27 @@ import { CategoryBreakdown } from '@/components/dashboard/widgets/category-break
 import { HealthPanel } from '@/components/dashboard/widgets/health-panel';
 import { ActivityFeed } from '@/components/dashboard/widgets/activity-feed';
 import {
-  ArrowRight, CheckCircle2, Activity, Radar, Gauge, FileSearch, GitFork,
-  ShieldAlert, KeyRound, Link2, PenLine,
+  ArrowRight,
+  CheckCircle2,
+  Activity,
+  Radar,
+  Gauge,
+  FileSearch,
+  GitFork,
+  ShieldAlert,
+  KeyRound,
+  Link2,
+  PenLine,
 } from 'lucide-react';
 
 const FEATURED_TOOLS = [
   { href: '/dashboard/tools/geo-audit', icon: Gauge, title: 'GEO Audit', desc: 'URL → 0-100 AI hazırlık skoru' },
-  { href: '/dashboard/tools/content-audit', icon: FileSearch, title: 'İçerik Denetleyici', desc: 'Sayfa → aksiyon kartları' },
+  {
+    href: '/dashboard/tools/content-audit',
+    icon: FileSearch,
+    title: 'İçerik Denetleyici',
+    desc: 'Sayfa → aksiyon kartları',
+  },
   { href: '/dashboard/tools/keyword-finder', icon: KeyRound, title: 'Prompt Bulucu', desc: 'Yüksek niyetli sorular' },
   { href: '/dashboard/tools/cannibalization', icon: GitFork, title: 'Kanibalizasyon', desc: 'Rakip kendi sayfaların' },
   { href: '/dashboard/tools/hallucination', icon: ShieldAlert, title: 'Halüsinasyon', desc: 'Yanlış bilgi tespiti' },
@@ -34,7 +50,7 @@ const FEATURED_TOOLS = [
 ];
 
 export default async function DashboardHome() {
-  const session = await requireSession();
+  const session = await requirePageActor();
   const [analytics, prompts, competitors, brands, me, radar, citationSources, gaps] = await Promise.all([
     getComprehensiveAnalytics(session.tenantId),
     listPrompts(session.tenantId),
@@ -84,13 +100,20 @@ export default async function DashboardHome() {
             <div className="font-display text-[28px] tabular text-brand">{Math.round((onboardingDone / 4) * 100)}%</div>
           </div>
           <div className="h-1.5 bg-paper-4 rounded-full overflow-hidden mb-5">
-            <div className="h-full bg-brand transition-all duration-500" style={{ width: `${(onboardingDone / 4) * 100}%` }} />
+            <div
+              className="h-full bg-brand transition-all duration-500"
+              style={{ width: `${(onboardingDone / 4) * 100}%` }}
+            />
           </div>
           <div className="space-y-2.5">
             <OnboardStep done={onboarding.brand} label="Marka bilgilerini gir" href="/dashboard/settings" />
             <OnboardStep done={onboarding.competitors} label="3-5 rakip ekle" href="/dashboard/competitors" />
             <OnboardStep done={onboarding.prompts} label="5-10 izlenecek soru ekle" href="/dashboard/prompts" />
-            <OnboardStep done={onboarding.firstRun} label="İlk çalıştırmayı tetikle (otomatik gece çalışır)" href="/dashboard/prompts" />
+            <OnboardStep
+              done={onboarding.firstRun}
+              label="İlk ölçüm (soru eklenince otomatik başlar; her gece tekrarlanır)"
+              href="/dashboard/prompts"
+            />
           </div>
         </div>
       )}
@@ -98,17 +121,23 @@ export default async function DashboardHome() {
       {hasContent ? (
         <div className="space-y-6">
           {/* KPI row */}
-          <div className="rise-2"><KpiRow kpis={analytics.kpis} /></div>
+          <div className="rise-2">
+            <KpiRow kpis={analytics.kpis} />
+          </div>
 
           {/* Trend + SoV */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-3">
-            <div className="lg:col-span-2 h-full"><DualTrend trend={analytics.trend} /></div>
+            <div className="lg:col-span-2 h-full">
+              <DualTrend trend={analytics.trend} />
+            </div>
             <SovDonut ownSov={analytics.kpis.sov} competitors={analytics.competitors} />
           </div>
 
           {/* Provider breakdown + Health */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-3">
-            <div className="lg:col-span-2 h-full"><ProviderBreakdown byProvider={analytics.byProvider} /></div>
+            <div className="lg:col-span-2 h-full">
+              <ProviderBreakdown byProvider={analytics.byProvider} />
+            </div>
             <HealthPanel health={analytics.health} />
           </div>
 
@@ -140,12 +169,16 @@ export default async function DashboardHome() {
 
           {/* Prompt performance + Activity */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rise-4">
-            <div className="lg:col-span-2 h-full"><PromptPerformanceTable prompts={analytics.promptPerformance} /></div>
+            <div className="lg:col-span-2 h-full">
+              <PromptPerformanceTable prompts={analytics.promptPerformance} />
+            </div>
             <ActivityFeed activity={analytics.activity} />
           </div>
 
           {/* Gaps */}
-          <div className="rise-5"><VisibilityGaps gaps={gaps} /></div>
+          <div className="rise-5">
+            <VisibilityGaps gaps={gaps} />
+          </div>
         </div>
       ) : (
         <div className="card p-10 text-center mb-8 rise-3">
@@ -167,13 +200,20 @@ export default async function DashboardHome() {
             <div className="eyebrow">GEO Araç Kutusu</div>
             <h2 className="font-display text-[22px] mt-1">İhtiyacın olan her şey, tek tıkla</h2>
           </div>
-          <Link href="/dashboard/tools" className="text-[13px] text-brand-deep hover:text-brand inline-flex items-center gap-1">
+          <Link
+            href="/dashboard/tools"
+            className="text-[13px] text-brand-deep hover:text-brand inline-flex items-center gap-1"
+          >
             Tüm araçlar <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {FEATURED_TOOLS.map((t) => (
-            <Link key={t.href} href={t.href} className="card p-4 hover:-translate-y-0.5 hover:bg-paper-2 transition-all group">
+            <Link
+              key={t.href}
+              href={t.href}
+              className="card p-4 hover:-translate-y-0.5 hover:bg-paper-2 transition-all group"
+            >
               <div className="w-9 h-9 rounded-lg bg-brand-glow flex items-center justify-center mb-3 group-hover:bg-brand/15 transition">
                 <t.icon className="w-4 h-4 text-brand" />
               </div>
@@ -195,10 +235,16 @@ function OnboardStep({ done, label, href }: { done: boolean; label: string; href
       ) : (
         <div className="w-4 h-4 rounded-full border-2 border-ink-faint shrink-0" />
       )}
-      <span className={done ? 'text-[14px] text-ink-faint line-through' : 'text-[14px] text-ink group-hover:text-brand-deep'}>
+      <span
+        className={
+          done ? 'text-[14px] text-ink-faint line-through' : 'text-[14px] text-ink group-hover:text-brand-deep'
+        }
+      >
         {label}
       </span>
-      {!done && <ArrowRight className="w-3.5 h-3.5 text-ink-faint ml-auto group-hover:text-brand-deep group-hover:translate-x-0.5 transition" />}
+      {!done && (
+        <ArrowRight className="w-3.5 h-3.5 text-ink-faint ml-auto group-hover:text-brand-deep group-hover:translate-x-0.5 transition" />
+      )}
     </Link>
   );
 }

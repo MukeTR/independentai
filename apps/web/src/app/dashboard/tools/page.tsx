@@ -1,7 +1,24 @@
 import Link from 'next/link';
 import {
-  ArrowRight, FileText, Bot, Code, ClipboardCheck, Calculator, CheckCircle2, Wrench,
-  Gauge, FileSearch, KeyRound, Link2, GitFork, ShieldAlert, PenLine,
+  ArrowRight,
+  FileText,
+  Bot,
+  Code,
+  ClipboardCheck,
+  Calculator,
+  CheckCircle2,
+  Wrench,
+  Gauge,
+  FileSearch,
+  KeyRound,
+  Link2,
+  GitFork,
+  ShieldAlert,
+  PenLine,
+  Store,
+  PackageSearch,
+  Bot as BotIcon,
+  Tags,
 } from 'lucide-react';
 
 const TOOLS = [
@@ -37,7 +54,7 @@ const TOOLS = [
     href: '/dashboard/tools/keyword-finder',
     icon: KeyRound,
     title: 'Prompt / Anahtar Kelime Bulucu',
-    desc: 'Müşterilerinizin AI\'a soracağı yüksek niyetli soruları bulun, tek tıkla takibe ekleyin.',
+    desc: "Müşterilerinizin AI'a soracağı yüksek niyetli soruları bulun, tek tıkla takibe ekleyin.",
     category: 'Keşif',
   },
   {
@@ -58,21 +75,21 @@ const TOOLS = [
     href: '/dashboard/tools/llms-txt',
     icon: FileText,
     title: 'llms.txt Generator',
-    desc: 'AI bot\'lara markanızı doğrudan anlatan markdown dosyası üret. 30 saniyede hazır.',
+    desc: "AI bot'lara markanızı doğrudan anlatan markdown dosyası üret. 30 saniyede hazır.",
     category: 'Üretici',
   },
   {
     href: '/dashboard/tools/robots',
     icon: Bot,
     title: 'robots.txt Generator',
-    desc: 'AI crawler\'larını yönet (GPTBot, ClaudeBot, PerplexityBot), sitemap referansı ekle.',
+    desc: "AI crawler'larını yönet (GPTBot, ClaudeBot, PerplexityBot), sitemap referansı ekle.",
     category: 'Üretici',
   },
   {
     href: '/dashboard/tools/schema',
     icon: Code,
     title: 'Schema Markup Generator',
-    desc: 'Organization JSON-LD üret, HTML\'inize yapıştır. AI gözündeki kanonik bilginiz.',
+    desc: "Organization JSON-LD üret, HTML'inize yapıştır. AI gözündeki kanonik bilginiz.",
     category: 'Üretici',
   },
   {
@@ -96,9 +113,37 @@ const TOOLS = [
     desc: '25 maddelik interaktif checklist, kategori bazlı skor, rapor indir.',
     category: 'Denetim',
   },
+  {
+    href: '/dashboard/tools/ecommerce-visibility',
+    icon: Store,
+    title: 'E-ticaret AI Görünürlük Testi',
+    desc: 'Mağazanızı 6 eksende puanlar; bağlı katalog veri kalitesi ve ticari soru önerileriyle birlikte.',
+    category: 'E-ticaret',
+  },
+  {
+    href: '/dashboard/tools/product-page',
+    icon: PackageSearch,
+    title: 'Ürün Sayfası Testi',
+    desc: 'Product JSON-LD, açıklama özgünlüğü, görsel alt metni, SSS/özellik tablosu ve AI cevap uyumu.',
+    category: 'E-ticaret',
+  },
+  {
+    href: '/dashboard/tools/ai-crawler',
+    icon: BotIcon,
+    title: 'AI Crawler Testi',
+    desc: 'robots.txt bot matrisi (GPTBot, ClaudeBot, PerplexityBot…), noindex/canonical/sitemap/llms.txt.',
+    category: 'E-ticaret',
+  },
+  {
+    href: '/dashboard/tools/product-writer',
+    icon: Tags,
+    title: 'Ürün Açıklama Yazıcı',
+    desc: 'Yalnızca verdiğiniz özelliklerle açıklama + 5 SSS + meta + Product JSON-LD iskeleti.',
+    category: 'E-ticaret',
+  },
 ];
 
-const CATEGORIES = ['Denetim', 'Keşif', 'Üretici', 'Hesaplayıcı'];
+const CATEGORIES = ['Denetim', 'Keşif', 'Üretici', 'Hesaplayıcı', 'E-ticaret'];
 
 export default function ToolsHub() {
   return (
@@ -109,8 +154,8 @@ export default function ToolsHub() {
       </div>
       <h1 className="font-display text-[36px] tracking-tight">GEO araç kutusu</h1>
       <p className="text-[15px] text-ink-muted mt-3 max-w-2xl">
-        AI çağında markanızı optimize etmek için ihtiyacınız olan tüm araçlar tek bir yerde.
-        Hepsi tarayıcıda çalışır, sunucu kaydı yok, gizliliğiniz korunur.
+        AI çağında markanızı optimize etmek için ihtiyacınız olan tüm araçlar tek bir yerde. Hepsi tarayıcıda çalışır,
+        sunucu kaydı yok, gizliliğiniz korunur.
       </p>
 
       {CATEGORIES.map((cat) => (
@@ -145,10 +190,38 @@ export default function ToolsHub() {
         <div className="eyebrow mb-2">Ücretsiz public araçlar</div>
         <p className="text-[13.5px] text-ink-muted leading-relaxed">
           Kayıt gerektirmeyen hızlı kontrol araçları:{' '}
-          <a href="/arac/chatgpt-rank-checker" className="text-brand-deep hover:text-brand underline">ChatGPT</a>,{' '}
-          <a href="/arac/claude-rank-checker" className="text-brand-deep hover:text-brand underline">Claude</a> ve{' '}
-          <a href="/arac/gemini-rank-checker" className="text-brand-deep hover:text-brand underline">Gemini</a> rank checker.
-          Aklında olan bir araç var mı? <a href="/contact" className="text-brand-deep hover:text-brand underline">İletişim</a>'den bize yaz.
+          <a href="/arac/chatgpt-rank-checker" className="text-brand-deep hover:text-brand underline">
+            ChatGPT
+          </a>
+          ,{' '}
+          <a href="/arac/claude-rank-checker" className="text-brand-deep hover:text-brand underline">
+            Claude
+          </a>{' '}
+          ve{' '}
+          <a href="/arac/gemini-rank-checker" className="text-brand-deep hover:text-brand underline">
+            Gemini
+          </a>{' '}
+          rank checker;{' '}
+          <a href="/arac/e-ticaret-ai-gorunurluk-testi" className="text-brand-deep hover:text-brand underline">
+            e-ticaret AI görünürlük
+          </a>
+          ,{' '}
+          <a href="/arac/urun-sayfasi-testi" className="text-brand-deep hover:text-brand underline">
+            ürün sayfası
+          </a>
+          ,{' '}
+          <a href="/arac/ai-crawler-testi" className="text-brand-deep hover:text-brand underline">
+            AI crawler
+          </a>{' '}
+          testleri ve{' '}
+          <a href="/arac/urun-aciklama-yazici" className="text-brand-deep hover:text-brand underline">
+            ürün açıklama yazıcı
+          </a>
+          . Aklında olan bir araç var mı?{' '}
+          <a href="/contact" className="text-brand-deep hover:text-brand underline">
+            İletişim
+          </a>
+          'den bize yaz.
         </p>
       </div>
     </div>

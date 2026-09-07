@@ -10,13 +10,13 @@ const OAUTH_ERRORS: Record<string, string> = {
   oauth_state: 'Oturum doğrulaması başarısız oldu. Lütfen tekrar deneyin.',
   oauth_failed: 'Sosyal kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.',
   oauth_no_email: 'Hesabınızdan e-posta alınamadı. E-posta ile kayıt olabilirsiniz.',
+  oauth_email_unverified:
+    'Bu e-posta ile zaten bir hesap var ve sosyal hesabınızın e-postası doğrulanmamış. Güvenlik için şifrenizle giriş yapın.',
+  oauth_conflict: 'Bu e-posta ile zaten bir hesap var. Şifrenizle giriş yapın.',
+  session_expired: 'Oturumunuz sona erdi. Lütfen tekrar giriş yapın.',
 };
 
-export default async function RegisterPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
   const oauthError = error ? OAUTH_ERRORS[error] : undefined;
 
@@ -27,9 +27,7 @@ export default async function RegisterPage({
         <span className="font-mono">İlk 6 ay tamamen ücretsiz</span>
       </div>
       <h1 className="font-display text-[32px] tracking-tight">Hesap oluştur</h1>
-      <p className="text-[14px] text-ink-muted mt-2">
-        Kredi kartı gerekmez. Kayıt anında 6 aylık tam erişim başlar.
-      </p>
+      <p className="text-[14px] text-ink-muted mt-2">Kredi kartı gerekmez. Kayıt anında 6 aylık tam erişim başlar.</p>
 
       {oauthError && (
         <div className="text-[13px] text-danger bg-danger/5 border-hairline border-danger/20 rounded-lg p-3 mt-6">

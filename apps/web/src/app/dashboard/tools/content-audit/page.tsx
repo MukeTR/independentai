@@ -12,8 +12,8 @@ export default function ContentAuditPage() {
       </div>
       <h1 className="font-display text-[36px] tracking-tight">İçerik Denetleyicisi</h1>
       <p className="text-[15px] text-ink-muted mt-3 max-w-2xl mb-8">
-        Bir sayfa URL'i girin; içeriğinizi AI motorlarının daha çok alıntılaması için analiz edip
-        önceliklendirilmiş aksiyon kartları çıkaralım — her biri zorluk ve tahmini etki etiketiyle.
+        Bir sayfa URL'i girin; içeriğinizi AI motorlarının daha çok alıntılaması için analiz edip önceliklendirilmiş
+        aksiyon kartları çıkaralım — her biri zorluk ve tahmini etki etiketiyle.
       </p>
 
       <ContentAuditScanner />

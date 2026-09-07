@@ -54,11 +54,20 @@ async function inspect(label: string, url: string) {
 }
 
 async function main() {
-  const STAGING = 'postgresql://neondb_owner:npg_kMZL3nFxfEK7@ep-shy-salad-ap1ijb8p-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-  const PRODUCTION = 'postgresql://neondb_owner:npg_kMZL3nFxfEK7@ep-summer-brook-ap7c96ie-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+  // Bağlantı bilgileri koda GÖMÜLMEZ — ortam değişkeninden okunur.
+  // Kullanım:
+  //   DATABASE_URL='<prod-url>' npx tsx scripts/db-status.ts
+  //   STAGING_DATABASE_URL='<staging-url>' DATABASE_URL='<prod-url>' npx tsx scripts/db-status.ts
+  const prod = process.env.DATABASE_URL;
+  const staging = process.env.STAGING_DATABASE_URL;
 
-  await inspect('STAGING', STAGING);
-  await inspect('PRODUCTION', PRODUCTION);
+  if (!prod && !staging) {
+    console.error('DATABASE_URL (ve istege bagli STAGING_DATABASE_URL) tanimli degil.');
+    process.exit(1);
+  }
+
+  if (prod) await inspect('PRODUCTION', prod);
+  if (staging) await inspect('STAGING', staging);
 }
 
 main().catch(console.error);

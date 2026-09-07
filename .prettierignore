@@ -1,0 +1,16 @@
+node_modules
+dist
+.next
+.turbo
+pnpm-lock.yaml
+packages/db/prisma/migrations
+apps/web/src/data/blog-posts*.ts
+# Sensör paketi otomatik üretilir (apps/web/scripts/build-sensor.mjs)
+apps/web/src/generated
+playwright-report
+test-results
+coverage
+*.tsbuildinfo
+
+# Yerel prompt dosyaları (depoya girmez)
+CLAUDE_*.md

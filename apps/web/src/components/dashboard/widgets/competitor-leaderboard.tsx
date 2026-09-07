@@ -6,14 +6,8 @@ function sentimentColor(score: number) {
   return { dot: 'bg-danger', text: 'text-danger' };
 }
 
-export function CompetitorLeaderboard({
-  competitors,
-}: {
-  competitors: ComprehensiveAnalytics['competitors'];
-}) {
-  const rows = [...competitors]
-    .sort((a, b) => b.mentions - a.mentions)
-    .slice(0, 8);
+export function CompetitorLeaderboard({ competitors }: { competitors: ComprehensiveAnalytics['competitors'] }) {
+  const rows = [...competitors].sort((a, b) => b.mentions - a.mentions).slice(0, 8);
 
   const maxSov = Math.max(...rows.map((r) => r.sov), 1);
 
@@ -44,17 +38,11 @@ export function CompetitorLeaderboard({
                   key={`${c.name}-${i}`}
                   className="flex items-center gap-3 px-2 py-2.5 rounded-[8px] hover:bg-paper-2 transition-colors"
                 >
-                  <div className="w-6 shrink-0 font-mono text-[12px] text-ink-faint tabular">
-                    {i + 1}
-                  </div>
+                  <div className="w-6 shrink-0 font-mono text-[12px] text-ink-faint tabular">{i + 1}</div>
 
-                  <div className="flex-1 min-w-0 truncate text-[13px] font-medium text-ink">
-                    {c.name}
-                  </div>
+                  <div className="flex-1 min-w-0 truncate text-[13px] font-medium text-ink">{c.name}</div>
 
-                  <div className="w-12 shrink-0 text-right font-mono text-[13px] text-ink tabular">
-                    {c.mentions}
-                  </div>
+                  <div className="w-12 shrink-0 text-right font-mono text-[13px] text-ink tabular">{c.mentions}</div>
 
                   <div className="w-24 shrink-0">
                     <div className="flex items-center gap-2">
@@ -73,9 +61,7 @@ export function CompetitorLeaderboard({
                   <div className="w-14 shrink-0">
                     <div className="flex items-center justify-end gap-1.5">
                       <span className={`h-2 w-2 rounded-full ${sc.dot}`} />
-                      <span className={`font-mono text-[12px] tabular ${sc.text}`}>
-                        {sentiment}
-                      </span>
+                      <span className={`font-mono text-[12px] tabular ${sc.text}`}>{sentiment}</span>
                     </div>
                   </div>
 

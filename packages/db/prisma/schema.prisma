@@ -1,5 +1,5 @@
 // Independent AI — Prisma şeması
-// Postgres (Neon free tier)
+// Postgres (Supabase)
 
 generator client {
   provider      = "prisma-client-js"
@@ -7,8 +7,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Runtime: Supabase transaction pooler (6543) — serverless bağlantı patlamasını önler.
+  url       = env("DATABASE_URL")
+  // Şema işlemleri (db push / migrate): pooler DDL'i desteklemediği için doğrudan bağlantı (5432).
+  directUrl = env("DIRECT_URL")
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -16,42 +19,77 @@ datasource db {
 // ───────────────────────────────────────────────────────────────
 
 model Tenant {
-  id          String   @id @default(cuid())
-  name        String
-  website     String?
-  industry    String?  // örn. "saas", "ecommerce", "restaurant", "agency"
-  locale      String   @default("tr")
+  id                    String     @id @default(cuid())
+  name                  String
+  website               String?
+  industry              String? // örn. "saas", "ecommerce", "restaurant", "agency"
+  locale                String     @default("tr")
   // 6 aylık ücretsiz lansman: kayıt tarihi + 6 ay
-  trialEndsAt DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  trialEndsAt           DateTime
+  // Ücretli plan (6 ay sonrası). LAUNCH = lansman dönemi; fiyat/ödeme sağlayıcısı henüz yok,
+  // bu yüzden STARTER/GROWTH yalnızca super admin tarafından elle atanır.
+  plan                  PlanTier   @default(LAUNCH)
+  // BRAND: marka hesabı (varsayılan). AGENCY: ajans "ev" tenant'ı — marka verisi taşımaz,
+  // AgencyAccount ile 1:1'dir; ajans üyeleri buraya bağlıdır.
+  kind                  TenantKind @default(BRAND)
+  // Onboarding (marka + ilk sorular) atomik olarak tamamlandığında set edilir.
+  onboardingCompletedAt DateTime?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
 
-  users       User[]
-  brands      Brand[]
-  prompts     Prompt[]
-  competitors Competitor[]
+  users            User[]
+  brands           Brand[]
+  prompts          Prompt[]
+  competitors      Competitor[]
+  invites          TeamInvite[]
+  agency           AgencyAccount? // kind = AGENCY ise
+  agencyWorkspace  AgencyWorkspace? // bir ajansın müşteri çalışma alanıysa
+  storeConnections StoreConnection[]
+  reportShares     ReportShare[]
+  trackedSites     TrackedSite[]
 
   @@index([trialEndsAt])
+  @@index([kind])
+}
+
+enum TenantKind {
+  BRAND
+  AGENCY
+}
+
+enum PlanTier {
+  LAUNCH
+  STARTER
+  GROWTH
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
+  id              String    @id @default(cuid())
+  email           String    @unique
   // OAuth (Google/LinkedIn) ile oluşan kullanıcılarda şifre olmaz → opsiyonel.
-  passwordHash  String?
-  name          String?
-  avatarUrl     String?
+  passwordHash    String?
+  name            String?
+  avatarUrl       String?
   // Sosyal giriş bağlantısı: "google" | "linkedin". Şifreli hesaplarda null.
-  oauthProvider String?
-  oauthSub      String?  // provider'ın verdiği benzersiz kullanıcı id'si (sub)
-  role          UserRole @default(OWNER)
+  oauthProvider   String?
+  oauthSub        String? // provider'ın verdiği benzersiz kullanıcı id'si (sub)
+  role            UserRole  @default(OWNER)
   // Platform sahibi (independentai.space operatörü) için.
   // Sıradan tenant user'larında false.
-  isSuperAdmin  Boolean  @default(false)
-  tenantId      String
-  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isSuperAdmin    Boolean   @default(false)
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // E-posta doğrulama (OAuth ile gelen doğrulanmış e-postalar otomatik set edilir).
+  emailVerifiedAt DateTime?
+  // Oturum iptali: JWT içindeki "sv" claim'i bununla eşleşmezse oturum geçersizdir.
+  sessionVersion  Int       @default(1)
+  lastLoginAt     DateTime?
+  lastActiveAt    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  authTokens        AuthToken[]
+  agencyMemberships AgencyMembership[]
 
   @@index([oauthProvider, oauthSub])
   @@index([tenantId])
@@ -72,14 +110,14 @@ model Brand {
   id        String   @id @default(cuid())
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  name      String                  // ana marka adı: "Acme"
-  aliases   String[] @default([])   // ["Acme Corp", "acme.com", "Acmecorp"]
+  name      String // ana marka adı: "Acme"
+  aliases   String[] @default([]) // ["Acme Corp", "acme.com", "Acmecorp"]
   website   String?
   isOwn     Boolean  @default(true) // firmanın kendi markası mı yoksa rakip mi?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  mentions  BrandMention[]
+  mentions BrandMention[]
 
   @@index([tenantId])
 }
@@ -101,17 +139,20 @@ model Competitor {
 // ───────────────────────────────────────────────────────────────
 
 model Prompt {
-  id        String       @id @default(cuid())
+  id        String   @id @default(cuid())
   tenantId  String
-  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  text      String       // "İstanbul'da en iyi diş hekimi"
-  language  String       @default("tr")
-  category  String?      // örn. "discovery", "comparison", "review"
-  isActive  Boolean      @default(true)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  text      String // "İstanbul'da en iyi diş hekimi"
+  language  String   @default("tr")
+  category  String? // örn. "discovery", "comparison", "review"
+  isActive  Boolean  @default(true)
+  // Metin her değiştiğinde artar; run kayıtları hangi sürümle üretildiğini taşır.
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  runs      ModelRun[]
+  runs         ModelRun[]
+  attributions PromptAttribution[]
 
   @@index([tenantId, isActive])
 }
@@ -125,21 +166,57 @@ model ModelRun {
   promptId     String
   prompt       Prompt     @relation(fields: [promptId], references: [id], onDelete: Cascade)
   provider     AiProvider
-  modelName    String     // örn. "gpt-4o-mini", "claude-haiku-4-5", "gemini-1.5-flash"
+  modelName    String // örn. "gpt-4o-mini", "claude-haiku-4-5", "gemini-1.5-flash"
   responseText String     @db.Text
-  citations    Json?      // [{url, title, snippet}]
+  citations    Json? // [{url, title, snippet}]
   tokensUsed   Int?
   costUsd      Float?
   latencyMs    Int?
   runDate      DateTime   @default(now())
   isMocked     Boolean    @default(false)
   errorMessage String?
+  // Hata sınıfı: auth | rate_limit | timeout | server | invalid | unknown
+  errorCode    String?
+
+  // ── İş/kuyruk alanları ──
+  origin         RunOrigin @default(MANUAL) // manual | initial (prompt eklenince) | cron
+  status         RunStatus @default(SUCCESS)
+  // Cron için: (promptId, provider, gün, deneme) tekilliği. Manuel/initial run'larda null.
+  dedupeKey      String?   @unique
+  scheduledFor   DateTime? // cron günü (UTC 00:00) — tarihsel yorumlama için
+  attempt        Int       @default(1)
+  leaseExpiresAt DateTime?
+  completedAt    DateTime?
+  promptVersion  Int?
+  locale         String?
+
+  // ── Ölçüm meta ──
+  inputTokens    Int?
+  outputTokens   Int?
+  // native (provider web search/grounding) | text (yalnızca metindeki linkler) | none
+  groundingMode  String?
+  webSearchCount Int?
 
   mentions      BrandMention[]
   citationLinks Citation[]
 
   @@index([promptId, runDate])
   @@index([provider, runDate])
+  @@index([status, scheduledFor])
+  @@index([promptId, provider, runDate])
+}
+
+enum RunOrigin {
+  MANUAL
+  INITIAL
+  CRON
+}
+
+enum RunStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  ERROR
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -150,9 +227,9 @@ model Citation {
   id         String   @id @default(cuid())
   modelRunId String
   modelRun   ModelRun @relation(fields: [modelRunId], references: [id], onDelete: Cascade)
-  tenantId   String   // hızlı agregasyon için denormalize
+  tenantId   String // hızlı agregasyon için denormalize
   url        String   @db.Text
-  domain     String   // normalize edilmiş ana alan (örn. "linkedin.com")
+  domain     String // normalize edilmiş ana alan (örn. "linkedin.com")
   title      String?
   runDate    DateTime @default(now())
 
@@ -172,21 +249,22 @@ enum AiProvider {
 // ───────────────────────────────────────────────────────────────
 
 model BrandMention {
-  id              String   @id @default(cuid())
-  modelRunId      String
-  modelRun        ModelRun @relation(fields: [modelRunId], references: [id], onDelete: Cascade)
-  brandId         String?  // null ise rakip / dış marka
-  brand           Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  mentionName     String   // gerçekte metinde geçen ad
-  isOwnBrand      Boolean  @default(false)
-  isCompetitor    Boolean  @default(false)
-  position        Int      // metindeki kaçıncı bahsedilen marka (1, 2, 3...)
-  sentiment       Sentiment @default(NEUTRAL)
-  mentionType     MentionType @default(LISTED) // AI markayı nasıl andı (Faz 0)
-  snippet         String   @db.Text  // markanın geçtiği cümlenin etrafındaki bağlam
+  id           String      @id @default(cuid())
+  modelRunId   String
+  modelRun     ModelRun    @relation(fields: [modelRunId], references: [id], onDelete: Cascade)
+  brandId      String? // null ise rakip / dış marka
+  brand        Brand?      @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  mentionName  String // gerçekte metinde geçen ad
+  isOwnBrand   Boolean     @default(false)
+  isCompetitor Boolean     @default(false)
+  position     Int // metindeki kaçıncı bahsedilen marka (1, 2, 3...)
+  sentiment    Sentiment   @default(NEUTRAL)
+  mentionType  MentionType @default(LISTED) // AI markayı nasıl andı (Faz 0)
+  snippet      String      @db.Text // markanın geçtiği cümlenin etrafındaki bağlam
 
   @@index([modelRunId])
   @@index([brandId])
+  @@index([modelRunId, isOwnBrand])
 }
 
 enum Sentiment {
@@ -198,9 +276,9 @@ enum Sentiment {
 // AI cevabında markanın anılma biçimi
 enum MentionType {
   RECOMMENDED // açıkça öneriliyor ("X'i tavsiye ederim")
-  LISTED      // bir liste içinde sıralanmış
-  COMPARED    // karşılaştırma bağlamında
-  PASSING     // geçerken/yan cümlede
+  LISTED // bir liste içinde sıralanmış
+  COMPARED // karşılaştırma bağlamında
+  PASSING // geçerken/yan cümlede
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -210,11 +288,11 @@ enum MentionType {
 
 model SystemConfig {
   id        String   @id @default(cuid())
-  key       String   @unique           // örn. "OPENAI_API_KEY", "ANTHROPIC_API_KEY"
-  value     String   @db.Text          // encrypted ciphertext (base64)
-  encrypted Boolean  @default(true)    // ileride non-sensitive değerler için false olabilir
+  key       String   @unique // örn. "OPENAI_API_KEY", "ANTHROPIC_API_KEY"
+  value     String   @db.Text // encrypted ciphertext (base64)
+  encrypted Boolean  @default(true) // ileride non-sensitive değerler için false olabilir
   updatedAt DateTime @updatedAt
-  updatedBy String?                    // super admin user.id
+  updatedBy String? // super admin user.id
 
   @@index([key])
 }
@@ -224,22 +302,25 @@ model SystemConfig {
 // ───────────────────────────────────────────────────────────────
 
 model Audit {
-  id           String    @id @default(cuid())
-  tenantId     String?   // null = public lead-magnet denetimi (kayıtsız)
-  kind         AuditKind @default(GEO)
-  url          String    @db.Text
-  overallScore Int       // 0-100
-  breakdown    Json      // { answerFirst, citationAuthority, aiComprehension, technical, freshness }
-  findings     Json      // [{ category, status: pass|warn|fail, title, detail, fix? }]
-  recommendations Json?  // İçerik denetimi aksiyon kartları [{title, difficulty, impact, detail}]
-  createdAt    DateTime  @default(now())
+  id              String    @id @default(cuid())
+  tenantId        String? // null = public lead-magnet denetimi (kayıtsız)
+  kind            AuditKind @default(GEO)
+  url             String    @db.Text
+  overallScore    Int // 0-100
+  breakdown       Json // { answerFirst, citationAuthority, aiComprehension, technical, freshness }
+  findings        Json // [{ category, status: pass|warn|fail, title, detail, fix? }]
+  recommendations Json? // İçerik denetimi aksiyon kartları [{title, difficulty, impact, detail}]
+  createdAt       DateTime  @default(now())
 
   @@index([tenantId, createdAt])
 }
 
 enum AuditKind {
-  GEO     // teknik AI-hazırlık denetimi
+  GEO // teknik AI-hazırlık denetimi
   CONTENT // içerik/sayfa optimizasyon denetimi
+  COMMERCE // mağaza AI commerce readiness (URL veya katalog)
+  PRODUCT_PAGE // tek ürün sayfası uygunluk testi
+  CRAWLER // AI crawler & indexability testi
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -253,7 +334,7 @@ model PageEmbedding {
   url       String   @db.Text
   title     String?
   excerpt   String?  @db.Text
-  embedding Json     // number[]
+  embedding Json // number[]
   createdAt DateTime @default(now())
 
   @@index([tenantId])
@@ -264,15 +345,19 @@ model PageEmbedding {
 // ───────────────────────────────────────────────────────────────
 
 model AlertConfig {
-  id                      String   @id @default(cuid())
-  tenantId                String   @unique
-  emailEnabled            Boolean  @default(true)
+  id                      String    @id @default(cuid())
+  tenantId                String    @unique
+  emailEnabled            Boolean   @default(true)
+  // AES-256-GCM ile şifreli saklanır (slackWebhookEncrypted=true). Eski düz metin satırlar
+  // ilk yazımda şifrelenir.
   slackWebhookUrl         String?
-  weeklyReportEnabled     Boolean  @default(true)
-  visibilityDropThreshold Int      @default(15) // puan düşüşü eşiği
-  lastNotifiedAt          DateTime?
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  slackWebhookEncrypted   Boolean   @default(false)
+  weeklyReportEnabled     Boolean   @default(true)
+  visibilityDropThreshold Int       @default(15) // puan düşüşü eşiği
+  lastNotifiedAt          DateTime? // son haftalık rapor
+  lastDropAlertAt         DateTime? // son düşüş uyarısı (günde en fazla bir kez)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -293,13 +378,790 @@ model BrandFact {
 // ───────────────────────────────────────────────────────────────
 
 model ApiToken {
-  id         String    @id @default(cuid())
-  tenantId   String
-  name       String
-  tokenHash  String    @unique // sha256(token)
-  prefix     String    // "iai_live_xxxx" gösterim için ilk karakterler
-  lastUsedAt DateTime?
-  createdAt  DateTime  @default(now())
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  tokenHash   String    @unique // sha256(token)
+  prefix      String // "iai_live_xxxx" gösterim için ilk karakterler
+  scopes      String[]  @default(["read:visibility"])
+  createdById String?
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
 
   @@index([tenantId])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  TeamInvite (ekip daveti — OWNER/ADMIN davet eder, e-posta ile kabul edilir)
+// ───────────────────────────────────────────────────────────────
+
+model TeamInvite {
+  id          String    @id @default(cuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email       String // normalize (lowercase)
+  role        UserRole  @default(VIEWER)
+  tokenHash   String    @unique // sha256(token) — token yalnızca davet linkinde
+  invitedById String?
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AuthToken (şifre sıfırlama + e-posta doğrulama — tek kullanımlık, hash'li)
+// ───────────────────────────────────────────────────────────────
+
+model AuthToken {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      AuthTokenKind
+  tokenHash String        @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([userId, kind])
+}
+
+enum AuthTokenKind {
+  PASSWORD_RESET
+  EMAIL_VERIFY
+}
+
+// ───────────────────────────────────────────────────────────────
+//  RateLimitBucket — serverless'ta instance'lar arası tutarlı sabit-pencere sayaç.
+//  Redis'e ihtiyaç duymadan (Vercel Hobby + Supabase) dağıtık limit sağlar.
+// ───────────────────────────────────────────────────────────────
+
+model RateLimitBucket {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AuditLog — güvenlik açısından önemli eylemler (token, üye, silme, admin)
+// ───────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String?
+  agencyId    String? // ajans kapsamlı olaylar (müşteri bağlama, atama, ekip)
+  actorUserId String?
+  action      String // örn. "api_token.create", "member.remove", "tenant.delete"
+  targetType  String?
+  targetId    String?
+  meta        Json?
+  ip          String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([agencyId, createdAt])
+  @@index([action, createdAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  RunBatch — cron / manuel toplu çalıştırma gözlemi (admin ekranı)
+// ───────────────────────────────────────────────────────────────
+
+model RunBatch {
+  id          String    @id @default(cuid())
+  origin      RunOrigin
+  hop         Int       @default(0) // zincirleme tetiklemede kaçıncı halka
+  startedAt   DateTime  @default(now())
+  finishedAt  DateTime?
+  enqueued    Int       @default(0)
+  processed   Int       @default(0)
+  failed      Int       @default(0)
+  remaining   Int       @default(0)
+  note        String?
+  triggeredBy String? // "vercel-cron" | "chain" | user.id
+
+  @@index([startedAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  NotificationLog — e-posta/Slack teslimat kaydı (retry ve destek için)
+// ───────────────────────────────────────────────────────────────
+
+model NotificationLog {
+  id                String   @id @default(cuid())
+  tenantId          String?
+  kind              String // weekly_report | drop_alert | slack_test | invite | password_reset | email_verify
+  channel           String // email | slack
+  status            String // sent | failed | skipped
+  recipient         String? // maskelenmiş alıcı (e-posta: a***@x.com)
+  providerMessageId String?
+  error             String?
+  createdAt         DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([kind, createdAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AJANS KATMANI (additive) — Tenant modeli ve marka verisi değişmez.
+//  AgencyAccount 1:1 AGENCY türü tenant'a bağlıdır; müşteri çalışma alanları mevcut BRAND
+//  tenant'larıdır (AgencyWorkspace ile ilişkilendirilir). Erişim: membership + WorkspaceAccess.
+// ───────────────────────────────────────────────────────────────
+
+model AgencyAccount {
+  id          String     @id @default(cuid())
+  tenantId    String     @unique // kind = AGENCY olan ev tenant'ı
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  website     String?
+  plan        AgencyPlan @default(LAUNCH)
+  // Beyaz etiket alanları (temel): logo url + vurgu rengi; kaynak gizleme plan/capability'ye bağlı.
+  logoUrl     String?
+  accentColor String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  memberships  AgencyMembership[]
+  workspaces   AgencyWorkspace[]
+  invites      AgencyInvite[]
+  linkRequests AgencyLinkRequest[]
+}
+
+enum AgencyPlan {
+  LAUNCH
+  STUDIO
+  SCALE
+}
+
+// OWNER: plan/ekip/tüm müşteriler/silme. ADMIN: ekip + müşteriler (billing yok).
+// STRATEGIST: atandığı müşterilerde yazma. ANALYST: atandığı müşterilerde salt-okunur.
+enum AgencyRole {
+  OWNER
+  ADMIN
+  STRATEGIST
+  ANALYST
+}
+
+model AgencyMembership {
+  id         String           @id @default(cuid())
+  agencyId   String
+  agency     AgencyAccount    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       AgencyRole       @default(ANALYST)
+  status     MembershipStatus @default(ACTIVE)
+  // true: tüm müşterilere erişir (OWNER/ADMIN varsayılanı); false: yalnızca WorkspaceAccess satırları
+  allClients Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  access          WorkspaceAccess[]
+  ownedWorkspaces AgencyWorkspace[] @relation("WorkspaceOwnerMember")
+
+  @@unique([agencyId, userId])
+  @@index([userId])
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model AgencyWorkspace {
+  id            String            @id @default(cuid())
+  agencyId      String
+  agency        AgencyAccount     @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  tenantId      String            @unique // müşteri (BRAND) tenant'ı — veri burada yaşar
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  status        WorkspaceStatus   @default(ACTIVE)
+  label         String? // ajans içi etiket (müşteriye gösterilmez)
+  tags          String[]          @default([])
+  ownerMemberId String? // sorumlu ekip üyesi
+  ownerMember   AgencyMembership? @relation("WorkspaceOwnerMember", fields: [ownerMemberId], references: [id], onDelete: SetNull)
+  linkedAt      DateTime          @default(now())
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  access WorkspaceAccess[]
+
+  @@index([agencyId, status])
+}
+
+// ACTIVE: cron/entegrasyon çalışır. PAUSED: maliyet üretmez, veri korunur. ARCHIVED: gizli, veri korunur.
+enum WorkspaceStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+model WorkspaceAccess {
+  id           String           @id @default(cuid())
+  membershipId String
+  membership   AgencyMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  workspaceId  String
+  workspace    AgencyWorkspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  // null: üyenin ajans rolü geçerli; dolu: bu müşteri için özel rol (ör. ANALYST)
+  roleOverride AgencyRole?
+  createdAt    DateTime         @default(now())
+
+  @@unique([membershipId, workspaceId])
+  @@index([workspaceId])
+}
+
+// Ajans ekip daveti (TeamInvite ajans ev tenant'ı için değil; rol ve atama taşır)
+model AgencyInvite {
+  id           String        @id @default(cuid())
+  agencyId     String
+  agency       AgencyAccount @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  email        String
+  role         AgencyRole    @default(ANALYST)
+  allClients   Boolean       @default(false)
+  workspaceIds String[]      @default([]) // kabulde WorkspaceAccess'e çevrilir
+  tokenHash    String        @unique
+  invitedById  String?
+  expiresAt    DateTime
+  acceptedAt   DateTime?
+  createdAt    DateTime      @default(now())
+
+  @@index([agencyId])
+  @@index([email])
+}
+
+// Mevcut bir marka tenant'ının ajansa bağlanması: tenant OWNER'ı onaylar (habersiz sahiplenme yok).
+model AgencyLinkRequest {
+  id          String            @id @default(cuid())
+  agencyId    String
+  agency      AgencyAccount     @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  tokenHash   String            @unique
+  status      LinkRequestStatus @default(PENDING)
+  tenantId    String? // onaylandığında bağlanan tenant
+  createdById String?
+  expiresAt   DateTime
+  createdAt   DateTime          @default(now())
+  resolvedAt  DateTime?
+
+  @@index([agencyId, status])
+}
+
+enum LinkRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Rapor paylaşımı — süreli, iptal edilebilir, tahmin edilemez token; noindex
+// ───────────────────────────────────────────────────────────────
+
+model ReportShare {
+  id           String    @id @default(cuid())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tokenHash    String    @unique
+  label        String?
+  rangeDays    Int       @default(30)
+  createdById  String?
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  lastViewedAt DateTime?
+  views        Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  @@index([tenantId])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  E-TİCARET ENTEGRASYONU (additive)
+// ───────────────────────────────────────────────────────────────
+
+enum CommerceProvider {
+  SHOPIFY
+  IKAS
+  TICIMAX
+}
+
+enum ConnectionStatus {
+  PENDING // yetkilendirme başladı, tamamlanmadı
+  ACTIVE
+  ERROR // son senkron/doğrulama hatası (lastErrorCode)
+  DISCONNECTED
+}
+
+model StoreConnection {
+  id                 String           @id @default(cuid())
+  tenantId           String
+  tenant             Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider           CommerceProvider
+  storeDomain        String // ör. acme.myshopify.com | acme.myikas.com | www.acme.com
+  externalStoreId    String?
+  displayName        String?
+  status             ConnectionStatus @default(PENDING)
+  capabilities       Json? // discoverCapabilities çıktısı (products, categories, webhooks, ...)
+  // AES-256-GCM ile şifreli JSON kimlik bilgileri; ASLA istemciye/loga çıkmaz
+  credentialsEnc     String?          @db.Text
+  scopes             String[]         @default([])
+  tokenExpiresAt     DateTime?
+  refreshExpiresAt   DateTime?
+  webhooksRegistered Boolean          @default(false)
+  lastSyncAt         DateTime?
+  lastErrorCode      String?
+  lastErrorAt        DateTime?
+  createdById        String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  products   CatalogProduct[]
+  syncs      CatalogSync[]
+  deliveries IntegrationWebhookDelivery[]
+
+  @@unique([tenantId, provider, storeDomain])
+  @@index([tenantId])
+  @@index([status])
+}
+
+model CatalogProduct {
+  id              String          @id @default(cuid())
+  tenantId        String
+  connectionId    String
+  connection      StoreConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  externalId      String
+  handle          String?
+  url             String?         @db.Text
+  title           String
+  vendor          String?
+  productType     String?
+  categories      String[]        @default([])
+  description     String?         @db.Text // kısaltılmış düz metin
+  priceMin        Decimal?        @db.Decimal(12, 2)
+  priceMax        Decimal?        @db.Decimal(12, 2)
+  currency        String?
+  availability    Availability    @default(UNKNOWN)
+  imageUrl        String?         @db.Text
+  imageAlt        String?
+  seoTitle        String?
+  seoDescription  String?
+  identifiers     Json? // { sku, barcode, mpn }
+  facts           Json? // yapısal gerçekler (varyant sayısı, özellikler)
+  status          String? // provider yayın durumu (active/draft/archived)
+  sourceUpdatedAt DateTime?
+  contentHash     String
+  syncedAt        DateTime        @default(now())
+  deletedAt       DateTime?
+
+  @@unique([connectionId, externalId])
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, vendor])
+}
+
+enum Availability {
+  IN_STOCK
+  OUT_OF_STOCK
+  UNKNOWN
+}
+
+model CatalogSync {
+  id             String          @id @default(cuid())
+  connectionId   String
+  connection     StoreConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  tenantId       String
+  status         RunStatus       @default(PENDING)
+  cursor         String?         @db.Text
+  page           Int             @default(0)
+  fetched        Int             @default(0)
+  upserted       Int             @default(0)
+  unchanged      Int             @default(0)
+  deleted        Int             @default(0)
+  total          Int?
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  errorCode      String?
+  triggeredBy    String? // user.id | webhook | cron
+  dedupeKey      String?         @unique
+  attempt        Int             @default(1)
+  leaseExpiresAt DateTime?
+  createdAt      DateTime        @default(now())
+
+  @@index([connectionId, createdAt])
+  @@index([status, leaseExpiresAt])
+  @@index([tenantId, createdAt])
+}
+
+model IntegrationWebhookDelivery {
+  id           String           @id @default(cuid())
+  provider     CommerceProvider
+  connectionId String?
+  connection   StoreConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  externalId   String // sağlayıcının teslimat/olay id'si (dedupe)
+  topic        String
+  status       String // received | processed | ignored | failed | invalid_signature
+  attempts     Int              @default(1)
+  receivedAt   DateTime         @default(now())
+  processedAt  DateTime?
+  errorCode    String?
+
+  @@unique([provider, externalId])
+  @@index([connectionId, receivedAt])
+}
+
+// Kayıtsız (public) araç sonuçları — kısa saklama, anonim id, hassas veri yok
+model PublicScan {
+  id        String    @id @default(cuid())
+  kind      AuditKind
+  urlHash   String // sha256(normalize(url)) — ham URL saklanmaz
+  hostname  String
+  score     Int?
+  result    Json
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+  @@index([urlHash, kind, createdAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  AI Discovery Sensor (Faz S) — her tür web sitesine kurulabilen ölçüm
+//
+//  İki ayrı kanal, asla karıştırılmaz:
+//    • Browser SDK  → AiAcquisitionSession + AiJourneyEvent (gerçek insan ziyareti / AI referral)
+//    • Server/edge  → AiCrawlerEvent (JavaScript çalıştırmayan crawler/fetcher istekleri)
+//  Sentetik görünürlük testleri zaten ModelRun'dır; burada saklanmaz.
+//
+//  Gizlilik: çerez yok, PII yok, ham IP yok, query string yok. Ham olaylar kısa süre saklanır
+//  (TrackedSite.retentionDays), uzun vadeli sayımlar AiTrafficRollup'ta tutulur.
+// ───────────────────────────────────────────────────────────────
+
+model TrackedSite {
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // "example.com" (host, küçük harf, port yok) ve kanonik origin "https://example.com"
+  domain           String
+  normalizedOrigin String
+  // Ek kabul edilen origin'ler (www, alt alan adı, staging). Exact eşleşme; wildcard yok.
+  allowedOrigins   String[]          @default([])
+  status           TrackedSiteStatus @default(PENDING)
+
+  // Public write key: yalnızca olay YAZAR. Ham anahtar saklanmaz.
+  publicKeyHash      String  @unique
+  publicKeyPrefix    String // gösterilebilir ön ek, örn. "iais_7f3a…"
+  // Server/edge ingest secret (HMAC imzası doğrulanabilsin diye AES-GCM ile ŞİFRELİ saklanır;
+  // özet yeterli olmaz çünkü imza paylaşılan sırla yeniden hesaplanır). Ayrı rotate edilir.
+  ingestSecretEnc    String?
+  ingestSecretPrefix String?
+
+  // "script" | "gtm" | "wordpress" | "nextjs" | "cloudflare" | "server" | "other"
+  installMethod String?
+  // Varsayılan hedef şablonu seçimi için: "saas" | "service" | "media" | "education" | "marketplace" | "ecommerce" | "other"
+  siteKind      String?
+
+  verifiedAt         DateTime?
+  lastBrowserEventAt DateTime?
+  lastServerEventAt  DateTime?
+  lastSdkVersion     String?
+  // Ham olay saklama süresi (gün). Rollup'lar kalır.
+  retentionDays      Int       @default(90)
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  goals        SiteGoal[]
+  sessions     AiAcquisitionSession[]
+  events       AiJourneyEvent[]
+  crawlerHits  AiCrawlerEvent[]
+  rollups      AiTrafficRollup[]
+  attributions PromptAttribution[]
+
+  @@unique([tenantId, domain])
+  @@index([tenantId, status])
+  @@index([status, lastBrowserEventAt])
+}
+
+enum TrackedSiteStatus {
+  PENDING // kurulum bekliyor (henüz olay gelmedi)
+  ACTIVE
+  PAUSED // ölçüm durduruldu; veri korunur
+  REVOKED // anahtarlar iptal; ingest reddedilir
+}
+
+// Sektörden bağımsız dönüşüm tanımı. Kod yazmadan URL ile hedef tanımlanabilir.
+model SiteGoal {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  name           String
+  type           GoalType
+  matchMethod    GoalMatch
+  // matchMethod'a göre biri dolu: PATH → pathPattern ("/tesekkurler", "/rezervasyon/*"),
+  // EVENT → eventName ("demo_request"), DATA_ATTRIBUTE → attributeValue (data-iai-event değeri)
+  pathPattern    String?
+  eventName      String?
+  attributeValue String?
+
+  defaultValue Decimal? @db.Decimal(12, 2)
+  currency     String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions AiAcquisitionSession[]
+  events   AiJourneyEvent[]
+
+  @@unique([trackedSiteId, name])
+  @@index([trackedSiteId, isActive])
+}
+
+enum GoalType {
+  SIGN_UP
+  LEAD
+  DEMO
+  CONTACT
+  BOOKING
+  APPLICATION
+  SUBSCRIBE
+  PURCHASE
+  CUSTOM
+}
+
+enum GoalMatch {
+  EVENT
+  PATH
+  DATA_ATTRIBUTE
+}
+
+// Bir ziyaretin kaynağı ve yolculuğu. Çerezsiz: sessionKey kısa ömürlü, siteye özel, anonim.
+model AiAcquisitionSession {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  // İstemcinin ürettiği anonim oturum kimliği (kişi kimliği DEĞİL; benzersiz kişi iddiası üretilmez).
+  sessionKey   String
+  sourceClass  SourceClass @default(OTHER)
+  // AI kaynağı: "openai" | "anthropic" | "google" | "perplexity" | "microsoft" | ...
+  provider     String?
+  referrerHost String?
+  landingPath  String
+
+  firstSeenAt DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  convertedAt DateTime?
+  goalId      String?
+  goal        SiteGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  value       Decimal?  @db.Decimal(12, 2)
+  currency    String?
+  eventCount  Int       @default(0)
+  expiresAt   DateTime
+
+  events       AiJourneyEvent[]
+  attributions PromptAttribution[]
+
+  @@unique([trackedSiteId, sessionKey])
+  @@index([tenantId, firstSeenAt])
+  @@index([trackedSiteId, sourceClass, firstSeenAt])
+  @@index([expiresAt])
+}
+
+enum SourceClass {
+  AI_REFERRAL
+  DIRECT
+  ORGANIC
+  OTHER
+}
+
+model AiJourneyEvent {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  sessionId String?
+  session   AiAcquisitionSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  // İstemcinin ürettiği eventId; site kapsamında tekil (tekrar teslim yok sayılır).
+  dedupeKey String        @unique
+  type      SiteEventType
+  path      String
+
+  // Sektör bağımsız varlık: "article" | "service" | "product" | "listing" | "course" | "location" | ...
+  entityType  String?
+  entityId    String?
+  entityLabel String?
+
+  goalId   String?
+  goal     SiteGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  value    Decimal?  @db.Decimal(12, 2)
+  currency String?
+
+  sdkVersion String?
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  expiresAt  DateTime
+
+  @@index([tenantId, occurredAt])
+  @@index([trackedSiteId, type, occurredAt])
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+enum SiteEventType {
+  PAGE_VIEW
+  CONTENT_VIEW
+  CTA_CLICK
+  FORM_START
+  FORM_SUBMIT
+  SIGN_UP
+  DEMO_REQUEST
+  PHONE_CLICK
+  BOOKING
+  APPLICATION
+  SUBSCRIBE
+  PRODUCT_VIEW
+  ADD_TO_CART
+  PURCHASE
+  CUSTOM
+}
+
+// Ziyaretçinin hangi soru/niyetle geldiği. Üç kaynak asla karıştırılmaz.
+model PromptAttribution {
+  id            String       @id @default(cuid())
+  tenantId      String
+  trackedSiteId String?
+  trackedSite   TrackedSite? @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  sessionId String?
+  session   AiAcquisitionSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  // Eşleşen izlenen soru (varsa)
+  promptId  String?
+  prompt    Prompt?               @relation(fields: [promptId], references: [id], onDelete: SetNull)
+
+  source       AttributionSource
+  // Normalize niyet kümesi: "recommendation" | "comparison" | "pricing" | "alternative" | "how_to" | "local" | "other"
+  intent       String?
+  // 0-100. Eşiğin altında kayıt üretilmez (sahte kesinlik yok).
+  confidence   Int               @default(0)
+  // Açıklanabilirlik: hangi sinyal ne kadar katkı verdi
+  evidence     Json?
+  // Yalnızca USER_REPORTED: ziyaretçinin yazdığı metin (PII temizlenmiş, kısaltılmış)
+  reportedText String?           @db.Text
+  provider     String?
+
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([trackedSiteId, source, createdAt])
+  @@index([sessionId])
+  @@index([promptId])
+}
+
+enum AttributionSource {
+  USER_REPORTED // ziyaretçi kendisi bildirdi
+  INFERRED // açıklanabilir tahmin (confidence + evidence)
+  SYNTHETIC // Independent AI'ın kendi ölçümü (ModelRun) — gerçek ziyaretçi promptu değil
+}
+
+// Doğrulanabilir bot kaydı (versiyonlu). Yalnızca user-agent eşleşmesi "verified" saymaz.
+model AiBotIdentity {
+  id                 String     @id @default(cuid())
+  canonicalId        String     @unique // "openai.gptbot"
+  operator           String // "OpenAI"
+  displayName        String
+  purpose            BotPurpose @default(OTHER)
+  // Resmî dokümanda geçen user-agent parçaları
+  userAgents         String[]   @default([])
+  // "edge" | "ip_range" | "reverse_dns" | "signature" | "none"
+  verificationMethod String     @default("none")
+  reverseDnsSuffixes String[]   @default([])
+  docsUrl            String?
+  registryVersion    Int        @default(1)
+  isActive           Boolean    @default(true)
+  updatedAt          DateTime   @updatedAt
+
+  hits AiCrawlerEvent[]
+
+  @@index([isActive])
+}
+
+enum BotPurpose {
+  TRAINING
+  SEARCH
+  ASSISTANT
+  AGENT
+  OTHER
+}
+
+model AiCrawlerEvent {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  dedupeKey String         @unique
+  botId     String?
+  bot       AiBotIdentity? @relation(fields: [botId], references: [id], onDelete: SetNull)
+
+  operator           String?
+  canonicalBotId     String?
+  purpose            BotPurpose        @default(OTHER)
+  verification       VerificationLevel @default(UNVERIFIED)
+  // "edge" | "ip_range" | "reverse_dns" | "signature" | "user_agent"
+  verificationMethod String?
+
+  path        String
+  status      Int?
+  contentType String?
+  // Telemetriyi gönderen katman: "cloudflare" | "vercel" | "nginx" | "server"
+  source      String
+
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  expiresAt  DateTime
+
+  @@index([tenantId, occurredAt])
+  @@index([trackedSiteId, verification, occurredAt])
+  @@index([trackedSiteId, canonicalBotId, occurredAt])
+  @@index([expiresAt])
+}
+
+enum VerificationLevel {
+  VERIFIED // edge/IP/reverse DNS/imza ile kanıtlandı
+  PROBABLE // güçlü ama kanıtlanmamış (yalnız UA + tutarlı ağ sinyali)
+  UNVERIFIED // yalnızca user-agent iddiası
+}
+
+// Uzun vadeli sayımlar. Ham olaylar retention ile silinir; bunlar kalır.
+model AiTrafficRollup {
+  id            String      @id @default(cuid())
+  tenantId      String
+  trackedSiteId String
+  trackedSite   TrackedSite @relation(fields: [trackedSiteId], references: [id], onDelete: Cascade)
+
+  // "hour" | "day"
+  granularity String
+  bucketStart DateTime
+  // "referral" | "crawler" | "event" | "goal"
+  kind        String
+  // Boyutların kanonik özeti (NULL'lu unique tuzağına düşmemek için tek alan)
+  dimKey      String
+  dims        Json
+
+  count        Int @default(0)
+  sessionCount Int @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([trackedSiteId, granularity, bucketStart, kind, dimKey])
+  @@index([tenantId, granularity, bucketStart])
+  @@index([trackedSiteId, kind, bucketStart])
 }

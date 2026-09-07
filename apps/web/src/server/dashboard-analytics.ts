@@ -3,9 +3,7 @@
  * Citation) tek geçişte zengin metrik seti üretir. Yeni "command center" dashboard'u besler.
  */
 import { prisma } from './prisma';
-import { PROVIDER_LABELS } from '@independentai/shared';
-
-const SENTIMENT_SCORE = { POSITIVE: 100, NEUTRAL: 50, NEGATIVE: 0 } as const;
+import { PROVIDER_LABELS, visibilityOf, shareOfVoiceOf, SENTIMENT_SCORE } from '@independentai/shared';
 
 export type ComprehensiveAnalytics = {
   hasData: boolean;
@@ -37,7 +35,15 @@ export type ComprehensiveAnalytics = {
     sparkline: number[];
   }[];
   categoryBreakdown: { category: string; visibility: number; runs: number }[];
-  health: { errorRate: number; mockRate: number; avgLatencyMs: number; totalCostUsd: number };
+  health: {
+    errorRate: number;
+    mockRate: number;
+    avgLatencyMs: number;
+    totalCostUsd: number;
+    costUnknownRuns: number;
+    nativeGroundingRate: number;
+    erroredRuns: number;
+  };
   activity: {
     id: string;
     date: string;
@@ -66,34 +72,44 @@ export async function getComprehensiveAnalytics(tenantId: string, days = 30): Pr
   const prevSince = new Date(now - 2 * days * 86400000);
 
   // Tek sorgu: mevcut + önceki pencere (delta için), mention + prompt dahil
+  // Yalnızca gereken alanlar (responseText gibi ağır sütunlar çekilmez); PENDING/RUNNING satırlar hariç.
   const allRuns = await prisma.modelRun.findMany({
-    where: { prompt: { tenantId }, runDate: { gte: prevSince } },
-    include: {
-      mentions: true,
+    where: { prompt: { tenantId }, runDate: { gte: prevSince }, status: { in: ['SUCCESS', 'ERROR'] } },
+    select: {
+      id: true,
+      provider: true,
+      runDate: true,
+      status: true,
+      errorMessage: true,
+      isMocked: true,
+      latencyMs: true,
+      costUsd: true,
+      groundingMode: true,
+      mentions: {
+        select: {
+          isOwnBrand: true,
+          isCompetitor: true,
+          mentionName: true,
+          position: true,
+          sentiment: true,
+          mentionType: true,
+        },
+      },
       prompt: { select: { id: true, text: true, category: true } },
     },
     orderBy: { runDate: 'desc' },
+    take: 6000,
   });
 
   const runs = allRuns.filter((r) => r.runDate >= since);
   const prevRuns = allRuns.filter((r) => r.runDate < since);
-  const validRuns = runs.filter((r) => !r.errorMessage);
+  const validRuns = runs.filter((r) => r.status === 'SUCCESS');
 
   const empty = validRuns.length === 0;
 
   // ---- KPI: visibility & SoV (mevcut + önceki) ----
-  const visOf = (rs: typeof runs) => {
-    const valid = rs.filter((r) => !r.errorMessage);
-    if (!valid.length) return 0;
-    const withOwn = valid.filter((r) => r.mentions.some((m) => m.isOwnBrand)).length;
-    return Math.round((withOwn / valid.length) * 100);
-  };
-  const sovOf = (rs: typeof runs) => {
-    const ms = rs.flatMap((r) => r.mentions);
-    const own = ms.filter((m) => m.isOwnBrand).length;
-    const comp = ms.filter((m) => m.isCompetitor).length;
-    return own + comp > 0 ? Math.round((own / (own + comp)) * 100) : 0;
-  };
+  const visOf = (rs: typeof runs) => visibilityOf(rs);
+  const sovOf = (rs: typeof runs) => shareOfVoiceOf(rs);
 
   const ownMentions = validRuns.flatMap((r) => r.mentions).filter((m) => m.isOwnBrand);
   const avgPosition = ownMentions.length
@@ -184,7 +200,10 @@ export async function getComprehensiveAnalytics(tenantId: string, days = 30): Pr
     const bucket = m.position >= 6 ? '6+' : String(m.position);
     posMap.set(bucket, (posMap.get(bucket) ?? 0) + 1);
   }
-  const positionHistogram = ['1', '2', '3', '4', '5', '6+'].map((bucket) => ({ bucket, count: posMap.get(bucket) ?? 0 }));
+  const positionHistogram = ['1', '2', '3', '4', '5', '6+'].map((bucket) => ({
+    bucket,
+    count: posMap.get(bucket) ?? 0,
+  }));
 
   // ---- Rakip lider tablosu ----
   type C = { mentions: number; sentSum: number; posSum: number; posN: number };
@@ -215,12 +234,26 @@ export async function getComprehensiveAnalytics(tenantId: string, days = 30): Pr
     .slice(0, 10);
 
   // ---- Prompt performansı + sparkline ----
-  type P = { text: string; category: string | null; runs: number; withOwn: number; posSum: number; posN: number; daily: Map<string, { w: number; t: number }> };
+  type P = {
+    text: string;
+    category: string | null;
+    runs: number;
+    withOwn: number;
+    posSum: number;
+    posN: number;
+    daily: Map<string, { w: number; t: number }>;
+  };
   const promptMap = new Map<string, P>();
   for (const r of validRuns) {
-    const p =
-      promptMap.get(r.prompt.id) ??
-      { text: r.prompt.text, category: r.prompt.category, runs: 0, withOwn: 0, posSum: 0, posN: 0, daily: new Map() };
+    const p = promptMap.get(r.prompt.id) ?? {
+      text: r.prompt.text,
+      category: r.prompt.category,
+      runs: 0,
+      withOwn: 0,
+      posSum: 0,
+      posN: 0,
+      daily: new Map(),
+    };
     p.runs += 1;
     const own = r.mentions.filter((m) => m.isOwnBrand);
     if (own.length) p.withOwn += 1;
@@ -265,14 +298,20 @@ export async function getComprehensiveAnalytics(tenantId: string, days = 30): Pr
   }));
 
   // ---- Sağlık / ops ----
-  const errored = runs.filter((r) => r.errorMessage).length;
+  const errored = runs.filter((r) => r.status === 'ERROR').length;
   const mocked = runs.filter((r) => r.isMocked).length;
   const latencies = validRuns.map((r) => r.latencyMs ?? 0).filter((x) => x > 0);
+  const costKnown = validRuns.filter((r) => r.costUsd != null);
+  const nativeGrounded = validRuns.filter((r) => r.groundingMode === 'native').length;
   const health = {
     errorRate: runs.length ? Math.round((errored / runs.length) * 100) : 0,
     mockRate: runs.length ? Math.round((mocked / runs.length) * 100) : 0,
     avgLatencyMs: latencies.length ? Math.round(latencies.reduce((s, x) => s + x, 0) / latencies.length) : 0,
-    totalCostUsd: Math.round(validRuns.reduce((s, r) => s + (r.costUsd ?? 0), 0) * 10000) / 10000,
+    // Maliyet yalnızca fiyatı bilinen run'lar üzerinden; bilinmeyenler ayrıca sayılır (0 sanılmasın).
+    totalCostUsd: Math.round(costKnown.reduce((s, r) => s + (r.costUsd ?? 0), 0) * 10000) / 10000,
+    costUnknownRuns: validRuns.length - costKnown.length,
+    nativeGroundingRate: validRuns.length ? Math.round((nativeGrounded / validRuns.length) * 100) : 0,
+    erroredRuns: errored,
   };
 
   // ---- Aktivite akışı ----

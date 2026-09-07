@@ -1,25 +1,10 @@
 import { prisma } from './prisma';
-import { requireSession } from './session';
 
-export class ForbiddenError extends Error {
-  constructor() {
-    super('Forbidden — super admin required');
-  }
-}
-
-/**
- * Sadece isSuperAdmin=true olan platform sahibi geçer.
- * Tenant-level OWNER/ADMIN ile karıştırılmamalı.
- */
-export async function requireSuperAdmin() {
-  const session = await requireSession();
-  const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { isSuperAdmin: true } });
-  if (!user?.isSuperAdmin) throw new ForbiddenError();
-  return session;
-}
+export { requireSuperAdmin } from './authz';
+export { ForbiddenError } from './errors';
 
 export async function getPlatformStats() {
-  const [tenants, users, prompts, runs, mentions, recentRuns, costSum] = await Promise.all([
+  const [tenants, users, prompts, runs, mentions, recentRuns, costSum, costUnknown] = await Promise.all([
     prisma.tenant.count(),
     prisma.user.count(),
     prisma.prompt.count(),
@@ -27,6 +12,7 @@ export async function getPlatformStats() {
     prisma.brandMention.count(),
     prisma.modelRun.count({ where: { runDate: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } } }),
     prisma.modelRun.aggregate({ _sum: { costUsd: true } }),
+    prisma.modelRun.count({ where: { status: 'SUCCESS', isMocked: false, costUsd: null } }),
   ]);
 
   const recentTenants = await prisma.tenant.findMany({
@@ -50,6 +36,7 @@ export async function getPlatformStats() {
     mentions,
     recentRuns7d: recentRuns,
     totalCostUsd: costSum._sum.costUsd ?? 0,
+    costUnknownRuns: costUnknown,
     recentTenants,
   };
 }
@@ -93,27 +80,9 @@ export function listRecentRuns(limit = 50) {
   });
 }
 
-export async function triggerManualCron() {
-  // Vercel cron endpoint'imizi local olarak çalıştırmak yerine,
-  // doğrudan run-prompt logic'ini import edip aynı şeyi yapıyoruz.
-  // Bu sayede CRON_SECRET'a ihtiyaç yok.
-  const { runPromptOnce } = await import('./run-prompt');
-  const prompts = await prisma.prompt.findMany({
-    where: { isActive: true },
-    select: { id: true, tenantId: true },
-  });
-  const results: { promptId: string; ok: boolean; error?: string }[] = [];
-  for (const p of prompts) {
-    try {
-      await runPromptOnce(p.tenantId, p.id);
-      results.push({ promptId: p.id, ok: true });
-    } catch (err) {
-      results.push({
-        promptId: p.id,
-        ok: false,
-        error: err instanceof Error ? err.message : String(err),
-      });
-    }
-  }
-  return { processed: results.length, failed: results.filter((r) => !r.ok).length };
+export async function triggerManualCron(triggeredBy: string, opts: { force?: boolean } = {}) {
+  // Cron endpoint'ini HTTP üzerinden çağırmak yerine aynı toplu çalıştırıcıyı doğrudan kullanır.
+  // force: true → bugünün satırları zaten çalışmış olsa da yeni bir tam tur üretir.
+  const { runDuePrompts } = await import('./run-prompt');
+  return runDuePrompts({ deadlineAt: Date.now() + 240_000, force: opts.force ?? false, triggeredBy });
 }

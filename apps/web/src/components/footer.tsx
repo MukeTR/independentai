@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Logo } from './logo';
 import { Container } from './container';
+import { ECOMMERCE_TOOL_LINKS, RANK_CHECKER_LINKS, SOLUTION_LINKS } from './nav-data';
 
 const FOOTER_LINKS = [
   {
@@ -15,6 +16,10 @@ const FOOTER_LINKS = [
     ],
   },
   {
+    heading: 'Çözümler',
+    links: SOLUTION_LINKS.map((l) => ({ href: l.href, label: l.title })),
+  },
+  {
     heading: 'Kaynaklar',
     links: [
       { href: '/blog', label: 'Blog' },
@@ -26,9 +31,8 @@ const FOOTER_LINKS = [
   {
     heading: 'Ücretsiz araçlar',
     links: [
-      { href: '/arac/chatgpt-rank-checker', label: 'ChatGPT rank checker' },
-      { href: '/arac/claude-rank-checker', label: 'Claude rank checker' },
-      { href: '/arac/gemini-rank-checker', label: 'Gemini rank checker' },
+      ...ECOMMERCE_TOOL_LINKS.map((l) => ({ href: l.href, label: l.title })),
+      ...RANK_CHECKER_LINKS.map((l) => ({ href: l.href, label: l.title })),
     ],
   },
   {
@@ -56,11 +60,11 @@ export function Footer() {
     <footer className="border-t-hairline border-hairline mt-24 bg-paper-2/60">
       <Container className="py-16">
         <div className="grid grid-cols-12 gap-10">
-          <div className="col-span-12 md:col-span-4">
+          <div className="col-span-12 lg:col-span-3">
             <Logo />
             <p className="text-[13.5px] text-ink-muted mt-4 leading-relaxed max-w-[280px]">
-              Yapay zekaların markanızı ne sıklıkla, hangi sırada ve nasıl önerdiğini bağımsız bir gözle ölçen
-              görünürlük platformu.
+              Yapay zekaların markanızı ve ürünlerinizi ne sıklıkla, hangi sırada ve nasıl önerdiğini bağımsız bir gözle
+              ölçen görünürlük platformu.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <span className="chip own !text-[10.5px]">independentai.space</span>
@@ -68,7 +72,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="col-span-12 md:col-span-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-8">
+          <div className="col-span-12 lg:col-span-9 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-x-6 gap-y-8">
             {FOOTER_LINKS.map((col) => (
               <div key={col.heading}>
                 <div className="eyebrow mb-4">{col.heading}</div>
@@ -86,7 +90,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t-hairline border-hairline mt-14 pt-6 flex items-center justify-between text-[12px] text-ink-faint">
+        <div className="border-t-hairline border-hairline mt-14 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[12px] text-ink-faint">
           <div>© {new Date().getFullYear()} Independent AI · Türkiye</div>
           <div className="font-mono">independentai.space</div>
         </div>

@@ -1,10 +1,9 @@
 import { prisma } from './prisma';
 import { encrypt, decrypt, maskKey } from './crypto';
+import { describeModels } from '@independentai/ai';
+import { mockAllowed } from './env';
 
-export type ConfigKey =
-  | 'OPENAI_API_KEY'
-  | 'ANTHROPIC_API_KEY'
-  | 'GOOGLE_API_KEY';
+export type ConfigKey = 'OPENAI_API_KEY' | 'ANTHROPIC_API_KEY' | 'GOOGLE_API_KEY';
 
 export const CONFIG_KEYS: { key: ConfigKey; label: string; provider: string; help: string; pattern?: string }[] = [
   {
@@ -108,4 +107,22 @@ export async function setConfigValue(key: ConfigKey, value: string, userId: stri
 export async function clearConfigValue(key: ConfigKey): Promise<void> {
   await prisma.systemConfig.deleteMany({ where: { key } });
   delete process.env[key];
+}
+
+/** Admin sağlık ekranı: provider anahtar durumu + aktif model + fiyat/grounding bilgisi. */
+export async function providerHealth() {
+  const [keys] = await Promise.all([listConfigStatus()]);
+  await hydrateEnvFromConfig();
+  const models = describeModels();
+  return {
+    mockAllowed: mockAllowed(),
+    providers: models.map((m) => {
+      const k = keys.find((c) =>
+        c.provider
+          .toUpperCase()
+          .startsWith(m.provider === 'OPENAI' ? 'OPENAI' : m.provider === 'ANTHROPIC' ? 'ANTHROPIC' : 'GOOGLE'),
+      );
+      return { ...m, keySource: k?.source ?? 'none', configured: (k?.source ?? 'none') !== 'none' };
+    }),
+  };
 }

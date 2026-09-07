@@ -17,8 +17,8 @@ export default function Cookies() {
 
         <div className="space-y-8 text-[15px] leading-[1.7] text-ink">
           <p className="text-ink-muted">
-            Independent AI yalnızca <strong>kullanım için zorunlu</strong> çerezler kullanır. Reklam, takip veya
-            üçüncü taraf analitik çerezleri yoktur.
+            Independent AI yalnızca <strong>kullanım için zorunlu</strong> çerezler kullanır. Reklam, takip veya üçüncü
+            taraf analitik çerezleri yoktur.
           </p>
 
           <section>
@@ -33,7 +33,11 @@ export default function Cookies() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-hairline">
-                  <tr><td className="px-4 py-2.5 font-mono text-[12px]">iai_token</td><td className="px-4 py-2.5">Oturum yönetimi (JWT)</td><td className="px-4 py-2.5">30 gün</td></tr>
+                  <tr>
+                    <td className="px-4 py-2.5 font-mono text-[12px]">iai_token</td>
+                    <td className="px-4 py-2.5">Oturum yönetimi (JWT)</td>
+                    <td className="px-4 py-2.5">30 gün</td>
+                  </tr>
                 </tbody>
               </table>
             </div>

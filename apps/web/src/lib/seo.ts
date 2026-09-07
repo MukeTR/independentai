@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 const SITE = 'https://independentai.space';
 const BRAND = 'Independent AI';
 const DEFAULT_DESCRIPTION =
-  'ChatGPT, Claude ve Gemini\'nin verdiği cevaplarda markanız ne sıklıkla, hangi sırada ve hangi tonla geçiyor? Independent AI bağımsız bir gözle ölçer.';
+  "ChatGPT, Claude ve Gemini'nin verdiği cevaplarda markanız ne sıklıkla, hangi sırada ve hangi tonla geçiyor? Independent AI bağımsız bir gözle ölçer.";
 
 export type PageSeoInput = {
   title: string;
@@ -42,7 +42,11 @@ export function buildMetadata(input: PageSeoInput): Metadata {
     },
     robots: input.noIndex
       ? { index: false, follow: false }
-      : { index: true, follow: true, googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' } },
+      : {
+          index: true,
+          follow: true,
+          googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
+        },
   };
 }
 

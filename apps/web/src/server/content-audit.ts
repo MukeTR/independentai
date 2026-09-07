@@ -97,13 +97,38 @@ Format: {"items":[{"title":"...","detail":"...","difficulty":"Kolay","impact":"Y
 function heuristicRecommendations(stats: ContentAuditResult['stats']): ActionCard[] {
   const cards: ActionCard[] = [];
   if (!stats.hasFaq)
-    cards.push({ title: 'FAQ / Soru-Cevap bölümü ekleyin', detail: 'Müşteri sorularını başlık yapıp altına kısa net cevaplar verin. AI bu blokları doğrudan alıntılar.', difficulty: 'Orta', impact: 'Yüksek' });
+    cards.push({
+      title: 'FAQ / Soru-Cevap bölümü ekleyin',
+      detail: 'Müşteri sorularını başlık yapıp altına kısa net cevaplar verin. AI bu blokları doğrudan alıntılar.',
+      difficulty: 'Orta',
+      impact: 'Yüksek',
+    });
   if (stats.headings < 3)
-    cards.push({ title: 'İçeriği alt başlıklarla bölün', detail: 'H2/H3 başlıklar ekleyerek konuları ayırın; AI her bölümü bağımsız alıntılayabilir.', difficulty: 'Kolay', impact: 'Yüksek' });
+    cards.push({
+      title: 'İçeriği alt başlıklarla bölün',
+      detail: 'H2/H3 başlıklar ekleyerek konuları ayırın; AI her bölümü bağımsız alıntılayabilir.',
+      difficulty: 'Kolay',
+      impact: 'Yüksek',
+    });
   if (stats.lists < 1)
-    cards.push({ title: 'Madde/numaralı liste kullanın', detail: 'Karşılaştırma ve adımları listeye çevirin — AI yapılandırılmış içeriği tercih eder.', difficulty: 'Kolay', impact: 'Orta' });
+    cards.push({
+      title: 'Madde/numaralı liste kullanın',
+      detail: 'Karşılaştırma ve adımları listeye çevirin — AI yapılandırılmış içeriği tercih eder.',
+      difficulty: 'Kolay',
+      impact: 'Orta',
+    });
   if (stats.wordCount < 600)
-    cards.push({ title: 'İçeriği derinleştirin', detail: 'En az 600+ kelimeyle konuyu kapsamlı işleyin; yüzeysel sayfalar nadiren alıntılanır.', difficulty: 'Orta', impact: 'Orta' });
-  cards.push({ title: 'İstatistik ve kaynak ekleyin', detail: 'Somut veriler ve otoriter kaynak linkleri AI güvenini artırır.', difficulty: 'Orta', impact: 'Yüksek' });
+    cards.push({
+      title: 'İçeriği derinleştirin',
+      detail: 'En az 600+ kelimeyle konuyu kapsamlı işleyin; yüzeysel sayfalar nadiren alıntılanır.',
+      difficulty: 'Orta',
+      impact: 'Orta',
+    });
+  cards.push({
+    title: 'İstatistik ve kaynak ekleyin',
+    detail: 'Somut veriler ve otoriter kaynak linkleri AI güvenini artırır.',
+    difficulty: 'Orta',
+    impact: 'Yüksek',
+  });
   return cards;
 }

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import { route } from '@/server/route';
+import { clearSessionCookie } from '@/server/session';
 
-export async function POST() {
+export const POST = route('auth.logout', async () => {
   const res = NextResponse.json({ ok: true });
-  res.cookies.delete('iai_token');
+  clearSessionCookie(res);
   return res;
-}
+});

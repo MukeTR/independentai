@@ -60,19 +60,35 @@ export function RankChecker({
       <form onSubmit={check} className="space-y-4">
         <div>
           <label className="text-[13px] text-ink-muted">Markanız</label>
-          <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Örn. Acme" className="input mt-1.5" />
+          <input
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            placeholder="Örn. Acme"
+            className="input mt-1.5"
+          />
         </div>
         <div>
           <label className="text-[13px] text-ink-muted">Soru / Prompt</label>
-          <input value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder={examplePrompt} className="input mt-1.5" />
+          <input
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder={examplePrompt}
+            className="input mt-1.5"
+          />
         </div>
-        <button type="submit" disabled={loading} className="btn-primary w-full inline-flex items-center justify-center gap-2">
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary w-full inline-flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           {loading ? `${label}'e soruluyor…` : `${label}'de kontrol et`}
         </button>
       </form>
 
-      {error && <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>}
+      {error && (
+        <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>
+      )}
 
       {result && (
         <div className="mt-6">
@@ -96,7 +112,9 @@ export function RankChecker({
               </div>
             </div>
             {result.snippet && (
-              <p className="text-[13px] text-ink-muted mt-3 italic border-l-2 border-hairline pl-3">…{result.snippet}…</p>
+              <p className="text-[13px] text-ink-muted mt-3 italic border-l-2 border-hairline pl-3">
+                …{result.snippet}…
+              </p>
             )}
             {result.otherBrands.length > 0 && (
               <div className="text-[12.5px] text-ink-muted mt-3">
@@ -104,7 +122,8 @@ export function RankChecker({
               </div>
             )}
             <div className="text-[11px] text-ink-faint mt-3 font-mono">
-              {result.modelName}{result.isMocked ? ' · demo yanıt (gerçek API anahtarı yok)' : ''}
+              {result.modelName}
+              {result.isMocked ? ' · demo yanıt (gerçek API anahtarı yok)' : ''}
             </div>
           </div>
 
@@ -121,7 +140,8 @@ export function RankChecker({
             <Sparkles className="w-5 h-5 mx-auto mb-2" style={{ color: accent }} />
             <div className="font-display text-[16px]">Tek soru yetmez — her gün, 3 modelde, otomatik izleyin</div>
             <p className="text-[13px] text-ink-muted mt-1.5 max-w-md mx-auto">
-              Independent AI markanızı ChatGPT, Claude ve Gemini'de günlük takip eder, rakip karşılaştırması ve trend verir. İlk 6 ay ücretsiz.
+              Independent AI markanızı ChatGPT, Claude ve Gemini'de günlük takip eder, rakip karşılaştırması ve trend
+              verir. İlk 6 ay ücretsiz.
             </p>
             <Link href="/register" className="btn-primary inline-flex items-center gap-2 mt-4">
               Ücretsiz başla <ArrowRight className="w-4 h-4" />

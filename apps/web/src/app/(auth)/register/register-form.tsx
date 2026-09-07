@@ -1,10 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch, errorMessage } from '@/lib/api-client';
+import { InlineAlert } from '@/components/ui/inline-alert';
+import { useHydrated } from '@/lib/use-hydrated';
 
 export function RegisterForm() {
   const router = useRouter();
+  const hydrated = useHydrated();
+  const ids = { company: useId(), site: useId(), email: useId(), pass: useId(), passHelp: useId() };
   const [companyName, setCompanyName] = useState('');
   const [website, setWebsite] = useState('');
   const [email, setEmail] = useState('');
@@ -14,55 +19,106 @@ export function RegisterForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/auth/register', {
+      await apiFetch('/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyName, website: website || undefined, email, password }),
+        json: { companyName, website: website || undefined, email, password },
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message ?? 'Kayıt başarısız');
-      }
       router.push('/onboarding');
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
-    } finally {
+      setError(errorMessage(err, 'Kayıt başarısız'));
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-4" noValidate>
       <div>
-        <label className="eyebrow block mb-2">Şirket adı</label>
-        <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Acme Yazılım" className="input" required />
+        <label htmlFor={ids.company} className="eyebrow block mb-2">
+          Şirket adı
+        </label>
+        <input
+          id={ids.company}
+          autoComplete="organization"
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
+          placeholder="Acme Yazılım"
+          className="input"
+          required
+          maxLength={80}
+        />
       </div>
       <div>
-        <label className="eyebrow block mb-2">Web sitesi (opsiyonel)</label>
-        <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://acme.com" className="input" />
+        <label htmlFor={ids.site} className="eyebrow block mb-2">
+          Web sitesi <span className="text-ink-faint normal-case tracking-normal">(opsiyonel)</span>
+        </label>
+        <input
+          id={ids.site}
+          type="url"
+          autoComplete="url"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+          placeholder="https://acme.com"
+          className="input"
+        />
       </div>
       <div>
-        <label className="eyebrow block mb-2">E-posta</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input" required />
+        <label htmlFor={ids.email} className="eyebrow block mb-2">
+          E-posta
+        </label>
+        <input
+          id={ids.email}
+          type="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="input"
+          required
+        />
       </div>
       <div>
-        <label className="eyebrow block mb-2">Şifre <span className="text-ink-faint">(en az 8 karakter)</span></label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="input" required minLength={8} />
+        <label htmlFor={ids.pass} className="eyebrow block mb-2">
+          Şifre
+        </label>
+        <input
+          id={ids.pass}
+          type="password"
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="input"
+          required
+          minLength={8}
+          aria-describedby={ids.passHelp}
+        />
+        <p id={ids.passHelp} className="text-[11.5px] text-ink-faint mt-1.5">
+          En az 8 karakter, bir harf ve bir rakam.
+        </p>
       </div>
-
-      {error && (
-        <div className="text-[13px] text-danger bg-danger/5 border-hairline border-danger/20 rounded-lg p-3">
-          {error}
-        </div>
-      )}
-
-      <button type="submit" disabled={loading} className="btn-primary w-full mt-6 disabled:opacity-50">
+      {error && <InlineAlert>{error}</InlineAlert>}
+      <button
+        type="submit"
+        disabled={!hydrated || loading}
+        className="btn-primary w-full mt-6 disabled:opacity-50"
+        aria-busy={loading}
+      >
         {loading ? 'Hesap oluşturuluyor…' : '6 ay ücretsiz başlat'}
       </button>
+      <p className="text-[11.5px] text-ink-faint text-center">
+        Kayıt olarak{' '}
+        <a href="/legal/terms" className="underline">
+          Kullanım Şartları
+        </a>{' '}
+        ve{' '}
+        <a href="/legal/privacy" className="underline">
+          Gizlilik Politikası
+        </a>
+        &apos;nı kabul edersiniz.
+      </p>
     </form>
   );
 }

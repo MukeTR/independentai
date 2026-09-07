@@ -6,14 +6,14 @@ import { CheckCircle2, Circle, Download, Sparkles } from 'lucide-react';
 type Item = { id: string; label: string; category: string };
 
 const ITEMS: Item[] = [
-  { id: 'i1', category: 'Temel altyapı', label: 'HTTPS aktif ve tüm canonical URL\'ler https:// ile başlıyor' },
+  { id: 'i1', category: 'Temel altyapı', label: "HTTPS aktif ve tüm canonical URL'ler https:// ile başlıyor" },
   { id: 'i2', category: 'Temel altyapı', label: 'Sitemap.xml güncel, robots.txt erişilebilir' },
   { id: 'i3', category: 'Temel altyapı', label: 'llms.txt eklenmiş, content-type text/markdown' },
   { id: 'i4', category: 'Temel altyapı', label: 'Sayfa hızı: LCP < 2.5sn, CLS < 0.1' },
   { id: 'i5', category: 'Temel altyapı', label: 'Mobile-first responsive tasarım' },
   { id: 'i6', category: 'Temel altyapı', label: 'JS-bağımsız temel içerik (SSR veya SSG ile)' },
   { id: 'i7', category: 'Temel altyapı', label: 'Yapılandırılmış veri: Organization, WebSite, BreadcrumbList' },
-  { id: 'i8', category: 'Temel altyapı', label: 'AI bot\'ları robots.txt\'te explicit allow' },
+  { id: 'i8', category: 'Temel altyapı', label: "AI bot'ları robots.txt'te explicit allow" },
   { id: 'i9', category: 'İçerik', label: 'Her ana kategoride pillar makale (3000+ kelime)' },
   { id: 'i10', category: 'İçerik', label: 'Karşılaştırma içerikleri (X vs Y formatı)' },
   { id: 'i11', category: 'İçerik', label: 'FAQ bölümleri (FAQPage schema ile)' },
@@ -106,19 +106,24 @@ export function AiSeoChecklist() {
         <div className="flex items-baseline justify-between mb-3">
           <div className="eyebrow">Genel Skor</div>
           <div className="font-display text-[36px] tabular text-brand">
-            {score.pct}<span className="text-[18px] text-ink-faint">%</span>
+            {score.pct}
+            <span className="text-[18px] text-ink-faint">%</span>
           </div>
         </div>
         <div className="h-2 rounded-full bg-paper-4 overflow-hidden">
           <div className="h-full bg-brand transition-all duration-300" style={{ width: `${score.pct}%` }} />
         </div>
-        <div className="text-[11px] text-ink-faint mt-2 font-mono">{score.done}/{score.total} madde tamamlandı</div>
+        <div className="text-[11px] text-ink-faint mt-2 font-mono">
+          {score.done}/{score.total} madde tamamlandı
+        </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
           {categoryStats.map((c) => (
             <div key={c.cat} className="text-center p-2 border-hairline border rounded-lg">
               <div className="text-[10px] text-ink-faint uppercase tracking-wider">{c.cat}</div>
-              <div className="font-mono text-[13px] tabular mt-1">{c.done}/{c.total}</div>
+              <div className="font-mono text-[13px] tabular mt-1">
+                {c.done}/{c.total}
+              </div>
               <div className="text-[10px] text-brand-deep">{c.pct}%</div>
             </div>
           ))}
@@ -135,6 +140,7 @@ export function AiSeoChecklist() {
                 <li key={item.id}>
                   <button
                     type="button"
+                    aria-pressed={!!checked[item.id]}
                     onClick={() => toggle(item.id)}
                     className="flex items-start gap-3 text-left w-full hover:bg-paper-2/50 px-2 py-1.5 rounded-lg transition"
                   >
@@ -143,7 +149,11 @@ export function AiSeoChecklist() {
                     ) : (
                       <Circle className="w-4 h-4 text-ink-faint mt-0.5 shrink-0" />
                     )}
-                    <span className={checked[item.id] ? 'text-ink-faint line-through text-[13.5px]' : 'text-ink text-[13.5px]'}>
+                    <span
+                      className={
+                        checked[item.id] ? 'text-ink-faint line-through text-[13.5px]' : 'text-ink text-[13.5px]'
+                      }
+                    >
                       {item.label}
                     </span>
                   </button>

@@ -138,7 +138,7 @@ function renderInline(text: string, mentions: Mention[]): React.ReactNode {
 
   // Step 1: extract inline code spans
   const codeParts: Segment[] = [];
-  let remaining = text;
+
   const codeRegex = /`([^`]+)`/g;
   let lastIdx = 0;
   let m: RegExpExecArray | null;
@@ -170,9 +170,24 @@ function renderInline(text: string, mentions: Mention[]): React.ReactNode {
 
   // Step 3: render with mention highlight on text segments
   return segments.map((seg, idx) => {
-    if (seg.type === 'code') return <code key={idx} className="font-mono text-[12.5px] bg-paper-4 px-1.5 py-0.5 rounded">{seg.content}</code>;
-    if (seg.type === 'bold') return <strong key={idx} className="font-semibold text-ink">{highlightInText(seg.content, mentions)}</strong>;
-    if (seg.type === 'italic') return <em key={idx} className="not-italic text-ink-muted">{highlightInText(seg.content, mentions)}</em>;
+    if (seg.type === 'code')
+      return (
+        <code key={idx} className="font-mono text-[12.5px] bg-paper-4 px-1.5 py-0.5 rounded">
+          {seg.content}
+        </code>
+      );
+    if (seg.type === 'bold')
+      return (
+        <strong key={idx} className="font-semibold text-ink">
+          {highlightInText(seg.content, mentions)}
+        </strong>
+      );
+    if (seg.type === 'italic')
+      return (
+        <em key={idx} className="not-italic text-ink-muted">
+          {highlightInText(seg.content, mentions)}
+        </em>
+      );
     return <React.Fragment key={idx}>{highlightInText(seg.content, mentions)}</React.Fragment>;
   });
 }
@@ -206,9 +221,9 @@ function highlightInText(text: string, mentions: Mention[]): React.ReactNode {
     return (
       <mark
         key={i}
-        className={t.isOwn
-          ? 'bg-brand/15 text-brand-deep px-1 rounded font-medium'
-          : 'bg-paper-4 text-ink px-1 rounded'}
+        className={
+          t.isOwn ? 'bg-brand/15 text-brand-deep px-1 rounded font-medium' : 'bg-paper-4 text-ink px-1 rounded'
+        }
       >
         {part}
       </mark>
@@ -230,7 +245,7 @@ export function MarkdownResponse({ text, mentions }: { text: string; mentions: M
               3: 'text-[15px] font-semibold mt-4 mb-1',
               4: 'text-[13.5px] font-semibold text-ink-muted uppercase tracking-wider mt-3 mb-0.5',
             };
-            const Tag = (`h${block.level + 1}` as 'h2' | 'h3' | 'h4' | 'h5');
+            const Tag = `h${block.level + 1}` as 'h2' | 'h3' | 'h4' | 'h5';
             return (
               <Tag key={i} className={sizes[block.level]}>
                 {renderInline(block.text, mentions)}
