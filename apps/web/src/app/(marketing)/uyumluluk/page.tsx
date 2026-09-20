@@ -25,7 +25,7 @@ const PATH = '/uyumluluk';
 export const metadata = buildMetadata({
   title: 'Uyumluluk — her web teknolojisiyle çalışır',
   description:
-    'Kurulum yok: Yanıt herkese açık sayfanızı okur. WordPress, Wix, Framer, Bootstrap, React ya da mağaza altyapısı fark etmez.',
+    'Kurulum yok: Yanıt herkese açık sayfanızı okur. WordPress, Wix, Framer, Bootstrap, React, Laravel ya da mağaza altyapısı fark etmez; ölçüm HTML çıktısına bakar.',
   path: PATH,
 });
 
@@ -109,6 +109,49 @@ const DETECTED: { key: keyof typeof PLATFORM_LABELS; note: string }[] = [
   { key: 'BIGCOMMERCE', note: 'Ürün şeması ve stok alanları.' },
   { key: 'WIX', note: 'Tarayıcıda üretilen içerik için uyarı.' },
   { key: 'SQUARESPACE', note: 'Blok tabanlı sayfalarda başlık hiyerarşisi.' },
+];
+
+/**
+ * Ölçümün dayandığı açık standartlar — hangi kontrolün hangi belgeye baktığı kaynağıyla yazılır.
+ * “Biz öyle diyoruz” yerine doğrulanabilir bir referans: hem okuyan hem alıntılayan için.
+ */
+const STANDARDS: { check: string; looks: string; source: string; href: string }[] = [
+  {
+    check: 'Başlık yapısı',
+    looks: 'Sayfada tek bir H1 var mı, H2 ve H3 sırayla mı iniyor, bölümler ayrı ayrı alıntılanabiliyor mu.',
+    source: 'HTML Living Standard — başlıklar',
+    href: 'https://html.spec.whatwg.org/multipage/sections.html#headings-and-outlines',
+  },
+  {
+    check: 'Yapısal veri (JSON-LD)',
+    looks: 'Organization, Product, FAQPage gibi tipler var mı; şemada yazan ile sayfada görünen aynı mı.',
+    source: 'schema.org tip listesi',
+    href: 'https://schema.org/docs/schemas.html',
+  },
+  {
+    check: 'Meta alanları',
+    looks: 'title ve description sayfayı doğru tarif ediyor mu, boş ya da şablondan kopya mı.',
+    source: 'Google — başlık ve snippet belgeleri',
+    href: 'https://developers.google.com/search/docs/appearance/snippet',
+  },
+  {
+    check: 'Bot erişimi',
+    looks: 'robots.txt kuralları GPTBot, ClaudeBot, PerplexityBot gibi tarayıcıları farkında olmadan kapatıyor mu.',
+    source: 'RFC 9309 — Robots Exclusion Protocol',
+    href: 'https://www.rfc-editor.org/rfc/rfc9309.html',
+  },
+  {
+    check: 'Model kaynağı bildirimi',
+    looks: 'llms.txt dosyası var mı, içinde markayı anlatan kaynaklar doğru gösterilmiş mi.',
+    source: 'llms.txt önerisi',
+    href: 'https://llmstxt.org/',
+  },
+  {
+    check: 'Çok dilli eşleme',
+    looks: 'hreflang etiketleri karşılıklı mı, dil sürümleri birbirini doğru işaret ediyor mu.',
+    source: 'Google — yerelleştirilmiş sürümler',
+    href: 'https://developers.google.com/search/docs/specialty/international/localized-versions',
+  },
 ];
 
 const DEEPER = [
@@ -211,7 +254,7 @@ export default function UyumlulukPage() {
 
       <Section
         eyebrow="Ne ile yapılmış olursa olsun"
-        title="Ajans sitesinden mağazaya, aynı ölçüm."
+        title="Hangi teknolojilerle çalışıyor? Ajans sitesinden mağazaya, aynı ölçüm."
         intro="Aşağıdakiler sık karşılaştığımız yapılar. Listede olmayan bir teknoloji kullanıyorsanız da ölçüm çalışır: kontroller sayfanın HTML çıktısına bakar, onu üreten araca değil."
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -239,8 +282,8 @@ export default function UyumlulukPage() {
       <Section
         className="band border-t border-hairline"
         eyebrow="Ek olarak"
-        title="Mağaza altyapılarını otomatik tanır."
-        intro="Ürün sayfası olan siteler için bir adım daha var: altyapı tespit edilirse düzeltme adımları doğrudan o panelin diliyle yazılır."
+        title="Mağaza altyapımı tanıyor mu?"
+        intro="Evet; ürün sayfası olan sitelerde altyapı sayfanın imzasından tespit edilir ve düzeltme adımları doğrudan o panelin diliyle yazılır. Tanınmazsa ölçüm durmaz, adımlar teknoloji bağımsız yazılır."
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {DETECTED.map((p) => (
@@ -256,6 +299,51 @@ export default function UyumlulukPage() {
         <p className="text-[13px] text-ink-faint mt-6">
           Tanınmayan altyapılar “tespit edilemedi” olarak işaretlenir; ölçüm ve öneriler teknoloji bağımsız devam eder.
         </p>
+      </Section>
+
+      <Section
+        eyebrow="Neye göre ölçüyoruz"
+        title="Ölçüm hangi standartlara bakıyor?"
+        intro="Kısa cevap: kendi icat ettiğimiz bir listeye değil, açık web standartlarına. Aşağıdaki altı kontrolün her biri, yanında yazan belgeye dayanır; sayfanızı hangi araçla ürettiğiniz bu kontrolleri değiştirmez."
+      >
+        <div className="card overflow-x-auto">
+          <table className="w-full text-[13.5px] min-w-[720px]">
+            <caption className="sr-only">Kontroller ve dayandıkları açık standartlar</caption>
+            <thead>
+              <tr className="text-left text-ink-faint font-mono text-[11px] uppercase tracking-wider border-b border-hairline">
+                <th scope="col" className="px-5 py-3.5">
+                  Kontrol
+                </th>
+                <th scope="col" className="px-4 py-3.5">
+                  Sayfada neye bakar
+                </th>
+                <th scope="col" className="px-4 py-3.5">
+                  Kaynak
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-hairline">
+              {STANDARDS.map((s) => (
+                <tr key={s.check} className="align-top">
+                  <th scope="row" className="px-5 py-3.5 text-left text-ink font-medium whitespace-nowrap">
+                    {s.check}
+                  </th>
+                  <td className="px-4 py-3.5 text-ink-muted leading-relaxed">{s.looks}</td>
+                  <td className="px-4 py-3.5 leading-relaxed">
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-deep hover:text-brand"
+                    >
+                      {s.source}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Section>
 
       <Section

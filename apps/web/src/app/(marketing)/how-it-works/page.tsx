@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Bot, Database, GitBranch, Search, Sparkles, Wrench } from 'lucide-react';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
@@ -99,6 +100,20 @@ export default function HowItWorks() {
               </li>
             ))}
           </ol>
+
+          <figure className="mt-10 max-w-[460px] mx-auto rounded-2xl border border-hairline bg-paper-3 overflow-hidden">
+            <Image
+              src="/img/ciz/analiz-duzelt-olc.webp"
+              alt="Büyüteç, anahtar ve yükselen çizgi grafiği; üçü kavisli oklarla bir döngü oluşturuyor"
+              width={1200}
+              height={675}
+              unoptimized
+              className="w-full h-auto"
+            />
+            <figcaption className="text-[12.5px] text-ink-faint px-6 py-4 border-t border-hairline">
+              Aynı üç adım her gün baştan çalışır: tara, düzelt, yeniden ölç.
+            </figcaption>
+          </figure>
         </Container>
       </section>
 
