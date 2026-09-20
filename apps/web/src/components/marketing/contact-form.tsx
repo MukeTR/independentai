@@ -11,7 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import { Loader2, Send } from 'lucide-react';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { apiFetch, ApiError, errorMessage } from '@/lib/api-client';
-import { handleBlockedResponse } from '@/lib/blocked-redirect';
+import { BLOCKED_REJECTED_MESSAGE, handleBlockedResponse } from '@/lib/blocked-redirect';
 import { useHydrated } from '@/lib/use-hydrated';
 
 const TOPICS: { value: string; label: string }[] = [
@@ -90,7 +90,12 @@ export function ContactForm() {
           utm_campaign: params.get('utm_campaign') ?? '',
         },
       });
-      if (handleBlockedResponse(res)) return;
+      const outcome = handleBlockedResponse(res);
+      if (outcome === 'redirected') return; // tarayıcı yönlendirildi
+      if (outcome === 'rejected') {
+        setState({ status: 'error', message: BLOCKED_REJECTED_MESSAGE });
+        return;
+      }
       setState({ status: 'done' });
     } catch (err) {
       const msg =

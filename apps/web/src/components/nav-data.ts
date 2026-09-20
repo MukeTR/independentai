@@ -67,7 +67,9 @@ export const NAV_PANELS: MegaPanel[] = [
     wide: true,
     sections: [
       {
+        // Sektör adları uzun ("Hukuk ve danışmanlık"); iki kolon kaplasın ki hepsi tek satırda dursun.
         heading: 'Sektörel çözümler',
+        span: 2,
         links: [...SECTOR_LINKS.map((l) => ({ ...l })), { href: '/sektor', title: 'Tüm sektörler' }],
       },
       {
@@ -195,6 +197,12 @@ export const NAV_PANELS: MegaPanel[] = [
           { href: '/blog/arsiv', title: 'Tüm yazılar', description: 'Kategoriye göre tam arşiv' },
           { href: '/resources/geo-101', title: 'GEO 101 rehberi' },
           { href: '/resources/glossary', title: 'AI pazarlama sözlüğü' },
+          { href: '/resources/yapay-zeka-modelleri', title: 'Yapay zekâ modelleri atlası', description: 'Kim hangi asistanı kullanıyor; her sayının kaynağı açık' },
+          {
+            href: '/resources/model-pazar-payi',
+            title: 'Model pazar payı',
+            description: 'OpenRouter verisiyle günlük güncellenen model ve sağlayıcı payları',
+          },
         ],
       },
       {

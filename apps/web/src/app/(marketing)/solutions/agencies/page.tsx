@@ -21,7 +21,6 @@ import { AgencyPreanalysis } from '@/components/marketing/agency-preanalysis';
 import { buildMetadata } from '@/lib/seo';
 import { computeAgencyEntitlement } from '@/server/entitlement';
 import { getOffer } from '@/server/offer';
-import { formatTry } from '@independentai/shared';
 
 export const metadata = buildMetadata({
   title: 'Ajanslar için Yanıt — müşteri portföyü ve ortaklık programı',
@@ -233,12 +232,11 @@ export default async function AgenciesSolutionPage() {
                 <div className="font-display text-[18px]">Uygulama gerekirse</div>
               </div>
               <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">
-                Müşteriniz için teknik düzeltme, şema/entity ve içerik işini Yanıt Agency üstlenebilir:{' '}
-                {formatTry(offer.agencyFromMonthlyTry)}/ay’dan başlayan sprint, teklifle. Ölçüm ve rapor sizin
-                panelinizde kalır.
+                Müşteriniz için teknik düzeltme, şema/entity ve içerik işini Yanıt Agency üstlenebilir. Sabit paket
+                yoktur: kapsam görüşmesinden sonra teklif verilir. Ölçüm ve rapor sizin panelinizde kalır.
               </p>
               <Link
-                href="/yanit-agency"
+                href="/yanit-agency#teklif"
                 className="mt-4 inline-flex items-center gap-1.5 text-[13.5px] text-brand-deep hover:text-brand"
               >
                 Yanıt Agency’yi inceleyin <ArrowRight className="w-3.5 h-3.5" aria-hidden />

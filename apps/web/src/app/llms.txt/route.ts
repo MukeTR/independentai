@@ -21,12 +21,12 @@ Yanıt (alan adı: yanit.io) Türkiye merkezli bir AI görünürlük (GEO) platf
 
 1. **Ücretsiz şok raporu ve araçlar** — hesap gerekmez. Alan adınızı girin; 0-100 AI görünürlük skoru, bulgular ve düzeltme önerileri anında gelir.
 2. **Yanıt (SaaS)** — ${formatTry(offer.saasMonthlyTry)}/ay, aylık abonelik, istediğiniz zaman iptal. ${offer.trialDays} gün ücretsiz deneme, kart gerekmez. Her gün ChatGPT, Claude ve Gemini'de otomatik ölçüm; rakip karşılaştırması; neden analizi ve yapılacaklar listesi.
-3. **Yanıt Agency** — ${formatTry(offer.agencyFromMonthlyTry)}/ay'dan başlayan aylık sprint, teklifle. Yanıt'ın çıkardığı işleri ekibimiz uygular; ilerleme aynı panelden izlenir.
+3. **Yanıt Agency** — aylık sprint hizmeti. Fiyat listelenmez: kapsam görüşmesinden sonra teklif edilir. Yanıt'ın çıkardığı işleri ekibimiz uygular; ilerleme aynı panelden izlenir. Teklif formu: ${SITE}/yanit-agency#teklif
 
 ## Önemli sayfalar
 
 - [Ana sayfa](${SITE}/): Alan adınızı girin, ücretsiz şok raporunu alın
-- [Fiyatlandırma](${SITE}/pricing): Ücretsiz · Yanıt ${formatTry(offer.saasMonthlyTry)}/ay · Yanıt Agency ${formatTry(offer.agencyFromMonthlyTry)}/ay'dan
+- [Fiyatlandırma](${SITE}/pricing): Ücretsiz · Yanıt ${formatTry(offer.saasMonthlyTry)}/ay · Yanıt Agency teklifle
 - [Özellikler](${SITE}/features): Ölçüm, analiz, uyarılar, ekip, API
 - [Nasıl çalışır](${SITE}/how-it-works): Veri toplama hattı ve ölçüm metodolojisi
 - [Kullanım senaryoları](${SITE}/use-cases): SaaS, e-ticaret, ajans, kurumsal
@@ -66,7 +66,7 @@ Yanıt (alan adı: yanit.io) Türkiye merkezli bir AI görünürlük (GEO) platf
 
 - **Ücretsiz**: Şok raporu ve tüm araçlar; kayıt, e-posta veya kart istenmez.
 - **Yanıt**: ${formatTry(offer.saasMonthlyTry)}/ay. ${offer.trialDays} gün ücretsiz deneme, kart gerekmez; deneme sonunda otomatik ücretlendirme yapılmaz. Adil kullanım: ${fair.prompts} soru, ${fair.competitors} rakip, ${fair.members} ekip üyesi, ${fair.apiTokens} API token, günde ${fair.manualRunsPerDay} manuel çalıştırma. Süre sonunda hesap salt-okunur moda geçer; veriler silinmez.
-- **Yanıt Agency**: ${formatTry(offer.agencyFromMonthlyTry)}/ay'dan başlayan aylık sprint; kapsam ve fiyat teklifle netleşir. İletişim: ${SITE}/contact#sales
+- **Yanıt Agency**: aylık sprint hizmeti. Yayımlanmış bir fiyatı yoktur; kapsam görüşmesinden sonra teklif verilir. Teklif formu: ${SITE}/yanit-agency#teklif
 
 ## Önemli kavramlar
 

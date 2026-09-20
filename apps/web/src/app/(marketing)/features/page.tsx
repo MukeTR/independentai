@@ -33,6 +33,7 @@ import { Section } from '@/components/section';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { ECOMMERCE_TOOL_LINKS, RANK_CHECKER_LINKS } from '@/components/nav-data';
+import { Ciz, type CizName } from '@/components/marketing/ciz';
 import { buildMetadata } from '@/lib/seo';
 import { getOffer } from '@/server/offer';
 
@@ -51,7 +52,9 @@ export const metadata = buildMetadata({
 const PUBLIC_TOOL_COUNT = ECOMMERCE_TOOL_LINKS.length + RANK_CHECKER_LINKS.length;
 
 type Feature = { icon: typeof Eye; t: string; d: string; badge?: 'yakında' };
-type Pillar = { id: string; eyebrow: string; title: string; body: string; features: Feature[] };
+/** Bölüm ortasına giren çizim durağı: ilk iki kartın ardından gelir, kalan kartlar altında sürer. */
+type Illo = { name: CizName; alt: string; caption: string };
+type Pillar = { id: string; eyebrow: string; title: string; body: string; features: Feature[]; illo?: Illo };
 
 /**
  * Sütunlar. `offer` ile kurulur: Yanıt Agency başlangıç fiyatı admin ayarından (`server/offer.ts`) gelir;
@@ -92,6 +95,11 @@ function buildPillars(offer: Offer): Pillar[] {
       eyebrow: 'Anla',
       title: 'Görünürlük boşluğu: rakip var, siz yoksunuz',
       body: 'Tek sayı yetmez. Hangi sorularda rakibiniz önerilip siz önerilmiyorsunuz, hangi modelde zayıfsınız, cevaplar hangi kaynaklara dayanıyor: nedeni görürsünüz.',
+      illo: {
+        name: 'kiyas',
+        alt: 'Terazide tartılan iki web sayfası; mavi olan tarafın ağır bastığı çizim',
+        caption: 'Aynı soruda kimin ağır bastığını rakip karşılaştırması gösterir.',
+      },
       features: [
         {
           icon: TrendingUp,
@@ -148,6 +156,11 @@ function buildPillars(offer: Offer): Pillar[] {
       eyebrow: 'Düzelt',
       title: 'Ücretsiz araçlar ve panel araçları',
       body: `Bulguyu bilmek yetmez, düzeltmek gerekir. ${PUBLIC_TOOL_COUNT} ücretsiz araç hesap istemeden çalışır; panelde denetim, keşif ve üretici araçları aynı bulguları derinleştirir. Uygulamayı isterseniz Yanıt Agency yapar.`,
+      illo: {
+        name: 'ajans',
+        alt: 'Bir web sayfasını anahtar ve boya rulosuyla düzelten iki kişinin çizimi',
+        caption: 'Bulguyu bilmek yetmez; listeyi uygulayan biri gerekir.',
+      },
       features: [
         {
           icon: Search,
@@ -168,7 +181,7 @@ function buildPillars(offer: Offer): Pillar[] {
         {
           icon: Sparkles,
           t: 'Yanıt Agency',
-          d: `Analizi biz yaptık, uygulamayı da biz yapalım: teknik düzeltme, şema/entity, içerik ve kaynak çalışması. ${formatTry(offer.agencyFromMonthlyTry)}/ay’dan başlayan sprint, teklifle; sonuç sözü yok, ölçüm var.`,
+          d: 'Analizi biz yaptık, uygulamayı da biz yapalım: teknik düzeltme, şema/entity, içerik ve kaynak çalışması. Aylık sprint, kapsam görüşmesinden sonra teklifle; sonuç sözü yok, ölçüm var.',
         },
       ],
     },
@@ -243,6 +256,19 @@ function buildPillars(offer: Offer): Pillar[] {
   ];
 }
 
+function FeatureCard({ f }: { f: Feature }) {
+  return (
+    <div className={`card p-6 ${f.badge === 'yakında' ? 'border-dashed' : ''}`}>
+      <div className="flex items-center justify-between">
+        <f.icon className="w-5 h-5 text-brand" aria-hidden />
+        {f.badge ? <span className="chip !text-[10px]">{f.badge}</span> : null}
+      </div>
+      <h3 className="font-display text-[19px] mt-4 leading-snug">{f.t}</h3>
+      <p className="text-[13.5px] text-ink-muted mt-3 leading-relaxed">{f.d}</p>
+    </div>
+  );
+}
+
 const STATUS_LABEL: Record<string, string> = { live: 'yayında', roadmap: 'yakında' };
 
 export default async function FeaturesPage() {
@@ -297,18 +323,32 @@ export default async function FeaturesPage() {
           intro={p.body}
           className={`scroll-mt-20 ${idx % 2 === 1 ? 'bg-paper-2/40' : ''}`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {p.features.map((f) => (
-              <div key={f.t} className={`card p-6 ${f.badge === 'yakında' ? 'border-dashed' : ''}`}>
-                <div className="flex items-center justify-between">
-                  <f.icon className="w-5 h-5 text-brand" aria-hidden />
-                  {f.badge ? <span className="chip !text-[10px]">{f.badge}</span> : null}
-                </div>
-                <h3 className="font-display text-[19px] mt-4 leading-snug">{f.t}</h3>
-                <p className="text-[13.5px] text-ink-muted mt-3 leading-relaxed">{f.d}</p>
+          {p.illo ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {p.features.slice(0, 2).map((f) => (
+                  <FeatureCard key={f.t} f={f} />
+                ))}
               </div>
-            ))}
-          </div>
+              <figure className="mt-10 max-w-[460px] mx-auto rounded-2xl border border-hairline bg-paper-3 overflow-hidden">
+                <Ciz name={p.illo.name} alt={p.illo.alt} className="p-2" />
+                <figcaption className="text-[12.5px] text-ink-faint px-6 py-4 border-t border-hairline">
+                  {p.illo.caption}
+                </figcaption>
+              </figure>
+              <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
+                {p.features.slice(2).map((f) => (
+                  <FeatureCard key={f.t} f={f} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {p.features.map((f) => (
+                <FeatureCard key={f.t} f={f} />
+              ))}
+            </div>
+          )}
         </Section>
       ))}
 

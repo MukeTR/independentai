@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Check, ArrowRight, Sparkles, Gift, Users } from 'lucide-react';
 import { Container } from '@/components/container';
@@ -12,12 +13,18 @@ import { computeEntitlement } from '@/server/entitlement';
 import { ECOMMERCE_TOOL_LINKS, RANK_CHECKER_LINKS } from '@/components/nav-data';
 import { DASHBOARD_TOOLS } from '@/app/dashboard/tools/tools-data';
 
-export const metadata = buildMetadata({
-  title: 'Fiyatlandırma — Ücretsiz rapor, aylık abonelik, ajans sprinti',
-  description:
-    'Ücretsiz araçlar ve rapor için hesap gerekmez. Yanıt aylık abonelik, 14 gün deneme, kart istenmez; Yanıt Agency teklifle.',
-  path: '/pricing',
-});
+/**
+ * Deneme süresi meta açıklamasında da sayfadaki rakamla aynı olmalı: sabit "14 gün" yazmak,
+ * yönetim panelinden süre değiştiğinde arama sonucuyla sayfayı çelişkiye düşürüyordu.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const offer = await getOffer();
+  return buildMetadata({
+    title: 'Fiyatlandırma — ücretsiz rapor, abonelik ve ajans',
+    description: `Ücretsiz rapor ve araçlar için hesap gerekmez. Yanıt aylık abonelik, ${offer.trialDays} gün ücretsiz deneme, kart istenmez; Yanıt Agency uygulamayı teklifle üstlenir.`,
+    path: '/pricing',
+  });
+}
 
 // Tek kaynak: entitlement.ts LAUNCH limitleri (pazarlama metni koddan sapmasın).
 const LIMITS = computeEntitlement({ plan: 'LAUNCH', trialEndsAt: new Date() }).limits;
@@ -27,7 +34,6 @@ const PANEL_TOOL_COUNT = DASHBOARD_TOOLS.length;
 export default async function PricingPage() {
   const offer = await getOffer();
   const saas = formatTry(offer.saasMonthlyTry);
-  const agency = formatTry(offer.agencyFromMonthlyTry);
 
   const PLANS = [
     {
@@ -68,11 +74,11 @@ export default async function PricingPage() {
     {
       name: 'Yanıt Agency',
       icon: Users,
-      price: `${agency}’den`,
-      period: 'ay · aylık sprint, teklifle',
+      price: 'Teklifle',
+      period: 'aylık sprint · kapsam görüşmesinden sonra',
       description:
-        'Biz bulalım, biz uygulayalım. Yanıt’taki yapılacaklar listesini ekibimiz uygular; ilerlemeyi aynı panelden izlersiniz.',
-      cta: { label: 'Ekiple görüş', href: '/contact#sales' },
+        'Biz bulalım, biz uygulayalım. Yanıt’taki yapılacaklar listesini ekibimiz uygular; ilerlemeyi aynı panelden izlersiniz. Sabit paket yoktur: kapsamı birlikte çıkarır, teklifi ona göre yazarız.',
+      cta: { label: 'Yanıt Agency’yi inceleyin', href: '/yanit-agency#teklif' },
       highlight: false,
       features: [
         'Yanıt aboneliği dahil: ölçüm, bulgular, panel',
@@ -85,7 +91,38 @@ export default async function PricingPage() {
     },
   ];
 
+  /**
+   * Cevap-öncelikli karşılaştırma tablosu: bir asistan "Yanıt ne kadar?" sorusuna
+   * tek satırdan cevap üretebilsin diye plan farkları paragrafa değil tabloya yazılır.
+   */
+  const COMPARE: [string, string, string, string][] = [
+    ['Ne tür', 'Ücretsiz rapor ve araçlar', 'Yazılım — aylık abonelik', 'Hizmet — aylık sprint'],
+    ['Fiyat', '₺0', `${saas} / ay`, 'Teklifle — kapsam görüşmesinden sonra'],
+    [
+      'Hesap gerekir mi',
+      'Hayır; kayıt, e-posta ve kart istenmez',
+      `Evet; ${offer.trialDays} gün ücretsiz deneme, kart istenmez`,
+      'Evet; Yanıt aboneliği hizmete dahildir',
+    ],
+    [
+      'Ölçüm sıklığı',
+      'Tek seferlik tarama, istediğiniz kadar tekrar',
+      'Her gün, aynı sorular aynı biçimde',
+      'Her gün + ay sonu değerlendirme görüşmesi',
+    ],
+    ['Yapılacakları kim uygular', 'Siz', 'Siz ya da mevcut ajansınız', 'Yanıt Agency ekibi; ilerleme aynı panelde'],
+    ['Taahhüt', 'Yok', 'Aylık, istediğiniz zaman iptal', 'Aylık; devam kararı her ay sonunda'],
+  ];
+
   const PRICING_FAQS = [
+    {
+      question: 'Yanıt ne kadar, fiyata neler dahil?',
+      answer: `Yanıt aboneliği ${saas}/ay’dır ve ${offer.trialDays} gün ücretsiz denenir; kart istenmez. Fiyata ChatGPT, Claude ve Gemini sorgu maliyetleri, ${LIMITS.prompts} izlenebilir soru, ${LIMITS.competitors} rakip, panelde ${PANEL_TOOL_COUNT} GEO aracı, ${LIMITS.members} ekip üyesi ve paylaşılabilir rapor bağlantısı dahildir. Ana sayfadaki rapor ve ${PUBLIC_TOOL_COUNT} herkese açık araç ise ücretsizdir, hesap gerektirmez.`,
+    },
+    {
+      question: 'Yanıt ile Yanıt Agency arasındaki fark ne?',
+      answer: `Yanıt bir yazılımdır: ölçer, neyin eksik olduğunu gösterir ve düzeltme sırasını verir; uygulamayı siz ya da ajansınız yapar (${saas}/ay). Yanıt Agency ise bir hizmettir: aynı listeyi uygulayan ekiptir ve aylık sprintle çalışır. Ajans tarafının yayımlanmış bir fiyatı yoktur; kapsam görüşmesinden sonra teklif verilir. Yanıt aboneliği ajans hizmetine dahildir; ajans tarafını almadan da yalnızca yazılımı kullanabilirsiniz.`,
+    },
     {
       question: 'Gerçekten ücretsiz olan ne?',
       answer: `Şok raporu (ana sayfadaki analiz) ve tüm /arac araçları ücretsizdir; hesap açmanız, e-posta bırakmanız veya kart girmeniz gerekmez. Sürekli izleme, rakip karşılaştırması ve yapılacaklar listesi Yanıt aboneliğindedir; ${offer.trialDays} gün ücretsiz denersiniz.`,
@@ -101,8 +138,9 @@ export default async function PricingPage() {
         'İstediğiniz zaman. Yanıt aylık faturalanır, taahhüt yoktur. İptal ettiğiniz dönemin sonuna kadar erişiminiz sürer; sonrasında hesap salt-okunur olur, ölçüm geçmişiniz görüntülenmeye devam eder.',
     },
     {
-      question: 'Yanıt Agency fiyatı neden “-den başlayan”?',
-      answer: `Ajans hizmeti sitenizin büyüklüğüne, bulgu sayısına ve sprint kapsamına göre planlanır. ${agency}/ay başlangıç fiyatıdır; ön analizden sonra net teklif alırsınız. Yanıt aboneliği hizmete dahildir.`,
+      question: 'Yanıt Agency’nin fiyatı neden sayfada yazmıyor?',
+      answer:
+        'Ajans hizmeti sitenizin büyüklüğüne, bulgu sayısına ve sprint kapsamına göre planlanır; bu üçü bilinmeden yazılan bir rakam ya sizi yanıltır ya bizi. Bu yüzden fiyat listelemiyoruz: Yanıt Agency sayfasındaki formu doldurun, sitenizi okuyup gelelim ve kapsam görüşmesinden sonra net teklif verelim. Yanıt aboneliği hizmete dahildir.',
     },
     {
       question: 'AI sağlayıcı maliyetleri fiyata dahil mi?',
@@ -155,6 +193,8 @@ export default async function PricingPage() {
 
       <section className="pb-20">
         <Container>
+          {/* h1 → h3 atlamasını önleyen bölüm başlığı; tasarım aynı kalsın diye yalnız ekran okuyucuya görünür. */}
+          <h2 className="sr-only">Planlar ve fiyatlar</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
             {PLANS.map((p) => (
               <div
@@ -168,7 +208,7 @@ export default async function PricingPage() {
                 )}
                 <div className="flex items-center gap-2">
                   <p.icon className="w-4 h-4 text-brand" aria-hidden />
-                  <div className="eyebrow">{p.name}</div>
+                  <h3 className="eyebrow">{p.name}</h3>
                 </div>
                 <div
                   className={`font-display tracking-tight mt-2 tabular ${p.highlight ? 'text-[48px]' : 'text-[40px]'}`}
@@ -211,6 +251,51 @@ export default async function PricingPage() {
         </Container>
       </section>
 
+      <Section
+        className="band border-t border-hairline"
+        eyebrow="Karşılaştırma"
+        title="Hangisi size uygun?"
+        intro={`Kısa cevap: nerede olduğunuzu görmek ₺0 ve hesap istemez. Sürekli ölçüm istiyorsanız Yanıt aboneliği ${saas}/ay, ${offer.trialDays} gün ücretsiz. Uygulamayı da devretmek isterseniz Yanıt Agency aylık sprintle çalışır; fiyatı kapsam görüşmesinden sonra teklifle verilir.`}
+      >
+        <div className="card overflow-x-auto">
+          <table className="w-full text-[13.5px] min-w-[760px]">
+            <caption className="sr-only">Ücretsiz rapor, Yanıt aboneliği ve Yanıt Agency karşılaştırması</caption>
+            <thead>
+              <tr className="text-left text-ink-faint font-mono text-[11px] uppercase tracking-wider border-b border-hairline">
+                <th scope="col" className="px-5 py-3.5">
+                  Karşılaştırma
+                </th>
+                <th scope="col" className="px-4 py-3.5">
+                  Ücretsiz
+                </th>
+                <th scope="col" className="px-4 py-3.5">
+                  Yanıt
+                </th>
+                <th scope="col" className="px-4 py-3.5">
+                  Yanıt Agency
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-hairline">
+              {COMPARE.map((r) => (
+                <tr key={r[0]} className="align-top">
+                  <th scope="row" className="px-5 py-3.5 text-left text-ink font-medium whitespace-nowrap">
+                    {r[0]}
+                  </th>
+                  <td className="px-4 py-3.5 text-ink-muted leading-relaxed">{r[1]}</td>
+                  <td className="px-4 py-3.5 text-ink leading-relaxed">{r[2]}</td>
+                  <td className="px-4 py-3.5 text-ink-muted leading-relaxed">{r[3]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[13px] text-ink-faint mt-5 max-w-3xl leading-relaxed">
+          Yanıt yazılımdır, Yanıt Agency hizmettir. İkisi zorunlu bir paket değildir: yalnızca ölçüm alıp uygulamayı
+          kendi ekibinizle yapabilirsiniz.
+        </p>
+      </Section>
+
       <Section eyebrow="Sıkça sorulanlar" title="Fiyatlandırma soruları.">
         <Faq items={PRICING_FAQS} defaultOpen={0} />
       </Section>
@@ -225,8 +310,8 @@ export default async function PricingPage() {
         body="Alan adınızı girin, şok raporunuzu görün. Sürekli ölçüm için hesap açın; kart gerekmez."
         primaryHref="/register"
         primaryLabel={`${offer.trialDays} gün ücretsiz dene`}
-        secondaryHref="/contact#sales"
-        secondaryLabel="Yanıt Agency ile görüş"
+        secondaryHref="/yanit-agency#teklif"
+        secondaryLabel="Yanıt Agency’den teklif alın"
       />
     </>
   );

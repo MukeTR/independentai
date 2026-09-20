@@ -9,6 +9,8 @@ import { cn } from '@/lib/cn';
 export type MegaSection = {
   heading: string;
   links: { href: string; title: string; description?: string; badge?: string }[];
+  /** Bölümün kaç kolon kaplayacağı. Uzun etiketli listeler (sektörler) 2 ister ki başlıklar tek satırda kalsın. */
+  span?: 1 | 2;
 };
 
 export type MegaPanel = {
@@ -26,6 +28,14 @@ export type MegaPanel = {
     image?: string;
     imageAlt?: string;
   };
+};
+
+/** Tailwind dinamik sınıf adı üretemediği için kolon sayısını sabit sınıflara eşliyoruz. */
+const COLS: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+  4: 'grid-cols-4',
 };
 
 export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
@@ -89,11 +99,11 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
                   className={cn(
                     'grid gap-6',
                     p.featured ? 'col-span-8' : 'col-span-12',
-                    p.featured ? (p.sections.length >= 3 ? 'grid-cols-3' : 'grid-cols-2') : 'grid-cols-3',
+                    COLS[Math.min(4, p.sections.reduce((n, s) => n + (s.span ?? 1), 0))] ?? 'grid-cols-3',
                   )}
                 >
                   {p.sections.map((s) => (
-                    <div key={s.heading}>
+                    <div key={s.heading} className={cn(s.span === 2 && 'col-span-2')}>
                       <div className="eyebrow mb-3.5">{s.heading}</div>
                       <ul
                         className={cn(
@@ -108,7 +118,7 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
                               className="group block -mx-2 px-2 py-1.5 rounded-lg hover:bg-paper-2 transition"
                             >
                               <div className="flex items-center gap-2">
-                                <span className="text-[13.5px] text-ink group-hover:text-brand-deep transition">
+                                <span className="text-[13.5px] text-ink group-hover:text-brand-deep transition whitespace-nowrap">
                                   {l.title}
                                 </span>
                                 {l.badge && <span className="chip !py-0.5 !text-[10px]">{l.badge}</span>}
