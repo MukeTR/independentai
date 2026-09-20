@@ -2,6 +2,7 @@
 
 import { useId, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react';
+import { ProviderLogo } from '@/components/marketing/provider-logo';
 import type { ModelShare } from '@/server/openrouter-rankings';
 
 /**
@@ -66,6 +67,12 @@ type Col = {
   render: (m: ModelShare, i: number) => React.ReactNode;
   /** Sıralama için sayısal/metinsel anahtar. */
   value?: (m: ModelShare) => number | string | undefined;
+  /**
+   * Hücre arka planındaki mini dolgunun ham değeri. Sütunun kendi en büyük değerine oranlanır;
+   * böylece göz, sayıyı okumadan önce sırayı görür. Dolgu çok açıktır, metni bastırmaz.
+   * Yalnız "büyük iyi/çok" anlamı taşıyan sayısal sütunlarda kullanılır.
+   */
+  dolgu?: (m: ModelShare) => number | undefined;
 };
 
 const COLS: Col[] = [
@@ -87,7 +94,12 @@ const COLS: Col[] = [
     label: 'Sağlayıcı',
     tanim: 'Permaslug’ın eğik çizgiden önceki kısmı.',
     mono: true,
-    render: (m) => <span className="text-ink-muted whitespace-nowrap">{m.author}</span>,
+    render: (m) => (
+      <span className="inline-flex items-center gap-2 text-ink-muted whitespace-nowrap">
+        <ProviderLogo slug={m.author} size={14} className="text-ink-faint" />
+        {m.author}
+      </span>
+    ),
     value: (m) => m.author,
   },
   {
@@ -109,6 +121,7 @@ const COLS: Col[] = [
       </span>
     ),
     value: (m) => m.tokens,
+    dolgu: (m) => m.tokens,
   },
   {
     key: 'sharePct',
@@ -117,6 +130,7 @@ const COLS: Col[] = [
     align: 'right',
     render: (m) => <span className="tabular text-ink whitespace-nowrap">%{nf2.format(m.sharePct)}</span>,
     value: (m) => m.sharePct,
+    dolgu: (m) => m.sharePct,
   },
   {
     key: 'requests',
@@ -132,6 +146,7 @@ const COLS: Col[] = [
         </span>
       ),
     value: (m) => m.requests,
+    dolgu: (m) => m.requests,
   },
   {
     key: 'requestSharePct',
@@ -141,6 +156,7 @@ const COLS: Col[] = [
     render: (m) =>
       m.requestSharePct === undefined ? <Yok /> : <span className="tabular whitespace-nowrap">%{nf2.format(m.requestSharePct)}</span>,
     value: (m) => m.requestSharePct,
+    dolgu: (m) => m.requestSharePct,
   },
   {
     key: 'tokensPerRequest',
@@ -150,6 +166,7 @@ const COLS: Col[] = [
     render: (m) =>
       m.tokensPerRequest === undefined ? <Yok /> : <span className="tabular whitespace-nowrap">{nfTam.format(m.tokensPerRequest)}</span>,
     value: (m) => m.tokensPerRequest,
+    dolgu: (m) => m.tokensPerRequest,
   },
   {
     key: 'promptPerCompletion',
@@ -239,6 +256,25 @@ export function RankingsTable({ models, windowLabel }: { models: ModelShare[]; w
 
   const aktifBaslik = COLS.find((c) => c.key === sort.key)?.label ?? '';
 
+  /**
+   * Mini dolgular için sütun başına en büyük değer. Sıralamadan BAĞIMSIZDIR: dolgu oranı
+   * satırın yerine değil, sütundaki en büyük sayıya göre çizilir; tablo yeniden sıralanınca
+   * çubuk boyları değişmez.
+   */
+  const dolguTavanlari = useMemo(() => {
+    const t: Record<string, number> = {};
+    for (const c of COLS) {
+      if (!c.dolgu) continue;
+      let enBuyuk = 0;
+      for (const m of models) {
+        const v = c.dolgu(m);
+        if (v !== undefined && v > enBuyuk) enBuyuk = v;
+      }
+      if (enBuyuk > 0) t[c.label] = enBuyuk;
+    }
+    return t;
+  }, [models]);
+
   return (
     <div>
       <p className="text-[13px] text-ink-faint mb-3">
@@ -296,16 +332,28 @@ export function RankingsTable({ models, windowLabel }: { models: ModelShare[]; w
           <tbody>
             {siralanmis.map((m, i) => (
               <tr key={m.slug} className="border-b border-hairline last:border-0 hover:bg-paper-2">
-                {COLS.map((c) => (
-                  <td
-                    key={c.label}
-                    className={`px-3 py-3 text-[13.5px] text-ink-muted ${c.align === 'right' ? 'text-right' : ''} ${
-                      c.mono ? 'font-mono text-[13px]' : ''
-                    }`}
-                  >
-                    {c.render(m, i)}
-                  </td>
-                ))}
+                {COLS.map((c) => {
+                  const ham = c.dolgu?.(m);
+                  const tavan = dolguTavanlari[c.label];
+                  const oran = ham !== undefined && tavan ? Math.max(0, Math.min(1, ham / tavan)) : undefined;
+                  return (
+                    <td
+                      key={c.label}
+                      className={`relative px-3 py-3 text-[13.5px] text-ink-muted ${
+                        c.align === 'right' ? 'text-right' : ''
+                      } ${c.mono ? 'font-mono text-[13px]' : ''}`}
+                    >
+                      {oran !== undefined && (
+                        <span
+                          aria-hidden
+                          className="absolute inset-y-[4px] right-1 rounded-[3px] pointer-events-none"
+                          style={{ width: `${oran * 100}%`, backgroundColor: 'var(--brand-glow)' }}
+                        />
+                      )}
+                      <span className="relative">{c.render(m, i)}</span>
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
@@ -323,6 +371,13 @@ export function RankingsTable({ models, windowLabel }: { models: ModelShare[]; w
             <dd className="text-ink-muted">{c.tanim}</dd>
           </div>
         ))}
+        <div className="flex gap-2 text-[13px] leading-relaxed">
+          <dt className="text-ink shrink-0 font-medium">Hücre dolgusu:</dt>
+          <dd className="text-ink-muted">
+            Sayısal hücrelerin arkasındaki açık mavi dolgu, o sütundaki en büyük değere oranıdır. Tablo yeniden
+            sıralandığında dolgu boyları değişmez.
+          </dd>
+        </div>
         <div className="flex gap-2 text-[13px] leading-relaxed">
           <dt className="text-ink shrink-0 font-medium">Kısaltmalar:</dt>
           <dd className="text-ink-muted">T = trilyon, Mr = milyar, Mn = milyon. Tam sayı için hücrenin üzerine gelin.</dd>
