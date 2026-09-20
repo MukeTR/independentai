@@ -27,7 +27,7 @@ import {
   Database,
 } from 'lucide-react';
 import Link from 'next/link';
-import { CAPABILITIES, OFFER, formatTry, type Offer } from '@independentai/shared';
+import { CAPABILITIES, OFFER, formatTry } from '@independentai/shared';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { CtaBlock } from '@/components/marketing/cta-block';
@@ -57,10 +57,10 @@ type Illo = { name: CizName; alt: string; caption: string };
 type Pillar = { id: string; eyebrow: string; title: string; body: string; features: Feature[]; illo?: Illo };
 
 /**
- * Sütunlar. `offer` ile kurulur: Yanıt Agency başlangıç fiyatı admin ayarından (`server/offer.ts`) gelir;
- * `/yanit-agency` ve `/solutions/agencies` ile aynı kaynak. Statik `OFFER` yalnız `fairUse` (kod sabiti) için.
+ * Sütunlar. Ajans fiyatı sayfadan kaldırıldığı için burada artık `offer` gerekmiyor;
+ * SaaS rakamı sayfanın altındaki CTA satırında doğrudan kullanılıyor.
  */
-function buildPillars(offer: Offer): Pillar[] {
+function buildPillars(): Pillar[] {
   return [
     {
       id: 'tracking',
@@ -273,7 +273,7 @@ const STATUS_LABEL: Record<string, string> = { live: 'yayında', roadmap: 'yakı
 
 export default async function FeaturesPage() {
   const offer = await getOffer();
-  const pillars = buildPillars(offer);
+  const pillars = buildPillars();
   return (
     <>
       <BreadcrumbJsonLd

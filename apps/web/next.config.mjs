@@ -14,6 +14,10 @@ const BASE_HEADERS = [
 
 const nextConfig = {
   reactStrictMode: true,
+  // Statik vitrin anlık görüntüsü (Cloudflare önizlemesi) için: sunucu tarafı görüntü
+  // iyileştirici olmadığından `next/image` doğrudan /img/... yolunu bassın.
+  // Normal (Vercel) derlemede bu satır etkisizdir.
+  ...(process.env.YANIT_STATIC_SNAPSHOT === '1' ? { images: { unoptimized: true } } : {}),
   poweredByHeader: false,
   transpilePackages: ['@independentai/shared', '@independentai/db', '@independentai/ai'],
   serverExternalPackages: ['@prisma/client', '.prisma/client', 'undici'],

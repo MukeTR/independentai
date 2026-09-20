@@ -250,9 +250,9 @@ export default function HowItWorks() {
             Sitenizi tarayalım; <span className="text-brand">hükmü siz okuyun.</span>
           </>
         }
-        body="SEO karnesi hesap istemez: title, meta, H1, canonical, OG ve şema tek ekranda. Sonra isterseniz sürekli ölçüm için hesap açın; kart gerekmez."
-        primaryHref="/arac/seo-karnesi"
-        primaryLabel="SEO karnesini çalıştır"
+        body="Ücretsiz araçlar hesap istemez: müşterinizin sorduğu sorular, sitenizdeki karşılıkları ve yapay zekâ tarayıcılarının erişimi tek ekranda. Sonra isterseniz sürekli ölçüm için hesap açın; kart gerekmez."
+        primaryHref="/arac/musteriniz-nasil-soruyor"
+        primaryLabel="Müşteriniz sizi nasıl soruyor?"
         secondaryHref="/arac"
         secondaryLabel="Tüm ücretsiz araçlar"
       />

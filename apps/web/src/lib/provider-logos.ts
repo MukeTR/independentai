@@ -35,7 +35,9 @@ export const SAGLAYICI_LOGOLARI: Record<string, SaglayiciLogo> = {
   nvidia: { file: 'nvidia.svg', label: 'NVIDIA' },
   xiaomi: { file: 'xiaomi.svg', label: 'Xiaomi' },
   // Simple Icons setinde kurumsal Tencent markası yok; QQ markası Tencent'in kendi işaretidir.
-  tencent: { file: 'tencentqq.svg', label: 'Tencent' },
+  // Tencent'in kurumsal işareti Simple Icons'ta yok. QQ markası BAŞKA bir ürüne ait;
+  // Hunyuan modellerinin yanına koymak yanlış olur. Bilerek monograma düşürüldü.
+  tencent: { label: 'Tencent' },
   minimax: { file: 'minimax.svg', label: 'MiniMax' },
   moonshotai: { file: 'moonshotai.svg', label: 'Moonshot AI' },
   qwen: { file: 'qwen.svg', label: 'Qwen' },
