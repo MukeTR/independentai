@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
  * E2E — gerçek tarayıcı, gerçek Next sunucusu (port 3200), izole test DB.
  * `pnpm test:e2e` öncesi: TEST_DATABASE_URL tanımlı olmalı (bkz. tests/e2e/README.md).
  */
-const PORT = 3200;
+const PORT = Number(process.env.E2E_PORT ?? 3200);
 const baseURL = `http://localhost:${PORT}`;
 
 // Güvenlik kilidi: TEST_DATABASE_URL yoksa apps/web/.env'deki (production) DATABASE_URL devreye girebilir.
@@ -32,7 +32,7 @@ export default defineConfig({
   webServer: {
     command: process.env.E2E_SERVER_COMMAND ?? 'pnpm start',
     url: `${baseURL}/api/health`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !process.env.CI && !process.env.E2E_PORT,
     timeout: 120_000,
     env: {
       ...process.env,
