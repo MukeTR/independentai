@@ -1,18 +1,32 @@
 import Link from 'next/link';
 import { ArrowRight, Eye, Globe, Radar, Quote, Lightbulb, ShieldCheck, ListChecks, BarChart3 } from 'lucide-react';
+import { CAPABILITIES } from '@independentai/shared';
 import { Container } from '@/components/container';
 import { Reveal } from '@/components/marketing/reveal';
 
-const FEATURES = [
-  { icon: Eye, t: 'AI Visibility', d: 'ChatGPT · Gemini · Claude', wide: true },
-  { icon: Globe, t: 'Site Intelligence', d: 'Teknik + içerik audit' },
-  { icon: Radar, t: 'Competitor Intelligence', d: 'Kim, hangi soruda, kaçıncı' },
-  { icon: Quote, t: 'Citation Intelligence', d: 'Modellerin güvendiği kaynaklar' },
-  { icon: Lightbulb, t: 'Content Opportunities', d: 'Boşluk → içerik önerisi' },
-  { icon: ShieldCheck, t: 'Brand Accuracy', d: 'Halüsinasyon ve yanlış bilgi', wide: true },
-  { icon: ListChecks, t: 'Tasks', d: 'Haftalık iş listesi, etki tahmini', wide: true },
-  { icon: BarChart3, t: 'Reporting', d: 'Paylaşılabilir rapor, API', wide: true },
+/**
+ * Modül kartları. Rozet yetenek matrisinden türer: capability yoksa ya da `roadmap` ise "yakında",
+ * `beta` ise "beta". Yapılacaklar (Tasks) kodda yok → "yakında"; kart yalnızca planı anlatır.
+ */
+type Feature = { icon: typeof Eye; t: string; d: string; cap: string; wide?: boolean };
+
+const FEATURES: Feature[] = [
+  { icon: Eye, t: 'AI görünürlüğü', d: 'ChatGPT · Gemini · Claude', cap: 'tracking', wide: true },
+  { icon: Globe, t: 'Site denetimi', d: 'Teknik + içerik denetimi, ücretsiz araçlar', cap: 'geo_tools' },
+  { icon: Radar, t: 'Rakip takibi', d: 'Kim, hangi soruda, kaçıncı', cap: 'competitors' },
+  { icon: Quote, t: 'Atıf kaynakları', d: 'Modellerin güvendiği kaynaklar', cap: 'citations' },
+  { icon: Lightbulb, t: 'İçerik fırsatları', d: 'İçerik denetimi, soru bulucu, AEO yazıcı', cap: 'geo_tools' },
+  { icon: ShieldCheck, t: 'Marka doğruluğu', d: 'Halüsinasyon ve yanlış bilgi kontrolü', cap: 'geo_tools', wide: true },
+  { icon: ListChecks, t: 'Yapılacaklar', d: 'Haftalık iş listesi — yol haritasında', cap: 'tasks', wide: true },
+  { icon: BarChart3, t: 'Raporlama', d: 'Paylaşılabilir rapor, haftalık e-posta, API', cap: 'share_links', wide: true },
 ];
+
+function badgeFor(cap: string): 'beta' | 'yakında' | null {
+  const c = CAPABILITIES.find((x) => x.key === cap);
+  if (!c || c.status === 'roadmap') return 'yakında';
+  if (c.status === 'beta') return 'beta';
+  return null;
+}
 
 export function FeatureBento() {
   return (
@@ -35,16 +49,31 @@ export function FeatureBento() {
           </div>
         </Reveal>
         <div className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {FEATURES.map((f, i) => (
-            <Reveal key={f.t} delay={(i % 4) * 60} className={f.wide ? 'col-span-2' : ''}>
-              <div className="card p-5 h-full hover:-translate-y-0.5 transition-transform duration-300">
-                <f.icon className="w-5 h-5 text-brand" aria-hidden />
-                <div className="font-display text-[16px] mt-4">{f.t}</div>
-                <div className="text-[12.5px] text-ink-muted mt-1">{f.d}</div>
-              </div>
-            </Reveal>
-          ))}
+          {FEATURES.map((f, i) => {
+            const badge = badgeFor(f.cap);
+            return (
+              <Reveal key={f.t} delay={(i % 4) * 60} className={f.wide ? 'col-span-2' : ''}>
+                <div
+                  className={`card p-5 h-full hover:-translate-y-0.5 transition-transform duration-300 ${
+                    badge === 'yakında' ? 'border-dashed' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <f.icon className="w-5 h-5 text-brand" aria-hidden />
+                    {badge && (
+                      <span className="chip !text-[10px]">{f.cap === 'tasks' ? 'Yapılacaklar · yakında' : badge}</span>
+                    )}
+                  </div>
+                  <div className="font-display text-[16px] mt-4">{f.t}</div>
+                  <div className="text-[12.5px] text-ink-muted mt-1">{f.d}</div>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
+        <p className="text-[11.5px] text-ink-faint mt-5 font-mono">
+          Rozetler yetenek matrisinden gelir · “yakında” etiketli modül üründe yok · landing ekranları temsili
+        </p>
       </Container>
     </section>
   );

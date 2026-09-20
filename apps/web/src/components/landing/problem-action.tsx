@@ -6,19 +6,23 @@ import { Container } from '@/components/container';
 import { Reveal } from '@/components/marketing/reveal';
 import { useStory } from './story';
 
+/** Temsili örnek: bulgular ve öneriler gerçek panelde araç bazında gelir; tek "iş listesi" ekranı yakında. */
 const TASKS = [
-  { n: '01', t: 'Hizmet sayfasını yeniden yapılandır', meta: '15 dk', icon: Clock },
-  { n: '02', t: 'Comparison içeriği oluştur', meta: 'Yüksek etki', icon: Zap },
-  { n: '03', t: 'Marka entity sinyallerini güçlendir', meta: 'Yüksek etki', icon: Zap },
-  { n: '04', t: '4 citation kaynağında yer edin', meta: 'Orta etki', icon: Zap },
+  { n: '01', t: 'Hizmet sayfasını soruya cevap verecek biçimde yeniden yapılandır', meta: '15 dk', icon: Clock },
+  { n: '02', t: 'Karşılaştırma içeriği oluştur', meta: 'Yüksek öncelik', icon: Zap },
+  { n: '03', t: 'Marka entity sinyallerini güçlendir', meta: 'Yüksek öncelik', icon: Zap },
+  { n: '04', t: '4 kaynakta (dizin, karşılaştırma) yer edinin', meta: 'Orta öncelik', icon: Zap },
 ];
 
 function Found({ domain }: { domain: string }) {
   return (
     <div className="p-7 lg:p-9 h-full md:w-1/2">
-      <div className="chip comp !text-[10.5px]">Bulduk</div>
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="chip comp !text-[10.5px]">Bulduk</div>
+        <span className="chip !text-[10px]">temsili</span>
+      </div>
       <p className="font-display text-[20px] lg:text-[24px] mt-4 leading-snug max-w-lg">
-        "En iyi pazaryeri yönetim ajansı" sorgusunda markanız görünmüyor.
+        “En iyi pazaryeri yönetim ajansı” sorgusunda markanız görünmüyor.
       </p>
       <div className="mt-6 text-[14px]">
         <div className="eyebrow">Sebep</div>
@@ -45,7 +49,10 @@ function Found({ domain }: { domain: string }) {
 function Todo() {
   return (
     <div className="p-7 lg:p-9 h-full md:w-1/2 md:ml-auto">
-      <div className="chip own !text-[10.5px]">Yapılacaklar</div>
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="chip own !text-[10.5px]">Yapılacaklar</div>
+        <span className="chip !text-[10px]">yakında · temsili</span>
+      </div>
       <ol className="mt-5 space-y-2.5 max-w-xl">
         {TASKS.map((t) => (
           <li key={t.n} className="flex items-center gap-4 rounded-xl border border-hairline bg-paper-2/70 px-4 py-3">
@@ -60,7 +67,9 @@ function Todo() {
           </li>
         ))}
       </ol>
-      <p className="text-[12.5px] text-ink-faint mt-5">Tam burada ürün fark yaratıyor: analitik değil, iş listesi.</p>
+      <p className="text-[12.5px] text-ink-faint mt-5">
+        Bugün öneriler araç bazında gelir; tek “iş listesi” ekranı yol haritasında.
+      </p>
     </div>
   );
 }
@@ -74,12 +83,16 @@ export function ProblemAction() {
     <section className="py-20 lg:py-28 border-t border-hairline bg-paper-2/40">
       <Container>
         <Reveal>
-          <div className="eyebrow text-brand-deep">Adım 3 · Sorun → Aksiyon</div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="eyebrow text-brand-deep">Adım 3 · Sorun → Aksiyon</div>
+            <span className="chip !text-[10.5px]">Yapılacaklar · yakında</span>
+          </div>
           <h2 className="font-display text-[34px] lg:text-[48px] tracking-tight mt-3 max-w-3xl leading-[1.05]">
-            Yanıt sadece analitik vermez. <span className="accent-text">İş listesi çıkarır.</span>
+            Yanıt sadece skor vermez. <span className="accent-text">Nedenini ve ne yapılacağını söyler.</span>
           </h2>
           <p className="text-[16px] lg:text-[18px] text-ink-muted mt-5 max-w-2xl leading-relaxed">
-            Kaydırıcıyı çekin: solda ne bulduk, sağda ne yapılacak. Her görevin yanında "nasıl yapılır" var.
+            Kaydırıcıyı çekin: solda ne bulduk, sağda ne yapılacak. Her önerinin yanında “nasıl yapılır” var. Örnek
+            temsilidir; gerçek bulgular sitenizin taramasından gelir.
           </p>
         </Reveal>
 

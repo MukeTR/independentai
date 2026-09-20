@@ -9,14 +9,14 @@ import { DEMO } from './demo';
  * Landing boyunca tek bir örnek şirketi takip ederiz. Ziyaretçi kendi alan adını girerse
  * hero'daki tarama gerçek GEO denetimini (POST /api/tools/geo-audit, kayıt gerekmez) çalıştırır ve
  * hero + "sana ne yaptığımızı gösterelim" bölümü onun verisiyle dolar; kalan bölümler temsili
- * hikâyeyi (acme.com) anlatmaya devam eder, yalnızca alan adı değişir.
+ * hikâyeyi (acme.example) anlatmaya devam eder, yalnızca alan adı değişir.
  */
 
 export type ScanStatus = 'demo' | 'running' | 'done' | 'error';
 
 export type ScanState = {
   status: ScanStatus;
-  /** Girilen alan adı (normalize). Demo'da acme.com. */
+  /** Girilen alan adı (normalize). Demo'da acme.example. */
   domain: string;
   result: GeoAuditResult | null;
   error: string | null;
@@ -29,7 +29,7 @@ type Story = {
   startScan: (input: string) => void;
   /** Canlı sonuç var mı (hero/wow bölümleri gerçek veriyi gösterir). */
   live: boolean;
-  /** Bölümlerde kullanılacak alan adı: canlı ise ziyaretçinin, değilse acme.com. */
+  /** Bölümlerde kullanılacak alan adı: canlı ise ziyaretçinin, değilse acme.example. */
   domain: string;
   /** Canlı bulgular (fail → warn → pass sıralı) veya null. */
   findings: AuditFinding[] | null;
@@ -85,6 +85,8 @@ export function StoryProvider({ children }: { children: ReactNode }) {
       })
       .catch((err: unknown) => {
         if (runRef.current !== myRun) return;
+        // INTEGRATE yuvası (PREP-A `lib/blocked-redirect.ts` gelince): yasaklı site cevabında
+        // `if (handleBlockedResponse(err)) return;` — tarayıcıyı youtube'a yönlendirir, hata gösterilmez.
         setScan((s) => ({ ...s, status: 'error', result: null, error: errorMessage(err) }));
       });
   }, []);
@@ -106,6 +108,14 @@ export function StoryProvider({ children }: { children: ReactNode }) {
   }, [scan, startScan]);
 
   return <StoryContext.Provider value={value}>{children}</StoryContext.Provider>;
+}
+
+/**
+ * Yasaklı site ipucu yuvası. INTEGRATE, PREP-A'nın `<BlockedSiteHint/>` bileşenini buraya bağlar
+ * (`@/components/blocked-site-hint`); o zamana kadar hiçbir şey render etmez. Hero, hata satırının altında çağırır.
+ */
+export function BlockedSiteHintSlot(_props: { domain?: string }) {
+  return null;
 }
 
 export function useStory(): Story {

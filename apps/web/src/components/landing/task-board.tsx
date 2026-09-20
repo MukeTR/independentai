@@ -8,18 +8,28 @@ import { cn } from '@/lib/cn';
 
 type Task = { id: string; t: string; tag: string; tone: 'lift' | 'entity' | 'citation' | 'done'; done: boolean };
 
+/**
+ * Yapılacaklar listesi (Task) ürün yol haritasındadır; kodda Task modeli/rotası YOK. Bu bölüm bir ön izlemedir:
+ * temsili görevler, temsili etki etiketleri. Etiketler görünür ("Yapılacaklar · yakında", "temsili").
+ */
 const INITIAL: Task[] = [
   {
     id: 'a',
-    t: '"Pazaryeri danışmanlığı nedir?" sayfasını güncelle',
-    tag: '+8 tahmini görünürlük',
+    t: '“Pazaryeri danışmanlığı nedir?” sayfasını soruya cevap verecek biçimde güncelle',
+    tag: 'öncelik: yüksek',
     tone: 'lift',
     done: false,
   },
-  { id: 'b', t: '"En iyi pazaryeri ajansları" karşılaştırma içeriği oluştur', tag: '+12', tone: 'lift', done: false },
-  { id: 'c', t: 'LinkedIn company description güncelle', tag: 'Entity signal', tone: 'entity', done: false },
-  { id: 'd', t: 'Sektörel X yayında mention kazan', tag: 'Citation', tone: 'citation', done: false },
-  { id: 'e', t: 'Organization Schema eklendi', tag: 'Tamamlandı', tone: 'done', done: true },
+  {
+    id: 'b',
+    t: '“En iyi pazaryeri ajansları” karşılaştırma içeriği oluştur',
+    tag: 'öncelik: yüksek',
+    tone: 'lift',
+    done: false,
+  },
+  { id: 'c', t: 'LinkedIn şirket açıklamasını marka adıyla eşle', tag: 'entity sinyali', tone: 'entity', done: false },
+  { id: 'd', t: 'Sektör dizinine kayıt aç', tag: 'atıf', tone: 'citation', done: false },
+  { id: 'e', t: 'Organization şeması eklendi', tag: 'tamamlandı', tone: 'done', done: true },
 ];
 
 const BASE_DONE = 12;
@@ -46,16 +56,20 @@ export function TaskBoard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           <div className="lg:col-span-5">
             <Reveal>
-              <div className="eyebrow text-brand-deep">Adım 4 · 12 görev üretildi</div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="eyebrow text-brand-deep">Adım 4 · Yapılacaklar</div>
+                <span className="chip !text-[10.5px]">Yapılacaklar · yakında</span>
+              </div>
               <h2 className="font-display text-[34px] lg:text-[44px] tracking-tight mt-3 leading-[1.05]">
-                Analytics'e bakıp ne yapacağınızı düşünmeyin.{' '}
-                <span className="accent-text">Yanıt size sıradaki işi söylesin.</span>
+                Grafiğe bakıp ne yapacağınızı düşünmeyin.{' '}
+                <span className="accent-text">Yanıt sıradaki işi söylesin.</span>
               </h2>
               <p className="text-[16px] text-ink-muted mt-5 leading-relaxed">
-                Panelin merkezi bir grafik değil, bu haftanın listesi. Her görev bir etki tahmini taşır; işaretledikçe
-                görünürlük skorunuz nereye gideceğini gösterir.
+                Bugün panel bulguları ve önerileri araç araç verir. Bunları tek bir haftalık listede toplayan,
+                işaretledikçe ilerlemeyi gösteren “Yapılacaklar” ekranı yol haritamızda; aşağıdaki kart o ekranın
+                temsili ön izlemesidir.
               </p>
-              <p className="text-[13px] text-ink-faint mt-4">Kutucukları deneyin, halka anında güncellenir.</p>
+              <p className="text-[13px] text-ink-faint mt-4">Kutucukları deneyin; halka temsili olarak güncellenir.</p>
             </Reveal>
           </div>
 
@@ -64,7 +78,7 @@ export function TaskBoard() {
               <div className="card p-6 sm:p-7 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <div className="eyebrow">Bu hafta</div>
+                    <div className="eyebrow">Bu hafta · temsili</div>
                     <div className="font-display text-[22px] mt-1">Yapılacaklar</div>
                   </div>
                   <div className="flex items-center gap-3">
