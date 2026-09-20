@@ -7,8 +7,8 @@ import { capability, formatTry } from '@independentai/shared';
 import { AGENCY_ITEMS, SAAS_ITEMS } from './two-paths-data';
 
 /**
- * Adım 5 · İki yol. SaaS listesi capabilities (live|beta) ile sınırlı; Yapılacaklar listesi "yakında".
- * Yanıt Agency bir hizmettir (capability beta): teklifle, garanti yok, ilerleme aynı panelden izlenir.
+ * Adım 5 · İki yol. SaaS listesi capabilities ile sınırlı; Yapılacaklar listesi "yakında".
+ * Yanıt Agency bir hizmettir: teklifle, garanti yok, ilerleme aynı panelden izlenir.
  */
 export async function TwoPaths() {
   const offer = await getOffer();
@@ -16,8 +16,7 @@ export async function TwoPaths() {
     try {
       return capability('agency_service').status;
     } catch {
-      // INTEGRATE `agency_service: beta` girişini capabilities.ts'e ekleyene kadar rozet "beta" kalır.
-      return 'beta';
+      return null;
     }
   })();
   return (
@@ -51,7 +50,6 @@ export async function TwoPaths() {
                 {SAAS_ITEMS.map((s) => (
                   <li key={s.capability} className="flex items-center gap-2 text-[14px]">
                     <Check className="w-3.5 h-3.5 text-brand shrink-0" aria-hidden /> {s.label}
-                    {s.beta && <span className="chip !text-[9.5px] !py-0 !px-1.5">beta</span>}
                   </li>
                 ))}
                 <li className="flex items-center gap-2 text-[14px] text-ink-muted">

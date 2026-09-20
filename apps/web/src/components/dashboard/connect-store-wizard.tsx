@@ -426,7 +426,6 @@ export function ConnectStoreWizard({
                   >
                     <div className="flex items-center justify-between">
                       <Icon className="w-5 h-5 text-brand" aria-hidden />
-                      <span className="chip !text-[10px]">beta</span>
                     </div>
                     <div className="font-medium text-[14px] mt-3">{p.label}</div>
                     <div className="text-[11.5px] text-ink-faint mt-1">

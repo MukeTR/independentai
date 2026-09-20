@@ -141,6 +141,16 @@ function parseNote(raw: unknown): string | null {
 
 function parseHostname(raw: unknown): string {
   if (typeof raw !== 'string' || !raw.trim()) throw new ClientError('Alan adı boş olamaz');
+  // Kamu son eki kontrolü normalize'dan ÖNCE: `normalizeHostname` bunları zaten null döndürür,
+  // o yüzden kullanıcı "geçersiz alan adı" yerine gerçek nedeni görmeli.
+  const bare = raw
+    .trim()
+    .toLowerCase()
+    .replace(/^[a-z]+:\/\//, '')
+    .replace(/^www\./, '')
+    .split(/[/?#]/)[0];
+  if (bare && isPublicSuffixHostname(bare))
+    throw new ClientError('Bu bir kamu son eki; tek bir alan adı girin (örn. firma.com.tr)');
   const hostname = normalizeHostname(raw);
   if (!hostname) throw new ClientError('Geçersiz alan adı (örn. firma.com; port, yol veya @ olmadan)');
   if (isPublicSuffixHostname(hostname))

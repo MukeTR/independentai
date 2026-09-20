@@ -30,7 +30,7 @@ Yanıt (alan adı: independentai.space; eski adı Independent AI) Türkiye merke
 - [Özellikler](${SITE}/features): Ölçüm, analiz, uyarılar, ekip, API
 - [Nasıl çalışır](${SITE}/how-it-works): Veri toplama hattı ve ölçüm metodolojisi
 - [Kullanım senaryoları](${SITE}/use-cases): SaaS, e-ticaret, ajans, kurumsal
-- [E-ticaret çözümü](${SITE}/solutions/ecommerce): Shopify, ikas, Ticimax mağaza bağlantısı (beta)
+- [E-ticaret çözümü](${SITE}/solutions/ecommerce): Shopify, ikas, Ticimax mağaza bağlantısı
 - [Ajanslar](${SITE}/solutions/agencies): Çok müşterili portföy, roller, paylaşım linkleri, ücretsiz ön analiz
 - [Public API](${SITE}/docs/api): GET /api/v1/visibility — salt-okunur görünürlük verisi, Bearer token, 60 istek/dk
 - [Dokümantasyon](${SITE}/docs): Kurulum ve kullanım rehberleri
@@ -45,7 +45,7 @@ Yanıt (alan adı: independentai.space; eski adı Independent AI) Türkiye merke
 - [E-ticaret AI görünürlük testi](${SITE}/arac/e-ticaret-ai-gorunurluk-testi): Mağazanın AI motorlarına hazırlığı, 6 eksen
 - [Ürün sayfası testi](${SITE}/arac/urun-sayfasi-testi): Product JSON-LD, içerik, görsel, yapı, cevap uyumu
 - [AI crawler testi](${SITE}/arac/ai-crawler-testi): robots.txt bot matrisi, indekslenebilirlik, llms.txt
-- [Ürün açıklama yazıcı](${SITE}/arac/urun-aciklama-yazici): AI destekli açıklama + SSS + meta + JSON-LD (beta)
+- [Ürün açıklama yazıcı](${SITE}/arac/urun-aciklama-yazici): AI destekli açıklama + SSS + meta + JSON-LD
 - [ChatGPT rank checker](${SITE}/arac/chatgpt-rank-checker) · [Claude rank checker](${SITE}/arac/claude-rank-checker) · [Gemini rank checker](${SITE}/arac/gemini-rank-checker): Markanız o modelde anılıyor mu, kaçıncı sırada?
 
 ## Hakkında

@@ -2,7 +2,7 @@ import { SolutionPage } from '@/components/marketing/solution-page';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'ikas için AI görünürlüğü — salt-okunur katalog bağlantısı (beta)',
+  title: 'ikas için AI görünürlüğü — salt-okunur katalog bağlantısı',
   description:
     'ikas mağazanı Client ID / Client Secret ile bağla; ürün kataloğun salt-okunur senkronlanır. AI hazırlık skoru ve ChatGPT/Claude/Gemini izleme soruları ile ürünlerinin AI asistanlarında nasıl göründüğünü ölç.',
   path: '/solutions/ikas',
@@ -16,7 +16,7 @@ export default function IkasSolutionPage() {
         name: 'ikas entegrasyonu',
         eyebrow: 'Çözüm · ikas',
         breadcrumb: 'ikas',
-        badges: ['beta', 'Client ID / Secret', 'salt-okunur'],
+        badges: ['Client ID / Secret', 'salt-okunur'],
         title: (
           <>
             ikas mağazan AI asistanlarında nasıl görünüyor — <span className="text-brand">ölç, düzelt, izle.</span>
@@ -27,7 +27,7 @@ export default function IkasSolutionPage() {
         setup: {
           title: 'ikas kurulumu — Client ID / Client Secret ile.',
           intro:
-            'ikas entegrasyonu beta aşamasında. ikas Admin API’sine, panelinizde oluşturduğunuz özel uygulamanın kimlik bilgileriyle (client_credentials) bağlanır; erişim token’ı sunucuda otomatik yenilenir.',
+            'ikas Admin API’sine, panelinizde oluşturduğunuz özel uygulamanın kimlik bilgileriyle (client_credentials) bağlanır; erişim token’ı sunucuda otomatik yenilenir.',
           steps: [
             {
               t: 'Özel uygulama oluştur',

@@ -50,7 +50,7 @@ export const metadata = buildMetadata({
  */
 const PUBLIC_TOOL_COUNT = ECOMMERCE_TOOL_LINKS.length + RANK_CHECKER_LINKS.length;
 
-type Feature = { icon: typeof Eye; t: string; d: string; badge?: 'beta' | 'yakında' };
+type Feature = { icon: typeof Eye; t: string; d: string; badge?: 'yakında' };
 type Pillar = { id: string; eyebrow: string; title: string; body: string; features: Feature[] };
 
 /**
@@ -112,7 +112,6 @@ function buildPillars(offer: Offer): Pillar[] {
           icon: Quote,
           t: 'Atıf kaynakları',
           d: 'Modellerin cevap üretirken dayandığı alan adları. Sağlayıcı web araması açıkken native atıf, kapalıyken metin içi bağlantılar.',
-          badge: 'beta',
         },
       ],
     },
@@ -141,7 +140,6 @@ function buildPillars(offer: Offer): Pillar[] {
           icon: Brain,
           t: 'Sentiment',
           d: 'Pozitif / nötr / negatif ton. Heuristik + LLM sınıflandırma; sağlayıcı anahtarı yoksa yalnızca heuristik.',
-          badge: 'beta',
         },
       ],
     },
@@ -171,7 +169,6 @@ function buildPillars(offer: Offer): Pillar[] {
           icon: Sparkles,
           t: 'Yanıt Agency',
           d: `Analizi biz yaptık, uygulamayı da biz yapalım: teknik düzeltme, şema/entity, içerik ve kaynak çalışması. ${formatTry(offer.agencyFromMonthlyTry)}/ay’dan başlayan sprint, teklifle; sonuç sözü yok, ölçüm var.`,
-          badge: 'beta',
         },
       ],
     },
@@ -246,7 +243,7 @@ function buildPillars(offer: Offer): Pillar[] {
   ];
 }
 
-const STATUS_LABEL: Record<string, string> = { live: 'yayında', beta: 'beta', roadmap: 'yakında' };
+const STATUS_LABEL: Record<string, string> = { live: 'yayında', roadmap: 'yakında' };
 
 export default async function FeaturesPage() {
   const offer = await getOffer();
@@ -319,7 +316,7 @@ export default async function FeaturesPage() {
       <Section
         id="capabilities"
         eyebrow="Yetenek matrisi"
-        title="Ne yayında, ne beta, ne yakında?"
+        title="Ne yayında, ne yakında?"
         intro="Aşağıdaki liste koddaki yetenek matrisinden gelir; bir özellik burada 'yayında' değilse hiçbir sayfa onu çalışan özellik gibi anlatmaz."
         className="bg-paper-2/40 scroll-mt-20"
       >

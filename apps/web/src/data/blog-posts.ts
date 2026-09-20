@@ -193,6 +193,14 @@ export function getWordCount(post: BlogPost): number {
   }, 0);
 }
 
+/**
+ * Gerçek okuma süresi (dk) — gövdedeki kelime sayısından, 200 kelime/dk ile.
+ * `readTimeMin` alanı elle girilmişti ve gerçeği yansıtmıyordu; arayüz artık bunu kullanır.
+ */
+export function getReadTimeMin(post: BlogPost): number {
+  return Math.max(1, Math.round(getWordCount(post) / 200));
+}
+
 /** Kategoriye göre gruplanmış yazılar — arşiv sayfası için (publishedAt desc korunur). */
 export function getPostsByCategory(): { category: BlogCategory; posts: BlogPost[] }[] {
   const preferredOrder: BlogCategory[] = ['GEO', 'AI', 'Strateji', 'Teknik', 'Pazarlama', 'Ürün', 'Sektör'];

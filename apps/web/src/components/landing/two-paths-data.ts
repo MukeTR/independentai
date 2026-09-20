@@ -1,17 +1,17 @@
 /**
  * "İki yol" bölümünün listeleri — test edilebilir tek kaynak (marketing-copy.test.ts).
  *
- * SaaS listesi yalnızca `CAPABILITIES` içinde `live` ya da `beta` olan yeteneklere işaret eder; kodda
+ * SaaS listesi yalnızca `CAPABILITIES` içindeki yeteneklere işaret eder; kodda
  * karşılığı olmayan hiçbir şey burada "var" gibi sunulmaz. Yapılacaklar listesi (Task) roadmap'tir ve
  * bileşende ayrı bir "yakında" satırı olarak gösterilir.
  */
-export type SaasItem = { label: string; capability: string; beta?: boolean };
+export type SaasItem = { label: string; capability: string };
 
 export const SAAS_ITEMS: SaasItem[] = [
   { label: 'ChatGPT · Claude · Gemini görünürlük takibi', capability: 'tracking' },
   { label: 'Rakip takibi ve Share of Voice', capability: 'competitors' },
   { label: 'GEO denetimi ve panel araçları', capability: 'geo_tools' },
-  { label: 'Atıf kaynakları', capability: 'citations', beta: true },
+  { label: 'Atıf kaynakları', capability: 'citations' },
   { label: 'Günlük ölçüm, haftalık rapor ve uyarılar', capability: 'alerts' },
   { label: 'Paylaşılabilir rapor bağlantısı', capability: 'share_links' },
   { label: 'Salt-okunur Public API', capability: 'api' },

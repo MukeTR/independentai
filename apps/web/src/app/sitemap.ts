@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/seo';
+import { SECTORS } from '@/data/sectors';
 import { POSTS } from '@/data/blog-posts';
 
 /**
@@ -35,6 +36,7 @@ const STATIC_PAGES: StaticPage[] = [
   { path: '/', priority: 1.0, change: 'weekly', lastmod: CLAIMS_REVISION },
   { path: '/features', priority: 0.8, change: 'weekly', lastmod: CLAIMS_REVISION },
   { path: '/uyumluluk', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
+  { path: '/sektor', priority: 0.8, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/pricing', priority: 0.8, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/how-it-works', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/use-cases', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
@@ -93,6 +95,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: page.priority,
   }));
 
+  /** Sektörel çözüm sayfaları — tek kaynak data/sectors.ts. */
+  const sectorEntries: MetadataRoute.Sitemap = SECTORS.map((s) => ({
+    url: `${SITE_URL}/sektor/${s.slug}`,
+    lastModified: staticLastmod,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
   /**
    * Blog sayfalama — path-based /blog/sayfa/N (sayfa 1 = /blog, üstte zaten var).
    * Her sayfa kendi kendine canonical olduğu için indekslenebilir gerçek hedeflerdir.
@@ -126,5 +136,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  return [...staticEntries, ...blogPagination, ...blogEntries];
+  return [...staticEntries, ...sectorEntries, ...blogPagination, ...blogEntries];
 }

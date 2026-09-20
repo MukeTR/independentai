@@ -3,6 +3,7 @@
  * Yalnızca var olan sayfalara link verilir; "yakında" olanlar rozetle işaretlenir, "var" gibi anlatılmaz.
  */
 import type { MegaPanel } from './mega-menu';
+import { SECTORS } from '@/data/sectors';
 
 export const SOLUTION_LINKS = [
   {
@@ -14,19 +15,16 @@ export const SOLUTION_LINKS = [
     href: '/solutions/shopify',
     title: 'Shopify',
     description: 'OAuth ile salt-okunur katalog; webhook ile canlı güncelleme.',
-    badge: 'beta',
   },
   {
     href: '/solutions/ikas',
     title: 'ikas',
     description: 'Client ID/Secret ile bağlan; Türkiye e-ticaret altyapısı.',
-    badge: 'beta',
   },
   {
     href: '/solutions/ticimax',
     title: 'Ticimax',
     description: 'Ürün servisi ile günlük katalog senkronu.',
-    badge: 'beta',
   },
   {
     href: '/solutions/agencies',
@@ -51,7 +49,6 @@ export const ECOMMERCE_TOOL_LINKS = [
     href: '/arac/urun-aciklama-yazici',
     title: 'Ürün açıklama yazıcı',
     description: 'AI-dostu, doğrulanabilir ürün metni',
-    badge: 'beta',
   },
 ] as const;
 
@@ -61,10 +58,18 @@ export const RANK_CHECKER_LINKS = [
   { href: '/arac/gemini-rank-checker', title: 'Gemini rank checker' },
 ] as const;
 
+/** Sektörel çözüm bağlantıları — tek kaynak `data/sectors.ts`. */
+export const SECTOR_LINKS = SECTORS.map((x) => ({ href: `/sektor/${x.slug}`, title: x.name }));
+
 export const NAV_PANELS: MegaPanel[] = [
   {
     label: 'Çözümler',
+    wide: true,
     sections: [
+      {
+        heading: 'Sektörel çözümler',
+        links: [...SECTOR_LINKS.map((l) => ({ ...l })), { href: '/sektor', title: 'Tüm sektörler' }],
+      },
       {
         heading: 'Platforma göre',
         links: SOLUTION_LINKS.filter((l) => l.href !== '/solutions/agencies').map((l) => ({ ...l })),
@@ -109,15 +114,15 @@ export const NAV_PANELS: MegaPanel[] = [
             title: 'Ürün sayfası testi',
             description: 'Şema, açıklama, fiyat ve stok sinyalleri',
           },
-          { href: '/arac/urun-aciklama-yazici', title: 'Ürün açıklama yazıcı', badge: 'beta' },
+          { href: '/arac/urun-aciklama-yazici', title: 'Ürün açıklama yazıcı' },
         ],
       },
       {
         heading: 'Altyapınıza göre',
         links: [
-          { href: '/solutions/shopify', title: 'Shopify', badge: 'beta' },
-          { href: '/solutions/ikas', title: 'ikas', badge: 'beta' },
-          { href: '/solutions/ticimax', title: 'Ticimax', badge: 'beta' },
+          { href: '/solutions/shopify', title: 'Shopify' },
+          { href: '/solutions/ikas', title: 'ikas' },
+          { href: '/solutions/ticimax', title: 'Ticimax' },
           { href: '/uyumluluk', title: 'Diğer tüm altyapılar', description: 'WooCommerce, Magento, IdeaSoft…' },
         ],
       },
@@ -158,7 +163,7 @@ export const NAV_PANELS: MegaPanel[] = [
           { href: '/features#analytics', title: 'Görünürlük skoru' },
           { href: '/features#analytics', title: 'Share of Voice' },
           { href: '/features#analytics', title: 'Zaman serisi trendi' },
-          { href: '/features#detection', title: 'Tonal analiz', badge: 'beta' },
+          { href: '/features#detection', title: 'Tonal analiz' },
         ],
       },
     ],

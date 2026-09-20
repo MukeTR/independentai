@@ -9,7 +9,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Çözümler — sektör, platform ve ajans',
   description:
-    'Sektörünüze göre sayfalar, Shopify / ikas / Ticimax için salt-okunur katalog bağlantısı (beta), ajanslar için müşteri portföyü ve ortaklık programı, uygulama için Yanıt Agency.',
+    'Sektörünüze göre sayfalar, Shopify / ikas / Ticimax için salt-okunur katalog bağlantısı, ajanslar için müşteri portföyü ve ortaklık programı, uygulama için Yanıt Agency.',
   path: '/solutions',
 });
 
@@ -38,7 +38,7 @@ export default function SolutionsIndex() {
             <span className="text-brand">yapay zekâ sizi mi öneriyor, rakibinizi mi?</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Sektör sayfaları, e-ticaret platformları için salt-okunur katalog bağlantıları (beta), ajanslar için müşteri
+            Sektör sayfaları, e-ticaret platformları için salt-okunur katalog bağlantıları, ajanslar için müşteri
             portföyü ve ortaklık programı, uygulama için Yanıt Agency. Her sayfada neyin çalıştığını ve sınırlarını
             açıkça yazıyoruz.
           </p>
@@ -53,7 +53,6 @@ export default function SolutionsIndex() {
                 <Link key={s.href} href={s.href} className="card p-6 group hover:-translate-y-0.5 transition-transform">
                   <div className="flex items-center justify-between">
                     <Icon className="w-5 h-5 text-brand" aria-hidden />
-                    {'badge' in s && s.badge ? <span className="chip !text-[10px]">{s.badge}</span> : null}
                   </div>
                   <h2 className="font-display text-[20px] mt-4">{s.title}</h2>
                   <p className="text-[13.5px] text-ink-muted mt-2 leading-relaxed">{s.description}</p>

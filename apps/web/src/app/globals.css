@@ -447,3 +447,41 @@ i, em, .italic { font-style: normal !important; }
 }
 /* Float eden menünün altındaki içerik üstten nefes alsın */
 .home-top { padding-top: 0; }
+
+
+/* =============================================================================
+   Footer dev kelime markası — sayfanın en altında, alttan kırpılan marka bandı
+   ============================================================================= */
+.wordmark-band {
+  position: relative;
+  margin-top: 64px;
+  height: clamp(120px, 17vw, 260px);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(37, 99, 235, 0.16) 0,
+      rgba(37, 99, 235, 0.16) 1px,
+      transparent 1px,
+      transparent 7px
+    ),
+    linear-gradient(180deg, #ffffff 0%, #eef3ff 55%, #e3ecff 100%);
+  border-top: 1px solid var(--hairline);
+}
+.wordmark-band__text {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(120px, 23vw, 380px);
+  line-height: 0.78;
+  letter-spacing: -0.045em;
+  color: var(--ink);
+  transform: translateY(16%);
+  user-select: none;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .wordmark-band { margin-top: 48px; }
+}

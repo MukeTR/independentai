@@ -114,14 +114,12 @@ const DETECTED: { key: keyof typeof PLATFORM_LABELS; note: string }[] = [
 const DEEPER = [
   {
     title: 'Mağaza bağlantısı',
-    badge: 'beta',
     body: 'Shopify, ikas ve Ticimax için salt okunur katalog bağlantısı: ürünleriniz tek tek değil toplu denetlenir. Sipariş ve müşteri verisi çekilmez.',
     href: '/solutions/ecommerce',
     cta: 'E-ticaret çözümünü gör',
   },
   {
     title: 'Ziyaret ölçümü',
-    badge: 'beta',
     body: 'Yapay zekâ asistanlarından gelen ziyaretleri ve tarayıcı botlarının isteklerini ayrı ayrı görmek isterseniz siteye küçük bir ölçüm kodu eklenir. İsteğe bağlıdır.',
     href: '/docs',
     cta: 'Kurulum belgesi',
@@ -268,10 +266,7 @@ export default function UyumlulukPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {DEEPER.map((d) => (
             <div key={d.title} className="card p-7 h-full flex flex-col">
-              <div className="flex items-center gap-3">
-                <h3 className="font-display text-[21px]">{d.title}</h3>
-                <span className="chip !text-[10.5px]">{d.badge}</span>
-              </div>
+              <h3 className="font-display text-[21px]">{d.title}</h3>
               <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{d.body}</p>
               <div className="mt-auto pt-6">
                 <Link

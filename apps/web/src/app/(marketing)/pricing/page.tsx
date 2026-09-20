@@ -60,7 +60,7 @@ export default async function PricingPage() {
         'Görünürlük skoru, Share of Voice, 30 günlük trend',
         'Neden görünmediğinizi gösteren bulgular ve yapılacaklar listesi',
         `Panelde ${PANEL_TOOL_COUNT} GEO aracı (denetim, keşif, üretici, e-ticaret)`,
-        `Mağaza bağlantısı: ${LIMITS.storeConnections} mağaza, ${LIMITS.catalogProducts.toLocaleString('tr-TR')} ürün (beta)`,
+        `Mağaza bağlantısı: ${LIMITS.storeConnections} mağaza, ${LIMITS.catalogProducts.toLocaleString('tr-TR')} ürün`,
         'E-posta + Slack uyarıları, haftalık rapor, paylaşılabilir rapor linki',
         `${LIMITS.members} ekip üyesi · Public API (${LIMITS.apiTokens} token, 60 istek/dk)`,
       ],

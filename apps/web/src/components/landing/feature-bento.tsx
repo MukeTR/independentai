@@ -6,7 +6,7 @@ import { Reveal } from '@/components/marketing/reveal';
 
 /**
  * Modül kartları. Rozet yetenek matrisinden türer: capability yoksa ya da `roadmap` ise "yakında",
- * `beta` ise "beta". Yapılacaklar (Tasks) kodda yok → "yakında"; kart yalnızca planı anlatır.
+ * Yapılacaklar (Tasks) kodda yok → "yakında"; kart yalnızca planı anlatır.
  */
 type Feature = { icon: typeof Eye; t: string; d: string; cap: string; wide?: boolean };
 
@@ -21,10 +21,9 @@ const FEATURES: Feature[] = [
   { icon: BarChart3, t: 'Raporlama', d: 'Paylaşılabilir rapor, haftalık e-posta, API', cap: 'share_links', wide: true },
 ];
 
-function badgeFor(cap: string): 'beta' | 'yakında' | null {
+function badgeFor(cap: string): 'yakında' | null {
   const c = CAPABILITIES.find((x) => x.key === cap);
   if (!c || c.status === 'roadmap') return 'yakında';
-  if (c.status === 'beta') return 'beta';
   return null;
 }
 

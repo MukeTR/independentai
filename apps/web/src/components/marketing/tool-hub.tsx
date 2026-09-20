@@ -59,7 +59,7 @@ export type HubTool = {
   icon: ToolIcon;
   /** URL taraması olan araç (kind != null) — `?url=` alır */
   scans: boolean;
-  badge?: 'beta' | 'yeni';
+  badge?: 'yeni';
 };
 
 export type HubGroup = { key: ToolGroup; label: string; tools: HubTool[] };

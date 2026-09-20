@@ -6,7 +6,7 @@ import { DEMO } from './demo';
 
 /**
  * Adım 6 · Yöntem açık. Kaynak listesi temsilidir (.example alan adları); "otorite puanı" gibi uydurma bir
- * metrik göstermeyiz — panelde gerçek atıf kaynakları (capability `citations`, beta) alan adı ve sayı olarak durur.
+ * metrik göstermeyiz — panelde gerçek atıf kaynakları (capability `citations`) alan adı ve sayı olarak durur.
  */
 const SOURCES = [
   { url: 'sektor-dergisi.example', how: 'Editöre e-posta', content: 'Uzman görüşü / röportaj' },
@@ -90,7 +90,7 @@ export function MethodReveal() {
               </div>
               <p className="text-[13px] text-ink-muted mt-5 leading-relaxed">
                 Modeller cevap üretirken güvendiği sitelere bakar. O sitelerde yoksanız, cevapta da yoksunuz. Atıf
-                sayımı panelde beta olarak sunulur; sayılar temsilidir.
+                sayımı panelde sunulur; sayılar temsilidir.
               </p>
               <div className="lg:hidden mt-6 text-ink-faint">
                 <ArrowDown className="w-4 h-4" aria-hidden />

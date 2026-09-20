@@ -51,7 +51,7 @@ export type ToolEntry = {
   dashboardSlug?: string;
   icon: ToolIcon;
   enabled: boolean;
-  badge?: 'beta' | 'yeni';
+  badge?: 'yeni';
 };
 
 export const TOOL_GROUP_LABELS: Record<ToolGroup, string> = {
@@ -140,7 +140,6 @@ export const TOOL_REGISTRY: ToolEntry[] = [
     dashboardSlug: 'product-writer',
     icon: 'Tags',
     enabled: true,
-    badge: 'beta',
   },
   {
     slug: 'chatgpt-rank-checker',

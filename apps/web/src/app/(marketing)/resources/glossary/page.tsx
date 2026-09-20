@@ -25,7 +25,7 @@ function buildTerms(offer: Offer) {
     {
       term: 'Atıf (Citation)',
       tr: 'Kaynak gösterme',
-      d: 'Modelin cevap üretirken dayandığı ya da bağlantı verdiği alan adı. Sağlayıcı web araması açıkken native atıf, kapalıyken metin içi bağlantı sayılır (beta).',
+      d: 'Modelin cevap üretirken dayandığı ya da bağlantı verdiği alan adı. Sağlayıcı web araması açıkken native atıf, kapalıyken metin içi bağlantı sayılır.',
     },
     {
       term: 'Alias Matching',
@@ -35,7 +35,7 @@ function buildTerms(offer: Offer) {
     {
       term: 'BrandMention',
       tr: 'Marka bahsi',
-      d: 'Cevap metninde geçen bir marka adı. Her bahis için pozisyon, bağlam cümlesi ve sentiment (beta) kaydedilir; aynı cevapta tekrar 1 sayılır.',
+      d: 'Cevap metninde geçen bir marka adı. Her bahis için pozisyon, bağlam cümlesi ve sentiment kaydedilir; aynı cevapta tekrar 1 sayılır.',
     },
     {
       term: 'Görünürlük boşluğu',
@@ -80,7 +80,7 @@ function buildTerms(offer: Offer) {
     {
       term: 'Sentiment',
       tr: 'Tonal değerlendirme',
-      d: 'Bir marka bahsinin pozitif, nötr veya negatif olduğunun değerlendirmesi. Heuristik + LLM sınıflandırma; sağlayıcı anahtarı yoksa yalnızca heuristik (beta).',
+      d: 'Bir marka bahsinin pozitif, nötr veya negatif olduğunun değerlendirmesi. Heuristik + LLM sınıflandırma; sağlayıcı anahtarı yoksa yalnızca heuristik.',
     },
     {
       term: 'Sahipsiz soru',

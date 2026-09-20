@@ -43,7 +43,7 @@ const SECTIONS = [
     description: 'Alias eşleşmesi, atıf, sahipsiz soru, hazırlık skoru.',
     items: [
       { t: 'Alias eşleşmesi', href: '#alias' },
-      { t: 'Sentiment (beta)', href: '#sentiment' },
+      { t: 'Sentiment', href: '#sentiment' },
       { t: 'Sözlük', href: '/resources/glossary' },
     ],
   },
@@ -133,7 +133,7 @@ const CONCEPTS = [
   },
   {
     id: 'sentiment',
-    t: 'Sentiment (beta)',
+    t: 'Sentiment',
     c: 'Heuristik + LLM sınıflandırma; sağlayıcı anahtarı yoksa yalnızca heuristik. Skor: POZİTİF 100 / NÖTR 50 / NEGATİF 0. Beta olduğu için tek başına karar metriği değil, bağlam cümlesiyle birlikte okuyun.',
   },
 ];

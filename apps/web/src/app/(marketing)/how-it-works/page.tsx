@@ -32,14 +32,14 @@ const STEPS = [
     n: '03',
     icon: Bot,
     title: 'Neden + öneriler',
-    body: 'Rakibiniz önerilip siz önerilmiyorsanız neden? Atıf kaynakları (beta), sahipsiz sorular, sayfa düzeyinde bulgular ve içerik boşlukları tek listede birleşir. Her öneri zorluk ve etki etiketi taşır; “nasıl yapılır” bağlantısı rehbere gider.',
+    body: 'Rakibiniz önerilip siz önerilmiyorsanız neden? Atıf kaynakları, sahipsiz sorular, sayfa düzeyinde bulgular ve içerik boşlukları tek listede birleşir. Her öneri zorluk ve etki etiketi taşır; “nasıl yapılır” bağlantısı rehbere gider.',
     note: 'Haftalık tek “Yapılacaklar” ekranı yol haritasında; bugün öneriler araç bazında gelir.',
   },
   {
     n: '04',
     icon: Wrench,
     title: 'Düzelt: siz ya da Yanıt Agency',
-    body: 'Listeyi kendi ekibiniz uygular; ya da Yanıt Agency aylık sprintle teknik düzeltme, şema/entity, içerik ve kaynak çalışmasını üstlenir (teklifle, beta). İki yolda da ilerleme aynı panelden izlenir.',
+    body: 'Listeyi kendi ekibiniz uygular; ya da Yanıt Agency aylık sprintle teknik düzeltme, şema/entity, içerik ve kaynak çalışmasını üstlenir (teklifle). İki yolda da ilerleme aynı panelden izlenir.',
     note: 'Sonuç sözü vermiyoruz; ölçüm ve kanıt veriyoruz.',
   },
   {

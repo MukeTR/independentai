@@ -2,7 +2,7 @@ import { SolutionPage } from '@/components/marketing/solution-page';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'Shopify için AI görünürlüğü — salt-okunur katalog bağlantısı (beta)',
+  title: 'Shopify için AI görünürlüğü — salt-okunur katalog bağlantısı',
   description:
     'Shopify mağazanı OAuth ile bağla (yalnızca read_products). Ürün kataloğun webhook ile güncel kalır; AI hazırlık skoru ve ChatGPT/Claude/Gemini izleme soruları ile ürünlerinin AI asistanlarında nasıl göründüğünü ölç.',
   path: '/solutions/shopify',
@@ -16,7 +16,7 @@ export default function ShopifySolutionPage() {
         name: 'Shopify entegrasyonu',
         eyebrow: 'Çözüm · Shopify',
         breadcrumb: 'Shopify',
-        badges: ['beta', 'OAuth', 'read_products'],
+        badges: ['OAuth', 'read_products'],
         title: (
           <>
             Shopify mağazan AI asistanlarında nasıl görünüyor — <span className="text-brand">ölç, düzelt, izle.</span>
@@ -27,7 +27,7 @@ export default function ShopifySolutionPage() {
         setup: {
           title: 'Shopify kurulumu — özel uygulama ile.',
           intro:
-            'Shopify entegrasyonu beta aşamasında ve Shopify App Store’da listelenmiyor. Kurulum, Partner hesabında tanımlı özel bir uygulama üzerinden standart OAuth (authorization code) akışıyla yapılır.',
+            'Bağlantı, Partner hesabında tanımlı özel bir uygulama üzerinden standart OAuth (authorization code) akışıyla kurulur; Shopify App Store’da listelenmiyoruz.',
           steps: [
             {
               t: 'Özel uygulama tanımı',
@@ -63,7 +63,7 @@ export default function ShopifySolutionPage() {
           {
             question: 'Uygulamanız Shopify App Store’da mı?',
             answer:
-              'Henüz değil. Entegrasyon beta aşamasında; kurulum Partner hesabında tanımlı özel (custom) uygulama üzerinden OAuth ile yapılır. App Store listesi için başvuru planlanıyor, tarih vermiyoruz.',
+              'Henüz değil. Kurulum, Partner hesabında tanımlı özel (custom) uygulama üzerinden OAuth ile yapılır. App Store listesi için başvuru planlanıyor, tarih vermiyoruz.',
           },
           {
             question: 'Hangi izinleri istiyorsunuz?',

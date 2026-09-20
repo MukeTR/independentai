@@ -9,7 +9,7 @@ import { VisibilityCalculator } from '@/components/marketing/visibility-calculat
 import { SchemaGenerator } from '@/components/marketing/schema-generator';
 import { GeoAuditChecklist } from '@/components/marketing/geo-audit-checklist';
 import { buildMetadata, SITE_URL, ORG_ID, WEBSITE_ID, BRAND_NAME } from '@/lib/seo';
-import { POSTS, getPostBySlug, getRelatedPosts, getWordCount } from '@/data/blog-posts';
+import { POSTS, getPostBySlug, getRelatedPosts, getWordCount, getReadTimeMin } from '@/data/blog-posts';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 
 // Slug bazlı interaktif araç eklemeleri.
@@ -114,7 +114,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           <header className="mt-8 pb-8 border-b-hairline border-hairline">
             <div className="flex items-center gap-3 flex-wrap">
               <span className="chip">{post.category}</span>
-              <span className="text-[12px] text-ink-faint font-mono">{post.readTimeMin} dk okuma</span>
+              <span className="text-[12px] text-ink-faint font-mono">{getReadTimeMin(post)} dk okuma</span>
               <span className="text-[12px] text-ink-faint">·</span>
               <time dateTime={post.publishedAt} className="text-[12px] text-ink-faint">
                 {new Date(post.publishedAt).toLocaleDateString('tr-TR', {
@@ -205,7 +205,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 <Link key={p.slug} href={`/blog/${p.slug}`} className="block hover:text-brand-deep transition py-1">
                   <div className="text-[15px] leading-snug">{p.title}</div>
                   <div className="text-[11px] text-ink-faint font-mono mt-1">
-                    {p.category} · {p.readTimeMin} dk
+                    {p.category} · {getReadTimeMin(p)} dk
                   </div>
                 </Link>
               ))}

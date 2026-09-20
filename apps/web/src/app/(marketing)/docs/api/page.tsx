@@ -76,7 +76,7 @@ const RESPONSE_FIELDS: { name: string; type: string; d: string }[] = [
   {
     name: 'top_citation_sources',
     type: '{ domain, count }[]',
-    d: 'AI cevaplarında atıf yapılan alan adları (beta: native web arama açıkken atıf, kapalıyken metin içi linkler).',
+    d: 'AI cevaplarında atıf yapılan alan adları: native web arama açıkken atıf, kapalıyken metin içi bağlantılar.',
   },
   {
     name: 'definitions',

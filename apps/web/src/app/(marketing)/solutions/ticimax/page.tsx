@@ -2,7 +2,7 @@ import { SolutionPage } from '@/components/marketing/solution-page';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'Ticimax için AI görünürlüğü — günlük katalog senkronu (beta)',
+  title: 'Ticimax için AI görünürlüğü — günlük katalog senkronu',
   description:
     'Ticimax mağazanı ürün web servisi ve üye kodunla bağla; katalog günde bir kez salt-okunur senkronlanır. AI hazırlık skoru ve ChatGPT/Claude/Gemini izleme soruları ile ürünlerinin AI asistanlarında nasıl göründüğünü ölç.',
   path: '/solutions/ticimax',
@@ -16,7 +16,7 @@ export default function TicimaxSolutionPage() {
         name: 'Ticimax entegrasyonu',
         eyebrow: 'Çözüm · Ticimax',
         breadcrumb: 'Ticimax',
-        badges: ['beta', 'günlük senkron', 'salt-okunur'],
+        badges: ['günlük senkron', 'salt-okunur'],
         title: (
           <>
             Ticimax mağazan AI asistanlarında nasıl görünüyor — <span className="text-brand">ölç, düzelt, izle.</span>
@@ -27,7 +27,7 @@ export default function TicimaxSolutionPage() {
         setup: {
           title: 'Ticimax kurulumu — servis adresi ve üye kodu ile.',
           intro:
-            'Ticimax entegrasyonu beta aşamasında. Ticimax ürün web servisine (SOAP, UrunServis) servis üye kodunuzla bağlanır; webhook olmadığı için katalog günde bir kez yenilenir.',
+            'Ticimax ürün web servisine (SOAP, UrunServis) servis üye kodunuzla bağlanır; webhook olmadığı için katalog günde bir kez yenilenir.',
           steps: [
             {
               t: 'Üye kodunu al',

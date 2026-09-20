@@ -38,8 +38,8 @@ export default function Blog() {
             GEO, AI ve <span className="text-brand">marka stratejisi</span> üzerine.
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Yanıt ekibinden uzun-formda araştırmalar, pratik rehberler ve sektörel görüşler. Türkiye pazarında
-            GEO&apos;nun nasıl evrildiğini buradan takip edin.
+            Yanıt ekibinden pratik rehberler, teknik notlar ve sektörel görüşler. Türkiye pazarında GEO&apos;nun nasıl
+            evrildiğini buradan takip edin.
           </p>
           <Link
             href="/blog/arsiv"

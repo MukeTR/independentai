@@ -29,7 +29,7 @@ export const metadata = buildMetadata({
 });
 
 /**
- * Hizmet sayfası. Yetenek matrisinde `agency_service` beta'dır (INTEGRATE ekler); kodda hizmet akışı yok,
+ * Hizmet sayfası. Hizmet akışı kodda yok;
  * talep iletişim formundan alınır. Basın çalışması iddiası, sıralama ya da sonuç sözü yok.
  */
 const WHAT = [
@@ -51,7 +51,7 @@ const WHAT = [
   {
     icon: Link2,
     t: 'Kaynak ve atıf çalışması',
-    d: 'Modellerin dayandığı dizinler, karşılaştırma siteleri ve sektör kaynaklarında doğru ve tutarlı kayıt. Ölçülebilir hedef: atıf veren kaynak sayısı (panelde, beta).',
+    d: 'Modellerin dayandığı dizinler, karşılaştırma siteleri ve sektör kaynaklarında doğru ve tutarlı kayıt. Ölçülebilir hedef: atıf veren kaynak sayısı (panelde).',
   },
 ];
 
@@ -125,7 +125,7 @@ export default async function YanitAgencyPage() {
     try {
       return capability('agency_service').status;
     } catch {
-      return 'beta';
+      return null;
     }
   })();
   return (

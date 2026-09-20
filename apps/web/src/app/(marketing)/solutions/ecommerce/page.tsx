@@ -1,75 +1,373 @@
-import { SolutionPage } from '@/components/marketing/solution-page';
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  ArrowRight,
+  Boxes,
+  Check,
+  MessageSquareQuote,
+  PackageSearch,
+  Radar,
+  ScanLine,
+  ShoppingBag,
+  Sparkles,
+  Store,
+} from 'lucide-react';
+import { Container } from '@/components/container';
+import { Section } from '@/components/section';
+import { Faq } from '@/components/marketing/faq';
+import { CtaBlock } from '@/components/marketing/cta-block';
+import { Ciz } from '@/components/marketing/ciz';
+import { BreadcrumbJsonLd, FaqJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
-import { OFFER } from '@independentai/shared';
+import { STATS } from '@/data/stats';
+import { toolBySlug, toolPath } from '@/lib/tool-registry';
 
-const fair = OFFER.fairUse;
+const PATH = '/solutions/ecommerce';
 
 export const metadata = buildMetadata({
-  title: 'E-ticaret için AI görünürlüğü — mağazanı bağla, ürünlerini ölç',
+  title: 'E-ticaret — ürününüz yapay zekâda nasıl anlatılıyor?',
   description:
-    'Mağazanızı bağlayın: ürün kataloğunuz salt okunur senkronlanır, yapay zekâ hazırlık skoru ve kategori sorularınız her gün ölçülür.',
-  path: '/solutions/ecommerce',
+    'Alışveriş soruları artık önce yapay zekâya soruluyor. Ürün sayfalarınızın hangi sinyalleri eksik, cevapta kim öneriliyor, ne düzeltmeli? Kurulum gerekmez.',
+  path: PATH,
 });
 
+/** Müşterinin satın almadan önce sorduğu gerçek kalıplar. */
+const QUESTIONS = [
+  'Bu ürünü hangi siteden almalıyım, fiyat farkı var mı?',
+  '“X marka Y model” için en uygun seçenek hangisi?',
+  'Bu kategoride hangi markalar güvenilir?',
+  'İade ve kargo koşulları en iyi mağaza hangisi?',
+  'Bu ürünün muadili daha ucuz ne var?',
+  'Türkiye’den satan, stokta olan mağaza öner.',
+];
+
+/** Semrush kalıbı: her kart = problem başlığı + çözüm cümlesi + ekran/çizim + engelsiz CTA. */
+const ACTIONS: {
+  icon: typeof ScanLine;
+  title: string;
+  body: string;
+  bullets: string[];
+  tool?: string;
+  href?: string;
+  cta: string;
+  image?: string;
+  imageAlt?: string;
+}[] = [
+  {
+    icon: ShoppingBag,
+    title: 'Mağazanız yapay zekâya ne anlatıyor?',
+    body: 'Ana sayfadan ürün sayfasına kadar okunabilirlik, katalog yapısı, şema ve bot erişimi tek taramada çıkar.',
+    bullets: ['Katalog ve kategori yapısı', 'Ürün şeması ve zorunlu alanlar', 'Bot erişimi ve sitemap'],
+    tool: 'e-ticaret-ai-gorunurluk-testi',
+    cta: 'Mağazamı tara',
+  },
+  {
+    icon: PackageSearch,
+    title: 'Ürün sayfanız cevap verebiliyor mu?',
+    body: 'Tek bir ürün sayfasını alır, yapay zekânın cevap üretirken aradığı alanları tek tek işaretleriz.',
+    bullets: [
+      'Fiyat, stok, marka, GTIN alanları',
+      'Açıklama derinliği ve şablon tekrarı',
+      'Görsel ve alt metin sinyalleri',
+    ],
+    tool: 'urun-sayfasi-testi',
+    cta: 'Ürün sayfamı test et',
+  },
+  {
+    icon: Radar,
+    title: 'O soruda kim öneriliyor?',
+    body: 'Kategorinizdeki bir soruyu doğrudan modele sorar, cevapta hangi markaların geçtiğini ve sıranızı gösteririz.',
+    bullets: ['Cevapta geçen markalar', 'Sizin konumunuz', 'Tarih ve model damgası'],
+    tool: 'chatgpt-rank-checker',
+    cta: 'Bir soru dene',
+  },
+  {
+    icon: ScanLine,
+    title: 'Botlar mağazanıza girebiliyor mu?',
+    body: 'robots.txt ve sunucu yanıtlarınız yapay zekâ tarayıcılarını engelliyorsa görünürlük en baştan biter.',
+    bullets: ['12 bot için kural çözümü', 'noindex ve canonical', 'llms.txt durumu'],
+    tool: 'ai-crawler-testi',
+    cta: 'Erişimi kontrol et',
+  },
+  {
+    icon: Sparkles,
+    title: 'Açıklamalarınız zayıfsa yeniden yazın',
+    body: 'Doğrulanabilir özelliklerden yola çıkarak cevap verilebilir ürün metni, SSS ve şema iskeleti üretiriz.',
+    bullets: ['Uydurma özellik yok', 'SSS ve meta çıktısı', 'Kopyalanabilir JSON-LD'],
+    tool: 'urun-aciklama-yazici',
+    cta: 'Açıklama üret',
+  },
+  {
+    icon: Boxes,
+    title: 'Tüm kataloğu tek tek değil toplu ölçün',
+    body: 'Mağazanızı bağlarsanız ürün kataloğunuz salt okunur senkronlanır; hazırlık skoru ürün ürün çıkar.',
+    bullets: ['Shopify, ikas, Ticimax', 'Sipariş ve müşteri verisi çekilmez', 'Panelde ürün bazlı liste'],
+    href: '/uyumluluk',
+    cta: 'Altyapı uyumluluğu',
+    image: '/img/panel/tools.webp',
+    imageAlt: 'Panelde araç listesi ekranı',
+  },
+];
+
+const PLATFORM_LINKS: { label: string; href: string }[] = [
+  { label: 'Shopify', href: '/solutions/shopify' },
+  { label: 'ikas', href: '/solutions/ikas' },
+  { label: 'Ticimax', href: '/solutions/ticimax' },
+  { label: 'WooCommerce', href: '/uyumluluk' },
+  { label: 'Magento', href: '/uyumluluk' },
+  { label: 'IdeaSoft', href: '/uyumluluk' },
+  { label: 'T-Soft', href: '/uyumluluk' },
+  { label: 'PrestaShop', href: '/uyumluluk' },
+  { label: 'OpenCart', href: '/uyumluluk' },
+  { label: 'Özel yazılım', href: '/uyumluluk' },
+];
+
+const STEPS = [
+  {
+    n: '01',
+    t: 'Tarayın',
+    d: 'Alan adınızı yazın. Kurulum, kod ya da kart gerekmez; mağazanız yalnızca okunur.',
+  },
+  {
+    n: '02',
+    t: 'Sırayı görün',
+    d: 'Bulgular önem sırasına dizilir: ne eksik, neden önemli, nasıl düzeltilir.',
+  },
+  {
+    n: '03',
+    t: 'Ölçmeye devam edin',
+    d: 'Kategori sorularınız her gün aynı biçimde sorulur; değişimi panelde izlersiniz.',
+  },
+];
+
+const FAQ = [
+  {
+    question: 'Mağazamı bağlamadan kullanabilir miyim?',
+    answer:
+      'Evet. Bu sayfadaki araçların tamamı alan adınızı yazmanız yeterli olacak şekilde çalışır; hesap, e-posta ya da kart istemez. Bağlantı yalnızca tüm kataloğu toplu denetlemek istediğinizde gerekir.',
+  },
+  {
+    question: 'Sipariş veya müşteri verisi çekiyor musunuz?',
+    answer:
+      'Hayır. Mağaza bağlantısı salt okunur ürün kapsamıyla sınırlıdır: ürün, varyant, fiyat ve stok alanları. Sipariş, müşteri ve ödeme verisine erişim istemiyoruz.',
+  },
+  {
+    question: 'Hangi altyapılarla çalışıyor?',
+    answer:
+      'Ücretsiz araçlar her altyapıda çalışır; ölçülen şeyler sayfanın kendisinde. Katalog bağlantısı Shopify, ikas ve Ticimax için hazırdır; diğer altyapılarda ürün sayfalarınızı tek tek ya da sitemap üzerinden ölçeriz.',
+  },
+  {
+    question: 'Ürünüm yapay zekâda mutlaka görünecek mi?',
+    answer:
+      'Böyle bir söz veremeyiz, veren de olmamalı. Biz sitenizin hazırlığını ölçer, eksikleri gösterir ve aynı soruyu her gün aynı biçimde sorarak değişimi takip ederiz. Modelin o gün ne söyleyeceği bizim elimizde değil.',
+  },
+  {
+    question: 'Fiyat ve stok bilgim yanlış görünüyorsa ne yapmalıyım?',
+    answer:
+      'Çoğu durumda ürün şemasındaki fiyat ve stok alanları eksik ya da sayfadaki bilgiyle çelişiyordur. Ürün sayfası testi bu alanları tek tek işaretler; düzelttikten sonra tekrar tarayıp farkı görebilirsiniz.',
+  },
+];
+
 export default function EcommerceSolutionPage() {
+  const chatgpt = STATS.chatgptShare;
+  const genAi = STATS.genAiUsage;
+
   return (
-    <SolutionPage
-      config={{
-        path: '/solutions/ecommerce',
-        name: 'E-ticaret entegrasyonları',
-        eyebrow: 'Çözüm · E-ticaret',
-        breadcrumb: 'E-ticaret',
-        badges: ['beta', 'salt-okunur katalog'],
-        title: (
-          <>
-            AI asistanlarında mağazan ve ürünlerin nasıl görünüyor —{' '}
-            <span className="text-brand">ölç, düzelt, izle.</span>
-          </>
-        ),
-        intro:
-          'Alışveriş soruları artık önce ChatGPT, Claude ve Gemini’ye soruluyor. Mağazanı bağla; ürün kataloğunu salt-okunur senkronlayıp AI hazırlık skorunu çıkaralım, kategorindeki soruları her gece izleyelim ve neyi düzelteceğini söyleyelim. Sipariş, müşteri ve ödeme verisine dokunmayız.',
-        setup: null,
-        syncMode: 'Shopify ve ikas: webhook ile canlı güncelleme + günlük yedek senkron · Ticimax: günlük senkron',
-        faqs: [
-          {
-            question: 'Hangi e-ticaret platformlarını destekliyorsunuz?',
-            answer:
-              'Shopify, ikas ve Ticimax — üçü de beta aşamasında. Başka bir altyapı kullanıyorsanız mağaza bağlamadan ücretsiz araçları (e-ticaret AI görünürlük testi, ürün sayfası testi, AI crawler testi) kullanabilirsiniz; bağlama sihirbazındaki "platformumu bilmiyorum" adımı herkese açık sayfanızdan altyapınızı tespit eder.',
-          },
-          {
-            question: 'Sipariş veya müşteri verisi çekiyor musunuz?',
-            answer:
-              'Hayır. İlk sürüm yalnızca ürün, kategori ve mağaza meta verisini okur: ürün adı, açıklama, fiyat aralığı, stok durumu, görsel, kategori, SEO alanları. Sipariş, sepet, müşteri, adres ve ödeme verisi hiçbir zaman istenmez; bağlantı izinleri de buna göre sınırlıdır.',
-          },
-          {
-            question: 'Mağazama bir şey yazar mısınız?',
-            answer:
-              'Hayır. Erişim salt-okunurdur; ürünlerinizi, fiyatlarınızı veya ayarlarınızı değiştirmeyiz. Düzeltme önerilerini siz uygularsınız.',
-          },
-          {
-            question: 'Bağlantıyı kesersem ya da silersem ne olur?',
-            answer:
-              '"Bağlantıyı kes" saklanan kimlik bilgisini siler, senkronu durdurur ve katalogu arşivler (yeniden bağlanınca geri gelir). "Sil" bağlantıyı ve senkronlanan tüm katalog verisini kalıcı olarak kaldırır. Mağazanızdaki veriye dokunulmaz.',
-          },
-          {
-            question: 'Ücreti nedir?',
-            answer: `Ücretsiz araçlar için hesap gerekmez. Mağaza bağlantısı Yanıt aboneliğine dahildir (ücretsiz deneme, kart gerekmez; fiyat için /pricing). Adil kullanım: hesap başına ${fair.storeConnections} mağaza bağlantısı, bağlantı başına ${fair.catalogProducts.toLocaleString('tr-TR')} ürün.`,
-          },
-          {
-            question: 'AI görünürlüğünü nasıl ölçüyorsunuz?',
-            answer:
-              'İzleme sorularınızı her gece ChatGPT, Claude ve Gemini’de çalıştırıp markanızın ve ürünlerinizin geçme oranını, sırasını ve tonunu kaydederiz. Mağaza tarafında ise katalogunuzdan AI hazırlık skoru ve düzeltme bulguları üretiriz. Hiçbir AI sağlayıcısıyla ticari ilişkimiz yok; sonuçlar olduğu gibi gösterilir.',
-          },
-        ],
-        cta: {
-          title: (
-            <>
-              Ürünlerin AI’da görünsün: <span className="text-brand">önce ölç.</span>
-            </>
-          ),
-          body: 'Kayıt ol, mağazanı bağla veya önce ücretsiz testi çalıştır. Kredi kartı yok; salt-okunur erişim.',
-        },
-      }}
-    />
+    <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Çözümler', href: '/solutions' },
+          { name: 'E-ticaret', href: PATH },
+        ]}
+      />
+      <FaqJsonLd items={FAQ} />
+
+      {/* 1 — Hero */}
+      <section className="pt-20 pb-14">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-7">
+              <div className="eyebrow">Çözüm · E-ticaret</div>
+              <h1 className="font-display text-[40px] lg:text-[54px] tracking-tight mt-3 leading-[1.05]">
+                Ürününüz yapay zekâda <span className="text-brand">nasıl anlatılıyor?</span>
+              </h1>
+              <p className="text-[17px] lg:text-[19px] text-ink-muted mt-6 leading-relaxed max-w-2xl">
+                Alışveriş sorusu artık önce sohbete soruluyor. Cevapta hangi mağaza öneriliyor, sizin ürününüz hangi
+                cümlelerle anlatılıyor, hangi alan eksik kaldığı için hiç anılmıyor? Alan adınızı yazın, 25 saniyede
+                görün.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href={toolPath('e-ticaret-ai-gorunurluk-testi')}
+                  className="btn-primary inline-flex items-center gap-2"
+                >
+                  Mağazamı ücretsiz tara <ArrowRight className="w-4 h-4" aria-hidden />
+                </Link>
+                <Link href="/contact?src=eticaret#sales" className="btn-secondary">
+                  Ekiple görüş
+                </Link>
+              </div>
+              <p className="text-[12.5px] text-ink-faint mt-4">
+                Kayıt gerekmez · sayfanız yalnızca okunur · sipariş ve müşteri verisine dokunulmaz
+              </p>
+            </div>
+            <div className="lg:col-span-5">
+              <div className="rounded-2xl border border-hairline overflow-hidden bg-paper-3">
+                <Image
+                  src="/img/sektor/eticaret-altyapi.webp"
+                  alt="Ürün listesi gösteren bir tarayıcı penceresi, yanında alışveriş sepeti ve kargo kutusu çizimi"
+                  width={1200}
+                  height={675}
+                  priority
+                  unoptimized
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* 2 — Müşteri soruları */}
+      <Section
+        className="band border-t border-hairline"
+        eyebrow="Müşteriniz bunu soruyor"
+        title="Bu sorular her gün yapay zekâya soruluyor."
+        intro="Cevapta bir mağaza adı geçiyor. Sizinki değilse, o satış başka yere gitti."
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {QUESTIONS.map((q) => (
+            <div key={q} className="card p-5 h-full flex gap-3">
+              <MessageSquareQuote className="w-4 h-4 text-brand shrink-0 mt-1" aria-hidden />
+              <p className="text-[14.5px] leading-relaxed">{q}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* 3 — Ne yapabilirsiniz (Semrush kartı kalıbı) */}
+      <Section
+        eyebrow="Ne yapabilirsiniz"
+        title="Altı iş, hepsi bugün başlayabilir."
+        intro="Her kart tek bir işi çözer ve engelsizdir: hesap açmadan çalıştırabilirsiniz."
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {ACTIONS.map((a) => {
+            const tool = a.tool ? toolBySlug(a.tool) : undefined;
+            const live = tool?.enabled === true;
+            const href = a.href ?? (live ? toolPath(a.tool as string) : '/arac');
+            return (
+              <div key={a.title} className="card h-full flex flex-col overflow-hidden">
+                {a.image && (
+                  <span className="block border-b border-hairline bg-paper-2">
+                    <Image
+                      src={a.image}
+                      alt={a.imageAlt ?? ''}
+                      width={900}
+                      height={260}
+                      unoptimized
+                      className="w-full h-[128px] object-cover object-top"
+                    />
+                  </span>
+                )}
+                <div className="p-6 flex-1 flex flex-col">
+                  <span className="w-10 h-10 rounded-xl bg-brand-glow flex items-center justify-center">
+                    <a.icon className="w-[18px] h-[18px] text-brand" aria-hidden />
+                  </span>
+                  <h3 className="font-display text-[19px] mt-4 leading-snug">{a.title}</h3>
+                  <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{a.body}</p>
+                  <ul className="mt-4 space-y-1.5">
+                    {a.bullets.map((b) => (
+                      <li key={b} className="flex items-center gap-2 text-[13px] text-ink-muted">
+                        <Check className="w-3.5 h-3.5 text-brand shrink-0" aria-hidden /> {b}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto pt-5">
+                    <Link
+                      href={href}
+                      className="inline-flex items-center gap-1.5 text-[13.5px] text-brand-deep hover:text-brand"
+                    >
+                      {a.cta} <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* 4 — Veri */}
+      <Section className="band border-t border-hairline" eyebrow="Neden şimdi" title="Alışveriş davranışı değişti.">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {[genAi, chatgpt].map((s) => (
+            <div key={s.key} className="card p-7 h-full">
+              <div className="font-display text-[44px] tabular leading-none text-brand">{s.value}</div>
+              <div className="text-[14px] text-ink mt-3 leading-snug">{s.label}</div>
+              <div className="text-[12px] text-ink-faint mt-2">
+                {s.source} · {s.year}
+              </div>
+            </div>
+          ))}
+          <div className="card p-7 h-full flex flex-col justify-center">
+            <p className="text-[15px] text-ink-muted leading-relaxed">
+              Sorun “yapay zekâda görünmek” değil; müşterinizin sorduğu o cümlede mağazanızın anılıp anılmadığı.
+            </p>
+            <Link
+              href={toolPath('chatgpt-rank-checker')}
+              className="inline-flex items-center gap-1.5 text-[13.5px] text-brand-deep hover:text-brand mt-4"
+            >
+              Bir soruyla deneyin <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+            </Link>
+          </div>
+        </div>
+      </Section>
+
+      {/* 5 — Nasıl çalışır */}
+      <Section eyebrow="Nasıl çalışır" title="Üç adım, aynı gün.">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-5">
+            <Ciz name="urun" alt="Bir alışveriş çantası ve yanında ürünü anlatan konuşma balonu" />
+          </div>
+          <div className="lg:col-span-7">
+            <ol className="space-y-6">
+              {STEPS.map((s) => (
+                <li key={s.n} className="flex gap-5">
+                  <span className="font-display text-[22px] text-brand tabular shrink-0">{s.n}</span>
+                  <span>
+                    <span className="font-display text-[19px] block">{s.t}</span>
+                    <span className="text-[14.5px] text-ink-muted mt-1.5 block leading-relaxed">{s.d}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </Section>
+
+      {/* 6 — Altyapı */}
+      <Section
+        className="band border-t border-hairline"
+        eyebrow="Altyapınız"
+        title="Hangi panelde olursanız olun."
+        intro="Ücretsiz araçlar için hiçbir bağlantı gerekmez. Katalog senkronu Shopify, ikas ve Ticimax için hazır; gerisinde ölçüm sayfalarınız üzerinden yürür."
+      >
+        <div className="flex flex-wrap gap-2.5">
+          {PLATFORM_LINKS.map(({ label, href }) => (
+            <Link key={label} href={href} className="chip !text-[13px] !px-4 !py-2 hover:border-brand">
+              <Store className="w-3.5 h-3.5 text-brand" aria-hidden /> {label}
+            </Link>
+          ))}
+        </div>
+      </Section>
+
+      <Section eyebrow="Sıkça sorulanlar" title="E-ticaret için sorular.">
+        <Faq items={FAQ} defaultOpen={0} />
+      </Section>
+
+      <CtaBlock />
+    </>
   );
 }

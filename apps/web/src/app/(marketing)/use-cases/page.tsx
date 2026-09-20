@@ -45,7 +45,7 @@ const SECTORS = [
     id: 'ecommerce',
     name: 'E-ticaret',
     q: '“Shopify mi ikas mı?”',
-    d: 'Ürün şeması, katalog yapısı, AI crawler erişimi; mağaza bağlantısı (beta).',
+    d: 'Ürün şeması, katalog yapısı, AI crawler erişimi; mağaza bağlantısı.',
   },
   {
     slug: 'ajans',
@@ -111,7 +111,7 @@ const BY_ROLE = [
     icon: Newspaper,
     name: 'Kurumsal iletişim',
     summary:
-      'Yapay zekâ markanız hakkında ne söylüyor, doğru mu söylüyor? Bağlam cümleleri ve sentiment (beta) ile yanlış bilgiyi erken yakalayın.',
+      'Yapay zekâ markanız hakkında ne söylüyor, doğru mu söylüyor? Bağlam cümleleri ve sentiment ile yanlış bilgiyi erken yakalayın.',
   },
 ];
 

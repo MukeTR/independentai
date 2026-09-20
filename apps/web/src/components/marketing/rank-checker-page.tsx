@@ -131,8 +131,8 @@ export async function RankCheckerPage({
             </p>
             <p className="text-[15px] text-ink-muted mt-4 leading-relaxed">
               Yanıt bu fotoğrafı sürekli çeker: ChatGPT, Claude ve Gemini’de günlük takip, rakip karşılaştırması,
-              sentiment (beta) ve trend. Eksik kaldığınız soruları ve hangi kaynaklara atıf verildiğini (beta) gösterir;
-              GEO denetimi ile sayfanızı puanlar. {offer.trialDays} gün ücretsiz deneme, kart gerekmez.
+              sentiment ve trend. Eksik kaldığınız soruları ve hangi kaynaklara atıf verildiğini gösterir; GEO denetimi
+              ile sayfanızı puanlar. {offer.trialDays} gün ücretsiz deneme, kart gerekmez.
             </p>
 
             <h3 className="font-display text-[20px] tracking-tight mt-10">{label} markaları nasıl seçiyor?</h3>

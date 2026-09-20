@@ -51,7 +51,7 @@ const PRINCIPLES = [
   },
   {
     t: 'Kodda olmayanı satmayız',
-    d: 'Yetenek matrisi tek kaynaktır: bir özellik “yayında” değilse hiçbir sayfa onu çalışan özellik gibi anlatmaz; “beta” ve “yakında” rozetleri görünürdür.',
+    d: 'Yetenek matrisi tek kaynaktır: bir özellik “yayında” değilse hiçbir sayfa onu çalışan özellik gibi anlatmaz; “yakında” rozeti görünürdür.',
   },
 ];
 

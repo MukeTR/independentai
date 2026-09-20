@@ -63,7 +63,7 @@ const HOW_IT_WORKS: SolutionStep[] = [
   },
   {
     title: 'Düzeltme rehberi',
-    body: 'Eksik SEO başlığı, zayıf açıklama, şema hatası gibi bulgular için adım adım rehber; ürün açıklama yazıcı (beta) ile AI-dostu taslak.',
+    body: 'Eksik SEO başlığı, zayıf açıklama, şema hatası gibi bulgular için adım adım rehber; ürün açıklama yazıcı ile AI-dostu taslak.',
   },
 ];
 
@@ -191,7 +191,7 @@ export async function SolutionPage({ config }: { config: SolutionConfig }) {
           id="platformlar"
           eyebrow="Platformlar"
           title="Desteklenen mağaza altyapıları."
-          intro="Üç bağlayıcı da beta: çalışıyor, gerçek mağazalarla test ediliyor; sınırları her sayfada açıkça yazıyoruz."
+          intro="Üçü de çalışıyor ve gerçek mağazalarla test ediliyor; sınırları her sayfada açıkça yazıyoruz."
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {platforms.map((p) => {
@@ -200,7 +200,6 @@ export async function SolutionPage({ config }: { config: SolutionConfig }) {
                 <Link key={p.href} href={p.href} className="card p-6 group hover:-translate-y-0.5 transition-transform">
                   <div className="flex items-center justify-between">
                     <Icon className="w-5 h-5 text-brand" aria-hidden />
-                    {'badge' in p && p.badge ? <span className="chip !text-[10px]">{p.badge}</span> : null}
                   </div>
                   <h3 className="font-display text-[19px] mt-4">{p.title}</h3>
                   <p className="text-[13.5px] text-ink-muted mt-2 leading-relaxed">{p.description}</p>
@@ -295,7 +294,6 @@ export async function SolutionPage({ config }: { config: SolutionConfig }) {
             <Link key={t.href} href={t.href} className="card p-5 group hover:-translate-y-0.5 transition-transform">
               <div className="flex items-center justify-between">
                 <Plug className="w-4 h-4 text-brand" aria-hidden />
-                {'badge' in t && t.badge ? <span className="chip !text-[10px]">{t.badge}</span> : null}
               </div>
               <h3 className="text-[14.5px] font-medium mt-3 leading-snug">{t.title}</h3>
               <p className="text-[12.5px] text-ink-muted mt-1.5 leading-relaxed">{t.description}</p>

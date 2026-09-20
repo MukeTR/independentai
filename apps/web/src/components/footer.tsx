@@ -95,6 +95,11 @@ export function Footer() {
           <div className="font-mono">yanit.io · independentai.space</div>
         </div>
       </Container>
+
+      {/* Sayfanın en altındaki dev kelime markası — dekoratif, alttan kırpılır */}
+      <div className="wordmark-band" aria-hidden>
+        <span className="wordmark-band__text">yanıt</span>
+      </div>
     </footer>
   );
 }

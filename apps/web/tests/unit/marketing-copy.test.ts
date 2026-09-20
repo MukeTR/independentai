@@ -229,7 +229,7 @@ describe('temsili veri etiketleri (landing bileşenleri)', () => {
 describe('two-paths: kodda olmayan özellik vaadi yok', () => {
   const byKey = new Map(CAPABILITIES.map((c) => [c.key, c.status]));
 
-  it('SaaS listesi yalnız live|beta yeteneklere işaret eder', () => {
+  it('SaaS listesi yalnız tanımlı yeteneklere işaret eder', () => {
     expect(SAAS_ITEMS.length).toBeGreaterThanOrEqual(5);
     for (const item of SAAS_ITEMS) {
       const status = byKey.get(item.capability);
@@ -300,14 +300,13 @@ describe('sayfalar ve anchor kimlikleri (§7.1)', () => {
     }
   });
 
-  it('/yanit-agency: OFFER üzerinden fiyat, teklifle, beta rozeti, garanti yok, CTA /contact?src=agency', () => {
+  it('/yanit-agency: OFFER üzerinden fiyat, teklifle, garanti yok, CTA /contact?src=agency', () => {
     const rel = path.join('app', '(marketing)', 'yanit-agency', 'page.tsx');
     expect(has(rel)).toBe(true);
     const t = src(rel).text;
     expect(t).toMatch(/agencyFromMonthlyTry/);
     expect(t).toMatch(/getOffer/);
     expect(t).toMatch(/teklif/i);
-    expect(t).toMatch(/beta/);
     expect(t).toMatch(/\/contact\?src=agency/);
     expect(t).toMatch(/buildMetadata/);
   });
