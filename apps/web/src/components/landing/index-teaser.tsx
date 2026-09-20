@@ -19,13 +19,17 @@ export function IndexTeaser() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
             <Reveal>
-              <div className="eyebrow text-brand-deep">Hazırlanıyor · her ay bir sektör</div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="eyebrow text-brand-deep">Hazırlanıyor · her ay bir sektör</div>
+                <span className="chip !text-[10.5px]">yakında · örnek tablo temsili</span>
+              </div>
               <h2 className="font-display text-[32px] lg:text-[42px] tracking-tight mt-3 leading-[1.05]">
                 Türkiye AI Görünürlük Endeksi
               </h2>
               <p className="text-[15.5px] text-ink-muted mt-4 leading-relaxed max-w-xl">
-                Her ay bir sektörün markalarını aynı satın alma sorularında ölçüp sıralıyoruz. Kategorinizde kaçıncı
-                sıradasınız, kim sizden kaç kat fazla öneriliyor: raporunuz e-postanızda.
+                Planımız: her ay bir sektörün markalarını aynı satın alma sorularında ölçüp sıralamak. Kategorinizde
+                kaçıncı sıradasınız, kim sizden kaç kat fazla öneriliyor. Endeks henüz yayımlanmadı; aşağıdaki tablo
+                temsilidir.
               </p>
               <ul className="mt-5 flex flex-wrap gap-2">
                 {SECTORS.map((s) => (
@@ -46,7 +50,7 @@ export function IndexTeaser() {
             <Reveal delay={100}>
               <div className="card p-6" aria-label="Örnek endeks tablosu (temsili)">
                 <div className="flex items-center justify-between">
-                  <div className="eyebrow">Yanıt AI Visibility Score</div>
+                  <div className="eyebrow">Yanıt görünürlük skoru</div>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-ink-faint">temsili</span>
                 </div>
                 <ol className="mt-5 space-y-3">
@@ -62,7 +66,7 @@ export function IndexTeaser() {
                   ))}
                 </ol>
                 <p className="text-[11.5px] text-ink-faint mt-5">
-                  Paylaşılabilir kart: "Kategorimizde AI görünürlüğünde ilk 3'teyiz."
+                  Marka A–D hayali; skorlar örnek. Gerçek endeks tarih, model ve soru setiyle yayımlanacak.
                 </p>
               </div>
             </Reveal>

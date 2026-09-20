@@ -21,7 +21,10 @@ export function CeoScreen() {
         <Reveal>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-5">
-              <div className="eyebrow text-brand-deep">GEO, AEO, LLMO değil</div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="eyebrow text-brand-deep">GEO, AEO, LLMO değil</div>
+                <span className="chip !text-[10.5px]">temsili</span>
+              </div>
               <h2 className="font-display text-[30px] lg:text-[38px] tracking-tight mt-3 leading-[1.05]">
                 Ekranınızda dört sayı olsun.
               </h2>
@@ -43,7 +46,10 @@ export function CeoScreen() {
               aria-label="Örnek yönetici ekranı (temsili)"
             >
               {CEO_SCREEN.map((c) => (
-                <div key={c.l} className="card p-5">
+                <div key={c.l} className="card p-5 relative">
+                  <span className="absolute top-3 right-3 text-[9.5px] font-mono uppercase tracking-wider text-ink-faint">
+                    temsili
+                  </span>
                   <div
                     className={cn(
                       'font-display text-[40px] lg:text-[46px] tabular leading-none',

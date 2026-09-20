@@ -16,6 +16,7 @@ import { AiChatDemo } from '@/components/landing/ai-chat-demo';
 import { FeatureBento } from '@/components/landing/feature-bento';
 import { FinalCta } from '@/components/landing/final-cta';
 import { getOffer } from '@/server/offer';
+import { formatTry } from '@independentai/shared';
 
 export const metadata = buildMetadata({
   title: 'Müşteriniz yapay zekâya soruyor: sizi mi öneriyor, rakibinizi mi?',
@@ -46,7 +47,7 @@ export default async function Landing() {
       <AiChatDemo />
       <IndexTeaser />
       <FeatureBento />
-      <FinalCta />
+      <FinalCta trialDays={offer.trialDays} saasMonthlyTry={formatTry(offer.saasMonthlyTry)} />
     </StoryProvider>
   );
 }

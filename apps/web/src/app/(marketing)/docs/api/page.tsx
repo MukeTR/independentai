@@ -27,6 +27,31 @@ const NAV = [
   { href: '#cors', t: 'CORS' },
   { href: '#security', t: 'Güvenlik' },
   { href: '#examples', t: 'Örnekler' },
+  { href: '#tools', t: 'Ücretsiz araç uçları' },
+];
+
+/**
+ * Hesap gerektirmeyen araç uçları (kısa belge). Ayrıntı /docs#araclar. Yeni site araçları
+ * (`/api/tools/site/<slug>`) INTEGRATE ile registry'den bu listeye eklenir.
+ */
+const PUBLIC_TOOLS: { p: string; body: string; limit: string; d: string }[] = [
+  {
+    p: '/api/tools/geo-audit',
+    body: '{ url }',
+    limit: '10/saat/IP',
+    d: 'GEO hazırlık denetimi (5 eksen, 0–100, bulgular)',
+  },
+  {
+    p: '/api/tools/rank-check',
+    body: '{ brand, prompt, provider }',
+    limit: '8/saat/IP',
+    d: 'Tek soruda marka anıldı mı, sıra, yerine önerilenler; sağlayıcı yoksa 503',
+  },
+  { p: '/api/tools/ecommerce-visibility', body: '{ url }', limit: 'IP + küresel', d: 'Mağaza AI görünürlük testi' },
+  { p: '/api/tools/product-page', body: '{ url }', limit: 'IP + küresel', d: 'Ürün sayfası testi' },
+  { p: '/api/tools/ai-crawler', body: '{ url }', limit: 'IP + küresel', d: 'AI crawler erişim testi' },
+  { p: '/api/tools/agency-preanalysis', body: '{ domains[≤3] }', limit: '3/saat/IP', d: 'Ajans ön-analizi' },
+  { p: '/api/tools/platform-detect', body: '{ url }', limit: 'IP + küresel', d: 'E-ticaret platformu tespiti' },
 ];
 
 const RESPONSE_FIELDS: { name: string; type: string; d: string }[] = [
@@ -64,7 +89,7 @@ const ERROR_CODES: { status: string; code: string; d: string }[] = [
   {
     status: '401',
     code: 'unauthorized',
-    d: "Authorization başlığı eksik, biçimi bozuk, token geçersiz, iptal edilmiş veya süresi dolmuş. Token gerekli scope'a sahip değilse de 401 döner.",
+    d: 'Authorization başlığı eksik, biçimi bozuk, token geçersiz, iptal edilmiş veya süresi dolmuş. Token gerekli scope’a sahip değilse de 401 döner.',
   },
   {
     status: '429',
@@ -314,7 +339,7 @@ Authorization: Bearer iai_live_...`}</Code>
                         <td className="py-3 pr-4 text-ink-muted">integer, 1–90</td>
                         <td className="py-3 pr-4 text-ink-muted">30</td>
                         <td className="py-3 text-ink-muted">
-                          Pencere uzunluğu (gün). Aralık dışı değerler 1–90'a kırpılır; sayı olmayan değer varsayılana
+                          Pencere uzunluğu (gün). Aralık dışı değerler 1–90’a kırpılır; sayı olmayan değer varsayılana
                           döner.
                         </td>
                       </tr>
@@ -362,7 +387,7 @@ Authorization: Bearer iai_live_...`}</Code>
                       <br />÷ toplam SUCCESS run sayısı × 100
                     </p>
                     <p className="text-[13px] text-ink-muted mt-3 leading-relaxed">
-                      Bir "run" = bir soru × bir sağlayıcı × bir tarih. Markanız aynı cevapta birden çok kez geçse de o
+                      Bir “run” = bir soru × bir sağlayıcı × bir tarih. Markanız aynı cevapta birden çok kez geçse de o
                       run bir kez sayılır.
                     </p>
                   </div>
@@ -379,7 +404,7 @@ Authorization: Bearer iai_live_...`}</Code>
                   </div>
                 </div>
                 <p className="text-[13.5px] text-ink-muted leading-relaxed">
-                  Hatalı (ERROR) run'lar her iki metrikte de <span className="text-ink">paydaya dahil edilmez</span>;{' '}
+                  Hatalı (ERROR) run’lar her iki metrikte de <span className="text-ink">paydaya dahil edilmez</span>;{' '}
                   <code className="font-mono text-[12.5px]">errored_runs</code> alanında ayrıca raporlanır. Paydası
                   sıfır olan pencerelerde skor 0 döner.
                 </p>
@@ -463,8 +488,8 @@ Authorization: Bearer iai_live_...`}</Code>
                   başlıklar <code className="font-mono text-[12.5px]">Authorization</code> ve{' '}
                   <code className="font-mono text-[12.5px]">Content-Type</code>. Bu, sunucu tarafı ve edge ortamlarını
                   kolaylaştırmak içindir —{' '}
-                  <span className="text-ink">token'ı asla tarayıcıya gönderilen JavaScript'e gömmeyin</span>; herkesin
-                  görebileceği bir yerde durur. Ön yüz gösterimleri için veriyi kendi backend'inizden proxy'leyin.
+                  <span className="text-ink">token’ı asla tarayıcıya gönderilen JavaScript’e gömmeyin</span>; herkesin
+                  görebileceği bir yerde durur. Ön yüz gösterimleri için veriyi kendi backend’inizden proxy’leyin.
                 </p>
               </div>
 
@@ -488,10 +513,10 @@ Authorization: Bearer iai_live_...`}</Code>
                   </li>
                   <li>
                     Son kullanım zamanı (<code className="font-mono text-[12.5px]">lastUsedAt</code>) panelde görünür;
-                    kullanılmayan token'ları iptal edin.
+                    kullanılmayan token’ları iptal edin.
                   </li>
                   <li>
-                    Token'ı ortam değişkeninde veya gizli anahtar yöneticisinde tutun; sürüm kontrolüne eklemeyin.
+                    Token’ı ortam değişkeninde veya gizli anahtar yöneticisinde tutun; sürüm kontrolüne eklemeyin.
                   </li>
                 </ul>
               </div>
@@ -513,6 +538,51 @@ Authorization: Bearer iai_live_...`}</Code>
                 </div>
               </div>
 
+              {/* Ücretsiz araç uçları */}
+              <div id="tools" className="scroll-mt-24 space-y-4">
+                <H2 id="tools-h" icon={Globe2}>
+                  Ücretsiz araç uçları (token gerekmez)
+                </H2>
+                <p className="text-[14.5px] text-ink-muted leading-relaxed">
+                  Ücretsiz araçların arkasındaki uçlar herkese açıktır:{' '}
+                  <code className="font-mono text-[12.5px]">POST</code> + JSON gövde, JSON yanıt. Kayıtsız kullanımda IP
+                  başına saatlik sınır ve küresel tavan vardır; giriş yapmış kullanıcıda hesap başına 30/saat. 429’da{' '}
+                  <code className="font-mono text-[12.5px]">Retry-After</code> bekleme süresini verir. Yalnızca
+                  http/https ve herkese açık adresler; özel ağ adresleri 400 döner. Deterministik tarayıcı; LLM’e
+                  kişisel veri gitmez.
+                </p>
+                <div className="overflow-x-auto max-w-full">
+                  <table className="w-full text-[13px] min-w-[640px]">
+                    <thead>
+                      <tr className="text-left text-ink-faint font-mono text-[11px] uppercase tracking-wider border-b border-hairline">
+                        <th className="py-2 pr-4">Uç</th>
+                        <th className="py-2 pr-4">Gövde</th>
+                        <th className="py-2 pr-4">Sınır</th>
+                        <th className="py-2">Ne döner</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {PUBLIC_TOOLS.map((t) => (
+                        <tr key={t.p} className="border-b border-hairline align-top">
+                          <td className="py-3 pr-4 font-mono text-[12.5px] whitespace-nowrap">{t.p}</td>
+                          <td className="py-3 pr-4 font-mono text-[12px] text-ink-muted whitespace-nowrap">{t.body}</td>
+                          <td className="py-3 pr-4 text-ink-muted whitespace-nowrap">{t.limit}</td>
+                          <td className="py-3 text-ink-muted">{t.d}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-[13px] text-ink-faint">
+                  Uçlar sözleşme değil: araç sayfaları için tasarlandı, sürüm garantisi vermiyoruz; entegrasyon için
+                  Public API’yi kullanın. Tarayıcımızın kimliği ve engelleme:{' '}
+                  <Link href="/bot" className="text-brand-deep hover:text-brand">
+                    YanitBot
+                  </Link>
+                  .
+                </p>
+              </div>
+
               <div className="card p-6 flex items-start gap-4 flex-wrap">
                 <div className="flex-1 min-w-[220px]">
                   <div className="font-display text-[18px] tracking-tight">Token oluşturmaya hazır mısınız?</div>
@@ -524,7 +594,7 @@ Authorization: Bearer iai_live_...`}</Code>
                   <Link href="/dashboard/api" className="btn-primary inline-flex items-center gap-2 text-[13.5px]">
                     Panelde token oluştur
                   </Link>
-                  <Link href="/contact" className="btn-secondary text-[13.5px]">
+                  <Link href="/contact#form" className="btn-secondary text-[13.5px]">
                     Destek
                   </Link>
                 </div>

@@ -1,6 +1,6 @@
 /** Temsili hikâye — landing boyunca tek örnek şirket; tüm bölümler aynı rakamları kullanır. */
 export const DEMO = {
-  domain: 'acme.com',
+  domain: 'acme.example',
   /** AI görünürlüğü (siz) */
   score: 22,
   /** Rakibin görünürlüğü */

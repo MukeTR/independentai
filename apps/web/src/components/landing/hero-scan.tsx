@@ -6,7 +6,7 @@ import { ArrowRight, Check, Loader2, Lock, AlertCircle } from 'lucide-react';
 import { Container } from '@/components/container';
 import { cn } from '@/lib/cn';
 import { DEMO } from './demo';
-import { useStory } from './story';
+import { BlockedSiteHintSlot, useStory } from './story';
 
 /** Gerçek denetimin (geo-audit) ölçtüğü beş boyut — hem demo hem canlı taramada aynı sırayla akar. */
 const STEPS = [
@@ -92,6 +92,7 @@ export function HeroScan() {
                   <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" aria-hidden /> {scan.error}
                 </p>
               )}
+              <BlockedSiteHintSlot domain={scan.domain} />
               <p className="mt-3 text-[12.5px] text-ink-faint">
                 Kayıt gerekmez · sonuç 10–20 saniyede · sayfanız yalnızca okunur
               </p>
@@ -99,9 +100,10 @@ export function HeroScan() {
 
             <p className="rise-5 mt-6 text-[14px] text-ink-muted">
               Ya da bizim yapmamızı ister misiniz?{' '}
-              <Link href="#agency" className="text-brand-deep hover:text-brand inline-flex items-center gap-1">
+              <Link href="/yanit-agency" className="text-brand-deep hover:text-brand inline-flex items-center gap-1">
                 Yanıt Agency <ArrowRight className="w-3.5 h-3.5" aria-hidden />
-              </Link>
+              </Link>{' '}
+              <span className="text-ink-faint">· teklifle</span>
             </p>
           </div>
 

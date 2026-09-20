@@ -6,7 +6,8 @@ import { ArrowRight } from 'lucide-react';
 import { Container } from '@/components/container';
 import { useStory } from './story';
 
-export function FinalCta() {
+/** Kapanış: canlı tarama + teklif satırı (OFFER, sayfa getOffer() ile geçer) + Yanıt Agency yolu. */
+export function FinalCta({ trialDays, saasMonthlyTry }: { trialDays: number; saasMonthlyTry: string }) {
   const { startScan } = useStory();
   const [input, setInput] = useState('');
   const id = useId();
@@ -32,7 +33,7 @@ export function FinalCta() {
             Önce nerede olduğunuzu görelim.
           </h2>
           <p className="text-[17px] lg:text-[19px] text-ink-muted mt-6 leading-relaxed">
-            URL'nizi girin. Yanıt markanızı, rakiplerinizi ve AI görünürlüğünüzü analiz etsin.
+            URL’nizi girin. Yanıt markanızı, rakiplerinizi ve AI görünürlüğünüzü analiz etsin.
           </p>
           <form onSubmit={onSubmit} className="mt-9 max-w-xl mx-auto" aria-label="Analizi başlat">
             <label htmlFor={id} className="sr-only">
@@ -58,11 +59,15 @@ export function FinalCta() {
               </button>
             </div>
           </form>
+          <p className="mt-4 text-[12px] text-ink-faint font-mono">
+            Tarama ücretsiz · hesap yok · sürekli ölçüm {saasMonthlyTry}/ay, {trialDays} gün deneme, kart yok
+          </p>
           <p className="mt-6 text-[14px] text-ink-muted">
             Uygulamak istemiyor musunuz?{' '}
-            <Link href="/contact#sales" className="text-brand-deep hover:text-brand">
+            <Link href="/yanit-agency" className="text-brand-deep hover:text-brand">
               Yanıt Agency sizin için yapabilir.
-            </Link>
+            </Link>{' '}
+            <span className="text-ink-faint">(teklifle)</span>
           </p>
         </div>
       </Container>
