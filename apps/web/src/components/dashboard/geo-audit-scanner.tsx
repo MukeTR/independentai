@@ -9,6 +9,8 @@ type Result = {
   overallScore: number;
   breakdown: Record<string, number>;
   findings: Finding[];
+  /** Dolu ise sayfa hiç okunamadı; skor bir değerlendirme değildir, gösterilmez. */
+  unreachable?: { reason: 'network' | 'http'; status: number | null };
 };
 
 const AXIS_LABELS: Record<string, string> = {
@@ -39,6 +41,14 @@ export function GeoAuditScanner({ defaultUrl = '' }: { defaultUrl?: string }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Denetim başarısız');
+      // Sayfa hiç okunamadıysa 0/100 göstermek yanıltıcı olur: ölçüm yapılamadı, skor yok.
+      if (data?.unreachable) {
+        throw new Error(
+          data.unreachable.reason === 'http'
+            ? `Adres cevap verdi ama sayfayı vermedi (HTTP ${data.unreachable.status}). Bot engeli ya da güvenlik duvarı olabilir.`
+            : 'Adrese ulaşılamadı. Alan adının yazımını kontrol edin; site açıksa sunucu isteğimizi engelliyor olabilir.',
+        );
+      }
       setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu');

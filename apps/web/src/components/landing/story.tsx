@@ -57,6 +57,15 @@ export function normalizeDomainInput(raw: string): string | null {
 
 const RANK: Record<AuditFinding['status'], number> = { fail: 0, warn: 1, pass: 2 };
 
+/** Ulaşılamayan adres için kullanıcıya ne yapacağını söyleyen mesaj. */
+function unreachableMessage(domain: string, result: GeoAuditResult): string {
+  const u = result.unreachable;
+  if (u?.reason === 'http') {
+    return `${domain} cevap verdi ama sayfayı vermedi (HTTP ${u.status}). Genelde bot engeli ya da güvenlik duvarı olur; sunucu kurallarınızda yapay zekâ tarayıcılarına izin verip tekrar deneyin.`;
+  }
+  return `${domain} adresine ulaşılamadı. Alan adının yazımını kontrol edin; site tarayıcıda açılıyorsa sunucunuz isteğimizi engelliyor olabilir.`;
+}
+
 export function StoryProvider({ children }: { children: ReactNode }) {
   const [scan, setScan] = useState<ScanState>({
     status: 'demo',
@@ -86,6 +95,12 @@ export function StoryProvider({ children }: { children: ReactNode }) {
         if (blocked === 'redirected') return;
         if (blocked === 'rejected') {
           setScan((s) => ({ ...s, status: 'error', result: null, error: BLOCKED_REJECTED_MESSAGE }));
+          return;
+        }
+        // Sayfa hiç okunamadıysa skor bir sonuç değil, ölçümün hiç yapılamadığının işaretidir.
+        // 0/100 kırmızı halka göstermek yanlış bilgi olur: bunu hata durumu olarak anlatırız.
+        if (result?.unreachable) {
+          setScan((s) => ({ ...s, status: 'error', result: null, error: unreachableMessage(domain, result) }));
           return;
         }
         setScan((s) => ({ ...s, status: 'done', result, error: null }));

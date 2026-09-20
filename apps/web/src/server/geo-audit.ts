@@ -21,6 +21,11 @@ export type GeoAuditResult = {
     freshness: number;
   };
   findings: AuditFinding[];
+  /**
+   * Sayfa hiç okunamadıysa doldurulur. Bu durumda `overallScore` bir DEĞERLENDİRME DEĞİLDİR;
+   * ölçüm hiç yapılamamıştır. Arayüz bu alanı görünce skor yerine "taranamadı" durumunu göstermeli.
+   */
+  unreachable?: { reason: 'network' | 'http'; status: number | null };
 };
 
 const FETCH_TIMEOUT = 12000;
@@ -66,6 +71,24 @@ function countMatches(re: RegExp, html: string): number {
   return (html.match(re) || []).length;
 }
 
+/**
+ * `fetchText` her başarısızlığı `null`'a indirger; burada nedeni ayırmamız gerekiyor:
+ * adres hiç çözülmediyse (yazım hatası, kapalı alan adı) verilecek mesaj, sunucunun 403 dönmesinden farklı.
+ */
+async function fetchPageDetailed(
+  url: string,
+): Promise<{ html: string } | { html: null; reason: 'network' | 'http'; status: number | null }> {
+  try {
+    const res = await safeFetch(url, { timeout: FETCH_TIMEOUT });
+    if (!res) return { html: null, reason: 'network', status: null };
+    if (!res.ok) return { html: null, reason: 'http', status: res.status };
+    return { html: res.text };
+  } catch (err) {
+    if (err instanceof UnsafeUrlError) throw new ClientError(err.message);
+    return { html: null, reason: 'network', status: null };
+  }
+}
+
 export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   let url = rawUrl.trim();
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
@@ -77,24 +100,33 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
     }
   })();
 
-  const html = await fetchText(url);
+  const page = await fetchPageDetailed(url);
   const findings: AuditFinding[] = [];
 
-  if (html === null) {
+  if (page.html === null) {
+    const isHttp = page.reason === 'http';
     return {
       url,
       overallScore: 0,
       breakdown: { answerFirst: 0, citationAuthority: 0, aiComprehension: 0, technical: 0, freshness: 0 },
+      unreachable: { reason: page.reason, status: page.status },
       findings: [
         {
           category: 'Erişim',
           status: 'fail',
-          title: 'Sayfa çekilemedi',
-          detail: 'URL yanıt vermedi veya engelledi. HTTPS, erişilebilirlik ve bot engellerini kontrol edin.',
+          title: isHttp ? `Sayfa ${page.status} döndürdü` : 'Adrese ulaşılamadı',
+          detail: isHttp
+            ? `Sunucu cevap verdi ama sayfayı vermedi (HTTP ${page.status}). Bot engeli, güvenlik duvarı ya da kaldırılmış bir sayfa olabilir.`
+            : 'Alan adı çözülemedi veya sunucu hiç cevap vermedi. Yazımı kontrol edin; site açıksa sunucu bizim isteğimizi engelliyor olabilir.',
+          fix: isHttp
+            ? 'Sunucu/CDN kurallarında YanitBot ve diğer yapay zekâ tarayıcılarına izin verin, sonra yeniden deneyin.'
+            : 'Adresi tarayıcıda açıp çalıştığını doğrulayın, ardından tam adresi (https:// dahil) yapıştırarak tekrar deneyin.',
         },
       ],
     };
   }
+
+  const html = page.html;
 
   const text = stripTags(html);
   const wordCount = text.split(/\s+/).filter(Boolean).length;

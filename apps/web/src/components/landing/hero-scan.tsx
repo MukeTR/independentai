@@ -163,7 +163,13 @@ function Scanner({
   const [showResult, setShowResult] = useState(mode !== 'running');
 
   useEffect(() => {
-    if (mode === 'error') return;
+    // Hata: tarama hiç tamamlanmadı. Animasyonu dondurup bırakmak "hesaplanıyor" yanılsaması
+    // üretiyordu; bunun yerine adımları sıfırlayıp paneli "taranamadı" haline alıyoruz.
+    if (mode === 'error') {
+      setProgress(0);
+      setShowResult(false);
+      return;
+    }
     if (mode === 'done') {
       setProgress(total);
       const t = setTimeout(() => setShowResult(true), 250);
@@ -202,7 +208,7 @@ function Scanner({
       aria-live="polite"
       aria-label={live ? `${domain} analiz sonucu` : 'Örnek analiz akışı (temsili veri)'}
     >
-      {scanning && <span className="scanline" aria-hidden />}
+      {scanning && mode !== 'error' && <span className="scanline" aria-hidden />}
 
       {/* Tarayıcı çubuğu */}
       <div className="flex items-center justify-between border-b border-hairline pb-3">
@@ -218,7 +224,7 @@ function Scanner({
             live ? 'text-brand-deep' : 'text-ink-faint',
           )}
         >
-          {live ? 'canlı sonuç' : mode === 'running' ? 'taranıyor' : 'temsili'}
+          {live ? 'canlı sonuç' : mode === 'running' ? 'taranıyor' : mode === 'error' ? 'taranamadı' : 'temsili'}
         </span>
       </div>
 
@@ -226,7 +232,7 @@ function Scanner({
         {/* Adımlar */}
         <ol className="space-y-2.5" aria-label="Tarama adımları">
           <li className="text-[11px] font-mono text-ink-faint tracking-wider uppercase mb-3">
-            {scanning ? 'tarama başladı' : 'tarama tamamlandı'}
+            {mode === 'error' ? 'tarama yapılamadı' : scanning ? 'tarama başladı' : 'tarama tamamlandı'}
           </li>
           {STEPS.map((s, i) => {
             const state = i < progress ? 'done' : i === progress && scanning ? 'active' : 'pending';
@@ -335,16 +341,32 @@ function Scanner({
             </>
           ) : (
             <div className="text-center">
-              <div className="font-display text-[40px] tabular text-ink-faint/60">
-                <span className="pulse-dot">··</span>
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.08em] font-semibold text-ink-faint mt-2">
-                {mode === 'running' ? `${domain} okunuyor` : 'hesaplanıyor'}
-              </div>
-              {mode === 'running' && (
-                <p className="text-[12px] text-ink-faint mt-3 max-w-[200px] leading-relaxed">
-                  Sayfa yapısı, içerik netliği, şema ve atıf sinyalleri kontrol ediliyor.
-                </p>
+              {mode === 'error' ? (
+                <>
+                  <span className="w-11 h-11 rounded-full bg-paper-2 border border-hairline flex items-center justify-center mx-auto">
+                    <AlertCircle className="w-5 h-5 text-ink-faint" aria-hidden />
+                  </span>
+                  <div className="text-[11px] uppercase tracking-[0.08em] font-semibold text-ink-faint mt-3">
+                    skor yok
+                  </div>
+                  <p className="text-[12px] text-ink-faint mt-3 max-w-[210px] leading-relaxed">
+                    Sayfa okunamadığı için puan hesaplanmadı. Adresi düzeltip yeniden deneyin.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="font-display text-[40px] tabular text-ink-faint/60">
+                    <span className="pulse-dot">··</span>
+                  </div>
+                  <div className="text-[11px] uppercase tracking-[0.08em] font-semibold text-ink-faint mt-2">
+                    {mode === 'running' ? `${domain} okunuyor` : 'hesaplanıyor'}
+                  </div>
+                  {mode === 'running' && (
+                    <p className="text-[12px] text-ink-faint mt-3 max-w-[200px] leading-relaxed">
+                      Sayfa yapısı, içerik netliği, şema ve atıf sinyalleri kontrol ediliyor.
+                    </p>
+                  )}
+                </>
               )}
             </div>
           )}
