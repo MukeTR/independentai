@@ -104,16 +104,19 @@ function AuthorBar({ a, maxTokens, maxRequests }: { a: AuthorShare; maxTokens: n
     <li className="grid grid-cols-[minmax(0,9rem)_1fr] sm:grid-cols-[minmax(0,11rem)_1fr_auto] items-center gap-x-4 gap-y-2 py-3 border-b border-hairline last:border-0">
       <span className="text-[14px] text-ink truncate font-mono">{a.author}</span>
       <span className="flex flex-col gap-1.5 min-w-0" aria-hidden>
-        <span className="h-2 rounded-full bg-paper-4/60 overflow-hidden">
+        <span className="h-2 rounded-full bg-paper-4 overflow-hidden">
           <span className="block h-full rounded-full bg-brand" style={{ width: `${wTok}%` }} />
         </span>
-        <span className="h-2 rounded-full bg-paper-4/60 overflow-hidden">
-          <span className="block h-full rounded-full bg-ink-faint/50" style={{ width: `${wReq ?? 2}%` }} />
+        <span className="h-2 rounded-full bg-paper-4 overflow-hidden">
+          {wReq !== null && <span className="block h-full rounded-full bg-ink-muted" style={{ width: `${wReq}%` }} />}
         </span>
       </span>
       <span className="col-span-2 sm:col-span-1 text-[13px] tabular whitespace-nowrap flex sm:block gap-4">
-        <span className="text-ink">%{PCT(a.sharePct)} token</span>
-        <span className="text-ink-muted sm:block">
+        <span className="text-ink flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0" aria-hidden />%{PCT(a.sharePct)} token
+        </span>
+        <span className="text-ink-muted flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-ink-muted shrink-0" aria-hidden />
           {a.requestSharePct === undefined ? '— istek' : `%${PCT(a.requestSharePct)} istek`}
         </span>
       </span>
@@ -393,7 +396,7 @@ export default async function ModelPazarPayiPage() {
           <Section
             eyebrow="Sağlayıcıya göre"
             title="Token hacmi ve istek sayısı aynı şeyi söylemez."
-            intro={`${pencereEtiketi} penceresinde, listedeki ${snap.models.length} modelin toplamı üzerinden hesaplandı. Üstteki mor çubuk token payı, alttaki gri çubuk istek payıdır; ikisi ayrıştığında o sağlayıcının modelleri farklı uzunlukta bağlamla çalışıyor demektir.`}
+            intro={`${pencereEtiketi} penceresinde, listedeki ${snap.models.length} modelin toplamı üzerinden hesaplandı. Üstteki renkli çubuk token payı, alttaki koyu çubuk istek payıdır; ikisi ayrıştığında o sağlayıcının modelleri farklı uzunlukta bağlamla çalışıyor demektir.`}
           >
             <ul className="card p-6 lg:p-8">
               {snap.authors.map((a) => (

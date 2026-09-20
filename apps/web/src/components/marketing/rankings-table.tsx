@@ -243,11 +243,11 @@ export function RankingsTable({ models, windowLabel }: { models: ModelShare[]; w
     <div>
       <p className="text-[13px] text-ink-faint mb-3">
         Sütun başlığına tıklayın; tablo o sütuna göre yeniden sıralanır. Veri sayfayla birlikte geldi, sıralama için
-        yeni istek atılmaz.
+        yeni istek atılmaz. Tablo geniştir: dar ekranda yatay kaydırın.
       </p>
 
       <div className="card overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[1180px]">
+        <table className="w-full text-left border-collapse min-w-[1100px]">
           <caption className="sr-only">
             {windowLabel} penceresinde OpenRouter üzerinden ölçülen model kullanımı. Sütun başlıkları sıralama
             düğmesidir.
@@ -262,7 +262,7 @@ export function RankingsTable({ models, windowLabel }: { models: ModelShare[]; w
                     key={c.label}
                     scope="col"
                     aria-sort={c.key ? ariaSort : undefined}
-                    className={`eyebrow px-4 py-3.5 align-bottom ${c.align === 'right' ? 'text-right' : ''}`}
+                    className={`eyebrow px-3 py-3.5 align-bottom ${c.align === 'right' ? 'text-right' : ''}`}
                   >
                     {c.key ? (
                       <button
@@ -299,7 +299,7 @@ export function RankingsTable({ models, windowLabel }: { models: ModelShare[]; w
                 {COLS.map((c) => (
                   <td
                     key={c.label}
-                    className={`px-4 py-3 text-[13.5px] text-ink-muted ${c.align === 'right' ? 'text-right' : ''} ${
+                    className={`px-3 py-3 text-[13.5px] text-ink-muted ${c.align === 'right' ? 'text-right' : ''} ${
                       c.mono ? 'font-mono text-[13px]' : ''
                     }`}
                   >
