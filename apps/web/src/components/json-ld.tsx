@@ -24,7 +24,7 @@ export function OrganizationJsonLd() {
         // Gerçek profiller oluşturuldukça doldurulacak (LinkedIn, X, GitHub, Crunchbase).
         sameAs: [],
         description:
-          'Yapay zekaların verdiği cevaplarda markanızın görünürlüğünü, sıralamasını ve rakiplerle karşılaştırmasını ölçen bağımsız platform.',
+          'Yanıt: markanızın yapay zekâ cevaplarındaki görünürlüğünü analiz eden, neden görünmediğinizi bulan ve yapılacak işleri çıkaran platform; isteyene Yanıt Agency uygulama hizmeti.',
       }}
     />
   );
@@ -61,7 +61,7 @@ export function SoftwareApplicationJsonLd() {
         operatingSystem: 'Web',
         applicationCategory: 'BusinessApplication',
         description:
-          'AI brand visibility / GEO (Generative Engine Optimization) platformu. ChatGPT, Claude ve Gemini cevaplarında marka takibi.',
+          'AI görünürlük analizi ve yapılacak işler platformu: ChatGPT, Gemini ve Claude cevaplarında marka takibi, neden analizi, görev listesi.',
         offers: {
           '@type': 'Offer',
           price: '0',

@@ -59,20 +59,20 @@ export function Footer() {
   return (
     <footer className="border-t-hairline border-hairline mt-24 bg-paper-2/60">
       <Container className="py-16">
-        <div className="grid grid-cols-12 gap-10">
-          <div className="col-span-12 lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-3">
             <Logo />
             <p className="text-[13.5px] text-ink-muted mt-4 leading-relaxed max-w-[280px]">
-              Yapay zekaların markanızı ve ürünlerinizi ne sıklıkla, hangi sırada ve nasıl önerdiğini bağımsız bir gözle
-              ölçen görünürlük platformu.
+              Yanıt, yapay zekâların markanızı önerip önermediğini analiz eder, neden görünmediğinizi bulur ve ne
+              yapmanız gerektiğini söyler. Siz yapın veya Yanıt Agency yapsın.
             </p>
             <div className="mt-6 flex items-center gap-3">
-              <span className="chip own !text-[10.5px]">independentai.space</span>
+              <span className="chip own !text-[10.5px]">yanit.io</span>
               <span className="chip !text-[10.5px]">v0.1 · lansman</span>
             </div>
           </div>
 
-          <div className="col-span-12 lg:col-span-9 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-x-6 gap-y-8">
+          <div className="lg:col-span-9 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-x-6 gap-y-8">
             {FOOTER_LINKS.map((col) => (
               <div key={col.heading}>
                 <div className="eyebrow mb-4">{col.heading}</div>
@@ -91,8 +91,8 @@ export function Footer() {
         </div>
 
         <div className="border-t-hairline border-hairline mt-14 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[12px] text-ink-faint">
-          <div>© {new Date().getFullYear()} Independent AI · Türkiye</div>
-          <div className="font-mono">independentai.space</div>
+          <div>© {new Date().getFullYear()} Yanıt · Türkiye</div>
+          <div className="font-mono">yanit.io · independentai.space</div>
         </div>
       </Container>
     </footer>

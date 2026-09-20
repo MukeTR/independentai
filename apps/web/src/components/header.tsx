@@ -6,7 +6,7 @@ import { MobileMenu } from './mobile-menu';
 import { Container } from './container';
 import { NAV_PANELS } from './nav-data';
 
-export function Header() {
+export function Header({ themeClass }: { themeClass?: string } = {}) {
   return (
     <header className="relative z-40">
       <div className="border-b-hairline border-hairline/60 backdrop-blur-sm bg-paper/80 sticky top-0 z-40">
@@ -35,7 +35,7 @@ export function Header() {
               >
                 Ücretsiz başla <ArrowRight className="w-3.5 h-3.5" aria-hidden />
               </Link>
-              <MobileMenu panels={NAV_PANELS} />
+              <MobileMenu panels={NAV_PANELS} themeClass={themeClass} />
             </div>
           </div>
         </Container>

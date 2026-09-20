@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 const SITE = 'https://independentai.space';
-const BRAND = 'Independent AI';
+const BRAND = 'Yanıt';
 const DEFAULT_DESCRIPTION =
-  "ChatGPT, Claude ve Gemini'nin verdiği cevaplarda markanız ne sıklıkla, hangi sırada ve hangi tonla geçiyor? Independent AI bağımsız bir gözle ölçer.";
+  'Müşterileriniz satın almadan önce yapay zekâya soruyor. Yanıt, o sorularda sizi mi rakibinizi mi önerdiğini ölçer, nedenini gösterir ve yapılacakları verir.';
 
 export type PageSeoInput = {
   title: string;

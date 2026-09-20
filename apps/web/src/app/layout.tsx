@@ -10,9 +10,9 @@ import { Analytics } from '@vercel/analytics/next';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Independent AI — Yapay zekalarda markanız nasıl konumlanıyor?',
+  title: 'Yanıt — Yapay zekâ sizi öneriyor mu?',
   description:
-    "ChatGPT, Claude ve Gemini'nin alanınızla ilgili sorulara verdiği cevaplarda markanız geçiyor mu, hangi sırada, hangi rakiplerinizle birlikte? Bağımsız bir üçüncü taraf gözüyle ölçer.",
+    'Yanıt, markanızın ChatGPT, Gemini ve Claude cevaplarındaki görünürlüğünü analiz eder, neden görünmediğinizi bulur ve ne yapmanız gerektiğini söyler. Siz yapın veya bize bırakın.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://independentai.space'),
   icons: {
     icon: '/icon.svg',

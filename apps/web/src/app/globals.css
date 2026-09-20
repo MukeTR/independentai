@@ -280,3 +280,117 @@ i, em, .italic { font-style: normal !important; }
 /* Dokunma hedefi minimumu */
 @media (pointer: coarse) { .btn-primary, .btn-secondary { min-height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .rise-1, .rise-2, .rise-3, .rise-4, .rise-5 { animation: none !important; } }
+
+/* =============================================================================
+   Yanıt landing — koyu tema (yalnızca (home) rota grubunda .theme-dark sarmalayıcı)
+   Aynı token adları; utility sınıfları (card, btn, chip, bg-paper…) otomatik uyar.
+   ============================================================================= */
+.theme-dark {
+  --paper:        #07080F;
+  --paper-2:      #0B0D18;
+  --paper-3:      #10131F;
+  --paper-4:      #171B2B;
+
+  --ink:          #F2F3F8;
+  --ink-muted:    #A3A8BC;
+  --ink-faint:    #6E7489;
+
+  --hairline:     rgba(255, 255, 255, 0.10);
+  --hairline-2:   rgba(255, 255, 255, 0.06);
+
+  --brand:        #8B7CFF;
+  --brand-deep:   #B4ABFF;
+  --brand-glow:   rgba(139, 124, 255, 0.14);
+
+  --positive:     #34D399;
+  --warning:      #FBBF24;
+  --danger:       #F87171;
+
+  --grid-line:    rgba(139, 124, 255, 0.05);
+
+  background: var(--paper);
+  color: var(--ink);
+  color-scheme: dark;
+  background-image:
+    radial-gradient(circle at 50% -10%, rgba(139, 92, 246, 0.16), transparent 45%),
+    repeating-linear-gradient(0deg, transparent 0, transparent 39px, var(--grid-line) 39px, var(--grid-line) 40px),
+    repeating-linear-gradient(90deg, transparent 0, transparent 39px, var(--grid-line) 39px, var(--grid-line) 40px);
+}
+.theme-dark .card {
+  background: rgba(16, 19, 31, 0.78);
+  border-color: var(--hairline);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 20px 50px -30px rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+}
+.theme-dark .btn-primary { background: var(--ink); color: #07080F; }
+.theme-dark .btn-primary:hover { background: #fff; color: #07080F; }
+.theme-dark .btn-secondary { background: rgba(255,255,255,0.04); color: var(--ink); border-color: var(--hairline); }
+.theme-dark .btn-secondary:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.07); }
+.theme-dark .input { background: rgba(255,255,255,0.04); border-color: var(--hairline); color: var(--ink); }
+.theme-dark .input::placeholder { color: var(--ink-faint); }
+.theme-dark .input:focus { background: rgba(255,255,255,0.06); border-color: var(--brand); }
+.theme-dark .chip { background: rgba(255,255,255,0.05); border-color: var(--hairline); color: var(--ink-muted); }
+.theme-dark .chip.own { background: var(--brand-glow); color: var(--brand-deep); border-color: rgba(139,124,255,0.35); }
+.theme-dark .chip.comp { background: rgba(248,113,113,0.10); color: var(--danger); border-color: rgba(248,113,113,0.25); }
+.theme-dark .aurora-bg {
+  opacity: 0.7;
+  background:
+    radial-gradient(38% 50% at 22% 30%, rgba(139, 92, 246, 0.42), transparent 70%),
+    radial-gradient(34% 46% at 78% 24%, rgba(59, 130, 246, 0.32), transparent 70%),
+    radial-gradient(40% 42% at 60% 70%, rgba(34, 211, 238, 0.16), transparent 72%);
+}
+.theme-dark .text-shimmer {
+  background: linear-gradient(100deg, #A78BFA 20%, #8B7CFF 38%, #60A5FA 50%, #8B7CFF 62%, #A78BFA 80%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.theme-dark .grad-border {
+  background:
+    linear-gradient(rgba(16,19,31,0.9), rgba(16,19,31,0.9)) padding-box,
+    linear-gradient(135deg, rgba(139,92,246,0.7), rgba(59,130,246,0.35) 55%, rgba(139,92,246,0.1)) border-box;
+}
+.theme-dark :focus-visible { outline-color: var(--brand); }
+
+/* Violet → elektrik mavi vurgu */
+.accent-grad { background-image: linear-gradient(135deg, #8B5CF6 0%, #6366F1 45%, #3B82F6 100%); }
+.accent-text {
+  background-image: linear-gradient(100deg, #A78BFA, #818CF8 50%, #60A5FA);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.glow-ring { box-shadow: 0 0 0 1px rgba(139,124,255,0.25), 0 0 60px -12px rgba(139,92,246,0.55); }
+
+/* Tarama animasyonu (hero) */
+@keyframes scanline { 0% { top: -10%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 105%; opacity: 0; } }
+.scanline {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(139,124,255,0.9), transparent);
+  animation: scanline 2.2s cubic-bezier(0.45,0,0.55,1) infinite;
+}
+@keyframes stepIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
+.step-in { animation: stepIn 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes pulseDot { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+.pulse-dot { animation: pulseDot 1s ease-in-out infinite; }
+@keyframes ringDraw { to { stroke-dashoffset: var(--ring-target, 0); } }
+.ring-draw { animation: ringDraw 1.2s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* Sayfa üzerinde beliren bulgu işaretleri */
+@keyframes popMark { 0% { opacity: 0; transform: scale(0.85) translateY(6px); } 60% { transform: scale(1.03) translateY(0); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.pop-mark { animation: popMark 0.5s cubic-bezier(0.22,1,0.36,1) both; animation-delay: var(--pop-delay, 0ms); }
+
+/* Yazı yazma imleci (sahte sohbet) */
+@keyframes caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.caret::after { content: '▍'; margin-left: 1px; color: var(--brand); animation: caret 0.9s steps(1) infinite; }
+
+/* Before/after kaydırıcı */
+.ba-handle { touch-action: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scanline, .step-in, .pulse-dot, .ring-draw, .pop-mark, .caret::after { animation: none !important; }
+  .step-in, .pop-mark { opacity: 1 !important; transform: none !important; }
+  .ring-draw { stroke-dashoffset: var(--ring-target, 0) !important; }
+}

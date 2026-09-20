@@ -13,7 +13,7 @@ import type { MegaPanel } from './mega-menu';
  * Mobil gezinme (lg altı): hamburger → tam ekran panel, gruplar akordeon (native <details>).
  * Rota değişince kapanır; açıkken arka plan kaydırması kilitlenir; Esc kapatır.
  */
-export function MobileMenu({ panels }: { panels: MegaPanel[] }) {
+export function MobileMenu({ panels, themeClass }: { panels: MegaPanel[]; themeClass?: string }) {
   const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
   const pathname = usePathname();
@@ -60,7 +60,7 @@ export function MobileMenu({ panels }: { panels: MegaPanel[] }) {
             role="dialog"
             aria-modal="true"
             aria-label="Site menüsü"
-            className="fixed inset-0 z-50 bg-paper overflow-y-auto"
+            className={cn('fixed inset-0 z-50 bg-paper overflow-y-auto', themeClass)}
             style={{ animation: 'rise 200ms cubic-bezier(0.22, 1, 0.36, 1) both' }}
           >
             <div className="flex items-center justify-between h-16 px-6 border-b border-hairline sticky top-0 bg-paper/95 backdrop-blur-sm">
