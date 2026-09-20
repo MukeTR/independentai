@@ -71,10 +71,6 @@ export const NAV_PANELS: MegaPanel[] = [
         links: [...SECTOR_LINKS.map((l) => ({ ...l })), { href: '/sektor', title: 'Tüm sektörler' }],
       },
       {
-        heading: 'Platforma göre',
-        links: SOLUTION_LINKS.filter((l) => l.href !== '/solutions/agencies').map((l) => ({ ...l })),
-      },
-      {
         heading: 'Kime göre',
         links: [
           { href: '/solutions/agencies', title: 'Ajanslar', description: 'Çoklu müşteri, roller, paylaşım linkleri' },

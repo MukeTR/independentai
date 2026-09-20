@@ -89,13 +89,18 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
                   className={cn(
                     'grid gap-6',
                     p.featured ? 'col-span-8' : 'col-span-12',
-                    p.featured ? (p.wide ? 'grid-cols-3' : 'grid-cols-2') : 'grid-cols-3',
+                    p.featured ? (p.sections.length >= 3 ? 'grid-cols-3' : 'grid-cols-2') : 'grid-cols-3',
                   )}
                 >
                   {p.sections.map((s) => (
                     <div key={s.heading}>
                       <div className="eyebrow mb-3.5">{s.heading}</div>
-                      <ul className="space-y-2.5">
+                      <ul
+                        className={cn(
+                          'space-y-2.5',
+                          s.links.length > 6 && 'grid grid-cols-2 gap-x-6 gap-y-1 space-y-0',
+                        )}
+                      >
                         {s.links.map((l) => (
                           <li key={l.href}>
                             <Link
