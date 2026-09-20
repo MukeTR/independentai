@@ -10,6 +10,7 @@ import { log } from '@/server/logger';
 import { cronAuthorized } from '@/server/cron-auth';
 import { pruneExpiredPublicScans } from '@/server/public-scan-maintenance';
 import { runAgencySignals } from '@/server/agency-signal';
+import { refreshOpenRouterRankings, type RefreshResult } from '@/server/openrouter-rankings';
 
 export const maxDuration = 300; // Vercel Hobby/Pro varsayılan ve Hobby maksimumu (fluid compute)
 
@@ -55,6 +56,9 @@ export async function GET(req: NextRequest) {
   const catalogRemaining = 'remaining' in catalog ? catalog.remaining : 0;
 
   let alerts: Awaited<ReturnType<typeof runDailyDropAlerts>> | { skipped: true } = { skipped: true };
+  // Model kullanım sıralaması (OpenRouter) — hafif bir dış okuma, yalnız ilk hop'ta.
+  // Başarısız olursa eski anlık görüntü yerinde kalır; tur durmaz.
+  let rankings: RefreshResult | { skipped: true } = { skipped: true };
   if (runs.remaining === 0 && Date.now() < startedAt + 280_000) {
     alerts = await runDailyDropAlerts({ deadlineAt: startedAt + 285_000 });
     try {
@@ -70,6 +74,7 @@ export async function GET(req: NextRequest) {
       } catch (err) {
         log.warn('cron.night_maintenance_failed', { err });
       }
+      rankings = await refreshOpenRouterRankings(); // kendi hatasını yutar, fırlatmaz
     }
   }
 
@@ -95,6 +100,7 @@ export async function GET(req: NextRequest) {
     catalog,
     discovery,
     alerts,
+    rankings,
     willChain,
     durationMs: Date.now() - startedAt,
   });
@@ -103,6 +109,7 @@ export async function GET(req: NextRequest) {
     catalog,
     discovery,
     alerts,
+    rankings,
     hop,
     willChain,
     durationMs: Date.now() - startedAt,

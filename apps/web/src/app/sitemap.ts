@@ -41,16 +41,22 @@ const STATIC_PAGES: StaticPage[] = [
   { path: '/how-it-works', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/use-cases', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
 
-  // Çözümler (e-ticaret entegrasyonları; /solutions/agencies ayrı görevde eklenir)
+  // Çözümler (e-ticaret entegrasyonları + ajanslar)
   { path: '/solutions', priority: 0.7, change: 'monthly', lastmod: SOLUTIONS_REVISION },
   { path: '/solutions/ecommerce', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
   { path: '/solutions/shopify', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
   { path: '/solutions/ikas', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
   { path: '/solutions/ticimax', priority: 0.8, change: 'monthly', lastmod: SOLUTIONS_REVISION },
+  { path: '/solutions/agencies', priority: 0.7, change: 'monthly', lastmod: SOLUTIONS_REVISION },
+
+  // Hizmet tarafı (SaaS'ın ikinci yüzü; sektör sayfalarının ikinci CTA hedefi)
+  { path: '/yanit-agency', priority: 0.9, change: 'monthly', lastmod: CLAIMS_REVISION },
 
   // Company
   { path: '/about', priority: 0.5, change: 'monthly' },
   { path: '/contact', priority: 0.4, change: 'yearly' },
+  { path: '/demo', priority: 0.5, change: 'monthly' },
+  { path: '/bot', priority: 0.3, change: 'yearly', lastmod: CLAIMS_REVISION },
 
   // Blog
   { path: '/blog', priority: 0.7, change: 'daily' },
@@ -60,12 +66,16 @@ const STATIC_PAGES: StaticPage[] = [
   { path: '/resources', priority: 0.7, change: 'monthly' },
   { path: '/resources/geo-101', priority: 0.7, change: 'monthly' },
   { path: '/resources/glossary', priority: 0.6, change: 'monthly' },
+  { path: '/resources/yapay-zeka-modelleri', priority: 0.8, change: 'monthly', lastmod: '2026-09-20' },
+  // Günlük tazelenen veri sayfası; lastmod sabit tutulmaz, değişim sıklığı günlüktür.
+  { path: '/resources/model-pazar-payi', priority: 0.7, change: 'daily' },
 
   // Docs (yalnızca canlı olanlar — docs/webhooks "yakında" stub'ı noindex)
   { path: '/docs', priority: 0.5, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/docs/api', priority: 0.6, change: 'monthly', lastmod: CLAIMS_REVISION },
 
-  // Ücretsiz public araçlar (lead-gen)
+  // Ücretsiz public araçlar (lead-gen) — /arac hub sayfası araç sayfalarının ebeveyni
+  { path: '/arac', priority: 0.8, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/arac/chatgpt-rank-checker', priority: 0.7, change: 'monthly' },
   { path: '/arac/claude-rank-checker', priority: 0.7, change: 'monthly' },
   { path: '/arac/gemini-rank-checker', priority: 0.7, change: 'monthly' },

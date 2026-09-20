@@ -61,13 +61,15 @@ export const STATS: Record<StatKey, Stat> = {
     key: 'chatgptShare',
     value: '%94,49',
     label: 'Yapay zekâ kaynaklı web trafiğinde ChatGPT payı',
-    year: 2026,
-    source: 'Digital 2026 (We Are Social + Meltwater)',
+    // Raporun ADI "Digital 2026" ama ölçüm dönemi EKİM 2025. Yıl alanı verinin yılını söyler.
+    year: 2025,
+    source: 'Digital 2026 (We Are Social + Meltwater), Ekim 2025 ölçümü',
     sourceUrl:
       'https://tr.euronews.com/next/2026/01/04/turkiye-chatgpt-trafiginde-yuzde-9449luk-oranla-dunya-birincisi',
     confidence: 'orta',
-    sentence: 'Türkiye’de yapay zekâ araçlarından gelen web trafiğinin %94,49’u ChatGPT’den geliyor (Digital 2026).',
-    note: 'İkincil kaynak (haber özeti); birincil raporda doğrulanana kadar “orta güven”.',
+    sentence:
+      'Ekim 2025’te Türkiye’de yapay zekâ araçlarından gelen web trafiğinin %94,49’u ChatGPT’den geliyordu (Digital 2026).',
+    note: 'İkincil kaynak (haber özeti); birincil raporda doğrulanamadı. Pay o tarihten beri düştü: Statcounter Ağustos 2026 Türkiye ölçümünde ChatGPT %77,1. Güncel dağılım için /resources/yapay-zeka-modelleri sayfasına bakın.',
   },
 };
 
