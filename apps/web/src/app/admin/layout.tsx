@@ -16,6 +16,7 @@ import {
   Briefcase,
   Megaphone,
   Ban,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 export const metadata = { robots: { index: false, follow: false } };
@@ -28,6 +29,7 @@ const ADMIN_NAV = [
   { href: '/admin/tenants', label: 'Tenants', icon: Building2 },
   { href: '/admin/users', label: 'Kullanıcılar', icon: UsersIcon },
   { href: '/admin/announcements', label: 'Duyurular', icon: Megaphone },
+  { href: '/admin/referanslar', label: 'Referanslar', icon: ImageIcon },
   { href: '/admin/blocked-sites', label: 'Yasaklı siteler', icon: Ban },
   { href: '/admin/runs', label: 'Run kayıtları', icon: Activity },
   { href: '/admin/system', label: 'Sistem', icon: SettingsIcon },

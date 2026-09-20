@@ -16,6 +16,7 @@ import { CaseStudy } from '@/components/landing/case-study';
 import { AiChatDemo } from '@/components/landing/ai-chat-demo';
 import { FeatureBento } from '@/components/landing/feature-bento';
 import { FinalCta } from '@/components/landing/final-cta';
+import { ReferenceLogos } from '@/components/marketing/reference-logos';
 import { getOffer } from '@/server/offer';
 import { formatTry } from '@independentai/shared';
 
@@ -36,6 +37,7 @@ export default async function Landing() {
     <StoryProvider>
       <SoftwareApplicationJsonLd saasMonthlyTry={offer.saasMonthlyTry} trialDays={offer.trialDays} />
       <HeroScan />
+      <ReferenceLogos />
       <StoryRail />
       <HowStrip />
       <BuyerQuestions />
