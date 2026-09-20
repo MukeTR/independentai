@@ -14,10 +14,16 @@ const BASE_HEADERS = [
 
 const nextConfig = {
   reactStrictMode: true,
-  // Statik vitrin anlık görüntüsü (Cloudflare önizlemesi) için: sunucu tarafı görüntü
-  // iyileştirici olmadığından `next/image` doğrudan /img/... yolunu bassın.
-  // Normal (Vercel) derlemede bu satır etkisizdir.
-  ...(process.env.YANIT_STATIC_SNAPSHOT === '1' ? { images: { unoptimized: true } } : {}),
+  // Statik vitrin anlık görüntüsü (Cloudflare önizlemesi) için iki ayar:
+  //  - `images.unoptimized`: statik kopyada sunucu tarafı görüntü iyileştirici yok,
+  //    `next/image` doğrudan /img/... yolunu bassın.
+  //  - `distDir`: anlık görüntü derlemesi ÇALIŞAN `next dev` sunucusunun `.next` klasörünü
+  //    EZMESİN. Ezdiğinde dev sunucusu bellekteki chunk haritasıyla diskteki dosyalar
+  //    uyuşmadığı için "Cannot find module './87.js'" hatası veriyor.
+  // Normal (Vercel) derlemede ikisi de etkisizdir.
+  ...(process.env.YANIT_STATIC_SNAPSHOT === '1'
+    ? { images: { unoptimized: true }, distDir: '.next-snapshot' }
+    : {}),
   poweredByHeader: false,
   transpilePackages: ['@independentai/shared', '@independentai/db', '@independentai/ai'],
   serverExternalPackages: ['@prisma/client', '.prisma/client', 'undici'],
