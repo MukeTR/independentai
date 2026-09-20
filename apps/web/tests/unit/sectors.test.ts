@@ -90,7 +90,7 @@ describe('SECTORS', () => {
     expect(tools('b2b-uretici')).toEqual(['hreflang-kontrol', 'guvenlik-basliklari', 'schema-denetimi']);
     expect(tools('ajans').slice(0, 2)).toEqual(['rakip-kiyas', 'whatsapp-onizleme']);
     expect(SECTOR_BY_SLUG.ajans.partnerCta).toBe(true);
-    for (const s of SECTORS) expect(s.featuredTool).toBe('satin-alma-sorusu-kapsama');
+    for (const s of SECTORS) expect(s.featuredTool).toBe('musteriniz-nasil-soruyor');
   });
 });
 

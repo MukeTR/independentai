@@ -44,7 +44,7 @@ export default async function DemoPage() {
   const offer = await getOffer();
   const tools = enabledTools().filter((t) => t.kind !== null);
   const firstTool = toolBySlug('seo-karnesi')?.enabled ? toolBySlug('seo-karnesi') : tools[0];
-  const coverage = toolBySlug('satin-alma-sorusu-kapsama');
+  const coverage = toolBySlug('musteriniz-nasil-soruyor');
   const coverageHref = coverage?.enabled ? toolPath(coverage.slug) : '/arac';
   const scanHref = firstTool ? toolPath(firstTool.slug) : '/arac';
 

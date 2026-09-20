@@ -69,7 +69,7 @@ export const PUBLIC_SCAN_LIMITS: Record<PublicScanKind, LimitSpec> = {
   BROKEN_LINKS: multi('kirik-link-bulucu'),
   ROBOTS_SITEMAP: multi('robots-sitemap-kontrol'),
   HREFLANG: multi('hreflang-kontrol'),
-  QUESTION_COVERAGE: multi('satin-alma-sorusu-kapsama'),
+  QUESTION_COVERAGE: multi('musteriniz-nasil-soruyor'),
   COMPARE: multi('rakip-kiyas'),
 };
 /** Ürün yazıcı: LLM maliyeti → daha sıkı (IP 5/saat, küresel 100/saat). */

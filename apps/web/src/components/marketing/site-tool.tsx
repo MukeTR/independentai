@@ -9,7 +9,7 @@
  *    CTA çifti ("Bunları biz düzeltelim" → /contact, "Kendim düzelteceğim" → #oneriler), KVKK cümlesi.
  *  - WAF: skor yerine "bot koruması nedeniyle taranamadı"; partial / legacyCharset görünür etiket.
  *  - `sectorSelect='required'`: form native `required` ile, `?url=` otomatik başlatması `autoRun` ile engellenir;
- *    sunucu tarafı (W3 satin-alma-sorusu-kapsama) `sector` yoksa yine ClientError (400) vermelidir.
+ *    sunucu tarafı (musteriniz-nasil-soruyor) `sector` yoksa yine ClientError (400) vermelidir.
  */
 import Link from 'next/link';
 import { useMemo, useState, type ReactNode } from 'react';

@@ -79,7 +79,7 @@ export const SECTORS: Sector[] = [
         why: '“X mi Y mi” sorusunda rakibinizle 14 maddede yan yana: hangi teknik eksik sizi geride bırakıyor?',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Yapay zekâ asistanları SaaS ürünlerini nasıl öneriyor?',
@@ -134,7 +134,7 @@ export const SECTORS: Sector[] = [
         why: 'Kendi sitenizin title, meta ve H1 düzeni, sunduğunuz hizmetin ilk kanıtıdır.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Müşterilerimin sitelerini de tarayabilir miyim?',
@@ -184,7 +184,7 @@ export const SECTORS: Sector[] = [
         why: 'Hasta formu taşıyan site için HTTPS, HSTS ve güncel TLS sertifikası temel güven şartıdır.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Bu test klinikleri karşılaştırıp puanlıyor mu?',
@@ -236,7 +236,7 @@ export const SECTORS: Sector[] = [
         why: 'Title ve H1 “hangi alanda, hangi şehirde” sorusuna tek cümlede cevap vermeli.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Avukatlık ve mali müşavirlik için reklam kısıtları var; bu araç uygun mu?',
@@ -286,7 +286,7 @@ export const SECTORS: Sector[] = [
         why: 'Tema kaynaklı “Disallow: /” veya bayat sitemap, binlerce ürünü görünmez bırakır.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Platformumu otomatik tanıyor musunuz?',
@@ -335,7 +335,7 @@ export const SECTORS: Sector[] = [
         why: 'Course ve EducationalOrganization şeması süre, biçim (online/yüz yüze) ve ücreti makineye açıkça söyler.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Kurs fiyatını yazmak zorunda mıyım?',
@@ -384,7 +384,7 @@ export const SECTORS: Sector[] = [
         why: 'Ofis adresi, telefon ve yetki belgesi bilgisi; yapay zekâ kimliksiz emlakçıyı önermez.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'İlan sayfaları için hangi şema tipi?',
@@ -433,7 +433,7 @@ export const SECTORS: Sector[] = [
         why: 'Sezonluk oda/paket sayfaları sitemap’te yoksa asistan güncel teklifinizi bulamaz.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Booking/Airbnb varken kendi sitem neden önemli?',
@@ -483,7 +483,7 @@ export const SECTORS: Sector[] = [
         why: 'Organization şemasında sertifikalar, üretim yeri ve ihracat pazarları makineye açıkça söylenmeli.',
       },
     ],
-    featuredTool: 'satin-alma-sorusu-kapsama',
+    featuredTool: 'musteriniz-nasil-soruyor',
     faq: [
       {
         q: 'Ürün kataloğum PDF; sorun mu?',
