@@ -244,7 +244,7 @@ export default function HowItWorks() {
       </Section>
 
       <CtaBlock
-        eyebrow="20 saniyede başlayın"
+        eyebrow="25 saniyede başlayın"
         title={
           <>
             Sitenizi tarayalım; <span className="text-brand">hükmü siz okuyun.</span>

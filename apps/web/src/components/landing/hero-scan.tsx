@@ -114,7 +114,7 @@ export function HeroScan() {
               )}
               <BlockedSiteHintSlot domain={scan.domain} />
               <p className="mt-3 text-[12.5px] text-ink-faint">
-                Kayıt gerekmez · sonuç 10–20 saniyede · sayfanız yalnızca okunur
+                Kayıt gerekmez · sonuç 25 saniyeye kadar · sayfanız yalnızca okunur
               </p>
             </form>
 

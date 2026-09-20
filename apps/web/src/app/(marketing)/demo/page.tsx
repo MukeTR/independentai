@@ -52,7 +52,7 @@ export default async function DemoPage() {
     {
       n: '01',
       icon: Search,
-      t: 'Siteyi 20 saniyede tarayın',
+      t: 'Siteyi 25 saniyede tarayın',
       d: `"İzninizle sitenizi tarayayım" deyip adresi yazın. ${firstTool?.title ?? 'Araç'} hüküm cümlesiyle döner: kaç kritik, kaç uyarı, kaç tamam — ve 100 üzerinden skor.`,
       href: scanHref,
       cta: 'Sitemi tara',
