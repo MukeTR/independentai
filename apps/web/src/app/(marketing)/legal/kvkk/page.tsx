@@ -13,7 +13,7 @@ export default function Kvkk() {
       <Container className="max-w-3xl">
         <div className="eyebrow">Yasal</div>
         <h1 className="font-display text-[40px] tracking-tight mt-3 mb-4">KVKK Aydınlatma Metni</h1>
-        <p className="text-[12px] text-ink-faint font-mono mb-12">Son güncelleme: 2026-05-22</p>
+        <p className="text-[12px] text-ink-faint font-mono mb-12">Son güncelleme: 2026-09-21</p>
 
         <div className="space-y-8 text-[15px] leading-[1.7] text-ink">
           <p className="text-ink-muted">
@@ -45,6 +45,10 @@ export default function Kvkk() {
             {
               h: 'Saklama süresi',
               c: 'Hesabınız aktif olduğu sürece + 1 yıl. Talep ettiğinizde 30 gün içinde silinir.',
+            },
+            {
+              h: 'Ücretsiz araçlar ve iletişim formu',
+              c: 'Ücretsiz site araçlarında (/arac) yalnızca girdiğiniz herkese açık web sitesi taranır; hesap, e-posta veya kayıt istenmez. Tarama kaydında ham IP adresi ve tam tarayıcı bilgisi SAKLANMAZ; kötüye kullanımı önlemek için IP ve tarayıcı ailesinden tuzlu bir özet (pseudonim ziyaretçi kimliği) üretilir ve bu özet geri çevrilemez. Tarama sonucu, alan adı ve skor 30 gün saklanır; kalıcı rapor bağlantısı bu sürenin sonunda kapanır. Alan adı ve skor, satış ekibimizin sizinle iletişime geçip geçmeyeceğine karar vermesi için lead kaydı olarak tutulur; bu kayıtta kişisel veri yoktur. Ad soyad, e-posta, telefon ve mesajınız yalnızca iletişim formunu doldurup KVKK aydınlatma onayını verdiğinizde işlenir ve yalnızca talebinizi yanıtlamak için kullanılır; ticari elektronik ileti (İYS) izni ayrı ve isteğe bağlı bir kutuyla alınır. Formdan veya araçlardan gelen hiçbir veri yapay zekâ servislerine (ChatGPT, Claude, Gemini vb.) gönderilmez; skorlar deterministik tarayıcıyla hesaplanır. Silme veya düzeltme talebiniz için destek@independentai.space adresine yazabilirsiniz.',
             },
             {
               h: 'Veri sahibi hakları',

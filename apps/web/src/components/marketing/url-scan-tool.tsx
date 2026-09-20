@@ -12,6 +12,13 @@ import { InlineAlert } from '@/components/ui/inline-alert';
 import { ApiError } from '@/lib/api-client';
 import { useHydrated } from '@/lib/use-hydrated';
 import { handleBlockedResponse } from '@/lib/blocked-redirect';
+import { ShareReportButtons } from './share-report-buttons';
+
+/** Zarftaki kalıcı rapor bağlantısı (`handlePublicScan` v2) — yalnız https/http string ise. */
+function reportUrlOf(result: unknown): string | null {
+  const v = result && typeof result === 'object' ? (result as { reportUrl?: unknown }).reportUrl : null;
+  return typeof v === 'string' && /^https?:\/\//.test(v) ? v : null;
+}
 
 export type ScanState<T> =
   | { status: 'idle' }
@@ -233,6 +240,15 @@ export function UrlScanTool<T>({
       {state.status === 'done' && (
         <div className="mt-6 space-y-6">
           {renderResult(state.result, { url: state.url, shareUrl })}
+          {reportUrlOf(state.result) && (
+            <div className="card p-4 sm:p-5">
+              <div className="eyebrow mb-2">Kalıcı rapor bağlantısı</div>
+              <p className="text-[12.5px] text-ink-muted mb-3">
+                Bu sonuç 30 gün boyunca aynı bağlantıdan açılır; yeniden tarama gerektirmez.
+              </p>
+              <ShareReportButtons url={reportUrlOf(state.result) as string} text={`${state.url} — Yanıt site raporu`} />
+            </div>
+          )}
           {shareUrl && (
             <div className="flex items-center gap-3 flex-wrap">
               <button
