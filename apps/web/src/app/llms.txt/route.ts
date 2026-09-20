@@ -8,7 +8,7 @@ import { OFFER, formatTry } from '@independentai/shared';
 
 export const dynamic = 'force-static';
 
-const SITE = 'https://independentai.space';
+const SITE = 'https://yanit.io';
 
 export async function GET() {
   const offer = OFFER;
@@ -17,7 +17,7 @@ export async function GET() {
 
 > Müşterileriniz satın almadan önce yapay zekâya soruyor. Yanıt, ChatGPT, Claude ve Gemini'nin o sorularda sizi mi rakibinizi mi önerdiğini ölçer, neden görünmediğinizi bulur ve yapılacakları verir. Siz yapın veya Yanıt Agency yapsın.
 
-Yanıt (alan adı: independentai.space; eski adı Independent AI) Türkiye merkezli bir AI görünürlük (GEO) platformudur. Üç katmanı vardır:
+Yanıt (alan adı: yanit.io) Türkiye merkezli bir AI görünürlük (GEO) platformudur. Üç katmanı vardır:
 
 1. **Ücretsiz şok raporu ve araçlar** — hesap gerekmez. Alan adınızı girin; 0-100 AI görünürlük skoru, bulgular ve düzeltme önerileri anında gelir.
 2. **Yanıt (SaaS)** — ${formatTry(offer.saasMonthlyTry)}/ay, aylık abonelik, istediğiniz zaman iptal. ${offer.trialDays} gün ücretsiz deneme, kart gerekmez. Her gün ChatGPT, Claude ve Gemini'de otomatik ölçüm; rakip karşılaştırması; neden analizi ve yapılacaklar listesi.
@@ -52,7 +52,7 @@ Yanıt (alan adı: independentai.space; eski adı Independent AI) Türkiye merke
 
 - **Marka**: Yanıt (Yanıt Agency: uygulama hizmeti)
 - **Kuruluş**: 2026, Türkiye
-- **Alan adı**: independentai.space
+- **Alan adı**: yanit.io
 - **Hedef pazar**: Türkiye merkezli SaaS, e-ticaret, ajans, kurumsal markalar
 - **İzlenen AI modelleri**: OpenAI ChatGPT, Anthropic Claude, Google Gemini — Perplexity ve Grok planlanıyor (henüz yok)
 - **Ölçüm sıklığı**: Her gece otomatik + anında "şimdi çalıştır"

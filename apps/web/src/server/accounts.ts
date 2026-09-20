@@ -22,6 +22,17 @@ import { computeEntitlement } from './entitlement';
 import { log } from './logger';
 
 /** Deneme bitişi: kayıt anı + `days` gün (varsayılan OFFER.trialDays; kayıt akışı getOffer() ile geçer). */
+/**
+ * OAuth sağlayıcısı e-posta vermediğinde üretilen yer tutucu adresin alan adı.
+ * Alan adı geçişi nedeniyle eski kayıtlar da yer tutucu sayılır (doğrulama bandı ve e-posta gönderimi için).
+ */
+export const PLACEHOLDER_EMAIL_DOMAIN = 'users.yanit.io';
+const LEGACY_PLACEHOLDER_DOMAINS = ['users.independentai.space'];
+
+export function isPlaceholderEmail(email: string): boolean {
+  return [PLACEHOLDER_EMAIL_DOMAIN, ...LEGACY_PLACEHOLDER_DOMAINS].some((d) => email.endsWith(`@${d}`));
+}
+
 export function trialEnd(from = new Date(), days: number = OFFER.trialDays): Date {
   return new Date(from.getTime() + days * 86_400_000);
 }
@@ -125,7 +136,7 @@ export async function upsertOAuthUser(provider: 'google' | 'linkedin', profile: 
   }
 
   // Yeni kullanıcı — e-posta doğrulanmamışsa yine de hesap açılır ama emailVerifiedAt boş kalır.
-  const finalEmail = email ?? `${provider}_${profile.sub}@users.independentai.space`;
+  const finalEmail = email ?? `${provider}_${profile.sub}@${PLACEHOLDER_EMAIL_DOMAIN}`;
   const tenantName = (profile.name || finalEmail.split('@')[0] || 'Markam').slice(0, LIMITS.companyName);
   const { trialDays } = await getOffer();
   try {

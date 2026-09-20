@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: 'Yanıt — Yapay zekâ sizi öneriyor mu?',
   description:
     'Yanıt, markanızın ChatGPT, Gemini ve Claude cevaplarındaki görünürlüğünü analiz eder, neden görünmediğinizi bulur ve ne yapmanız gerektiğini söyler. Siz yapın veya bize bırakın.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://independentai.space'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yanit.io'),
   icons: {
     icon: '/icon.svg',
     shortcut: '/icon.svg',

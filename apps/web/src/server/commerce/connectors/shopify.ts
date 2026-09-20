@@ -158,7 +158,7 @@ async function graphql<T>(ctx: ConnectorContext, query: string, variables: Recor
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'X-Shopify-Access-Token': creds.accessToken,
-        'User-Agent': 'IndependentAI-Commerce/1.0 (+https://independentai.space)',
+        'User-Agent': 'YanitBot-Commerce/1.0 (+https://yanit.io)',
       },
       body: JSON.stringify({ query, variables }),
       redirect: 'error',

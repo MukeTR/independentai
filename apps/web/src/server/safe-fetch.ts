@@ -285,7 +285,7 @@ export async function safeFetch(rawUrl: string, init: SafeFetchInit = {}): Promi
       res = (await undiciFetch(current, {
         method,
         headers: {
-          'User-Agent': 'IndependentAI-GEOBot/1.0 (+https://independentai.space)',
+          'User-Agent': 'YanitBot/1.0 (+https://yanit.io)',
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5',
           ...headers,
         },

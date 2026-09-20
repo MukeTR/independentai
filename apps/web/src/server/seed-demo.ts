@@ -7,7 +7,7 @@ import { prisma } from './prisma';
 import { hashPassword } from './password';
 import type { AiProvider, Sentiment, MentionType } from '@independentai/db';
 
-const DEMO_EMAIL = 'demo@independentai.space';
+const DEMO_EMAIL = 'demo@yanit.io';
 const DEMO_PASSWORD = 'demo1234';
 
 const CITATION_DOMAINS = [

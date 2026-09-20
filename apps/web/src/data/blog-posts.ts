@@ -100,7 +100,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
         '3. Content-Type olarak text/markdown veya text/plain ayarlayın.',
         '4. robots.txt\'inizde AI crawler\'ları (GPTBot, ClaudeBot, PerplexityBot) explicit allow edin.',
       ] },
-      { type: 'p', text: 'llms.txt eklemek 30 dakika sürer. Etkisi haftalar içinde AI cevaplarında görünmeye başlar. Yanıt\'ın kendi sitesinin llms.txt\'sini independentai.space/llms.txt adresinde görebilirsiniz — referans olarak kullanabilirsiniz.' },
+      { type: 'p', text: 'llms.txt eklemek 30 dakika sürer. Etkisi haftalar içinde AI cevaplarında görünmeye başlar. Yanıt\'ın kendi sitesinin llms.txt\'sini yanit.io/llms.txt adresinde görebilirsiniz — referans olarak kullanabilirsiniz.' },
     ],
   },
   {

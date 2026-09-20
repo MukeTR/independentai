@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const SITE = 'https://independentai.space';
+const SITE = 'https://yanit.io';
 const BRAND = 'Yanıt';
 const DEFAULT_DESCRIPTION =
   'Müşterileriniz satın almadan önce yapay zekâya soruyor. Yanıt, o sorularda sizi mi rakibinizi mi önerdiğini ölçer, nedenini gösterir ve yapılacakları verir.';

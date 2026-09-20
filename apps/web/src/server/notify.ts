@@ -6,6 +6,7 @@
  *      haftalık: lastNotifiedAt son 6 gün içindeyse atlanır; günlük düşüş: lastDropAlertAt 20 saat.
  *  - Her teslimat NotificationLog'a yazılır (mailer.ts).
  */
+import { isPlaceholderEmail } from './accounts';
 import { visibilityOf, type MetricRun } from '@independentai/shared';
 import { prisma } from './prisma';
 import { decrypt, encrypt, maskWebhook } from './crypto';
@@ -252,7 +253,7 @@ export async function runWeeklyReports(opts: { deadlineAt?: number } = {}): Prom
           tenantId: tenant.id,
         })) || delivered;
     const ownerEmail = tenant.users[0]?.email;
-    if (cfg.emailEnabled && ownerEmail && !ownerEmail.endsWith('@users.independentai.space')) {
+    if (cfg.emailEnabled && ownerEmail && !isPlaceholderEmail(ownerEmail)) {
       delivered =
         (await sendEmail({
           to: ownerEmail,
@@ -306,7 +307,7 @@ export async function runDailyDropAlerts(
           tenantId: tenant.id,
         })) || delivered;
     const ownerEmail = tenant.users[0]?.email;
-    if (cfg.emailEnabled && ownerEmail && !ownerEmail.endsWith('@users.independentai.space')) {
+    if (cfg.emailEnabled && ownerEmail && !isPlaceholderEmail(ownerEmail)) {
       delivered =
         (await sendEmail({
           to: ownerEmail,

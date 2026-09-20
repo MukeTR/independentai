@@ -9,7 +9,7 @@ export default function RootError({ error, reset }: { error: Error & { digest?: 
         <div className="eyebrow">Hata</div>
         <h1 className="font-display text-[24px] mt-2">Beklenmeyen bir hata oluştu</h1>
         <p className="text-[14px] text-ink-muted mt-2">
-          Lütfen tekrar deneyin. Sorun sürerse bize yazın: destek@independentai.space
+          Lütfen tekrar deneyin. Sorun sürerse bize yazın: destek@yanit.io
         </p>
         {error.digest && <p className="text-[11px] text-ink-faint font-mono mt-2">Referans: {error.digest}</p>}
         <div className="flex justify-center gap-2 mt-6">

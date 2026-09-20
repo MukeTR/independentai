@@ -319,8 +319,8 @@ describe('sayfalar ve anchor kimlikleri (§7.1)', () => {
     expect(t).toMatch(/robots\.txt/);
     expect(t).toMatch(/User-agent/i);
     expect(t).toMatch(/buildMetadata/);
-    // Geçiş kimliği: safe-fetch.ts hâlâ eski UA'yı gönderir; sayfa bunu saklamaz.
-    expect(t).toMatch(/IndependentAI-GEOBot\/1\.0/);
+    // Kimliğin iki yazımı da (site adresi ve /bot ekli) sayfada belgelenir.
+    expect(t).toMatch(/YanitBot\/1\.0/);
     // robots.txt uyumu kodda yok → "yakında"; kesin yol UA engeli.
     expect(t).toMatch(/robots\.txt uyumu · yakında/);
     expect(t).not.toMatch(/robots\.txt yeter/);

@@ -39,7 +39,7 @@ export function ForgotForm() {
   if (done === 'unavailable') {
     return (
       <InlineAlert tone="warning">
-        E-posta gönderimi bu ortamda yapılandırılmamış. Lütfen destek ile iletişime geçin: destek@independentai.space
+        E-posta gönderimi bu ortamda yapılandırılmamış. Lütfen destek ile iletişime geçin: destek@yanit.io
       </InlineAlert>
     );
   }

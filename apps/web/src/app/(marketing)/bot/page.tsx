@@ -12,14 +12,15 @@ export const metadata = buildMetadata({
   path: '/bot',
 });
 
-/** Sabah kararı #16: UA'daki adres SITE_URL (independentai.space) kalır; yanit.io geçişinde tek seferde değişir. */
+/** Tarayıcı kimliği tek kaynaktan: site adresi + /bot. */
 const UA = `YanitBot/1.0 (+${SITE_URL}/bot)`;
 /**
  * Geçiş dönemi kimliği: GEO denetimi, içerik denetimi, platform tespiti ve e-ticaret araçları hâlâ
  * `server/safe-fetch.ts` sabitini gönderir. INTEGRATE bu sabiti SCAN_UA ile değiştirene kadar
  * (PAZARLAMA_HIKAYESI §8) iki dize de aynı tarayıcıya aittir; sayfa ikisini de açıkça söyler.
  */
-const LEGACY_UA = 'IndependentAI-GEOBot/1.0 (+https://independentai.space)';
+/** Bazı eski araç uçları kimliği `/bot` eki olmadan gönderir; engelleme kuralı ikisini de kapsamalı. */
+const ALT_UA = 'YanitBot/1.0 (+https://yanit.io)';
 
 const FETCHES = [
   'Girilen alan adının ana sayfası ve ilgili birkaç sayfa (ör. bir ürün sayfası, hakkında/iletişim)',
@@ -50,8 +51,8 @@ const BUDGET = [
   },
   { k: 'Kimlik', v: `User-Agent: ${UA} · Accept-Language: tr-TR` },
   {
-    k: 'Geçiş',
-    v: `Geçiş süresince GEO denetimi, içerik denetimi, platform tespiti ve e-ticaret araçları eski kimlikle de görünebilir: ${LEGACY_UA}. İki dize aynı tarayıcıya aittir; engelleme kuralınızı ikisi için de yazın.`,
+    k: 'İkinci yazım',
+    v: `GEO denetimi, içerik denetimi, platform tespiti ve e-ticaret araçlarında kimlik “/bot” eki olmadan görünebilir: ${ALT_UA}. İki dize aynı tarayıcıya aittir; engelleme kuralınızı ikisi için de yazın.`,
   },
   { k: 'Kaynak', v: 'Bulut (Vercel) çıkış IP’leri; sabit IP listesi yok. Kimlik için UA dizesine bakın.' },
 ];
@@ -88,7 +89,7 @@ export default function BotPage() {
           </p>
           <div className="mt-6 card p-4 font-mono text-[13px] text-ink overflow-x-auto">
             <div>{UA}</div>
-            <div className="mt-2 text-ink-faint text-[12px]">geçiş süresince ayrıca: {LEGACY_UA}</div>
+            <div className="mt-2 text-ink-faint text-[12px]">geçiş süresince ayrıca: {ALT_UA}</div>
           </div>
         </Container>
       </section>

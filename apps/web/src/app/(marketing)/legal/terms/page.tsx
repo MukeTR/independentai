@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Kullanım Şartları',
-  description: 'Yanıt (Independent AI) kullanım şartları ve hizmet sözleşmesi.',
+  description: 'Yanıt kullanım şartları ve hizmet sözleşmesi.',
   path: '/legal/terms',
 });
 
@@ -19,7 +19,7 @@ export default function Terms() {
           {[
             {
               h: '1. Hizmetin kapsamı',
-              c: 'Yanıt (Independent AI), kullanıcılarının tanımladığı sorgular için OpenAI, Anthropic ve Google\'ın yapay zeka modellerine API çağrısı yapar, cevap metinlerinde marka tespiti yapar ve sonuçları görselleştirir. Hizmet "olduğu gibi" sunulur; sonuçların doğruluğu, tamlığı veya güncelliği garanti edilmez.',
+              c: 'Yanıt, kullanıcılarının tanımladığı sorgular için OpenAI, Anthropic ve Google\'ın yapay zeka modellerine API çağrısı yapar, cevap metinlerinde marka tespiti yapar ve sonuçları görselleştirir. Hizmet "olduğu gibi" sunulur; sonuçların doğruluğu, tamlığı veya güncelliği garanti edilmez.',
             },
             {
               h: '2. Ücretsiz deneme',

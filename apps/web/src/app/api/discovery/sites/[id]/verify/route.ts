@@ -8,7 +8,7 @@ import { getOwnedSite, toView, verificationToken, verifyByMetaTag } from '@/serv
 const VERIFY_LIMIT = { name: 'discovery-verify', limit: 20, windowMs: 3_600_000 };
 
 /** `verifyByMetaTag` ile aynı etiket adı (sites.ts içindeki desenle eşleşir). */
-const META_NAME = 'independentai-site-verification';
+const META_NAME = 'yanit-site-verification';
 
 /** GET — doğrulama token'ı ve sayfaya eklenecek meta etiketi (kopyalanabilir snippet). */
 export const GET = route('discovery.sites.verify_info', async (_req, ctx) => {

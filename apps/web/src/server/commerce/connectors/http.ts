@@ -5,7 +5,7 @@
 import type { CommerceProvider } from '@independentai/db';
 import { CommerceError } from '../errors';
 
-export const USER_AGENT = 'IndependentAI-Commerce/1.0 (+https://independentai.space)';
+export const USER_AGENT = 'YanitBot-Commerce/1.0 (+https://yanit.io)';
 /** Sağlayıcı yanıtı için üst sınır (brief: 5 MB). */
 export const MAX_PROVIDER_BODY_BYTES = 5 * 1024 * 1024;
 

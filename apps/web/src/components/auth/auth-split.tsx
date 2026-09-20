@@ -14,7 +14,7 @@ export function AuthSplit({ children }: { children: React.ReactNode }) {
         <div className="flex-1 flex items-center py-10">
           <div className="w-full max-w-sm mx-auto rise-1">{children}</div>
         </div>
-        <div className="text-[12px] text-ink-faint">independentai.space · 2026</div>
+        <div className="text-[12px] text-ink-faint">yanit.io · 2026</div>
       </div>
 
       {/* Sağ — animasyonlu showcase */}

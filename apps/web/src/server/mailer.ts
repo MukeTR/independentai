@@ -108,7 +108,7 @@ export async function sendEmail(opts: {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM || 'Yanıt <bildirim@independentai.space>',
+        from: process.env.EMAIL_FROM || 'Yanıt <bildirim@yanit.io>',
         to: opts.to,
         subject: opts.subject,
         html: opts.html,

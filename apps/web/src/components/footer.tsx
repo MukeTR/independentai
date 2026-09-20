@@ -92,7 +92,7 @@ export function Footer() {
 
         <div className="border-t-hairline border-hairline mt-14 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[12px] text-ink-faint">
           <div>© {new Date().getFullYear()} Yanıt · Türkiye</div>
-          <div className="font-mono">yanit.io · independentai.space</div>
+          <div className="font-mono">yanit.io</div>
         </div>
       </Container>
 

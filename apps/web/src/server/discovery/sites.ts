@@ -332,7 +332,7 @@ export async function deleteSite(actor: Actor, id: string, req?: Request): Promi
   });
 }
 
-/** Meta etiketiyle sahiplik doğrulaması: `<meta name="independentai-site-verification" content="…">`. */
+/** Meta etiketiyle sahiplik doğrulaması: `<meta name="yanit-site-verification" content="…">`. */
 export function verificationToken(site: Pick<TrackedSite, 'id' | 'publicKeyHash'>): string {
   return createHash('sha256').update(`${site.id}:${site.publicKeyHash}`).digest('hex').slice(0, 32);
 }
@@ -343,8 +343,10 @@ export async function verifyByMetaTag(actor: Actor, id: string): Promise<{ verif
   const token = verificationToken(site);
   const res = await safeFetch(site.normalizedOrigin, { timeout: 10_000 }).catch(() => null);
   if (!res || !res.ok) return { verified: false, reason: 'site_unreachable' };
-  const re = new RegExp(`<meta[^>]+name=["']independentai-site-verification["'][^>]+content=["']${token}["']`, 'i');
-  const reAlt = new RegExp(`<meta[^>]+content=["']${token}["'][^>]+name=["']independentai-site-verification["']`, 'i');
+  // Alan adı geçişi: yeni etiket üretilir, daha önce eklenmiş eski etiket de kabul edilir.
+  const names = 'yanit-site-verification|independentai-site-verification';
+  const re = new RegExp(`<meta[^>]+name=["'](?:${names})["'][^>]+content=["']${token}["']`, 'i');
+  const reAlt = new RegExp(`<meta[^>]+content=["']${token}["'][^>]+name=["'](?:${names})["']`, 'i');
   if (!re.test(res.text) && !reAlt.test(res.text)) return { verified: false, reason: 'meta_tag_not_found' };
   await prisma.trackedSite.update({ where: { id: site.id }, data: { verifiedAt: new Date() } });
   return { verified: true, reason: 'meta_tag' };

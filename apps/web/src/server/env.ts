@@ -33,7 +33,7 @@ export function cronSecret(): string | null {
 }
 
 export function siteUrl(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL || 'https://independentai.space').replace(/\/+$/, '');
+  return (process.env.NEXT_PUBLIC_SITE_URL || 'https://yanit.io').replace(/\/+$/, '');
 }
 
 export function isProduction(): boolean {

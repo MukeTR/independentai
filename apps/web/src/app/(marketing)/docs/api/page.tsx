@@ -13,7 +13,7 @@ export const metadata = buildMetadata({
   noIndex: false,
 });
 
-const BASE = 'https://independentai.space';
+const BASE = 'https://yanit.io';
 const ENDPOINT = `${BASE}/api/v1/visibility`;
 
 const NAV = [

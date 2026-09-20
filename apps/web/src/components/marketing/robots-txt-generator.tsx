@@ -42,7 +42,7 @@ export function RobotsTxtGenerator() {
 
     // Default rule
     lines.push('# robots.txt — Yanıt tarafından üretildi');
-    lines.push('# https://independentai.space/blog/llms-txt-rehberi-2026');
+    lines.push('# https://yanit.io/blog/llms-txt-rehberi-2026');
     lines.push('');
     lines.push('User-Agent: *');
     lines.push('Allow: /');

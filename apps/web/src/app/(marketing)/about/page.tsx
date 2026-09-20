@@ -131,9 +131,9 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-7 card p-8">
             <p className="text-[15px] text-ink-muted leading-relaxed">
-              Yanıt (eski adıyla Independent AI) Türkiye merkezli, bağımsız bir üründür. Ürünü bir kurucu geliştiriyor;
-              uygulama tarafında (Yanıt Agency) teknik SEO, şema ve içerik işlerini üstlenen küçük bir ekip çalışıyor.
-              Erken aşamadayız; yol haritasını kullanıcı geri bildirimiyle şekillendiriyoruz.
+              Yanıt Türkiye merkezli, bağımsız bir üründür. Ürünü bir kurucu geliştiriyor; uygulama tarafında (Yanıt
+              Agency) teknik SEO, şema ve içerik işlerini üstlenen küçük bir ekip çalışıyor. Erken aşamadayız; yol
+              haritasını kullanıcı geri bildirimiyle şekillendiriyoruz.
             </p>
             <p className="text-[13px] text-ink-faint mt-4 leading-relaxed">
               Ekip sayfasında isim yayımlamıyoruz; toplantıda tanışırsınız. Referans ve vaka bilgisi talep üzerine,

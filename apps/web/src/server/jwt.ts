@@ -10,7 +10,9 @@ export type SessionPayload = {
 };
 
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14; // 14 gün
-const ISSUER = 'independentai.space';
+const ISSUER = 'yanit.io';
+/** Alan adı geçişi: eski imzalı oturumlar süreleri dolana kadar geçerli kalsın. */
+const LEGACY_ISSUERS = ['independentai.space'];
 const AUDIENCE = 'iai-web';
 
 function getSecret(): Uint8Array {
@@ -30,7 +32,7 @@ export async function signSession(payload: SessionPayload): Promise<string> {
 export async function verifySession(token: string): Promise<SessionPayload> {
   const { payload } = await jwtVerify(token, getSecret(), {
     algorithms: ['HS256'],
-    issuer: ISSUER,
+    issuer: [ISSUER, ...LEGACY_ISSUERS],
     audience: AUDIENCE,
   });
   if (typeof payload.userId !== 'string' || typeof payload.tenantId !== 'string') {

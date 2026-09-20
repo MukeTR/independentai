@@ -286,7 +286,7 @@ describe('PATCH / DELETE / keys / verify', () => {
     expect(r.status).toBe(200);
     const token = r.json.token as unknown as string;
     expect(token).toMatch(/^[0-9a-f]{32}$/);
-    expect(String(r.json.metaTag)).toContain('independentai-site-verification');
+    expect(String(r.json.metaTag)).toContain('yanit-site-verification');
     expect(String(r.json.metaTag)).toContain(token);
     expect(r.json.verifiedAt).toBeNull();
   });

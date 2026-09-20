@@ -32,7 +32,7 @@ export default function ShopifySolutionPage() {
             {
               t: 'Özel uygulama tanımı',
               d: 'Shopify Partner Dashboard’da (veya mağaza yöneticisinde Ayarlar → Uygulamalar → Uygulama geliştir) bir uygulama oluşturun. İzinli yönlendirme adresi olarak aşağıdaki geri çağrı adresini ekleyin.',
-              code: 'https://independentai.space/api/integrations/shopify/callback',
+              code: 'https://yanit.io/api/integrations/shopify/callback',
             },
             {
               t: 'İzin kapsamı',

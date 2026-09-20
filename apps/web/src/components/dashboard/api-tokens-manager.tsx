@@ -204,7 +204,7 @@ export function ApiTokensManager({ isOwner, limit }: { isOwner: boolean; limit: 
       <div className="card p-5 sm:p-6 bg-paper-2/40">
         <div className="eyebrow mb-2">Kullanım</div>
         <pre className="text-[12px] font-mono text-ink-muted overflow-x-auto whitespace-pre">{`curl -H "Authorization: Bearer iai_live_..." \\
-  https://independentai.space/api/v1/visibility?days=30`}</pre>
+  https://yanit.io/api/v1/visibility?days=30`}</pre>
         <p className="text-[12.5px] text-ink-muted mt-3">
           Görünürlük skoru, ses payı, trend, model kırılımı ve atıf kaynaklarını JSON döndürür. Tam referans:{' '}
           <a href="/docs/api" className="text-brand-deep underline">

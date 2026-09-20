@@ -173,7 +173,7 @@ export const BATCH_4: BlogPost[] = [
         'Eksik schema markup.',
       ] },
       { type: 'h2', text: 'Yanıt\'ın landing page yapısı' },
-      { type: 'p', text: 'Kendi landing page\'imiz tüm bu prensipleri uyguluyor: net H1, somut value prop, sosyal kanıt, FAQ\'le yapılandırılmış özellikler, JSON-LD structured data, mobile-responsive. Görmek için: independentai.space.' },
+      { type: 'p', text: 'Kendi landing page\'imiz tüm bu prensipleri uyguluyor: net H1, somut value prop, sosyal kanıt, FAQ\'le yapılandırılmış özellikler, JSON-LD structured data, mobile-responsive. Görmek için: yanit.io.' },
     ],
   },
   {

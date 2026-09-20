@@ -245,7 +245,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'p', text: 'Dosyayı koyduktan sonra doğrulayın:' },
       { type: 'code', text: 'curl -I https://siteniz.com/llms.txt\n# 200 OK + Content-Type: text/markdown beklenir' },
       { type: 'p', text: 'Tarayıcıdan da kontrol edebilirsiniz; markdown ham olarak görünmeli. Google\'da kullandığınız Search Console gibi llms.txt için resmi bir doğrulama paneli henüz yok; loglarınızdan AI bot ziyaretlerinin artmasını gözlemleyerek etkisini ölçersiniz.' },
-      { type: 'p', text: 'Yanıt\'ın kendi llms.txt\'ini independentai.space/llms.txt adresinde görebilirsiniz — referans olarak kullanın. Bütün marketing pages\'lerimizi, kategorimizi ve önemli URL\'leri orada bulacaksınız.' },
+      { type: 'p', text: 'Yanıt\'ın kendi llms.txt\'ini yanit.io/llms.txt adresinde görebilirsiniz — referans olarak kullanın. Bütün marketing pages\'lerimizi, kategorimizi ve önemli URL\'leri orada bulacaksınız.' },
     ],
   },
   {
@@ -784,7 +784,7 @@ export const BATCH_1: BlogPost[] = [
         'Organik katılım: Bir kişi (CEO, founder, dev lead) gerçek hesaptan ilgili konularda yorum yapsın. Marka adı belli ama satış yapmıyor.',
         'AMA (Ask Me Anything) etkinlikler: r/Entrepreneur, r/SaaS gibi subreddit\'lerde "Brand X founder here, AMA" tarzı. Yılda 1-2 kez yapılabilir.',
         'Bağımsız konuşmalar: Markanızla ilgili thread\'lerde kullanıcı soru sorduğunda dürüst, yararlı cevap. "Biz X markasıyız, bu konuda Y çözümünü öneriyoruz" dürüstlük üzerinden çalışır.',
-        'Subreddit moderasyon ortaklığı: kendi subreddit\'inizi açmak (r/independentai gibi) bazen değerli; ama küçük subreddit\'ler değil ana kategori subreddit\'lerinde anılmak daha kıymetli.',
+        'Subreddit moderasyon ortaklığı: kendi subreddit\'inizi açmak (markanızın adıyla) bazen değerli; ama küçük subreddit\'ler değil ana kategori subreddit\'lerinde anılmak daha kıymetli.',
       ] },
       { type: 'h2', text: 'Yapılmaması gerekenler' },
       { type: 'p', text: 'Reddit\'te bir hata kalıcı zarar verir. Kaçınılması gerekenler:' },

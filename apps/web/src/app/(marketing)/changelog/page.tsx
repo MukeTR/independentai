@@ -30,7 +30,7 @@ const RELEASES = [
         type: 'IMPROVE' as const,
         items: [
           '"6 ay ücretsiz" lansman teklifi kaldırıldı; kayıt her zaman açık',
-          'Marka geçişi: pazarlama sayfaları, paylaşılan rapor imzası, e-postalar ve blog yazarı "Yanıt" oldu (alan adı independentai.space)',
+          'Marka geçişi: pazarlama sayfaları, paylaşılan rapor imzası, e-postalar ve blog yazarı "Yanıt" oldu (alan adı yanit.io)',
           'llms.txt yeni ürün anlatımıyla yeniden yazıldı',
         ],
       },

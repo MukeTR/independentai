@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Çerez Politikası',
-  description: 'Yanıt (Independent AI) çerez kullanımı ve tarayıcı saklama politikası.',
+  description: 'Yanıt çerez kullanımı ve tarayıcı saklama politikası.',
   path: '/legal/cookies',
 });
 
@@ -17,8 +17,8 @@ export default function Cookies() {
 
         <div className="space-y-8 text-[15px] leading-[1.7] text-ink">
           <p className="text-ink-muted">
-            Yanıt (Independent AI) yalnızca <strong>kullanım için zorunlu</strong> çerezler kullanır. Reklam, takip veya
-            üçüncü taraf analitik çerezleri yoktur.
+            Yanıt yalnızca <strong>kullanım için zorunlu</strong> çerezler kullanır. Reklam, takip veya üçüncü taraf
+            analitik çerezleri yoktur.
           </p>
 
           <section>

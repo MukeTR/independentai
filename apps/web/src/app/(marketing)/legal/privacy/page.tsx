@@ -3,8 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Gizlilik Politikası',
-  description:
-    'Yanıt (Independent AI) gizlilik politikası — hangi verileri toplarız, nasıl saklarız, kimle paylaşırız.',
+  description: 'Yanıt gizlilik politikası — hangi verileri toplarız, nasıl saklarız, kimle paylaşırız.',
   path: '/legal/privacy',
 });
 
@@ -111,8 +110,8 @@ export default function Privacy() {
 
           <Section h="8. İletişim">
             Sorularınız için:{' '}
-            <a href="mailto:destek@independentai.space" className="text-brand-deep hover:underline">
-              destek@independentai.space
+            <a href="mailto:destek@yanit.io" className="text-brand-deep hover:underline">
+              destek@yanit.io
             </a>
           </Section>
         </div>

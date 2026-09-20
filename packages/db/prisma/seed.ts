@@ -34,7 +34,7 @@ async function main() {
   await prisma.user.create({
     data: {
       tenantId: tenant.id,
-      email: 'demo@independentai.space',
+      email: 'demo@yanit.io',
       passwordHash: hashPassword('demo1234'),
       name: 'Demo Kullanıcı',
       role: 'OWNER',
@@ -146,7 +146,7 @@ async function main() {
 
   console.log('✅ Seed tamamlandı.');
   console.log('   Tenant: KarPanel Demo');
-  console.log('   Login : demo@independentai.space / demo1234');
+  console.log('   Login : demo@yanit.io / demo1234');
   console.log(`   Ücretsiz deneme bitişi: ${trialEndsAt.toISOString().slice(0, 10)}`);
 }
 

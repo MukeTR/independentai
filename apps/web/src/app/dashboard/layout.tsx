@@ -1,3 +1,4 @@
+import { isPlaceholderEmail } from '@/server/accounts';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { after } from 'next/server';
@@ -77,7 +78,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             veriler silinmez.
           </div>
         )}
-        {!actor.emailVerified && !actor.email.endsWith('@users.independentai.space') && <VerifyEmailBanner />}
+        {!actor.emailVerified && !isPlaceholderEmail(actor.email) && <VerifyEmailBanner />}
         <AgencyBand tenantId={actor.tenantId} tenantKind={actor.tenant.kind} />
         <main id="main" className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10 pt-7 pb-28">
           {children}

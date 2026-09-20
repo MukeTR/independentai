@@ -1,3 +1,4 @@
+import { isPlaceholderEmail } from '@/server/accounts';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requirePageActor, allowedRealtimeTopics } from '@/server/authz';
@@ -59,7 +60,7 @@ export default async function AgencyLayout({ children }: { children: React.React
             geçer; veriler silinmez.
           </div>
         )}
-        {!actor.emailVerified && !actor.email.endsWith('@users.independentai.space') && <VerifyEmailBanner />}
+        {!actor.emailVerified && !isPlaceholderEmail(actor.email) && <VerifyEmailBanner />}
         <main id="main" className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10 pt-7 pb-28">
           <AgencyNav />
           {children}

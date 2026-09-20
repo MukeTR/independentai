@@ -109,7 +109,7 @@ export default function Contact() {
       <Section eyebrow="Adres" title="Türkiye merkezliyiz." className="py-16 lg:py-20">
         <div className="card p-7 max-w-2xl">
           <div className="text-[14px] text-ink leading-relaxed">
-            Yanıt (Independent AI)
+            Yanıt
             <br />
             (Şirket bilgileri KVKK aydınlatma metninde yayınlanacak)
             <br />
