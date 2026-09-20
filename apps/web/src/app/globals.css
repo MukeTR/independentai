@@ -454,8 +454,8 @@ i, em, .italic { font-style: normal !important; }
    ============================================================================= */
 .wordmark-band {
   position: relative;
-  margin-top: 64px;
-  height: clamp(120px, 17vw, 260px);
+  margin-top: 0;
+  height: clamp(86px, 12.5vw, 200px);
   overflow: hidden;
   display: flex;
   align-items: flex-end;
@@ -474,14 +474,16 @@ i, em, .italic { font-style: normal !important; }
 .wordmark-band__text {
   font-family: var(--font-sans);
   font-weight: 700;
-  font-size: clamp(120px, 23vw, 380px);
-  line-height: 0.78;
-  letter-spacing: -0.045em;
+  /* Kelime bandın tüm genişliğini doldurur; alt kısmı bilinçli olarak kırpılır. */
+  font-size: 27.5vw;
+  line-height: 0.72;
+  letter-spacing: -0.05em;
   color: var(--ink);
-  transform: translateY(16%);
+  transform: translateY(19%);
   user-select: none;
   white-space: nowrap;
 }
 @media (max-width: 640px) {
-  .wordmark-band { margin-top: 48px; }
+  .wordmark-band { margin-top: 0; }
+  .wordmark-band__text { font-size: 30vw; }
 }

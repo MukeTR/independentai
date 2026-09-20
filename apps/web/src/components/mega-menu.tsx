@@ -56,8 +56,9 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
             onClick={() => (open === p.label ? setOpen(null) : openPanel(p.label))}
             onFocus={() => openPanel(p.label)}
             className={cn(
-              'inline-flex items-center gap-1.5 px-3.5 py-2 text-[14px] rounded-lg transition',
-              open === p.label ? 'text-ink bg-paper-3' : 'text-ink-muted hover:text-ink',
+              'inline-flex items-center gap-1.5 px-3.5 py-2 text-[14px] rounded-full transition outline-none',
+              'focus-visible:ring-2 focus-visible:ring-brand/30',
+              open === p.label ? 'text-ink bg-paper-2' : 'text-ink-muted hover:text-ink hover:bg-paper-2/70',
             )}
           >
             {p.label}
@@ -69,13 +70,17 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
 
           {open === p.label && (
             <div
-              className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50"
+              className={cn(
+                'absolute top-full pt-3 z-50',
+                // Geniş panel ortalanırsa ekranın solundan taşar; trigger'ın soluna hizala.
+                p.wide ? 'left-0' : 'left-1/2 -translate-x-1/2',
+              )}
               onMouseEnter={() => openPanel(p.label)}
               onMouseLeave={schedulePanelClose}
             >
               <div
                 className={cn(
-                  'card bg-paper-3 p-7 max-w-[calc(100vw-2rem)] grid grid-cols-12 gap-6 shadow-[0_24px_60px_-20px_rgba(20,22,28,0.16)]',
+                  'bg-paper-3 rounded-2xl border border-hairline p-7 max-w-[calc(100vw-2rem)] grid grid-cols-12 gap-7 shadow-[0_2px_4px_rgba(20,22,28,0.04),0_24px_56px_-28px_rgba(20,22,28,0.28)]',
                   p.wide ? 'w-[min(94vw,880px)]' : 'w-[min(92vw,720px)]',
                 )}
                 style={{ animation: 'rise 220ms cubic-bezier(0.22, 1, 0.36, 1) both' }}
@@ -89,11 +94,14 @@ export function MegaMenu({ panels }: { panels: MegaPanel[] }) {
                 >
                   {p.sections.map((s) => (
                     <div key={s.heading}>
-                      <div className="eyebrow mb-3">{s.heading}</div>
-                      <ul className="space-y-3">
+                      <div className="eyebrow mb-3.5">{s.heading}</div>
+                      <ul className="space-y-2.5">
                         {s.links.map((l) => (
                           <li key={l.href}>
-                            <Link href={l.href} className="group block">
+                            <Link
+                              href={l.href}
+                              className="group block -mx-2 px-2 py-1.5 rounded-lg hover:bg-paper-2 transition"
+                            >
                               <div className="flex items-center gap-2">
                                 <span className="text-[13.5px] text-ink group-hover:text-brand-deep transition">
                                   {l.title}

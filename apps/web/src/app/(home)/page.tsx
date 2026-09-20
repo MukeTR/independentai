@@ -20,9 +20,9 @@ import { getOffer } from '@/server/offer';
 import { formatTry } from '@independentai/shared';
 
 export const metadata = buildMetadata({
-  title: 'Yapay zekâ sizi mi öneriyor, rakibinizi mi?',
+  title: 'Yanıtta siz var mısınız?',
   description:
-    'Müşteriniz satın almadan önce yapay zekâya soruyor. Yanıt, ChatGPT ve Gemini’nin sizi mi rakibinizi mi önerdiğini ölçer, nedenini ve yapılacakları verir.',
+    'Müşteriniz satın almadan önce yapay zekâya soruyor. Yanıt, o cevapta markanızın geçip geçmediğini ölçer, nedenini gösterir ve yapılacakları verir.',
   path: '/',
 });
 

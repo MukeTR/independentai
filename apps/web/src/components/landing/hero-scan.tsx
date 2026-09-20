@@ -46,7 +46,7 @@ export function HeroScan() {
               <span className="tracking-[0.1em] font-semibold">Analiz → Düzelt → Ölç</span>
             </div>
             <h1 className="rise-2 font-display text-[42px] sm:text-[56px] lg:text-[68px] leading-[0.98] tracking-tight mt-7">
-              Müşteriniz yapay zekâya soruyor. <span className="text-shimmer">Sizi mi öneriyor, rakibinizi mi?</span>
+              Müşteriniz yapay zekâya soruyor. <span className="text-brand">Peki yanıtta siz var mısınız?</span>
             </h1>
             <p className="rise-3 text-[17px] lg:text-[19px] text-ink-muted mt-7 max-w-xl leading-relaxed">
               Satın almadan önce sorduğu sorularda ChatGPT, Gemini ve Claude kimi öneriyor? Yanıt ölçer.{' '}

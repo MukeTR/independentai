@@ -119,7 +119,7 @@ const DEEPER = [
     cta: 'E-ticaret çözümünü gör',
   },
   {
-    title: 'Ziyaret ölçümü',
+    title: 'AI ziyaret ölçümü',
     body: 'Yapay zekâ asistanlarından gelen ziyaretleri ve tarayıcı botlarının isteklerini ayrı ayrı görmek isterseniz siteye küçük bir ölçüm kodu eklenir. İsteğe bağlıdır.',
     href: '/docs',
     cta: 'Kurulum belgesi',

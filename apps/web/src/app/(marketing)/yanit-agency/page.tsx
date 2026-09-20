@@ -1,269 +1,327 @@
 import Link from 'next/link';
-import { Ciz } from '@/components/marketing/ciz';
-import {
-  ArrowRight,
-  Check,
-  ClipboardList,
-  Code2,
-  FileText,
-  Gauge,
-  Link2,
-  ShieldCheck,
-  Sparkles,
-  Wrench,
-} from 'lucide-react';
-import { capability, formatTry } from '@independentai/shared';
+import Image from 'next/image';
+import { ArrowRight, Check, FileText, Gauge, Link2, ListChecks, Minus, Wrench } from 'lucide-react';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
-import { CtaBlock } from '@/components/marketing/cta-block';
 import { Faq } from '@/components/marketing/faq';
-import { BreadcrumbJsonLd, FaqJsonLd, JsonLd } from '@/components/json-ld';
-import { buildMetadata, ORG_ID, SITE_URL } from '@/lib/seo';
+import { CtaBlock } from '@/components/marketing/cta-block';
+import { BreadcrumbJsonLd, FaqJsonLd } from '@/components/json-ld';
+import { buildMetadata } from '@/lib/seo';
 import { getOffer } from '@/server/offer';
+import { formatTry } from '@independentai/shared';
+
+const PATH = '/yanit-agency';
 
 export const metadata = buildMetadata({
   title: 'Yanıt Agency — analizi biz yaptık, uygulamayı da biz yapalım',
   description:
     'Yanıt’ın bulduğu listeyi ekibimiz uygular: teknik düzeltme, şema, içerik ve kaynak çalışması. Aylık sprint, teklifle; ölçüm aynı panelde.',
-  path: '/yanit-agency',
+  path: PATH,
 });
 
-/**
- * Hizmet sayfası. Hizmet akışı kodda yok;
- * talep iletişim formundan alınır. Basın çalışması iddiası, sıralama ya da sonuç sözü yok.
- */
-const WHAT = [
+/** Hizmet kolonları — her biri panelde ölçülen bir bulgu türüne karşılık gelir. */
+const SERVICES = [
   {
+    img: '/img/ajans/teknik.webp',
+    alt: 'Bir kişi web sitesi iskeletinin içini anahtarla düzeltiyor',
     icon: Wrench,
-    t: 'Teknik düzeltme',
-    d: 'Yönlendirme zinciri, canonical, güvenlik başlıkları, hız engelleri, robots ve AI crawler erişimi. Ücretsiz araçların “kritik” dediği her şey.',
+    title: 'Teknik düzeltme',
+    body: 'Bot erişimi, yönlendirme zinciri, canonical, sayfa hızı ve güvenlik başlıkları. Görünmemenin en ucuz sebepleri genelde burada.',
+    items: ['robots.txt ve bot erişimi', 'Yönlendirme ve canonical', 'Güvenlik başlıkları ve TLS'],
   },
   {
-    icon: Code2,
-    t: 'Şema ve entity çalışması',
-    d: 'Organization / LocalBusiness / Product / FAQ şemaları, marka adı tutarlılığı, sameAs bağlantıları, llms.txt. Yapay zekâ sizi ne olarak tanıyor, onu düzeltiriz.',
-  },
-  {
+    img: '/img/ajans/icerik.webp',
+    alt: 'Bir el, başlık ve paragraf blokları olan bir sayfaya yazıyor',
     icon: FileText,
-    t: 'Satın alma sorularına cevap veren içerik',
-    d: 'Sektörünüzde müşterinin sorduğu 5 soru için sayfalar: karşılaştırma, “kimin için / kimin için değil”, fiyat mantığı, sık sorulanlar. Abartı yok; kanıt var.',
+    title: 'Cevap veren içerik',
+    body: 'Müşterinizin sorduğu soruyu başlığa taşıyan, ilk paragrafta doğrudan cevap veren sayfalar. Karşılaştırma ve fiyat sayfaları dahil.',
+    items: ['Satın alma sorusu sayfaları', 'Karşılaştırma içerikleri', 'SSS ve şema uyumu'],
   },
   {
+    img: '/img/ajans/kaynak.webp',
+    alt: 'Merkezdeki karta bağlı beş küçük site kartı',
     icon: Link2,
-    t: 'Kaynak ve atıf çalışması',
-    d: 'Modellerin dayandığı dizinler, karşılaştırma siteleri ve sektör kaynaklarında doğru ve tutarlı kayıt. Ölçülebilir hedef: atıf veren kaynak sayısı (panelde).',
+    title: 'Şema, entity ve kaynak',
+    body: 'Kim olduğunuzu makinenin anlayacağı biçimde yazmak; dizinlerde, karşılaştırma sitelerinde ve sektör kaynaklarında doğru kayıt.',
+    items: ['Organization ve sektör şeması', 'NAP ve profil tutarlılığı', 'Kaynak ve dizin çalışması'],
+  },
+  {
+    img: '/img/ajans/rapor.webp',
+    alt: 'İki kişi masada yükselen bir grafiği inceliyor',
+    icon: Gauge,
+    title: 'Ölçüm ve raporlama',
+    body: 'Aynı sorular her gün aynı biçimde sorulur. Ay sonunda ne değişti, hangi soruda kim öne geçti; hepsi aynı panelde.',
+    items: ['Günlük ölçüm', 'Aylık değerlendirme', 'Paylaşılabilir rapor bağlantısı'],
   },
 ];
 
+/** Aylık sprint — dört hafta, her haftanın çıktısı belli. */
 const SPRINT = [
   {
-    n: '01',
-    t: 'Ölçüm',
-    d: 'Ücretsiz araçlar + panel: mevcut durum, rakip kıyası, öncelik sırası. Teklif bu rapora dayanır.',
+    w: '1. hafta',
+    t: 'Tarama ve sıralama',
+    d: 'Site taraması, sorularınızın belirlenmesi ve bulguların etkiye göre sıralanması. Sprintte neyin yapılacağı burada yazılı hale gelir.',
   },
   {
-    n: '02',
-    t: 'Sprint planı',
-    d: 'Aylık iş listesi: hangi bulgu, hangi sayfa, kim yapar, ne zaman biter. Onayınızla başlar.',
+    w: '2. hafta',
+    t: 'Teknik düzeltmeler',
+    d: 'Erişim, yönlendirme, şema ve sayfa düzeyindeki hızlı kazanımlar. Geliştirici ekibinizle ya da doğrudan panelinizde.',
   },
   {
-    n: '03',
-    t: 'Uygulama',
-    d: 'Ekibimiz uygular ya da geliştiricinizle birlikte çalışır; her iş bir bulguya bağlıdır.',
+    w: '3. hafta',
+    t: 'İçerik ve kaynak',
+    d: 'Cevap veren sayfalar yazılır, karşılaştırma içerikleri kurulur, kaynak ve dizin başvuruları yapılır.',
   },
   {
-    n: '04',
-    t: 'Yeniden ölçüm',
-    d: 'Aynı sorular, aynı modeller, her sabah. Sprint raporu panelden; ekran görüntüsü tarihli.',
+    w: '4. hafta',
+    t: 'Ölçüm ve devir',
+    d: 'Yeniden ölçüm, ay sonu değerlendirmesi ve bir sonraki sprintin listesi. Her şey panelde kalır.',
   },
 ];
 
-const FOR_WHOM = [
-  'Ekibinde teknik SEO / geliştirici olmayan KOBİ',
-  'Sektör sayfası sorularının çoğunda görünmeyen hizmet işletmesi (klinik, hukuk, eğitim, turizm)',
-  'Katalog şeması ve crawler erişimi zayıf e-ticaret mağazası',
-  'Müşterisi için uygulamayı dışarı vermek isteyen ajans (ortaklık programı)',
+/** Somut teslimler — hepsi üründe karşılığı olan şeyler. */
+const DELIVERABLES = [
+  { t: 'Önceliklendirilmiş bulgu listesi', d: 'Ne eksik, neden önemli, nasıl düzeltilir.' },
+  { t: 'Uygulanan düzeltmeler', d: 'Sprint içinde kapatılan maddeler ve yapılan değişikliklerin kaydı.' },
+  { t: 'Yazılan sayfalar', d: 'Soru odaklı içerik, karşılaştırma ve SSS bölümleri.' },
+  { t: 'Kaynak çalışması kaydı', d: 'Başvurulan dizin ve kaynaklar, dönen sonuçlar.' },
+  { t: 'Paylaşılabilir rapor', d: 'Yönetime tek bağlantıyla gönderilebilen ölçüm raporu.' },
+  { t: 'Panel erişimi', d: 'Aynı veriye siz de bakarsınız; kapalı kutu yok.' },
 ];
 
-const NOT_FOR = [
-  'Sıralama ya da “ilk 3” sözü isteyenler: yapay zekâ cevapları değişkendir; biz ölçer ve gösteririz.',
-  'Basın bülteni, influencer ya da reklam kampanyası arayanlar: bu bir uygulama hizmetidir.',
-  'Sağlık, hukuk ve mali müşavirlikte reklam mevzuatına aykırı ifade isteyenler: bilgilendirme diliyle çalışırız.',
-];
+const FIT = {
+  yes: [
+    'Sitesi yayında ve düzeltme yapılabilecek bir ekip ya da ajans erişimi olan markalar',
+    'Kategorisinde rakiplerinin önerildiğini gördüğü halde sebebini bilmeyenler',
+    'İçerik ve teknik işi yapacak vakti olmayan, ölçümü kendisi takip etmek isteyenler',
+  ],
+  no: [
+    'Kesin sonuç sözü arayanlar — biz böyle bir söz vermiyoruz',
+    'Tek seferlik “bir bakıp gitsin” işi arayanlar; sprint aylık çalışır',
+    'Sitesine hiçbir değişiklik yapılamayacak durumda olanlar',
+  ],
+};
 
-const FAQ_ITEMS = [
+const FAQ = [
+  {
+    question: 'Ne kadar sürede sonuç görürüm?',
+    answer:
+      'Teknik düzeltmelerin etkisi taramada hemen görünür. Yapay zekâ cevaplarındaki değişim içerik ve kaynak çalışmasının olgunlaşmasına bağlıdır; bunu tarih vererek değil, her sabah aynı soruyu sorarak takip ederiz.',
+  },
   {
     question: 'Sonuç sözü veriyor musunuz?',
     answer:
-      'Hayır. Yapay zekâ cevapları oturumdan oturuma değişir; hiçbir sağlayıcıyla sıralama anlaşması yoktur. Sözümüz yöntem ve ölçümdür: her iş bir bulguya bağlanır, her sabah aynı sorularla yeniden ölçülür, rapor tarihli ekran görüntüsüyle panelde durur.',
+      'Hayır. Modellerin ne söyleyeceği bizim kontrolümüzde değil. Söz verdiğimiz şey yöntem: ölçeriz, eksikleri gösteririz, uygularız ve değişimi aynı biçimde tekrar ölçeriz. Rakamlar panelde, istediğiniz an bakarsınız.',
   },
   {
-    question: 'Fiyat nasıl belirleniyor?',
+    question: 'Kendi ajansımız var, çakışır mı?',
     answer:
-      'Aylık sprint modeliyle, teklifle. Başlangıç fiyatı sayfada yazar; kapsam (sayfa sayısı, teknik borç, içerik hacmi) teklifi belirler. Taahhüt yok; sprint sonunda devam edip etmemeye siz karar verirsiniz. Yanıt aboneliği ayrıdır ve isteğe bağlıdır.',
+      'Çakışmaz, çoğu zaman birlikte çalışırız. Biz bulguyu ve sırayı veririz; uygulamayı sizin ekibiniz yapıyorsa yalnızca ölçüm ve yönlendirme tarafında kalırız. Ajanslar için ayrı bir ortaklık programımız da var.',
   },
   {
-    question: 'Kişisel verilerimiz yapay zekâ servislerine gidiyor mu?',
+    question: 'Fiyat neye göre belirleniyor?',
     answer:
-      'Hayır. Yalnızca herkese açık web sitenizi tarıyoruz; kişisel verinizi yapay zekâ servislerine göndermiyoruz. Müşteri listesi, CRM ya da sipariş verisi istemeyiz; ölçüm sorularında yalnızca marka adı ve herkese açık içerik kullanılır.',
+      'Site büyüklüğü, izlenecek soru sayısı, içerik hacmi ve sektörün rekabetine göre. Aylık sprint modeliyle çalışır ve teklif öncesi sitenizi tarayıp kapsamı birlikte netleştiririz.',
   },
   {
-    question: 'Kendi geliştiricimiz var; yine de çalışabilir miyiz?',
+    question: 'Sözleşme süresi var mı?',
     answer:
-      'Evet. Sprint planı iş listesi olarak paylaşılır; teknik işleri geliştiriciniz, içerik ve şema işlerini biz yapabiliriz ya da tam tersi. İlerleme aynı panelden izlenir.',
-  },
-  {
-    question: 'Ajansız; müşterimiz için sizi kullanabilir miyiz?',
-    answer:
-      'Evet. Ölçüm ve rapor sizin ajans panelinizde kalır; uygulamayı biz üstleniriz ve raporu siz sunarsınız. Ayrıntı için ajans ortaklık programı sayfasına bakın.',
+      'Sprint aylıktır. Uzun dönem taahhüdü istemiyoruz; devam kararını her ay sonundaki ölçüme bakarak birlikte veririz.',
   },
 ];
 
 export default async function YanitAgencyPage() {
   const offer = await getOffer();
-  const status = (() => {
-    try {
-      return capability('agency_service').status;
-    } catch {
-      return null;
-    }
-  })();
+
   return (
     <>
       <BreadcrumbJsonLd
         items={[
           { name: 'Ana sayfa', href: '/' },
-          { name: 'Yanıt Agency', href: '/yanit-agency' },
+          { name: 'Yanıt Agency', href: PATH },
         ]}
       />
-      <FaqJsonLd items={FAQ_ITEMS} />
-      <JsonLd
-        data={{
-          '@context': 'https://schema.org',
-          '@type': 'Service',
-          name: 'Yanıt Agency',
-          serviceType: 'Yapay zekâ görünürlüğü uygulama hizmeti',
-          url: `${SITE_URL}/yanit-agency`,
-          provider: { '@id': ORG_ID },
-          areaServed: 'TR',
-          description:
-            'Teknik düzeltme, şema ve entity, satın alma sorularına cevap veren içerik ve kaynak çalışması; aylık sprint, teklifle; ilerleme Yanıt panelinden ölçülür.',
-        }}
-      />
+      <FaqJsonLd items={FAQ} />
 
-      <section className="pt-24 pb-12">
-        <Container className="max-w-4xl">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-2 chip own">
-              <Sparkles className="w-3 h-3 text-brand" aria-hidden />
-              <span className="font-mono tracking-eyebrow">Yanıt Agency · hizmet</span>
-            </span>
-            <span className="chip !text-[10.5px]">{status}</span>
-            <span className="chip !text-[10.5px]">teklifle</span>
-          </div>
-          <h1 className="font-display text-[44px] lg:text-[64px] tracking-tight mt-5 leading-[1.02]">
-            Analizi biz yaptık. <span className="text-brand">Uygulamayı da biz yapalım.</span>
-          </h1>
-          <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Yanıt “31 bulgu, 9’u kritik” dediğinde listeyi kim yapacak? İsterseniz ekibimiz: teknik düzeltme, şema ve
-            entity, satın alma sorularına cevap veren içerik, kaynak çalışması. Aylık sprint; ilerleme aynı panelden,
-            aynı sorularla ölçülür.
-          </p>
-          <div className="mt-9 flex items-center gap-3 flex-wrap">
-            <Link href="/contact?src=agency" className="btn-primary inline-flex items-center gap-2">
-              Teklif isteyin <ArrowRight className="w-4 h-4" aria-hidden />
-            </Link>
-            <Link href="/arac" className="btn-secondary">
-              Önce sitemi tara
-            </Link>
-            <span className="text-[12px] text-ink-faint font-mono ml-2">
-              {formatTry(offer.agencyFromMonthlyTry)}/ay’dan · aylık sprint · taahhüt yok
-            </span>
-          </div>
-          <p className="mt-5 text-[12.5px] text-ink-faint">
-            Sonuç sözü vermiyoruz; sıralama satmıyoruz. Ölçer, uygular, yeniden ölçeriz.
-          </p>
-        </Container>
-      </section>
-
-      <section className="pb-4">
+      {/* Hero */}
+      <section className="pt-20 pb-14">
         <Container>
-          <div className="max-w-md">
-            <Ciz name="ajans" alt="İki kişi bir web sitesi iskeleti üzerinde birlikte çalışıyor" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-6">
+              <div className="eyebrow">Yanıt Agency</div>
+              <h1 className="font-display text-[40px] lg:text-[54px] tracking-tight mt-3 leading-[1.05]">
+                Analizi biz yaptık. <span className="text-brand">Uygulamayı da biz yapalım.</span>
+              </h1>
+              <p className="text-[17px] lg:text-[19px] text-ink-muted mt-6 leading-relaxed">
+                Yanıt size ne yapılacağını söylüyor. Yapacak vaktiniz yoksa ekibimiz üstlenir: teknik düzeltme, şema,
+                cevap veren içerik ve kaynak çalışması. Aylık sprint, tek panel, ölçülebilir ilerleme.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link href="/contact?src=agency#sales" className="btn-primary inline-flex items-center gap-2">
+                  Ekiple görüş <ArrowRight className="w-4 h-4" aria-hidden />
+                </Link>
+                <Link href="/arac" className="btn-secondary">
+                  Önce ücretsiz tarayın
+                </Link>
+              </div>
+              <p className="text-[13px] text-ink-faint mt-4">
+                {formatTry(offer.agencyFromMonthlyTry)}/ay’dan başlar · kapsam teklifle · sonuç sözü yok, ölçüm var
+              </p>
+            </div>
+            <div className="lg:col-span-6">
+              <div className="rounded-2xl border border-hairline overflow-hidden bg-paper-3">
+                <Image
+                  src="/img/ajans/sprint.webp"
+                  alt="Üç kişilik bir ekip, üç sütunlu bir görev panosunun önünde çalışıyor"
+                  width={1200}
+                  height={675}
+                  priority
+                  unoptimized
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
           </div>
         </Container>
       </section>
-      <Section eyebrow="Ne yaparız" title="Dört iş kalemi; hepsi bir bulguya bağlı." className="py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {WHAT.map((w) => (
-            <div key={w.t} className="card p-7">
-              <w.icon className="w-6 h-6 text-brand" aria-hidden />
-              <h3 className="font-display text-[20px] mt-4 leading-tight">{w.t}</h3>
-              <p className="text-[14.5px] text-ink-muted mt-3 leading-relaxed">{w.d}</p>
-            </div>
-          ))}
-        </div>
-        <p className="text-[12.5px] text-ink-faint mt-5 font-mono">
-          // Yapmadıklarımız: basın çalışması, reklam yönetimi, sosyal medya. Bunlar için ortak ajanslara yönlendiririz.
-        </p>
-      </Section>
 
+      {/* Ne yapıyoruz */}
       <Section
-        eyebrow="Sprint modeli"
-        title={
-          <>
-            {formatTry(offer.agencyFromMonthlyTry)}/ay’dan başlayan aylık sprint,{' '}
-            <span className="text-brand">teklifle.</span>
-          </>
-        }
-        intro="Kapsam teklifi belirler: sayfa sayısı, teknik borç, içerik hacmi. Taahhüt yok; sprint sonunda devam kararı sizin. Yanıt aboneliği ayrı ve isteğe bağlıdır; ölçüm için önerilir."
-        className="py-12 lg:py-16 bg-paper-2/40"
+        className="band border-t border-hairline"
+        eyebrow="Ne yapıyoruz"
+        title="Dört kolon, hepsi panelde ölçülen bir bulguya bağlı."
+        intro="Soyut bir “GEO çalışması” değil. Her kalem, taramada çıkan somut bir eksikliğin karşılığıdır."
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {SPRINT.map((s) => (
-            <div key={s.n} className="card p-6">
-              <div className="font-mono text-[11px] tracking-eyebrow text-brand">{s.n}</div>
-              <h3 className="font-display text-[18px] mt-3">{s.t}</h3>
-              <p className="text-[13.5px] text-ink-muted mt-2 leading-relaxed">{s.d}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {SERVICES.map((s) => (
+            <div key={s.title} className="card overflow-hidden h-full flex flex-col">
+              <span className="block border-b border-hairline bg-paper-3">
+                <Image src={s.img} alt={s.alt} width={1200} height={675} unoptimized className="w-full h-auto" />
+              </span>
+              <div className="p-7 flex-1 flex flex-col">
+                <div className="flex items-center gap-3">
+                  <span className="w-9 h-9 rounded-lg bg-brand-glow flex items-center justify-center shrink-0">
+                    <s.icon className="w-4 h-4 text-brand" aria-hidden />
+                  </span>
+                  <h3 className="font-display text-[20px]">{s.title}</h3>
+                </div>
+                <p className="text-[14.5px] text-ink-muted mt-3 leading-relaxed">{s.body}</p>
+                <ul className="mt-4 space-y-1.5">
+                  {s.items.map((i) => (
+                    <li key={i} className="flex items-center gap-2 text-[13.5px]">
+                      <Check className="w-3.5 h-3.5 text-brand shrink-0" aria-hidden /> {i}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
         </div>
-        <div className="mt-8 card p-6 flex items-start gap-4 flex-wrap">
-          <Gauge className="w-6 h-6 text-brand shrink-0" aria-hidden />
-          <div className="flex-1 min-w-[240px]">
-            <div className="font-display text-[18px]">Aynı panelden ölçüm</div>
-            <p className="text-[14px] text-ink-muted mt-2 leading-relaxed">
-              Sprint raporu ayrı bir sunum değil: görünürlük, Share of Voice, pozisyon ve atıf kaynakları panelde, tarih
-              damgalı. İsterseniz salt-okunur paylaşım linkiyle yönetiminize gönderirsiniz.
-            </p>
+      </Section>
+
+      {/* Sprint */}
+      <Section eyebrow="Aylık sprint" title="Dört hafta, dört çıktı." intro="Her haftanın ne bıraktığı baştan belli.">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {SPRINT.map((s) => (
+            <div key={s.w} className="card p-6 h-full">
+              <div className="eyebrow text-brand-deep">{s.w}</div>
+              <h3 className="font-display text-[19px] mt-3 leading-snug">{s.t}</h3>
+              <p className="text-[13.5px] text-ink-muted mt-3 leading-relaxed">{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Örnek sprint — temsili */}
+      <Section className="band border-t border-hairline" eyebrow="Bir sprint neye benzer" title="Örnek bir ay.">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-7">
+            <div className="card p-7">
+              <div className="flex items-center justify-between gap-4">
+                <div className="font-display text-[20px]">Sprint özeti</div>
+                <span className="chip !text-[10.5px]">temsili</span>
+              </div>
+              <div className="grid grid-cols-3 gap-4 mt-6">
+                {[
+                  ['31', 'bulgu'],
+                  ['9', 'kritik'],
+                  ['6', 'bu sprintte'],
+                ].map(([n, l]) => (
+                  <div key={l} className="rounded-xl border border-hairline p-4">
+                    <div className="font-display text-[30px] tabular text-brand leading-none">{n}</div>
+                    <div className="text-[12.5px] text-ink-muted mt-2">{l}</div>
+                  </div>
+                ))}
+              </div>
+              <ul className="mt-6 space-y-2.5">
+                {[
+                  'Bot erişimi açıldı, üç yönlendirme zinciri tek adıma indi',
+                  'Organization ve hizmet şeması eklendi, iletişim bilgileri tutarlı hale getirildi',
+                  'Dört satın alma sorusu için cevap-önce sayfa yazıldı',
+                  'İki sektör dizininde kayıt açıldı, bir karşılaştırma sayfasına eklenildi',
+                ].map((x) => (
+                  <li key={x} className="flex gap-3 text-[14px] leading-relaxed">
+                    <ListChecks className="w-4 h-4 text-brand shrink-0 mt-0.5" aria-hidden /> {x}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[12.5px] text-ink-faint mt-6">
+                Bu bir örnek akıştır, gerçek bir müşteri vakası değildir. Sizin sprintiniz taramanızdan çıkar.
+              </p>
+            </div>
+          </div>
+          <div className="lg:col-span-5">
+            <div className="card overflow-hidden">
+              <Image
+                src="/img/panel/trend.webp"
+                alt="Panelde görünürlük ve ses payı trendi grafiği"
+                width={900}
+                height={500}
+                unoptimized
+                className="w-full h-auto"
+              />
+              <div className="p-6">
+                <div className="font-display text-[17px]">İlerleme aynı panelde</div>
+                <p className="text-[13.5px] text-ink-muted mt-2 leading-relaxed">
+                  Ne yaptığımızı anlatmakla kalmayız; aynı soruların günlük ölçümünü siz de görürsünüz.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </Section>
 
-      <Section eyebrow="Kimler için" title="Kime uyar, kime uymaz?" className="py-12 lg:py-16">
+      {/* Teslimler */}
+      <Section eyebrow="Ne teslim ediyoruz" title="Altı somut çıktı.">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {DELIVERABLES.map((d) => (
+            <div key={d.t} className="card p-6 h-full">
+              <h3 className="font-display text-[17px] leading-snug">{d.t}</h3>
+              <p className="text-[13.5px] text-ink-muted mt-2.5 leading-relaxed">{d.d}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Uygun mu */}
+      <Section className="band border-t border-hairline" eyebrow="Kimler için" title="Herkese uygun değil.">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="card p-7">
-            <div className="flex items-center gap-2">
-              <ClipboardList className="w-5 h-5 text-brand" aria-hidden />
-              <div className="font-display text-[18px]">Uyar</div>
-            </div>
-            <ul className="mt-4 space-y-2.5 text-[14px]">
-              {FOR_WHOM.map((t) => (
-                <li key={t} className="flex gap-2">
-                  <Check className="w-4 h-4 text-positive shrink-0 mt-0.5" aria-hidden /> <span>{t}</span>
+          <div className="card p-7 h-full">
+            <div className="font-display text-[19px]">Uygun</div>
+            <ul className="mt-4 space-y-3">
+              {FIT.yes.map((x) => (
+                <li key={x} className="flex gap-3 text-[14px] leading-relaxed">
+                  <Check className="w-4 h-4 text-positive shrink-0 mt-0.5" aria-hidden /> {x}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="card p-7">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-brand" aria-hidden />
-              <div className="font-display text-[18px]">Uymaz</div>
-            </div>
-            <ul className="mt-4 space-y-2.5 text-[14px] text-ink-muted">
-              {NOT_FOR.map((t) => (
-                <li key={t} className="flex gap-2">
-                  <span className="w-4 shrink-0 text-ink-faint">—</span> <span>{t}</span>
+          <div className="card p-7 h-full">
+            <div className="font-display text-[19px]">Uygun değil</div>
+            <ul className="mt-4 space-y-3">
+              {FIT.no.map((x) => (
+                <li key={x} className="flex gap-3 text-[14px] leading-relaxed text-ink-muted">
+                  <Minus className="w-4 h-4 text-ink-faint shrink-0 mt-0.5" aria-hidden /> {x}
                 </li>
               ))}
             </ul>
@@ -271,26 +329,57 @@ export default async function YanitAgencyPage() {
         </div>
       </Section>
 
-      <Section eyebrow="Sık sorulanlar" title="Açık sorular, açık cevaplar." className="py-12 lg:py-16 bg-paper-2/40">
-        <Faq items={FAQ_ITEMS} />
-        <p className="text-[12.5px] text-ink-faint mt-5">
-          Yalnızca herkese açık web sitenizi tarıyoruz; kişisel verinizi yapay zekâ servislerine göndermiyoruz.
-        </p>
+      {/* Fiyat */}
+      <Section eyebrow="Fiyat" title="Aylık sprint, teklifle.">
+        <div className="card p-8 lg:p-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-5">
+              <div className="font-display text-[44px] tracking-tight leading-none">
+                {formatTry(offer.agencyFromMonthlyTry)}
+                <span className="text-[20px] text-ink-muted"> /ay’dan</span>
+              </div>
+              <p className="text-[14px] text-ink-muted mt-4 leading-relaxed">
+                Kapsam site büyüklüğü, soru sayısı ve içerik hacmine göre belirlenir. Teklif öncesi sitenizi tarar,
+                neyin gerektiğini birlikte konuşuruz.
+              </p>
+              <Link href="/contact?src=agency#sales" className="btn-primary inline-flex items-center gap-2 mt-7">
+                Teklif alın <ArrowRight className="w-4 h-4" aria-hidden />
+              </Link>
+            </div>
+            <div className="lg:col-span-7">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
+                {[
+                  'Aylık sprint ve yol haritası',
+                  'Teknik düzeltme uygulaması',
+                  'Cevap veren içerik üretimi',
+                  'Şema ve entity çalışması',
+                  'Kaynak ve dizin başvuruları',
+                  'Günlük ölçüm ve aylık rapor',
+                  'Panel erişimi (ekibiniz dahil)',
+                  'Taahhütsüz, aylık devam kararı',
+                ].map((x) => (
+                  <li key={x} className="flex items-center gap-2 text-[14px]">
+                    <Check className="w-3.5 h-3.5 text-brand shrink-0" aria-hidden /> {x}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[12.5px] text-ink-faint mt-6">
+                Yalnızca ölçüm istiyorsanız Yanıt aboneliği {formatTry(offer.saasMonthlyTry)}/ay;{' '}
+                <Link href="/pricing" className="text-brand-deep hover:text-brand">
+                  fiyatlandırmayı görün
+                </Link>
+                .
+              </p>
+            </div>
+          </div>
+        </div>
       </Section>
 
-      <CtaBlock
-        eyebrow="Yanıt Agency"
-        title={
-          <>
-            Önce raporu görün, <span className="text-brand">sonra teklifi konuşalım.</span>
-          </>
-        }
-        body="Ücretsiz araçlar hesap istemez; teklif bu rapora dayanır. Uygulama için iletişim formundan yazın, bir iş günü içinde döneriz."
-        primaryHref="/contact?src=agency"
-        primaryLabel="Teklif isteyin"
-        secondaryHref="/solutions/agencies#ortaklik"
-        secondaryLabel="Ajansım, ortaklık istiyorum"
-      />
+      <Section className="band border-t border-hairline" eyebrow="Sıkça sorulanlar" title="Yanıt Agency hakkında.">
+        <Faq items={FAQ} defaultOpen={0} />
+      </Section>
+
+      <CtaBlock />
     </>
   );
 }
