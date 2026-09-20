@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { route } from '@/server/route';
 import { readJson, ClientError } from '@/server/errors';
 import { enforceRateLimit } from '@/server/rate-limit';
@@ -8,6 +8,9 @@ import { parsePublicUrl, safeFetch, UnsafeUrlError } from '@/server/safe-fetch';
 import { detectPlatform, PLATFORM_LABELS } from '@/server/commerce/platform-detect';
 import type { PreanalysisItem } from '@/lib/preanalysis-types';
 import { blockedJson, findBlockedSite } from '@/server/blocklist';
+import { visitorHashFor } from '@/server/visitor';
+import { markPreanalysisUsed } from '@/server/agency-signal';
+import { log } from '@/server/logger';
 
 export const maxDuration = 60;
 
@@ -54,6 +57,20 @@ export const POST = route('tools.agency_preanalysis', async (req) => {
   for (const domain of domains) {
     const blocked = await findBlockedSite(domain);
     if (blocked) return blockedJson(blocked);
+  }
+
+  // Ajans sinyali: yalnız "ön-analiz kullanıldı" nedeni (pseudonim visitorHash; alan adları YAZILMAZ).
+  try {
+    const visitorHash = visitorHashFor(req);
+    after(async () => {
+      try {
+        await markPreanalysisUsed(visitorHash);
+      } catch (err) {
+        log.warn('agency-signal.preanalysis_touch_failed', { err });
+      }
+    });
+  } catch (err) {
+    log.warn('agency-signal.schedule_failed', { err });
   }
 
   await hydrateEnvFromConfig();

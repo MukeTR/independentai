@@ -5,6 +5,7 @@ import { getComprehensiveAnalytics } from '@/server/dashboard-analytics';
 import { getRadarData, getTopCitationSources, getVisibilityGaps } from '@/server/insights';
 import { CitationSources } from '@/components/dashboard/citation-sources';
 import { VisibilityGaps } from '@/components/dashboard/visibility-gaps';
+import { FirstScanCard } from '@/components/dashboard/first-scan-card';
 import { KpiRow } from '@/components/dashboard/widgets/kpi-row';
 import { MentionTypeBar } from '@/components/dashboard/widgets/mention-type-bar';
 import {
@@ -117,6 +118,9 @@ export default async function DashboardHome() {
           </div>
         </div>
       )}
+
+      {/* İlk site taraması (kayıt sonrası otomatik CRAWLER denetimi) */}
+      <FirstScanCard tenantId={session.tenantId} />
 
       {hasContent ? (
         <div className="space-y-6">

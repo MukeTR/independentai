@@ -8,6 +8,7 @@ import { DockNav } from '@/components/dock-nav';
 import { TopBar } from '@/components/top-bar';
 import { VerifyEmailBanner } from '@/components/dashboard/verify-email-banner';
 import { RealtimeProvider, RealtimeBadge } from '@/components/realtime-provider';
+import { AgencyBand } from '@/components/dashboard/agency-band';
 
 export const metadata = { robots: { index: false, follow: false } };
 
@@ -77,6 +78,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         )}
         {!actor.emailVerified && !actor.email.endsWith('@users.independentai.space') && <VerifyEmailBanner />}
+        <AgencyBand tenantId={actor.tenantId} tenantKind={actor.tenant.kind} />
         <main id="main" className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10 pt-7 pb-28">
           {children}
         </main>

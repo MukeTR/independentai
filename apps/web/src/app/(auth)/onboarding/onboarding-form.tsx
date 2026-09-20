@@ -6,6 +6,20 @@ import { Plus, X, ArrowRight, Building2, Briefcase } from 'lucide-react';
 import { apiFetch, errorMessage } from '@/lib/api-client';
 import { useHydrated } from '@/lib/use-hydrated';
 import { InlineAlert } from '@/components/ui/inline-alert';
+import { SECTOR_SLUGS, type SectorSlug } from '@/lib/tool-registry';
+
+/** Sektör etiketleri (yerel sabit; `data/sectors.ts` PREP-B'de — buradan import edilmez). */
+const SECTOR_LABELS: Record<SectorSlug, string> = {
+  saas: 'SaaS / yazılım',
+  ajans: 'Ajans (reklam, dijital, medya)',
+  klinik: 'Klinik / sağlık',
+  'hukuk-danismanlik': 'Hukuk ve danışmanlık',
+  'eticaret-altyapi': 'E-ticaret',
+  egitim: 'Eğitim',
+  gayrimenkul: 'Gayrimenkul',
+  turizm: 'Turizm ve konaklama',
+  'b2b-uretici': 'B2B üretici / sanayi',
+};
 
 type Initial = { brandName: string; aliases: string[]; website: string; competitors: string[]; prompts: string[] };
 type Mode = 'brand' | 'agency';
@@ -230,8 +244,9 @@ export function OnboardingForm({
   allowAgency?: boolean;
 }) {
   const router = useRouter();
-  const ids = { brand: useId(), alias: useId(), site: useId(), comp: useId(), prompt: useId() };
+  const ids = { brand: useId(), alias: useId(), site: useId(), sector: useId(), comp: useId(), prompt: useId() };
   const [mode, setMode] = useState<Mode>('brand');
+  const [sector, setSector] = useState<'' | SectorSlug>('');
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [brandName, setBrandName] = useState(initial.brandName);
   const [aliases, setAliases] = useState<string[]>(initial.aliases);
@@ -248,7 +263,12 @@ export function OnboardingForm({
     try {
       await apiFetch('/api/onboarding', {
         method: 'POST',
-        json: { brand: { name: brandName, aliases, website: website || undefined }, competitors, prompts },
+        json: {
+          brand: { name: brandName, aliases, website: website || undefined },
+          competitors,
+          prompts,
+          industry: sector || undefined,
+        },
         timeoutMs: 90_000,
       });
       router.push('/dashboard');
@@ -330,7 +350,33 @@ export function OnboardingForm({
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://acme.com"
+                aria-describedby={`${ids.site}-help`}
               />
+              <p id={`${ids.site}-help`} className="text-[11.5px] text-ink-faint mt-2">
+                Girerseniz kurulum biter bitmez sitenizin AI botlarına açıklığını otomatik tararız.
+              </p>
+            </div>
+            <div>
+              <label htmlFor={ids.sector} className="eyebrow block mb-2">
+                Sektör <span className="text-ink-faint normal-case tracking-normal">(opsiyonel)</span>
+              </label>
+              <select
+                id={ids.sector}
+                className="input"
+                value={sector}
+                onChange={(e) => setSector(e.target.value as '' | SectorSlug)}
+                aria-describedby={`${ids.sector}-help`}
+              >
+                <option value="">Seçiniz</option>
+                {SECTOR_SLUGS.map((slug) => (
+                  <option key={slug} value={slug}>
+                    {SECTOR_LABELS[slug]}
+                  </option>
+                ))}
+              </select>
+              <p id={`${ids.sector}-help`} className="text-[11.5px] text-ink-faint mt-2">
+                Sektörünüze özel kontrol ve soru setlerini buna göre öneririz.
+              </p>
             </div>
           </div>
           <div className="mt-9 flex justify-end">

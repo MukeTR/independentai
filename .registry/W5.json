@@ -1,0 +1,38 @@
+{
+  "work": "W5",
+  "adminNav": [
+    { "href": "/admin/agency-candidates", "label": "Ajans adayları", "icon": "Briefcase", "order": 40 },
+    { "href": "/admin/blocked-sites", "label": "Yasaklı siteler", "icon": "Ban", "order": 70 }
+  ],
+  "layoutSlots": [
+    {
+      "layout": "hero",
+      "component": "BlockedSiteHint",
+      "props": { "value": "<hero alan adı girdisi state'i>" },
+      "import": "@/components/blocked-site-hint",
+      "note": "components/landing/story.tsx (W7) hero input'unun yanına <BlockedSiteHint value={input} />; 400 ms debounce ile GET /api/public/blocklist, allowlist istemcide yeniden doğrulanır. /arac hub arama kutusuna (W6) da aynı satır."
+    }
+  ],
+  "changelog": [
+    {
+      "type": "NEW",
+      "item": "Admin › Yasaklı siteler: alan adı + YouTube yönlendirmesi; ziyaretçi alan adını girdiği anda yönlendirilir, hiçbir araç taramaz (alt alan adları dahil), isabet sayısı ve “Test et”"
+    },
+    {
+      "type": "NEW",
+      "item": "Ajans tespiti: admin “Ajans adayları” listesi (skor, nedenler, aksiyonlar), panelde “Ben ajansım” bandı ve ortaklık yönlendirmesi; kayıt sonrası otomatik ilk site taraması kartı ve sektör seçimi"
+    }
+  ],
+  "capabilities": [
+    {
+      "key": "first_scan",
+      "label": "Kayıt sonrası otomatik ilk site taraması",
+      "status": "live",
+      "note": "Onboarding'de web sitesi verildiyse AI Crawler denetimi arka planda (20 s bütçe) çalışır; panelde skor + 3 öneri kartı"
+    }
+  ],
+  "docsIndex": [
+    { "file": "docs/YASAKLI_SITELER.md", "title": "Yasaklı siteler" },
+    { "file": "docs/AJANS_TESPITI.md", "title": "Ajans tespiti" }
+  ]
+}
