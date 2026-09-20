@@ -47,7 +47,7 @@ export function AiChatDemo() {
   const done = typed >= ANSWER.length;
 
   return (
-    <section className="py-20 lg:py-28 border-t border-hairline bg-paper-2/40">
+    <section className="py-20 lg:py-28 border-t border-hairline bg-paper-2">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           <div className="lg:col-span-5 order-2 lg:order-1">
@@ -66,14 +66,10 @@ export function AiChatDemo() {
 
           <div className="lg:col-span-7 order-1 lg:order-2">
             <Reveal delay={80}>
-              <div
-                ref={ref}
-                className="card p-5 sm:p-6 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]"
-                aria-label="Örnek yapay zekâ sohbeti (temsili)"
-              >
+              <div ref={ref} className="card p-5 sm:p-6 card-raised" aria-label="Örnek yapay zekâ sohbeti (temsili)">
                 <div className="flex items-center justify-between border-b border-hairline pb-3">
                   <span className="text-[11.5px] font-mono text-ink-faint">sohbet · temsili</span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-ink-faint">
+                  <span className="text-[10px] uppercase tracking-[0.08em] font-semibold text-ink-faint">
                     gpt · gemini · claude
                   </span>
                 </div>

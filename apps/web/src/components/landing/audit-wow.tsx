@@ -106,10 +106,7 @@ function BrowserMock({ domain, marks, live }: { domain: string; marks: Mark[]; l
   ];
 
   return (
-    <div
-      className="card relative overflow-hidden shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]"
-      aria-label={`${domain} üzerinde işaretlenmiş bulgular`}
-    >
+    <div className="card relative overflow-hidden card-raised" aria-label={`${domain} üzerinde işaretlenmiş bulgular`}>
       <div className="flex items-center gap-2 px-4 py-3 border-b border-hairline">
         <span className="w-2 h-2 rounded-full bg-paper-4" />
         <span className="w-2 h-2 rounded-full bg-paper-4" />
@@ -117,7 +114,7 @@ function BrowserMock({ domain, marks, live }: { domain: string; marks: Mark[]; l
         <span className="ml-3 text-[11.5px] font-mono text-ink-faint truncate">
           {domain} <span className="text-ink-faint/60">· analiz ediliyor…</span>
         </span>
-        <span className="ml-auto text-[10px] font-mono uppercase tracking-wider text-ink-faint">
+        <span className="ml-auto text-[10px] uppercase tracking-[0.08em] font-semibold text-ink-faint">
           {live ? 'canlı' : 'temsili'}
         </span>
       </div>
@@ -132,22 +129,22 @@ function BrowserMock({ domain, marks, live }: { domain: string; marks: Mark[]; l
             <div className="h-2.5 w-12 rounded bg-paper-4" />
           </div>
         </div>
-        <div className="mt-10 h-7 w-3/4 rounded bg-paper-4/90" />
-        <div className="mt-3 h-7 w-1/2 rounded bg-paper-4/90" />
+        <div className="mt-10 h-7 w-3/4 rounded bg-paper-4" />
+        <div className="mt-3 h-7 w-1/2 rounded bg-paper-4" />
         <div className="mt-5 space-y-2">
-          <div className="h-2.5 w-11/12 rounded bg-paper-4/60" />
-          <div className="h-2.5 w-10/12 rounded bg-paper-4/60" />
-          <div className="h-2.5 w-7/12 rounded bg-paper-4/60" />
+          <div className="h-2.5 w-11/12 rounded bg-paper-4" />
+          <div className="h-2.5 w-10/12 rounded bg-paper-4" />
+          <div className="h-2.5 w-7/12 rounded bg-paper-4" />
         </div>
         <div className="mt-8 grid grid-cols-3 gap-4">
-          <div className="h-24 rounded-lg bg-paper-4/50" />
-          <div className="h-24 rounded-lg bg-paper-4/50" />
-          <div className="h-24 rounded-lg bg-paper-4/50" />
+          <div className="h-24 rounded-lg bg-paper-4" />
+          <div className="h-24 rounded-lg bg-paper-4" />
+          <div className="h-24 rounded-lg bg-paper-4" />
         </div>
         <div className="mt-8 space-y-2">
-          <div className="h-2.5 w-9/12 rounded bg-paper-4/60" />
-          <div className="h-2.5 w-10/12 rounded bg-paper-4/60" />
-          <div className="h-2.5 w-6/12 rounded bg-paper-4/60" />
+          <div className="h-2.5 w-9/12 rounded bg-paper-4" />
+          <div className="h-2.5 w-10/12 rounded bg-paper-4" />
+          <div className="h-2.5 w-6/12 rounded bg-paper-4" />
         </div>
 
         {/* İşaretler — sm+ sayfa üzerinde konumlu */}
@@ -155,7 +152,7 @@ function BrowserMock({ domain, marks, live }: { domain: string; marks: Mark[]; l
           <div
             key={m.title}
             className={cn(
-              'pop-mark hidden sm:block absolute max-w-[260px] rounded-xl border bg-paper-3/95 backdrop-blur px-3.5 py-3 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]',
+              'pop-mark hidden sm:block absolute max-w-[268px] rounded-xl border bg-paper-3 px-4 py-3 shadow-[0_8px_24px_-12px_rgba(20,22,28,0.35)]',
               TONE[m.status],
             )}
             style={
@@ -172,7 +169,7 @@ function BrowserMock({ domain, marks, live }: { domain: string; marks: Mark[]; l
         {marks.map((m, i) => (
           <div
             key={m.title}
-            className={cn('pop-mark rounded-xl border bg-paper-3/95 backdrop-blur px-3.5 py-3', TONE[m.status])}
+            className={cn('pop-mark rounded-xl border bg-paper-3 px-4 py-3', TONE[m.status])}
             style={{ ['--pop-delay' as string]: `${250 + i * 220}ms` } as React.CSSProperties}
           >
             <MarkBody m={m} />

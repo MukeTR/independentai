@@ -36,7 +36,7 @@ function AnswerCard({
         <span className={`chip !text-[10.5px] ${tone === 'after' ? 'own' : ''}`}>{title}</span>
         <span className="text-[10px] font-mono text-ink-faint uppercase tracking-wider">temsili · ChatGPT</span>
       </div>
-      <div className="mt-4 rounded-xl border border-hairline bg-paper-2/70 p-4">
+      <div className="mt-4 rounded-xl border border-hairline bg-paper-2 p-4">
         <div className="text-[11px] font-mono text-ink-faint">Soru</div>
         <p className="text-[13.5px] text-ink mt-1 leading-snug">
           Türkiye’de Trendyol mağazamı yönetecek iyi bir ajans arıyorum.
@@ -93,7 +93,7 @@ export function CaseStudy() {
 
           <Reveal delay={90}>
             <div className="card grad-border p-6 h-full lg:w-[300px] flex flex-col justify-center">
-              <div className="font-mono text-[11px] tracking-eyebrow text-brand">Yanıt raporu · temsili</div>
+              <div className="text-[11px] tracking-eyebrow text-brand">Yanıt raporu · temsili</div>
               <div className="font-display text-[30px] mt-2">{DEMO.issues} bulgu</div>
               <ul className="mt-4 space-y-1.5">
                 {PROBLEMS.map((p) => (

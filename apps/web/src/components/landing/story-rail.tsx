@@ -24,7 +24,7 @@ export function StoryRail() {
     { k: 'rank', v: `${DEMO.rankBefore} → ${DEMO.rankAfter}.`, l: 'sıra' },
   ];
   return (
-    <div className="border-y border-hairline bg-paper-2/50">
+    <div className="border-y border-hairline bg-paper-2">
       <Container>
         <ol
           className="flex items-center gap-6 lg:gap-8 py-4 overflow-x-auto text-[12px] whitespace-nowrap [scrollbar-width:none]"

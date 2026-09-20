@@ -34,6 +34,7 @@ const STATIC_PAGES: StaticPage[] = [
   // Core marketing
   { path: '/', priority: 1.0, change: 'weekly', lastmod: CLAIMS_REVISION },
   { path: '/features', priority: 0.8, change: 'weekly', lastmod: CLAIMS_REVISION },
+  { path: '/uyumluluk', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/pricing', priority: 0.8, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/how-it-works', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },
   { path: '/use-cases', priority: 0.7, change: 'monthly', lastmod: CLAIMS_REVISION },

@@ -146,6 +146,7 @@ export const NAV_PANELS: MegaPanel[] = [
       {
         heading: 'Yardım',
         links: [
+          { href: '/uyumluluk', title: 'Uyumluluk', description: 'Hangi altyapılarla çalışır?' },
           { href: '/docs', title: 'Dokümantasyon' },
           { href: '/changelog', title: 'Sürüm notları' },
           { href: '/contact', title: 'Destek' },

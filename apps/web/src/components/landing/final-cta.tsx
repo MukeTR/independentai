@@ -23,7 +23,7 @@ export function FinalCta({ trialDays, saasMonthlyTry }: { trialDays: number; saa
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(60% 70% at 50% 100%, rgba(139,92,246,0.35), transparent 70%), radial-gradient(40% 50% at 80% 0%, rgba(59,130,246,0.22), transparent 70%)',
+            'radial-gradient(60% 70% at 50% 100%, rgba(212,69,31,0.10), transparent 70%), radial-gradient(40% 50% at 80% 0%, rgba(212,69,31,0.05), transparent 70%)',
         }}
         aria-hidden
       />

@@ -55,7 +55,7 @@ function Todo() {
       </div>
       <ol className="mt-5 space-y-2.5 max-w-xl">
         {TASKS.map((t) => (
-          <li key={t.n} className="flex items-center gap-4 rounded-xl border border-hairline bg-paper-2/70 px-4 py-3">
+          <li key={t.n} className="flex items-center gap-4 rounded-xl border border-hairline bg-paper-2 px-4 py-3">
             <span className="font-mono text-[11px] text-brand-deep">{t.n}</span>
             <span className="text-[14px] text-ink flex-1 leading-snug">{t.t}</span>
             <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-ink-faint font-mono whitespace-nowrap">
@@ -80,7 +80,7 @@ export function ProblemAction() {
   const id = useId();
 
   return (
-    <section className="py-20 lg:py-28 border-t border-hairline bg-paper-2/40">
+    <section className="py-20 lg:py-28 border-t border-hairline bg-paper-2">
       <Container>
         <Reveal>
           <div className="flex items-center gap-3 flex-wrap">
@@ -115,7 +115,7 @@ export function ProblemAction() {
                 style={{ left: `${pos}%` }}
                 aria-hidden
               >
-                <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full accent-grad text-white text-[13px] flex items-center justify-center shadow-[0_10px_30px_-8px_rgba(139,92,246,0.9)]">
+                <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full accent-grad text-white text-[13px] flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(212,69,31,0.5)]">
                   ⇆
                 </span>
               </div>

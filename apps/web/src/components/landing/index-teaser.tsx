@@ -14,7 +14,7 @@ const ROWS = [
 /** Türkiye AI Görünürlük Endeksi — aylık sektör sıralaması (hazırlanıyor; temsili örnek). */
 export function IndexTeaser() {
   return (
-    <section className="py-20 lg:py-24 border-t border-hairline bg-paper-2/40">
+    <section className="py-20 lg:py-24 border-t border-hairline bg-paper-2">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
@@ -51,7 +51,7 @@ export function IndexTeaser() {
               <div className="card p-6" aria-label="Örnek endeks tablosu (temsili)">
                 <div className="flex items-center justify-between">
                   <div className="eyebrow">Yanıt görünürlük skoru</div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-ink-faint">temsili</span>
+                  <span className="text-[10px] uppercase tracking-[0.08em] font-semibold text-ink-faint">temsili</span>
                 </div>
                 <ol className="mt-5 space-y-3">
                   {ROWS.map((r, i) => (

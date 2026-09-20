@@ -16,7 +16,7 @@ const PIPE = [
 /** GEO/AEO/LLMO değil: yöneticinin ekranında dört sayı. */
 export function CeoScreen() {
   return (
-    <section className="py-16 lg:py-20 border-b border-hairline bg-paper-2/40">
+    <section className="py-16 lg:py-20 border-b border-hairline bg-paper-2">
       <Container>
         <Reveal>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -32,7 +32,7 @@ export function CeoScreen() {
                 Markanızı rastgele promptlarda değil, müşterilerinizin satın almadan önce sorduğu ticari niyetli
                 sorularda ölçeriz. Sektörünüze göre soru önerileri + kendi eklediğiniz gerçek müşteri soruları.
               </p>
-              <ol className="mt-5 flex flex-wrap items-center gap-2 text-[12px] font-mono text-ink-faint">
+              <ol className="mt-5 flex flex-wrap items-center gap-2 text-[12.5px] text-ink-faint">
                 {PIPE.map((p, i) => (
                   <li key={p} className="inline-flex items-center gap-2">
                     <span className="text-ink-muted">{p}</span>
@@ -47,9 +47,6 @@ export function CeoScreen() {
             >
               {CEO_SCREEN.map((c) => (
                 <div key={c.l} className="card p-5 relative">
-                  <span className="absolute top-3 right-3 text-[9.5px] font-mono uppercase tracking-wider text-ink-faint">
-                    temsili
-                  </span>
                   <div
                     className={cn(
                       'font-display text-[40px] lg:text-[46px] tabular leading-none',

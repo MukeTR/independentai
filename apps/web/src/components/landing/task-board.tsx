@@ -75,7 +75,7 @@ export function TaskBoard() {
 
           <div className="lg:col-span-7">
             <Reveal delay={100}>
-              <div className="card p-6 sm:p-7 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]">
+              <div className="card p-6 sm:p-7 card-raised">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <div className="eyebrow">Bu hafta · temsili</div>
@@ -98,9 +98,7 @@ export function TaskBoard() {
                       <label
                         className={cn(
                           'flex items-center gap-3.5 rounded-xl border px-4 py-3 cursor-pointer transition',
-                          t.done
-                            ? 'border-hairline bg-paper-2/40'
-                            : 'border-hairline bg-paper-2/70 hover:border-brand/40',
+                          t.done ? 'border-hairline bg-paper-2' : 'border-hairline bg-paper-2 hover:border-brand/40',
                         )}
                       >
                         <input type="checkbox" className="sr-only" checked={t.done} onChange={() => toggle(t.id)} />

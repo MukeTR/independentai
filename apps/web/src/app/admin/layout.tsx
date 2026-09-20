@@ -11,14 +11,24 @@ import {
   Settings as SettingsIcon,
   ArrowLeft,
   KeyRound,
+  Inbox,
+  ScanSearch,
+  Briefcase,
+  Megaphone,
+  Ban,
 } from 'lucide-react';
 
 export const metadata = { robots: { index: false, follow: false } };
 
 const ADMIN_NAV = [
   { href: '/admin', label: 'Genel Bakış', icon: LayoutDashboard, exact: true },
+  { href: '/admin/leads', label: "Lead'ler", icon: Inbox },
+  { href: '/admin/scans', label: 'Taramalar', icon: ScanSearch },
+  { href: '/admin/agency-candidates', label: 'Ajans adayları', icon: Briefcase },
   { href: '/admin/tenants', label: 'Tenants', icon: Building2 },
   { href: '/admin/users', label: 'Kullanıcılar', icon: UsersIcon },
+  { href: '/admin/announcements', label: 'Duyurular', icon: Megaphone },
+  { href: '/admin/blocked-sites', label: 'Yasaklı siteler', icon: Ban },
   { href: '/admin/runs', label: 'Run kayıtları', icon: Activity },
   { href: '/admin/system', label: 'Sistem', icon: SettingsIcon },
   { href: '/admin/system/api-keys', label: 'API Keys', icon: KeyRound },

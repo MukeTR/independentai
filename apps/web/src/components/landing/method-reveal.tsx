@@ -22,7 +22,7 @@ const BARS = [
 
 export function MethodReveal() {
   return (
-    <section className="py-20 lg:py-28 border-t border-hairline bg-paper-2/40">
+    <section className="py-20 lg:py-28 border-t border-hairline bg-paper-2">
       <Container>
         <Reveal>
           <div className="flex items-center gap-3 flex-wrap">
@@ -41,7 +41,7 @@ export function MethodReveal() {
         <div className="mt-14 grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-stretch">
           <Reveal>
             <div className="card p-7 h-full">
-              <div className="font-mono text-[11px] tracking-eyebrow text-brand">01 — Ne bulduk?</div>
+              <div className="text-[11px] tracking-eyebrow text-brand">01 — Ne bulduk?</div>
               <p className="font-display text-[20px] mt-4 leading-snug">
                 AI cevaplarında rakipleriniz şu kaynaklar nedeniyle sizden daha görünür.
               </p>
@@ -72,7 +72,7 @@ export function MethodReveal() {
 
           <Reveal delay={90}>
             <div className="card p-7 h-full">
-              <div className="font-mono text-[11px] tracking-eyebrow text-brand">02 — Neden?</div>
+              <div className="text-[11px] tracking-eyebrow text-brand">02 — Neden?</div>
               <p className="font-display text-[20px] mt-4 leading-snug">
                 Rakibinize 14 kaynak atıf veriyor. Size 3 kaynak.
               </p>
@@ -100,11 +100,11 @@ export function MethodReveal() {
 
           <Reveal delay={180}>
             <div className="card grad-border p-7 h-full">
-              <div className="font-mono text-[11px] tracking-eyebrow text-brand">03 — Nasıl düzeltilir?</div>
+              <div className="text-[11px] tracking-eyebrow text-brand">03 — Nasıl düzeltilir?</div>
               <p className="font-display text-[20px] mt-4 leading-snug">Bu kaynaklara girin. Her biri için:</p>
               <ul className="mt-5 space-y-2.5">
                 {SOURCES.map((s) => (
-                  <li key={s.url} className="rounded-xl border border-hairline bg-paper-2/70 p-3.5">
+                  <li key={s.url} className="rounded-xl border border-hairline bg-paper-2 p-3.5">
                     <div className="flex items-center justify-between gap-3">
                       <span className="font-mono text-[12.5px] text-ink inline-flex items-center gap-1.5">
                         <ExternalLink className="w-3 h-3 text-ink-faint" aria-hidden /> {s.url}

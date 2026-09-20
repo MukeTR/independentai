@@ -43,7 +43,7 @@ export function HeroScan() {
           <div className="lg:col-span-6">
             <div className="rise-1 inline-flex items-center gap-2 chip own">
               <span className="w-1.5 h-1.5 rounded-full bg-brand pulse-dot" />
-              <span className="font-mono tracking-eyebrow">Analiz → Düzelt → Ölç</span>
+              <span className="tracking-[0.1em] font-semibold">Analiz → Düzelt → Ölç</span>
             </div>
             <h1 className="rise-2 font-display text-[42px] sm:text-[56px] lg:text-[68px] leading-[0.98] tracking-tight mt-7">
               Müşteriniz yapay zekâya soruyor. <span className="text-shimmer">Sizi mi öneriyor, rakibinizi mi?</span>
@@ -178,7 +178,7 @@ function Scanner({
 
   return (
     <div
-      className="card relative overflow-hidden p-5 sm:p-6 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]"
+      className="card relative overflow-hidden p-5 sm:p-6 card-raised"
       aria-live="polite"
       aria-label={live ? `${domain} analiz sonucu` : 'Örnek analiz akışı (temsili veri)'}
     >
@@ -193,7 +193,10 @@ function Scanner({
           <span className="text-[11.5px] text-ink-faint font-mono ml-3 truncate">{domain}</span>
         </div>
         <span
-          className={cn('text-[10px] font-mono tracking-wider uppercase', live ? 'text-brand-deep' : 'text-ink-faint')}
+          className={cn(
+            'text-[10.5px] uppercase tracking-[0.08em] font-semibold',
+            live ? 'text-brand-deep' : 'text-ink-faint',
+          )}
         >
           {live ? 'canlı sonuç' : mode === 'running' ? 'taranıyor' : 'temsili'}
         </span>
@@ -267,11 +270,11 @@ function Scanner({
         </ol>
 
         {/* Sonuç */}
-        <div className="flex flex-col items-center justify-center rounded-xl border border-hairline bg-paper-2/60 p-5 min-h-[220px]">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-hairline bg-paper-2 p-5 min-h-[220px]">
           {showResult ? (
             <>
               <ScoreRing score={score} tone={tone} />
-              <div className="text-[11px] font-mono tracking-wider uppercase text-ink-faint mt-3">
+              <div className="text-[11px] uppercase tracking-[0.08em] font-semibold text-ink-faint mt-3">
                 {live ? 'AI hazırlık skoru' : 'AI görünürlüğü'}
               </div>
               <div
@@ -315,7 +318,7 @@ function Scanner({
               <div className="font-display text-[40px] tabular text-ink-faint/60">
                 <span className="pulse-dot">··</span>
               </div>
-              <div className="text-[11px] font-mono tracking-wider uppercase text-ink-faint mt-2">
+              <div className="text-[11px] uppercase tracking-[0.08em] font-semibold text-ink-faint mt-2">
                 {mode === 'running' ? `${domain} okunuyor` : 'hesaplanıyor'}
               </div>
               {mode === 'running' && (
@@ -360,8 +363,8 @@ function ScoreRing({ score, tone }: { score: number; tone: string }) {
         />
         <defs>
           <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#A78BFA" />
-            <stop offset="100%" stopColor="#60A5FA" />
+            <stop offset="0%" stopColor="var(--brand)" />
+            <stop offset="100%" stopColor="var(--brand-deep)" />
           </linearGradient>
         </defs>
       </svg>
