@@ -3,7 +3,7 @@ import { encrypt, decrypt, maskKey } from './crypto';
 import { describeModels } from '@independentai/ai';
 import { mockAllowed } from './env';
 
-export type ConfigKey = 'OPENAI_API_KEY' | 'ANTHROPIC_API_KEY' | 'GOOGLE_API_KEY';
+export type ConfigKey = 'OPENAI_API_KEY' | 'ANTHROPIC_API_KEY' | 'GOOGLE_API_KEY' | 'PERPLEXITY_API_KEY';
 
 export const CONFIG_KEYS: { key: ConfigKey; label: string; provider: string; help: string; pattern?: string }[] = [
   {
@@ -26,6 +26,13 @@ export const CONFIG_KEYS: { key: ConfigKey; label: string; provider: string; hel
     provider: 'Google',
     help: 'aistudio.google.com → API key',
     pattern: 'AIza...',
+  },
+  {
+    key: 'PERPLEXITY_API_KEY',
+    label: 'Perplexity (Sonar)',
+    provider: 'Perplexity',
+    help: 'perplexity.ai → Settings → API',
+    pattern: 'pplx-...',
   },
 ];
 
@@ -145,11 +152,9 @@ export async function providerHealth() {
   return {
     mockAllowed: mockAllowed(),
     providers: models.map((m) => {
-      const k = keys.find((c) =>
-        c.provider
-          .toUpperCase()
-          .startsWith(m.provider === 'OPENAI' ? 'OPENAI' : m.provider === 'ANTHROPIC' ? 'ANTHROPIC' : 'GOOGLE'),
-      );
+      // CONFIG_KEYS.provider etiketleri sağlayıcı enum'unun büyük harfli karşılığıdır
+      // ('OpenAI' → OPENAI, 'Perplexity' → PERPLEXITY); yeni sağlayıcı eklemek ayrıca eşleme istemez.
+      const k = keys.find((c) => c.provider.toUpperCase().startsWith(m.provider));
       return { ...m, keySource: k?.source ?? 'none', configured: (k?.source ?? 'none') !== 'none' };
     }),
   };

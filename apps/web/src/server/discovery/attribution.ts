@@ -175,6 +175,7 @@ const PROVIDER_TO_ENUM: Record<string, keyof typeof PROVIDER_LABELS> = {
   openai: 'OPENAI',
   anthropic: 'ANTHROPIC',
   google: 'GOOGLE',
+  perplexity: 'PERPLEXITY',
 };
 
 // ───────────────────────── Metin karşılaştırma ─────────────────────────

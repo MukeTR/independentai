@@ -25,7 +25,7 @@ export const POST = route('tools.rank_check', async (req) => {
   const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : '';
   if (prompt.length < 3 || prompt.length > 300) throw new ClientError('Soru 3-300 karakter olmalı');
   const provider = body.provider;
-  if (provider !== 'OPENAI' && provider !== 'ANTHROPIC' && provider !== 'GOOGLE')
+  if (provider !== 'OPENAI' && provider !== 'ANTHROPIC' && provider !== 'GOOGLE' && provider !== 'PERPLEXITY')
     throw new ClientError('Geçersiz sağlayıcı');
   // İsteğe bağlı web sitesi: yasaklı listede ise model çağrısı yapılmaz
   const websiteHost = typeof body.website === 'string' ? normalizeHostname(body.website) : null;

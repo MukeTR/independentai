@@ -1,4 +1,4 @@
-export type ProviderId = 'OPENAI' | 'ANTHROPIC' | 'GOOGLE';
+export type ProviderId = 'OPENAI' | 'ANTHROPIC' | 'GOOGLE' | 'PERPLEXITY';
 
 export type RunPromptInput = {
   prompt: string;

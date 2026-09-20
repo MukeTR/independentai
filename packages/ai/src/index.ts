@@ -1,6 +1,7 @@
 import { openaiAdapter } from './openai';
 import { anthropicAdapter } from './anthropic';
 import { googleAdapter } from './google';
+import { perplexityAdapter } from './perplexity';
 import { runMock } from './mock';
 import {
   AiProviderError,
@@ -23,9 +24,10 @@ const realAdapters: Record<ProviderId, AiProviderAdapter> = {
   OPENAI: openaiAdapter,
   ANTHROPIC: anthropicAdapter,
   GOOGLE: googleAdapter,
+  PERPLEXITY: perplexityAdapter,
 };
 
-export const ALL_PROVIDERS: ProviderId[] = ['OPENAI', 'ANTHROPIC', 'GOOGLE'];
+export const ALL_PROVIDERS: ProviderId[] = ['OPENAI', 'ANTHROPIC', 'GOOGLE', 'PERPLEXITY'];
 
 /**
  * Mock politikası: anahtar yoksa ve mock'a izin varsa (yerel/dev) sahte cevap; production'da

@@ -5,6 +5,7 @@ export const PROVIDER_LABELS = {
   OPENAI: 'ChatGPT',
   ANTHROPIC: 'Claude',
   GOOGLE: 'Gemini',
+  PERPLEXITY: 'Perplexity',
 } as const;
 
 export const PROMPT_CATEGORIES = [

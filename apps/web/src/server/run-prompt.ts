@@ -20,6 +20,7 @@
 import { prisma } from './prisma';
 import {
   ALL_PROVIDERS,
+  getAvailableProviders,
   getAdapter,
   extractMentions,
   enrichMentions,
@@ -51,6 +52,24 @@ const MAX_ATTEMPTS = 3;
 const CLAIM_BATCH = 6; // aynı anda işlenen (prompt, provider) satırı
 
 type TenantContext = { ownSpecs: BrandSpec[]; compSpecs: BrandSpec[] };
+/**
+ * Çalıştırma yapılacak sağlayıcılar.
+ *
+ * `ALL_PROVIDERS` ürünün TANIDIĞI sağlayıcılardır; hepsinin anahtarı olmayabilir. Anahtarsız bir
+ * sağlayıcıyı listeye almak her soru için her gün `not_configured` ile kapanan bir run üretir:
+ * hata sayacı şişer, panelde gürültü olur, hiçbir ölçüm kazanılmaz. Bu yüzden yapılandırılmış
+ * olanlarla çalışırız.
+ *
+ * İstisnalar:
+ *  - `IAI_ALLOW_MOCK=1` (yerel/dev): tam listeyi kullan ki yeni entegrasyon mock cevapla görünür kalsın.
+ *  - Hiçbiri yapılandırılmamışsa tam listeye düş; sessizce "hiç run yok" durumundansa açık hata iyidir.
+ */
+function runProviders(): typeof ALL_PROVIDERS {
+  if (process.env.IAI_ALLOW_MOCK === '1') return ALL_PROVIDERS;
+  const available = getAvailableProviders();
+  return available.length > 0 ? available : ALL_PROVIDERS;
+}
+
 const ctxCache = new Map<string, TenantContext>();
 
 async function tenantContext(tenantId: string): Promise<TenantContext> {
@@ -223,7 +242,7 @@ export async function runPromptOnce(
   ctxCache.delete(tenantId);
   const now = new Date();
   const rows = await prisma.$transaction(
-    ALL_PROVIDERS.map((provider) =>
+    runProviders().map((provider) =>
       prisma.modelRun.create({
         data: {
           promptId,
@@ -290,7 +309,7 @@ export async function enqueueDailyRuns(
       }
       continue;
     }
-    for (const provider of ALL_PROVIDERS) {
+    for (const provider of runProviders()) {
       data.push({
         promptId: p.id,
         provider: provider as AiProvider,
@@ -428,7 +447,7 @@ export async function runDuePrompts(opts: { deadlineAt: number; force?: boolean;
     });
     const res = await prisma.modelRun.createMany({
       data: prompts.flatMap((p) =>
-        ALL_PROVIDERS.map((provider) => ({
+        runProviders().map((provider) => ({
           promptId: p.id,
           provider: provider as AiProvider,
           modelName: 'pending',

@@ -1,7 +1,8 @@
 /**
  * Model yapılandırması ve fiyat kataloğu — TEK kaynak.
  *
- *  - Varsayılan modeller env ile geçersiz kılınabilir (OPENAI_MODEL, ANTHROPIC_MODEL, GOOGLE_MODEL).
+ *  - Varsayılan modeller env ile geçersiz kılınabilir (OPENAI_MODEL, ANTHROPIC_MODEL, GOOGLE_MODEL,
+ *    PERPLEXITY_MODEL).
  *  - Env değeri allowlist dışındaysa varsayılana düşülür ve uyarı loglanır (yanlış model adı
  *    production'ı sessizce mock'a düşürmesin).
  *  - Fiyatlar USD / 1M token; `effectiveFrom` ile tarihçeli. Katalogda olmayan model için
@@ -11,6 +12,9 @@
  *  - https://developers.openai.com/api/docs/pricing
  *  - https://platform.claude.com/docs/en/about-claude/pricing
  *  - https://ai.google.dev/gemini-api/docs/pricing
+ *
+ * Perplexity satırları 2026-09-20'de https://docs.perplexity.ai/docs/getting-started/pricing
+ * ve https://docs.perplexity.ai/getting-started/models üzerinden doğrulandı.
  */
 import type { ProviderId } from './types';
 
@@ -112,6 +116,39 @@ export const MODEL_CATALOG: ModelSpec[] = [
     webSearch: true,
     prices: [{ inputPerM: 1.5, outputPerM: 9.0, effectiveFrom: '2026-06-01', source: 'gemini-pricing' }],
   },
+  // ── Perplexity ──
+  // Sonar ailesi aramayı kendisi yapar (kapatılamaz), bu yüzden hepsinde webSearch: true.
+  // SIRA ÖNEMLİ: getModelSpec önek eşlemesi yapar ve İLK eşleşmeyi döner; 'sonar' en başta olsaydı
+  // 'sonar-pro' da ona düşer ve yanlış fiyat okunurdu. Uzun/özel id'ler önce, genel 'sonar' en sonda.
+  {
+    provider: 'PERPLEXITY',
+    id: 'sonar-reasoning-pro',
+    label: 'Sonar Reasoning Pro',
+    webSearch: true,
+    prices: [{ inputPerM: 2.0, outputPerM: 8.0, effectiveFrom: '2026-09-20', source: 'perplexity-pricing' }],
+  },
+  {
+    provider: 'PERPLEXITY',
+    id: 'sonar-deep-research',
+    label: 'Sonar Deep Research',
+    webSearch: true,
+    // Ayrıca atıf ($2/1M) ve akıl yürütme ($3/1M) token ücretleri var; token maliyeti alt sınırdır.
+    prices: [{ inputPerM: 2.0, outputPerM: 8.0, effectiveFrom: '2026-09-20', source: 'perplexity-pricing' }],
+  },
+  {
+    provider: 'PERPLEXITY',
+    id: 'sonar-pro',
+    label: 'Sonar Pro',
+    webSearch: true,
+    prices: [{ inputPerM: 3.0, outputPerM: 15.0, effectiveFrom: '2026-09-20', source: 'perplexity-pricing' }],
+  },
+  {
+    provider: 'PERPLEXITY',
+    id: 'sonar',
+    label: 'Sonar',
+    webSearch: true,
+    prices: [{ inputPerM: 1.0, outputPerM: 1.0, effectiveFrom: '2026-09-20', source: 'perplexity-pricing' }],
+  },
 ];
 
 /** Provider'ın kendi arama aracı için çağrı başına ek ücret (USD). */
@@ -121,18 +158,24 @@ export const WEB_SEARCH_PRICE_USD: Record<ProviderId, { perCall: number; source:
   // Gemini 2.5: 1.500 ücretsiz istek/gün sonrası $35/1k "grounded prompt". Gerçek ücret kotaya bağlı
   // olduğundan tahmini üst sınır olarak alınır.
   GOOGLE: { perCall: 0.035, source: 'gemini-pricing ($35/1k, kota sonrası)' },
+  // Perplexity'de arama ücreti modele ve arama derinliğine göre $5–$14/1k arasında değişir; sabit bir
+  // sayı uydurmak yerine adapter, API'nin bildirdiği gerçek maliyeti (usage.cost.total_cost) kullanır.
+  // O da yoksa yalnız token maliyeti döner (alt sınır).
+  PERPLEXITY: null,
 };
 
 export const DEFAULT_MODELS: Record<ProviderId, string> = {
   OPENAI: 'gpt-4o-mini',
   ANTHROPIC: 'claude-haiku-4-5',
   GOOGLE: 'gemini-2.5-flash',
+  PERPLEXITY: 'sonar',
 };
 
 const ENV_KEYS: Record<ProviderId, string> = {
   OPENAI: 'OPENAI_MODEL',
   ANTHROPIC: 'ANTHROPIC_MODEL',
   GOOGLE: 'GOOGLE_MODEL',
+  PERPLEXITY: 'PERPLEXITY_MODEL',
 };
 
 const warned = new Set<string>();
@@ -208,7 +251,7 @@ export function describeModels(): {
   priced: boolean;
   webSearch: boolean;
 }[] {
-  return (['OPENAI', 'ANTHROPIC', 'GOOGLE'] as ProviderId[]).map((p) => {
+  return (['OPENAI', 'ANTHROPIC', 'GOOGLE', 'PERPLEXITY'] as ProviderId[]).map((p) => {
     const model = resolveModel(p);
     const spec = getModelSpec(p, model);
     return {

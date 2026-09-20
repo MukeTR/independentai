@@ -242,6 +242,7 @@ enum AiProvider {
   OPENAI
   ANTHROPIC
   GOOGLE
+  PERPLEXITY
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -1322,4 +1323,49 @@ model AiTrafficRollup {
   @@unique([trackedSiteId, granularity, bucketStart, kind, dimKey])
   @@index([tenantId, granularity, bucketStart])
   @@index([trackedSiteId, kind, bucketStart])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Referans logoları
+// ───────────────────────────────────────────────────────────────
+
+// Landing'deki referans şeridi — admin'den elle girilir. Dosya yükleme YOKTUR:
+// `logoUrl` ya https ile başlayan dış bağlantı ya da repoda duran `/img/…` yerel yoludur.
+// Dış bağlantı sunucuda hiç fetch edilmez (SSRF yüzeyi açmamak için); yalnız kaydedilir.
+model ReferenceLogo {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String
+  siteUrl   String?
+  sector    String?
+  // Şeritteki sıra (küçük önce); eşitlikte createdAt.
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, order])
+}
+
+/// OpenRouter model kullanım sıralamasının günlük anlık görüntüsü.
+/// Sayfa her istekte kazıma yapmasın diye cron yazar, sayfa okur.
+/// `totalTokens` STRING tutulur: değer 100 trilyonu aşıyor, Prisma BigInt ise
+/// sunucu→istemci sınırında JSON'a serileşmiyor. İçerideki JSON blob'larında
+/// token sayıları düz sayıdır (hepsi 2^53 sınırının altında).
+model ModelUsageSnapshot {
+  id          String   @id @default(cuid())
+  /// Kaynak anahtarı; şimdilik yalnız "openrouter"
+  source      String
+  /// Kaynağın bildirdiği gün, YYYY-MM-DD
+  dataDate    String
+  totalTokens String
+  /// ModelShare[]
+  models      Json
+  /// AuthorShare[]
+  authors     Json
+  sourceUrl   String
+  fetchedAt   DateTime @default(now())
+
+  @@unique([source, dataDate])
+  @@index([source, fetchedAt])
 }

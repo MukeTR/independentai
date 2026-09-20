@@ -18,7 +18,7 @@ export type Capability = {
 };
 
 export const CAPABILITIES: Capability[] = [
-  { key: 'tracking', label: 'ChatGPT · Claude · Gemini görünürlük takibi', status: 'live' },
+  { key: 'tracking', label: 'ChatGPT · Claude · Gemini · Perplexity görünürlük takibi', status: 'live' },
   {
     key: 'daily_rerun',
     label: 'Günlük otomatik yeniden çalıştırma',
@@ -183,7 +183,13 @@ export const CAPABILITIES: Capability[] = [
   },
   { key: 'webhooks', label: 'Giden webhooks (olay bildirimleri)', status: 'roadmap' },
   { key: 'pdf_report', label: 'Aylık PDF rapor', status: 'roadmap' },
-  { key: 'perplexity', label: 'Perplexity / Grok takibi', status: 'roadmap' },
+  {
+    key: 'perplexity',
+    label: 'Perplexity görünürlük takibi',
+    status: 'live',
+    note: 'Sonar adaptörü kodda; ölçüm PERPLEXITY_API_KEY tanımlıysa çalışır. Kaynaklar Perplexity’nin kendi web aramasından gelir',
+  },
+  { key: 'grok', label: 'Grok görünürlük takibi', status: 'roadmap' },
   {
     key: 'billing',
     label: 'Kart ile online ödeme',
