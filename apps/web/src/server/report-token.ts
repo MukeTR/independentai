@@ -5,13 +5,21 @@
  */
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { jwtSecret } from './env';
+import { log } from './logger';
 
 const SIG_LEN = 24;
 const ID_RE = /^[a-z0-9_-]{8,64}$/i;
+const MIN_SECRET = 16;
+let warnedShort = false;
 
+/** REPORT_TOKEN_SECRET (≥16 karakter) yoksa JWT_SECRET; kısa sır yok sayılır ve bir kez uyarılır. */
 function secret(): string {
   const dedicated = process.env.REPORT_TOKEN_SECRET;
-  if (dedicated && dedicated.length >= 16) return dedicated;
+  if (dedicated && dedicated.length >= MIN_SECRET) return dedicated;
+  if (dedicated && !warnedShort) {
+    warnedShort = true;
+    log.warn('report-token.secret_too_short', { minLength: MIN_SECRET, fallback: 'JWT_SECRET' });
+  }
   return jwtSecret();
 }
 

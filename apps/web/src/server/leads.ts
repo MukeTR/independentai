@@ -51,8 +51,11 @@ export type ScanLeadInput = {
 };
 
 /**
- * Tarama → lead: scanCount++, lastScore, bestScore = max, kinds birleşimi, 3+ taramada "Tekrar tarama ×N" aktivitesi.
- * Platform/sektör/tenant yalnız verildiğinde güncellenir (boşla ezilmez).
+ * Tarama → lead: scanCount atomik `{increment:1}`, lastScore, bestScore yalnız büyükse (koşullu updateMany),
+ * kinds birleşimi koşullu updateMany (`NOT kinds has kind` → `push`; koşul DB'de — eşzamanlı ilk taramalar çift
+ * kayıt üretmez), 3+ taramada "Tekrar tarama ×N" aktivitesi. Platform/sektör/tenant yalnız verildiğinde güncellenir
+ * (boşla ezilmez). Sayaç/skor/kinds için okuma-yazma yarışı yok; `activity` JSON'u okuma-yazma ile eklenir — eşzamanlı
+ * iki tekrar taramada bir "rescan" satırı kaybolabilir, kabul edilebilir (bilgi amaçlı günlük, sayaç değil).
  */
 export async function upsertLeadFromScan(input: ScanLeadInput): Promise<{ id: string; scanCount: number }> {
   const hostname = input.hostname.toLowerCase();
@@ -60,30 +63,42 @@ export async function upsertLeadFromScan(input: ScanLeadInput): Promise<{ id: st
   const now = new Date();
 
   const update = async () => {
-    const cur = await prisma.lead.findUnique({
-      where: { hostname },
-      select: { id: true, scanCount: true, bestScore: true, kinds: true, activity: true },
-    });
+    const cur = await prisma.lead.findUnique({ where: { hostname }, select: { id: true } });
     if (!cur) return null;
-    const scanCount = cur.scanCount + 1;
-    const kinds = cur.kinds.includes(input.kind) ? cur.kinds : [...cur.kinds, input.kind];
-    const bestScore = score == null ? cur.bestScore : cur.bestScore == null ? score : Math.max(cur.bestScore, score);
     const data: Prisma.LeadUpdateInput = {
-      scanCount,
+      scanCount: { increment: 1 },
       lastSeenAt: now,
-      kinds,
       ...(score != null ? { lastScore: score } : {}),
-      bestScore,
       ...(input.platform ? { platform: input.platform } : {}),
       ...(input.sector ? { sector: input.sector } : {}),
       ...(input.tenantId ? { tenantId: input.tenantId } : {}),
       ...(input.reportToken ? { lastReportToken: input.reportToken } : {}),
-      ...(scanCount >= 3
-        ? { activity: pushActivity(cur.activity, { action: 'rescan', note: `Tekrar tarama ×${scanCount}` }) }
-        : {}),
     };
-    const row = await prisma.lead.update({ where: { id: cur.id }, data, select: { id: true, scanCount: true } });
-    return row;
+    const row = await prisma.lead.update({
+      where: { id: cur.id },
+      data,
+      select: { id: true, scanCount: true, activity: true },
+    });
+    // kinds birleşimi: koşul DB'de (aynı kind ile eşzamanlı iki tarama çift kayıt üretmez)
+    await prisma.lead.updateMany({
+      where: { id: cur.id, NOT: { kinds: { has: input.kind } } },
+      data: { kinds: { push: input.kind } },
+    });
+    if (score != null) {
+      // bestScore yalnız büyükse (ya da boşsa) — koşul DB'de değerlendirilir, eski değer ezilmez
+      await prisma.lead.updateMany({
+        where: { id: cur.id, OR: [{ bestScore: null }, { bestScore: { lt: score } }] },
+        data: { bestScore: score },
+      });
+    }
+    if (row.scanCount >= 3) {
+      await prisma.lead.update({
+        where: { id: cur.id },
+        data: { activity: pushActivity(row.activity, { action: 'rescan', note: `Tekrar tarama ×${row.scanCount}` }) },
+        select: { id: true },
+      });
+    }
+    return { id: row.id, scanCount: row.scanCount };
   };
 
   const existing = await update();

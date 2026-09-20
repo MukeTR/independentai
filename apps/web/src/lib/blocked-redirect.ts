@@ -31,13 +31,20 @@ export function isBlockedResponse(x: unknown): x is BlockedResponse {
   );
 }
 
+export type BlockedOutcome = 'redirected' | 'rejected' | 'none';
+
+export const BLOCKED_REJECTED_MESSAGE =
+  'Bu site taranamıyor. Yönlendirme adresi doğrulanamadığı için sonuç gösterilmiyor.';
+
 /**
- * Yanıt yasaklı site yanıtıysa ve hedef allowlist'teyse tarayıcıyı yönlendirir; true döner (çağıran akışı keser).
- * Aksi hâlde false — normal sonuç işleme devam eder.
+ * Yanıt yasaklı site yanıtıysa:
+ *  - hedef allowlist'teyse tarayıcıyı yönlendirir → 'redirected' (çağıran akışı keser)
+ *  - allowlist DIŞIYSA → 'rejected' (çağıran sonucu ASLA render etmez; hata mesajı gösterir)
+ * Yasaklı yanıt değilse 'none' — normal sonuç işleme devam eder.
  */
-export function handleBlockedResponse(json: unknown): boolean {
-  if (!isBlockedResponse(json)) return false;
-  if (!isAllowedRedirectUrl(json.redirectUrl)) return false;
+export function handleBlockedResponse(json: unknown): BlockedOutcome {
+  if (!isBlockedResponse(json)) return 'none';
+  if (!isAllowedRedirectUrl(json.redirectUrl)) return 'rejected';
   if (typeof window !== 'undefined') window.location.assign(json.redirectUrl);
-  return true;
+  return 'redirected';
 }

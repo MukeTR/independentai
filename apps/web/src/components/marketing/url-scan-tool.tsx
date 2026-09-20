@@ -4,6 +4,9 @@
  * URL tabanlı tarama araçlarının ortak kabuğu: form, ?url= ile otomatik başlatma, paylaşım linki,
  * yükleniyor/boş/hata/429 (Retry-After geri sayımı) durumları, erişilebilirlik (label, aria-live).
  * Sonucun nasıl çizileceği `renderResult` ile araca bırakılır.
+ *  - `extraFields` form içine ek alanlar (sektör seçici, rakip URL) koyar; `extraBody()` gövdeye ek alan ekler
+ *    (`{url, ...extraBody()}`) — geriye uyumlu, verilmezse yalnız `{url}` gönderilir.
+ *  - Yasaklı site yanıtı: allowlist'li hedef → yönlendirme; doğrulanamayan hedef → sonuç ASLA çizilmez, hata gösterilir.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -11,7 +14,7 @@ import { Check, Link2, Loader2, Search } from 'lucide-react';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { ApiError } from '@/lib/api-client';
 import { useHydrated } from '@/lib/use-hydrated';
-import { handleBlockedResponse } from '@/lib/blocked-redirect';
+import { BLOCKED_REJECTED_MESSAGE, handleBlockedResponse } from '@/lib/blocked-redirect';
 
 export type ScanState<T> =
   | { status: 'idle' }
@@ -79,6 +82,9 @@ export function UrlScanTool<T>({
   loadingHint,
   renderResult,
   autoRun = true,
+  extraFields,
+  extraBody,
+  inputId = 'scan-url',
 }: {
   endpoint: string;
   /** Paylaşım linki için sayfa yolu (örn. /arac/ai-crawler-testi) */
@@ -91,6 +97,12 @@ export function UrlScanTool<T>({
   renderResult: (result: T, ctx: { url: string; shareUrl: string }) => ReactNode;
   /** ?url= parametresi varsa otomatik başlat */
   autoRun?: boolean;
+  /** Form içinde URL alanının altına eklenen alanlar (sektör, rakip URL …) */
+  extraFields?: ReactNode;
+  /** İstek gövdesine eklenecek alanlar; her taramada yeniden okunur */
+  extraBody?: () => Record<string, unknown>;
+  /** Aynı sayfada birden çok araç varsa benzersiz alan kimliği */
+  inputId?: string;
 }) {
   const hydrated = useHydrated();
   const params = useSearchParams();
@@ -99,6 +111,8 @@ export function UrlScanTool<T>({
   const [countdown, setCountdown] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
   const started = useRef(false);
+  const extraBodyRef = useRef(extraBody);
+  extraBodyRef.current = extraBody;
 
   const run = useCallback(
     async (target: string) => {
@@ -107,8 +121,14 @@ export function UrlScanTool<T>({
       setState({ status: 'loading', url: value });
       setCountdown(null);
       try {
-        const result = await scanFetch<T>(endpoint, { url: value });
-        if (handleBlockedResponse(result)) return; // yasaklı site → yönlendirme (allowlist istemcide yeniden doğrulanır)
+        const result = await scanFetch<T>(endpoint, { url: value, ...(extraBodyRef.current?.() ?? {}) });
+        // Yasaklı site: allowlist istemcide yeniden doğrulanır; doğrulanamayan hedefte sonuç ASLA render edilmez.
+        const blocked = handleBlockedResponse(result);
+        if (blocked === 'redirected') return;
+        if (blocked === 'rejected') {
+          setState({ status: 'error', url: value, message: BLOCKED_REJECTED_MESSAGE, code: 'blocked' });
+          return;
+        }
         setState({ status: 'done', url: value, result });
       } catch (err) {
         const e =
@@ -175,12 +195,12 @@ export function UrlScanTool<T>({
         className="card p-4 sm:p-5"
         aria-busy={busy}
       >
-        <label htmlFor="scan-url" className="text-[13px] text-ink-muted">
+        <label htmlFor={inputId} className="text-[13px] text-ink-muted">
           {inputLabel}
         </label>
         <div className="flex flex-col sm:flex-row gap-3 mt-1.5">
           <input
-            id="scan-url"
+            id={inputId}
             name="url"
             type="text"
             inputMode="url"
@@ -192,7 +212,7 @@ export function UrlScanTool<T>({
             required
             minLength={3}
             maxLength={300}
-            aria-describedby="scan-help"
+            aria-describedby={`${inputId}-help`}
           />
           <button
             type="submit"
@@ -207,7 +227,8 @@ export function UrlScanTool<T>({
             {busy ? loadingLabel : blocked ? `Bekleyin (${countdown}s)` : submitLabel}
           </button>
         </div>
-        <p id="scan-help" className="text-[11.5px] text-ink-faint mt-2">
+        {extraFields}
+        <p id={`${inputId}-help`} className="text-[11.5px] text-ink-faint mt-2">
           Yalnızca herkese açık sayfalar taranır; giriş, e-posta veya kayıt gerekmez. Sonuç anlık bir fotoğraftır.
         </p>
       </form>
