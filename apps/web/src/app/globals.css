@@ -22,13 +22,13 @@
   --hairline:     #E4E8EE;   /* kartları gölge değil bu çizgi ayırır */
   --hairline-2:   #EFF2F6;
 
-  --brand:        #D4451F;   /* tek vurgu: sıcak terracotta */
-  --brand-deep:   #A8330F;
-  --brand-glow:   rgba(212, 69, 31, 0.07);
+  --brand:        #2563EB;   /* tek vurgu: mavi */
+  --brand-deep:   #1D4ED8;
+  --brand-glow:   rgba(37, 99, 235, 0.07);
 
   --positive:     #157347;
   --warning:      #B45309;
-  --danger:       #C0341B;
+  --danger:       #DC2626;
 
   --grid-line:    rgba(20, 22, 28, 0.028);
 
@@ -419,3 +419,31 @@ i, em, .italic { font-style: normal !important; }
 .btn-primary:hover { background: var(--brand-deep); }
 .band { background: var(--paper-2); }
 .eyebrow { color: var(--ink-faint); }
+
+
+/* =============================================================================
+   Cam yüzey — float eden menü çubuğu ve kelime markası
+   ============================================================================= */
+.glass-bar {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  border: 1px solid rgba(20, 22, 28, 0.07);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 10px 30px -14px rgba(20, 22, 28, 0.28);
+}
+.glass-word {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.35));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(20, 22, 28, 0.06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.95) inset, 0 4px 14px -10px rgba(20, 22, 28, 0.35);
+  transition: box-shadow 160ms ease, border-color 160ms ease;
+}
+.group:hover > .glass-word {
+  border-color: rgba(37, 99, 235, 0.25);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.95) inset, 0 6px 18px -10px rgba(37, 99, 235, 0.35);
+}
+/* Float eden menünün altındaki içerik üstten nefes alsın */
+.home-top { padding-top: 0; }

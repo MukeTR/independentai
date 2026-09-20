@@ -39,7 +39,7 @@ import { getOffer } from '@/server/offer';
 export const metadata = buildMetadata({
   title: 'Özellikler — Ölç, anla, düzelt',
   description:
-    'Müşterinizin satın almadan önce sorduğu sorularda ChatGPT, Claude ve Gemini sizi mi öneriyor, rakibinizi mi? Yanıt ölçer, nedenini gösterir, düzeltme araçlarını verir; siz düzeltin ya da Yanıt Agency düzeltsin.',
+    'ChatGPT, Claude ve Gemini müşteri sorularında sizi mi öneriyor? Yanıt ölçer, nedenini gösterir, düzeltme araçlarını verir.',
   path: '/features',
 });
 

@@ -8,13 +8,97 @@
 
 export type JsonLdNode = Record<string, unknown>;
 
+/**
+ * Düşmanca HTML koruması (Brifing §D.4): açılış etiketleri `openTags` ile DOĞRUSAL taranır (başlangıç literal
+ * arama, `>` indexOf + memo; öznitelik listesi ≤ ATTR_MAX), gövdeler `tagBodies` ile (kapanış memo; kapanış
+ * kalmadığında tarama biter). `<x[^>]*>` / `[\s\S]*?<\/x>` kalıpları kapanmamış etiket yığınlarında her başlangıçta
+ * metnin sonuna kadar geri izlediği için 2 MB düşmanca sayfada saniyeler sürer; burada her karakter en fazla bir
+ * kez okunur (fetch-page.test.ts süre testleri).
+ */
+export const ATTR_MAX = 2000;
+
+export type OpenTag = { attrs: string; start: number; end: number };
+
+/** `<name …>` açılış etiketleri (`<name>` ve `<name/>` dahil); ATTR_MAX'ı aşan öznitelik listesi atlanır. */
+export function openTags(html: string, name: string): OpenTag[] {
+  const out: OpenTag[] = [];
+  const re = new RegExp(`<${name}(?=[\\s/>])`, 'gi');
+  let gt = -1;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    const attrStart = m.index + m[0].length;
+    if (gt < attrStart) {
+      gt = html.indexOf('>', attrStart);
+      if (gt < 0) break;
+    }
+    if (gt - attrStart > ATTR_MAX) continue;
+    out.push({ attrs: html.slice(attrStart, gt), start: m.index, end: gt + 1 });
+  }
+  return out;
+}
+
+/**
+ * `<name …>…</name>` gövdeleri (regex `<name[^>]*>([\s\S]*?)<\/name>` ile aynı anlam: bir gövdenin içindeki
+ * açılışlar atlanır); `filter` özniteliğe göre eler (ör. ld+json script).
+ */
+export function tagBodies(
+  html: string,
+  name: string,
+  opts: { limit?: number; filter?: (attrs: string) => boolean } = {},
+): { attrs: string; body: string }[] {
+  const out: { attrs: string; body: string }[] = [];
+  const limit = opts.limit ?? Number.POSITIVE_INFINITY;
+  const close = new RegExp(`</${name}>`, 'gi');
+  let closeAt = -1;
+  let closeEnd = -1;
+  let cursor = 0;
+  for (const t of openTags(html, name)) {
+    if (out.length >= limit) break;
+    if (t.start < cursor) continue;
+    if (opts.filter && !opts.filter(t.attrs)) continue;
+    if (closeAt < t.end) {
+      close.lastIndex = t.end;
+      const c = close.exec(html);
+      if (!c) break;
+      closeAt = c.index;
+      closeEnd = c.index + c[0].length;
+    }
+    out.push({ attrs: t.attrs, body: html.slice(t.end, closeAt) });
+    cursor = closeEnd;
+  }
+  return out;
+}
+
+/** `<x …>…</x>` bloklarını doğrusal siler (htmlToText: script/style/noscript/template/yorum). */
+function stripBlocks(html: string, open: RegExp, close: RegExp): string {
+  let out = '';
+  let pos = 0;
+  let closeAt = -1;
+  let closeEnd = -1;
+  open.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = open.exec(html))) {
+    const bodyStart = m.index + m[0].length;
+    if (closeAt < bodyStart) {
+      close.lastIndex = bodyStart;
+      const c = close.exec(html);
+      if (!c) break;
+      closeAt = c.index;
+      closeEnd = c.index + c[0].length;
+    }
+    out += html.slice(pos, m.index) + ' ';
+    pos = closeEnd;
+    open.lastIndex = closeEnd;
+  }
+  return pos === 0 ? html : out + html.slice(pos);
+}
+
 /** `<script type="application/ld+json">` bloklarını parse eder; @graph ve dizileri düzleştirir. */
 export function extractJsonLd(html: string): JsonLdNode[] {
   const out: JsonLdNode[] = [];
-  const re = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(html))) {
-    const raw = (m[1] ?? '').trim();
+  const blocks = tagBodies(html, 'script', { filter: (a) => /type=["']application\/ld\+json["']/i.test(a) });
+  for (const block of blocks) {
+    const raw = block.body.trim();
     if (!raw) continue;
     let parsed: unknown;
     try {
@@ -169,40 +253,32 @@ export function checkProductSchema(nodes: JsonLdNode[]): ProductSchemaCheck {
 
 // ───────────── HTML meta çıkarımı ─────────────
 
-/** `<meta name|property="X" content="...">` — öznitelik sırası bağımsız. */
+/** `<meta name|property="X" content="...">` — öznitelik sırası bağımsız; doğrusal tarama (openTags). */
 export function metaContent(html: string, name: string): string | null {
-  const re = new RegExp(`<meta\\s+[^>]*?(?:name|property)=["']${escapeRe(name)}["'][^>]*>`, 'i');
-  const tag = html.match(re)?.[0];
+  const re = new RegExp(`(?:name|property)=["']${escapeRe(name)}["']`, 'i');
+  const tag = openTags(html, 'meta').find((t) => re.test(t.attrs));
   if (!tag) return null;
-  const c = tag.match(/content=["']([^"']*)["']/i)?.[1];
+  const c = tag.attrs.match(/content=["']([^"']*)["']/i)?.[1];
   return c != null ? decodeEntities(c).trim() : null;
 }
 
 export function titleOf(html: string): string | null {
-  const m = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-  return m
-    ? decodeEntities(m[1] ?? '')
-        .replace(/\s+/g, ' ')
-        .trim() || null
-    : null;
+  const t = tagBodies(html, 'title', { limit: 1 })[0];
+  return t ? decodeEntities(t.body).replace(/\s+/g, ' ').trim() || null : null;
 }
 
 export function headings(html: string, level: 1 | 2 | 3): string[] {
-  const re = new RegExp(`<h${level}[^>]*>([\\s\\S]*?)<\\/h${level}>`, 'gi');
-  const out: string[] = [];
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(html))) out.push(htmlToText(m[1] ?? ''));
-  return out;
+  return tagBodies(html, `h${level}`).map((b) => htmlToText(b.body));
 }
 
 export function canonicalOf(html: string): string | null {
-  const tag = html.match(/<link\s+[^>]*rel=["']canonical["'][^>]*>/i)?.[0];
+  const tag = openTags(html, 'link').find((t) => /rel=["']canonical["']/i.test(t.attrs));
   if (!tag) return null;
-  return tag.match(/href=["']([^"']+)["']/i)?.[1]?.trim() ?? null;
+  return tag.attrs.match(/href=["']([^"']+)["']/i)?.[1]?.trim() ?? null;
 }
 
 export function hreflangCount(html: string): number {
-  return (html.match(/<link\s+[^>]*rel=["']alternate["'][^>]*hreflang=/gi) || []).length;
+  return openTags(html, 'link').filter((t) => /rel=["']alternate["'][^>]*?hreflang=/i.test(t.attrs)).length;
 }
 
 export function metaRobots(html: string): string | null {
@@ -210,20 +286,25 @@ export function metaRobots(html: string): string | null {
 }
 
 export function hasViewport(html: string): boolean {
-  return /<meta\s+[^>]*name=["']viewport["']/i.test(html);
+  return openTags(html, 'meta').some((t) => /name=["']viewport["']/i.test(t.attrs));
 }
 
-/** Sayfa gövdesini düz metne indirger (script/style/noscript/template atılır). */
+const TEXT_STRIP: [RegExp, RegExp][] = [
+  [/<script/gi, /<\/script>/gi],
+  [/<style/gi, /<\/style>/gi],
+  [/<noscript/gi, /<\/noscript>/gi],
+  [/<template/gi, /<\/template>/gi],
+  [/<!--/g, /-->/g],
+];
+
+/**
+ * Sayfa gövdesini düz metne indirger (script/style/noscript/template/yorum atılır). Blok silme doğrusaldır
+ * (`stripBlocks`); etiket silme `<[^<>]{0,2000}>` — `<` ile başlayıp `>` bulamayan yığınlar metin olarak kalır.
+ */
 export function htmlToText(html: string): string {
-  return decodeEntities(
-    html
-      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-      .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
-      .replace(/<template[\s\S]*?<\/template>/gi, ' ')
-      .replace(/<!--[\s\S]*?-->/g, ' ')
-      .replace(/<[^>]+>/g, ' '),
-  )
+  let s = html;
+  for (const [open, close] of TEXT_STRIP) s = stripBlocks(s, open, close);
+  return decodeEntities(s.replace(/<[^<>]{0,2000}>/g, ' '))
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -252,16 +333,16 @@ export function jsDependencyHint(html: string): boolean {
 /** Bağlantı toplama: göreli yolları mutlaklaştırır, aynı host'a filtreler. */
 export function collectLinks(html: string, baseUrl: string): string[] {
   const out = new Set<string>();
-  const re = /<a\s+[^>]*href=["']([^"'#]+)["']/gi;
-  let m: RegExpExecArray | null;
   let base: URL | null = null;
   try {
     base = new URL(baseUrl);
   } catch {
     base = null;
   }
-  while ((m = re.exec(html))) {
-    const href = decodeEntities(m[1] ?? '').trim();
+  for (const t of openTags(html, 'a')) {
+    const raw = t.attrs.match(/href=["']([^"'#]+)["']/i)?.[1];
+    if (!raw) continue;
+    const href = decodeEntities(raw).trim();
     if (!href || /^(mailto:|tel:|javascript:|data:)/i.test(href)) continue;
     try {
       const u = base ? new URL(href, base) : new URL(href);
@@ -363,14 +444,17 @@ export function tableRowCount(html: string): number {
 }
 
 export function questionHeadingCount(html: string): number {
-  return (html.match(/<h[2-4][^>]*>[^<]*\?[^<]*<\/h[2-4]>/gi) || []).length;
+  let n = 0;
+  for (const level of ['h2', 'h3', 'h4'])
+    n += tagBodies(html, level).filter((b) => /^[^<]*\?[^<]*$/.test(b.body)).length;
+  return n;
 }
 
 export function imageAltStats(html: string): { total: number; withAlt: number } {
-  const imgs = html.match(/<img\s+[^>]*>/gi) || [];
+  const imgs = openTags(html, 'img');
   let withAlt = 0;
   for (const tag of imgs) {
-    const alt = tag.match(/\balt=["']([^"']*)["']/i)?.[1];
+    const alt = tag.attrs.match(/\balt=["']([^"']*)["']/i)?.[1];
     if (alt && alt.trim().length >= 3) withAlt += 1;
   }
   return { total: imgs.length, withAlt };

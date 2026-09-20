@@ -7,7 +7,7 @@ const fair = OFFER.fairUse;
 export const metadata = buildMetadata({
   title: 'E-ticaret için AI görünürlüğü — mağazanı bağla, ürünlerini ölç',
   description:
-    'Shopify, ikas veya Ticimax mağazanı bağla; ürün kataloğun salt-okunur senkronlanır, AI hazırlık skoru ve ChatGPT/Claude/Gemini izleme soruları ile ürünlerinin AI asistanlarında nasıl göründüğünü ölç.',
+    'Mağazanızı bağlayın: ürün kataloğunuz salt okunur senkronlanır, yapay zekâ hazırlık skoru ve kategori sorularınız her gün ölçülür.',
   path: '/solutions/ecommerce',
 });
 

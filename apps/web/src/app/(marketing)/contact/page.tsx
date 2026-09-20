@@ -10,7 +10,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'İletişim — Bize yazın',
   description:
-    'Satış görüşmesi, Yanıt Agency, ajans ortaklığı, destek veya basın. Formu doldurun; ekibimiz sizinle iletişime geçer. Kişisel veriniz yapay zekâ servislerine gönderilmez.',
+    'Satış, destek, basın ve ajans ortaklığı için Yanıt ekibine yazın. Rapor bağlantınızı ekleyin, bulguları birlikte konuşalım.',
   path: '/contact',
 });
 

@@ -5,6 +5,10 @@
 import { createHash } from 'node:crypto';
 import { jwtSecret } from './env';
 import { clientIp } from './rate-limit';
+import { log } from './logger';
+
+const MIN_SALT = 16;
+let warnedShort = false;
 
 /** Kaba tarayıcı ailesi (sürüm yok): edge | opera | samsung | chrome | firefox | safari | bot | other (+ "-mobil"). */
 export function uaFamily(ua: string | null | undefined): string {
@@ -22,9 +26,14 @@ export function uaFamily(ua: string | null | undefined): string {
   return mobile && family !== 'bot' ? `${family}-mobil` : family;
 }
 
+/** VISITOR_SALT (≥16 karakter) yoksa JWT_SECRET; kısa tuz yok sayılır ve bir kez uyarılır. */
 function salt(): string {
   const dedicated = process.env.VISITOR_SALT;
-  if (dedicated && dedicated.length >= 16) return dedicated;
+  if (dedicated && dedicated.length >= MIN_SALT) return dedicated;
+  if (dedicated && !warnedShort) {
+    warnedShort = true;
+    log.warn('visitor.salt_too_short', { minLength: MIN_SALT, fallback: 'JWT_SECRET' });
+  }
   return jwtSecret();
 }
 

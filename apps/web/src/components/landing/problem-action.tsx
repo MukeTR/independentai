@@ -115,7 +115,7 @@ export function ProblemAction() {
                 style={{ left: `${pos}%` }}
                 aria-hidden
               >
-                <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full accent-grad text-white text-[13px] flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(212,69,31,0.5)]">
+                <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full accent-grad text-white text-[13px] flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(37,99,235,0.5)]">
                   ⇆
                 </span>
               </div>

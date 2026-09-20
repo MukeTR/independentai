@@ -278,10 +278,10 @@ function Scanner({
                 {live ? 'AI hazırlık skoru' : 'AI görünürlüğü'}
               </div>
               <div
-                className="pop-mark mt-4 inline-flex items-center gap-2 chip comp !text-[12.5px] !py-1.5 !px-3"
+                className="pop-mark mt-4 inline-flex items-center gap-2 chip own !text-[12.5px] !py-1.5 !px-3"
                 style={{ '--pop-delay': '300ms' } as React.CSSProperties}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-danger" />
+                <span className="w-1.5 h-1.5 rounded-full bg-brand" />
                 {opportunities} fırsat bulundu
               </div>
               {!live && (
@@ -299,7 +299,7 @@ function Scanner({
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-ink-faint">Kaçırılan fırsat</dt>
-                    <dd className="font-mono text-warning">{DEMO.highIntent} yüksek niyetli soru</dd>
+                    <dd className="font-mono text-brand-deep">{DEMO.highIntent} yüksek niyetli soru</dd>
                   </div>
                 </dl>
               )}

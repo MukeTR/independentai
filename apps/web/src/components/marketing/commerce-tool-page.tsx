@@ -65,7 +65,7 @@ export async function CommerceToolPage({
       <BreadcrumbJsonLd
         items={[
           { name: 'Ana sayfa', href: '/' },
-          { name: 'Ücretsiz araçlar', href: '/arac/e-ticaret-ai-gorunurluk-testi' },
+          { name: 'Ücretsiz araçlar', href: '/arac' },
           { name: crumbName, href: path },
         ]}
       />

@@ -7,9 +7,9 @@ import { CRAWLER_AXES } from '@/server/commerce/crawler-audit';
 const PATH = '/arac/ai-crawler-testi';
 
 export const metadata = buildMetadata({
-  title: 'AI Crawler Testi — GPTBot, ClaudeBot, PerplexityBot sitenize erişebiliyor mu?',
+  title: 'AI Crawler Testi — botlar sitenize erişebiliyor mu?',
   description:
-    'robots.txt kurallarınızı 12 bot için çözümleyin: GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended, CCBot, Bytespider, Applebot-Extended, Googlebot, Bingbot. noindex, canonical, sitemap, llms.txt ve yönlendirme kontrolü. Ücretsiz.',
+    'robots.txt kurallarınızı 12 yapay zekâ botu için çözümleyin: GPTBot, ClaudeBot, PerplexityBot, Google-Extended ve diğerleri. Kayıt gerekmez.',
   path: PATH,
 });
 

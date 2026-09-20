@@ -161,15 +161,18 @@ export type Artifact = {
   latencyMs: number;
   truncated: boolean;
   redirects: SafeFetchResult['redirects'];
-  /** Ağ hatası / zaman aşımı / güvensiz URL: metin yok */
-  error?: 'network' | 'timeout' | 'unsafe';
+  /** Ağ hatası / zaman aşımı / güvensiz URL / tarama bütçesi dolu (site-scan/budget.ts): metin yok */
+  error?: 'network' | 'timeout' | 'unsafe' | 'budget';
 };
+
+export type ArtifactInit = { headers?: Record<string, string>; maxBytes?: number };
 
 /**
  * SSRF-güvenli ve zaman bütçeli tek kaynak çekimi. Hata fırlatmaz; `error` alanı doldurur.
  * Güvensiz URL (özel ağ vb.) → error:'unsafe' (çağıran ana URL için önceden parsePublicUrl uygular).
+ * `init.headers` safeFetch'e aynen geçer (ör. YanitBot User-Agent, Accept-Language); varsayılanlar değişmez.
  */
-export async function fetchArtifact(url: string, timeoutMs: number): Promise<Artifact> {
+export async function fetchArtifact(url: string, timeoutMs: number, init: ArtifactInit = {}): Promise<Artifact> {
   const start = Date.now();
   const empty = (error: Artifact['error']): Artifact => ({
     ok: false,
@@ -184,7 +187,11 @@ export async function fetchArtifact(url: string, timeoutMs: number): Promise<Art
   });
   try {
     const res = await Promise.race([
-      safeFetch(url, { timeout: timeoutMs }),
+      safeFetch(url, {
+        timeout: timeoutMs,
+        ...(init.headers ? { headers: init.headers } : {}),
+        ...(init.maxBytes ? { maxBytes: init.maxBytes } : {}),
+      }),
       new Promise<'timeout'>((r) => setTimeout(() => r('timeout'), timeoutMs + 500)),
     ]);
     if (res === 'timeout') return empty('timeout');

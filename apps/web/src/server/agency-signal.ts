@@ -13,6 +13,7 @@
 import type { AgencySignalStatus, AgencySubject, Prisma } from '@independentai/db';
 import { prisma } from './prisma';
 import { log } from './logger';
+import { etldPlusOne } from './public-suffix';
 
 export type AgencySubjectKind = 'TENANT' | 'VISITOR';
 
@@ -48,33 +49,8 @@ export const AGENCY_THRESHOLDS = {
 export const AGENCY_EMAIL_KEYWORDS =
   /ajans|agency|digital|dijital|medya|media|reklam|creative|kreatif|studio|stüdyo|marketing|pazarlama|growth|seo/i;
 
-/** İki seviyeli kamu son ekleri (kısa liste; tam PSL gerekmez). */
-const TWO_LEVEL_SUFFIX = new Set([
-  'com.tr',
-  'net.tr',
-  'org.tr',
-  'gov.tr',
-  'edu.tr',
-  'bel.tr',
-  'av.tr',
-  'dr.tr',
-  'k12.tr',
-  'co.uk',
-  'org.uk',
-  'com.au',
-  'co.jp',
-  'com.br',
-  'co.il',
-  'com.cn',
-]);
-
-/** eTLD+1 — `shop.acme.com.tr` → `acme.com.tr`, `a.b.acme.com` → `acme.com`. */
-export function etldPlusOne(hostname: string): string {
-  const labels = hostname.toLowerCase().split('.').filter(Boolean);
-  if (labels.length <= 2) return labels.join('.');
-  const last2 = labels.slice(-2).join('.');
-  return TWO_LEVEL_SUFFIX.has(last2) ? labels.slice(-3).join('.') : last2;
-}
+/** eTLD+1 — ortak modülden (server/public-suffix.ts); geriye uyum için buradan da dışa aktarılır. */
+export { etldPlusOne } from './public-suffix';
 
 export type AgencySignalInput = {
   subject: AgencySubjectKind;

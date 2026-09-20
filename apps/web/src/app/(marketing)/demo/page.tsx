@@ -14,7 +14,7 @@ const PATH = '/demo';
 export const metadata = buildMetadata({
   title: 'Demo turu — 60 saniyede Yanıt',
   description:
-    'Dört adımda Yanıt: sitenizi ücretsiz tarayın, kalıcı raporu paylaşın, sektörünüzün satın alma sorularına bakın, panelde her gün ölçün. Demo hesabı yok; kendi sitenizle deneyin ya da satış görüşmesi isteyin.',
+    'Dört adımda Yanıt: sitenizi ücretsiz tarayın, raporu paylaşın, sektörünüzün sorularına bakın, panelde her gün ölçün.',
   path: PATH,
 });
 

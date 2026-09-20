@@ -3,6 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 import { StoryProvider } from '@/components/landing/story';
 import { HeroScan } from '@/components/landing/hero-scan';
 import { StoryRail } from '@/components/landing/story-rail';
+import { HowStrip } from '@/components/landing/how-strip';
 import { BuyerQuestions } from '@/components/landing/buyer-questions';
 import { CeoScreen } from '@/components/landing/ceo-screen';
 import { IndexTeaser } from '@/components/landing/index-teaser';
@@ -19,9 +20,9 @@ import { getOffer } from '@/server/offer';
 import { formatTry } from '@independentai/shared';
 
 export const metadata = buildMetadata({
-  title: 'Müşteriniz yapay zekâya soruyor: sizi mi öneriyor, rakibinizi mi?',
+  title: 'Yapay zekâ sizi mi öneriyor, rakibinizi mi?',
   description:
-    'Yanıt, müşterilerinizin satın almadan önce ChatGPT, Gemini ve Claude’a sorduğu sorularda sizi mi rakibinizi mi önerdiğini ölçer; nedenini ve yapılacakları verir. Siz yapın veya Yanıt Agency yapsın.',
+    'Müşteriniz satın almadan önce yapay zekâya soruyor. Yanıt, ChatGPT ve Gemini’nin sizi mi rakibinizi mi önerdiğini ölçer, nedenini ve yapılacakları verir.',
   path: '/',
 });
 
@@ -36,6 +37,7 @@ export default async function Landing() {
       <SoftwareApplicationJsonLd saasMonthlyTry={offer.saasMonthlyTry} trialDays={offer.trialDays} />
       <HeroScan />
       <StoryRail />
+      <HowStrip />
       <BuyerQuestions />
       <AuditWow />
       <CeoScreen />

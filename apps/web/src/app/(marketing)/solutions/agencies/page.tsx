@@ -26,7 +26,7 @@ import { formatTry } from '@independentai/shared';
 export const metadata = buildMetadata({
   title: 'Ajanslar için Yanıt — müşteri portföyü ve ortaklık programı',
   description:
-    'Müşterilerinizin ChatGPT, Claude ve Gemini görünürlüğünü tek portföyde izleyin: müşteri başına çalışma alanı, ekip rolleri, salt-okunur rapor linkleri, 3 alan adı için anında ön-analiz ve ajans ortaklık programı. Kart gerekmez.',
+    'Müşterilerinizin yapay zekâ görünürlüğünü tek portföyde izleyin: çalışma alanları, ekip rolleri, paylaşılabilir raporlar, ön-analiz.',
   path: '/solutions/agencies',
 });
 

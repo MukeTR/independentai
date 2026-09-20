@@ -11,11 +11,11 @@ export async function Header({ themeClass }: { themeClass?: string } = {}) {
   const offer = await getOffer();
   const ctaLabel = `${offer.trialDays} gün dene`;
   return (
-    <header className="relative z-40">
-      <div className="border-b-hairline border-hairline/60 backdrop-blur-sm bg-paper/80 sticky top-0 z-40">
-        <Container>
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-10">
+    <header className="sticky top-0 z-40 pt-3 sm:pt-4">
+      <div className="px-4 sm:px-6">
+        <Container className="!px-0">
+          <div className="glass-bar flex items-center justify-between h-16 rounded-2xl pl-3 pr-2 sm:pl-4 sm:pr-3">
+            <div className="flex items-center gap-6 xl:gap-9">
               <Logo />
               <MegaMenu panels={NAV_PANELS} />
             </div>

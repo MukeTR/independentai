@@ -15,7 +15,7 @@ const PATH = '/arac';
 export const metadata = buildMetadata({
   title: 'Ücretsiz site araçları — Siteniz yapay zekâya hazır mı?',
   description:
-    'Tek adres girin, ücretsiz araçların hepsi hazır: SEO karnesi, WhatsApp önizleme, güvenlik başlıkları, kırık link, robots/sitemap, hreflang, schema, güven sinyalleri, rakip kıyası, e-ticaret ve AI crawler testleri. Hesap yok, e-posta duvarı yok, yapay zekâ puanlamada kullanılmaz.',
+    'Tek adres girin: SEO karnesi, WhatsApp önizleme, güvenlik başlıkları, kırık link, robots/sitemap, şema ve rakip kıyası. Kayıt gerekmez.',
   path: PATH,
 });
 

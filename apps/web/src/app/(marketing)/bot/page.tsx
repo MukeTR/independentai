@@ -8,7 +8,7 @@ import { buildMetadata, SITE_URL } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'YanitBot — tarayıcımız hakkında',
   description:
-    'YanitBot, Yanıt’ın ücretsiz site araçları ve panel denetimleri için herkese açık sayfaları okuyan tarayıcıdır. Ne çeker, ne çekmez, User-Agent dizeleri, tarama bütçesi ve nasıl engellenir.',
+    'YanitBot herkese açık sayfaları okur. Ne çeker, ne çekmez, User-Agent dizeleri, tarama bütçesi ve nasıl engellenir.',
   path: '/bot',
 });
 

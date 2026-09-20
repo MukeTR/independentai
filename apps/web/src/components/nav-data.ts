@@ -80,11 +80,64 @@ export const NAV_PANELS: MegaPanel[] = [
       },
     ],
     featured: {
-      eyebrow: 'Yeni · beta',
-      title: 'Mağazanı bağla, ürünlerin AI’da nasıl göründüğünü ölç',
-      body: 'Shopify, ikas ve Ticimax için salt-okunur katalog senkronu; sipariş ve müşteri verisi çekilmez.',
+      eyebrow: 'Uyumluluk',
+      title: 'Siteniz neyle yapıldıysa onunla çalışır',
+      body: 'Kurulum yok. WordPress, Wix, Framer, Bootstrap, React ya da mağaza altyapısı fark etmez.',
+      href: '/uyumluluk',
+      cta: 'Uyumluluğu gör',
+    },
+  },
+  {
+    label: 'E-ticaret',
+    wide: true,
+    sections: [
+      {
+        heading: 'Ürünleriniz yapay zekâda',
+        links: [
+          {
+            href: '/solutions/ecommerce',
+            title: 'Ürününüz nasıl anlatılıyor?',
+            description: 'ChatGPT ürününüzü hangi cümlelerle tarif ediyor',
+          },
+          {
+            href: '/arac/e-ticaret-ai-gorunurluk-testi',
+            title: 'Mağaza görünürlük testi',
+            description: 'Kayıt gerekmez · 25 saniye',
+          },
+          {
+            href: '/arac/urun-sayfasi-testi',
+            title: 'Ürün sayfası testi',
+            description: 'Şema, açıklama, fiyat ve stok sinyalleri',
+          },
+          { href: '/arac/urun-aciklama-yazici', title: 'Ürün açıklama yazıcı', badge: 'beta' },
+        ],
+      },
+      {
+        heading: 'Altyapınıza göre',
+        links: [
+          { href: '/solutions/shopify', title: 'Shopify', badge: 'beta' },
+          { href: '/solutions/ikas', title: 'ikas', badge: 'beta' },
+          { href: '/solutions/ticimax', title: 'Ticimax', badge: 'beta' },
+          { href: '/uyumluluk', title: 'Diğer tüm altyapılar', description: 'WooCommerce, Magento, IdeaSoft…' },
+        ],
+      },
+      {
+        heading: 'Satıcılar için',
+        links: [
+          { href: '/arac/ai-crawler-testi', title: 'AI botları mağazanıza girebiliyor mu?' },
+          { href: '/arac/chatgpt-rank-checker', title: 'Bir soruda kim öneriliyor?' },
+          { href: '/pricing', title: 'Fiyatlandırma' },
+        ],
+      },
+    ],
+    featured: {
+      eyebrow: 'Panelden',
+      title: 'Hangi üründe rakibiniz önde?',
+      body: 'Ürün ve kategori sorularında ses payınızı, rakip dağılımını ve günlük değişimi tek ekranda görün.',
       href: '/solutions/ecommerce',
       cta: 'E-ticaret çözümünü gör',
+      image: '/img/panel/sov.webp',
+      imageAlt: 'Panelde ses payı dağılımı: markanız ve rakipler',
     },
   },
   {

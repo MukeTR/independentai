@@ -15,7 +15,7 @@ import { DASHBOARD_TOOLS } from '@/app/dashboard/tools/tools-data';
 export const metadata = buildMetadata({
   title: 'Fiyatlandırma — Ücretsiz rapor, aylık abonelik, ajans sprinti',
   description:
-    'Şok raporu ve tüm araçlar ücretsiz, hesap gerekmez. Yanıt aylık abonelik, ücretsiz deneme, kart gerekmez, istediğiniz zaman iptal. Yanıt Agency aylık sprint, teklifle.',
+    'Ücretsiz araçlar ve rapor için hesap gerekmez. Yanıt aylık abonelik, 14 gün deneme, kart istenmez; Yanıt Agency teklifle.',
   path: '/pricing',
 });
 

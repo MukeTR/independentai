@@ -10,7 +10,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Kim için — 9 sektör, 4 rol',
   description:
-    'Klinik, hukuk, SaaS, e-ticaret altyapısı, ajans, eğitim, turizm, gayrimenkul, B2B üretici: müşteriniz satın almadan önce yapay zekâya soruyor. Sektörünüze göre hangi sorular, hangi kontroller; rolünüze göre ne işinize yarar.',
+    'Klinik, hukuk, SaaS, e-ticaret, ajans, eğitim, turizm, gayrimenkul ve B2B üretici: sektörünüze göre hangi sorular, hangi kontroller.',
   path: '/use-cases',
 });
 

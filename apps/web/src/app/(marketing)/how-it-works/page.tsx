@@ -9,7 +9,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Nasıl çalışır — Analiz → Düzelt → Ölç',
   description:
-    'Yanıt sitenizi deterministik araçlarla tarar, müşteri sorularını ChatGPT, Claude ve Gemini’ye tarih damgalı sorar, nedenini ve önerileri çıkarır; siz ya da Yanıt Agency düzeltir, her sabah yeniden ölçülür. Skor formülleri açık.',
+    'Yanıt sitenizi tarar, müşteri sorularını üç modele sorar, nedenini ve önerileri çıkarır; düzeltirsiniz, her sabah yeniden ölçülür.',
   path: '/how-it-works',
 });
 

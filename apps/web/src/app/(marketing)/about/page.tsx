@@ -9,7 +9,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Yanıt nedir?',
   description:
-    'Yanıt, müşterinizin satın almadan önce yapay zekâya sorduğu sorularda sizi mi rakibinizi mi önerdiğini ölçen, nedenini gösteren ve takip eden Türkiye merkezli bağımsız bir platformdur. Misyon, yöntem ilkeleri ve ekip.',
+    'Yanıt, markanızın yapay zekâ cevaplarındaki görünürlüğünü ölçen, nedenini gösteren Türkiye merkezli bağımsız bir platformdur.',
   path: '/about',
 });
 

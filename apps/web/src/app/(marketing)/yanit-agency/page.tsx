@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Ciz } from '@/components/marketing/ciz';
 import {
   ArrowRight,
   Check,
@@ -23,7 +24,7 @@ import { getOffer } from '@/server/offer';
 export const metadata = buildMetadata({
   title: 'Yanıt Agency — analizi biz yaptık, uygulamayı da biz yapalım',
   description:
-    'Yanıt’ın bulduğu listeyi ekibimiz uygular: teknik düzeltme, şema ve entity, satın alma sorularına cevap veren içerik, kaynak ve atıf çalışması. Aylık sprint, teklifle; ilerleme aynı panelden ölçülür. Sonuç sözü yok, ölçüm var.',
+    'Yanıt’ın bulduğu listeyi ekibimiz uygular: teknik düzeltme, şema, içerik ve kaynak çalışması. Aylık sprint, teklifle; ölçüm aynı panelde.',
   path: '/yanit-agency',
 });
 
@@ -185,6 +186,13 @@ export default async function YanitAgencyPage() {
         </Container>
       </section>
 
+      <section className="pb-4">
+        <Container>
+          <div className="max-w-md">
+            <Ciz name="ajans" alt="İki kişi bir web sitesi iskeleti üzerinde birlikte çalışıyor" />
+          </div>
+        </Container>
+      </section>
       <Section eyebrow="Ne yaparız" title="Dört iş kalemi; hepsi bir bulguya bağlı." className="py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {WHAT.map((w) => (

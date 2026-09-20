@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
 import { apiFetch, errorMessage } from '@/lib/api-client';
-import { handleBlockedResponse } from '@/lib/blocked-redirect';
+import { BLOCKED_REJECTED_MESSAGE, handleBlockedResponse } from '@/lib/blocked-redirect';
 import type { AuditFinding, GeoAuditResult } from '@/server/geo-audit';
 import { DEMO } from './demo';
 
@@ -82,7 +82,12 @@ export function StoryProvider({ children }: { children: ReactNode }) {
     apiFetch<GeoAuditResult>('/api/tools/geo-audit', { method: 'POST', json: { url: domain }, timeoutMs: 60_000 })
       .then((result) => {
         if (runRef.current !== myRun) return;
-        if (handleBlockedResponse(result)) return; // yasaklı site → yönlendirme
+        const blocked = handleBlockedResponse(result); // yasaklı site → yönlendirme; doğrulanamayan hedef → hata
+        if (blocked === 'redirected') return;
+        if (blocked === 'rejected') {
+          setScan((s) => ({ ...s, status: 'error', result: null, error: BLOCKED_REJECTED_MESSAGE }));
+          return;
+        }
         setScan((s) => ({ ...s, status: 'done', result, error: null }));
       })
       .catch((err: unknown) => {

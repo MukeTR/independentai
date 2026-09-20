@@ -11,6 +11,10 @@
  *  - Yanıt gövdesi akış halinde okunur ve MAX_BODY_BYTES'ta kesilir (sıkıştırma bombası/
  *    devasa sayfa koruması). İzin verilen content-type: text/html, text/plain, xml, json.
  *  - Zaman aşımı: bağlantı + toplam okuma.
+ *  - `guardedLookup` dışa aktarılır: başka soket kuran modüller (site-scan/tls-probe.ts `tls.connect`) aynı
+ *    DNS doğrulamasını `lookup` seçeneği olarak kullanır; böylece TLS probu da özel ağa bağlanamaz.
+ *  - User-Agent: varsayılan IndependentAI-GEOBot; site araçları `init.headers['User-Agent']` ile YanitBot geçer
+ *    (varsayılan davranış değişmez).
  */
 import { lookup as dnsLookup } from 'node:dns';
 import { isIP } from 'node:net';
@@ -150,8 +154,9 @@ export function parsePublicUrl(rawUrl: string): URL {
 /**
  * Bağlantı için kullanılan lookup: çözümlenen HER adres doğrulanır; biri bile özelse bağlantı
  * kurulmaz. Böylece doğrulanan adres = bağlanılan adres (TOCTOU yok).
+ * Dışa aktarılır: `tls.connect({ lookup: guardedLookup })` (site-scan/tls-probe.ts) aynı korumayı alır.
  */
-function guardedLookup(
+export function guardedLookup(
   hostname: string,
   options: unknown,
   callback: (err: NodeJS.ErrnoException | null, address: unknown, family?: number) => void,

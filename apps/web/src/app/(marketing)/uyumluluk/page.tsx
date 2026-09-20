@@ -18,13 +18,14 @@ import { Faq } from '@/components/marketing/faq';
 import { BreadcrumbJsonLd, FaqJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
 import { PLATFORM_LABELS } from '@/server/commerce/platform-detect';
+import { Ciz } from '@/components/marketing/ciz';
 
 const PATH = '/uyumluluk';
 
 export const metadata = buildMetadata({
   title: 'Uyumluluk — her web teknolojisiyle çalışır',
   description:
-    'Yanıt sitenize kod eklemeden herkese açık sayfalarınızı okur. WordPress, Wix, Framer, Webflow, Bootstrap ile yazılmış HTML, React, Laravel, Django ya da mağaza altyapısı fark etmez.',
+    'Kurulum yok: Yanıt herkese açık sayfanızı okur. WordPress, Wix, Framer, Bootstrap, React ya da mağaza altyapısı fark etmez.',
   path: PATH,
 });
 
@@ -170,22 +171,27 @@ export default function UyumlulukPage() {
 
       <section className="pt-24 pb-16">
         <Container>
-          <div className="max-w-3xl">
-            <div className="eyebrow">Uyumluluk</div>
-            <h1 className="font-display text-[40px] lg:text-[54px] tracking-tight mt-3 leading-[1.05]">
-              Siteniz neyle yapıldıysa <span className="text-brand">onunla çalışır.</span>
-            </h1>
-            <p className="text-[17px] lg:text-[19px] text-ink-muted mt-6 leading-relaxed">
-              Yanıt sitenize bağlanmaz, sitenizi okur. Ajansınızın kendi sitesi, kurumsal tanıtım sayfanız, bloğunuz ya
-              da mağazanız; WordPress, Wix, Framer, Bootstrap ile yazılmış HTML, React veya Laravel fark etmez.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/arac" className="btn-primary inline-flex items-center gap-2">
-                Ücretsiz araçları dene <ArrowRight className="w-4 h-4" aria-hidden />
-              </Link>
-              <Link href="/contact#sales" className="btn-secondary">
-                Ekiple görüş
-              </Link>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-7">
+              <div className="eyebrow">Uyumluluk</div>
+              <h1 className="font-display text-[40px] lg:text-[54px] tracking-tight mt-3 leading-[1.05]">
+                Siteniz neyle yapıldıysa <span className="text-brand">onunla çalışır.</span>
+              </h1>
+              <p className="text-[17px] lg:text-[19px] text-ink-muted mt-6 leading-relaxed">
+                Yanıt sitenize bağlanmaz, sitenizi okur. Ajansınızın kendi sitesi, kurumsal tanıtım sayfanız, bloğunuz
+                ya da mağazanız; WordPress, Wix, Framer, Bootstrap ile yazılmış HTML, React veya Laravel fark etmez.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link href="/arac" className="btn-primary inline-flex items-center gap-2">
+                  Ücretsiz araçları dene <ArrowRight className="w-4 h-4" aria-hidden />
+                </Link>
+                <Link href="/contact#sales" className="btn-secondary">
+                  Ekiple görüş
+                </Link>
+              </div>
+            </div>
+            <div className="lg:col-span-5">
+              <Ciz name="uyum" alt="Farklı şekillerdeki bloklar tek bir bağlantı noktasına bağlanıyor" priority />
             </div>
           </div>
         </Container>
