@@ -21,7 +21,7 @@ test('kayıt → ajans onboarding → boş portföy → müşteri oluştur → p
   await page.getByLabel('Şirket adı').fill('E2E Ajans');
   await page.getByLabel('E-posta').fill(email);
   await page.getByLabel('Şifre', { exact: true }).fill(PASSWORD);
-  await page.getByRole('button', { name: '6 ay ücretsiz başlat' }).click();
+  await page.getByRole('button', { name: /gün ücretsiz dene/ }).click();
   await expect(page).toHaveURL(/\/onboarding/);
 
   // Varsayılan seçim marka; ajans kartını seç

@@ -72,7 +72,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             role="status"
             className="bg-brand-glow border-b border-brand/20 text-[13px] text-ink px-6 py-2.5 text-center"
           >
-            Ücretsiz lansman döneminiz {ent.trialDaysLeft} gün sonra bitiyor. Süre sonunda hesap salt-okunur moda geçer;
+            Ücretsiz deneme süreniz {ent.trialDaysLeft} gün sonra bitiyor. Süre sonunda hesap salt-okunur moda geçer;
             veriler silinmez.
           </div>
         )}

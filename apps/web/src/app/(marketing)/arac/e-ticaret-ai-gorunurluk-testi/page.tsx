@@ -72,7 +72,7 @@ export default function Page() {
         'Crawl-only: JavaScript render edilmez; yalnızca istemci tarafında oluşan içerik görülmez.',
         'Tek ürün sayfası örneklenir; kataloğun tümü taranmaz. Bağlı mağazalarda panel içindeki “Katalog hazırlığı” tüm ürünleri değerlendirir.',
         'Zaman bütçesi 25 saniyedir; yavaş sunucularda bazı adımlar atlanır ve sonuç “kısmi” olarak işaretlenir.',
-        'Skor AI cevaplarında gerçekten anılıp anılmadığınızı ölçmez; buna hazırlığı ölçer. Anılma takibi için Independent AI panelini kullanın.',
+        'Skor AI cevaplarında gerçekten anılıp anılmadığınızı ölçmez; buna hazırlığı ölçer. Anılma takibi için Yanıt panelini kullanın.',
       ]}
       faq={FAQ}
     />

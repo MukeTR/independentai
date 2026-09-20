@@ -12,7 +12,7 @@ const STEPS = [
   {
     id: 's2',
     label: 'Her soruyu 3 modelde (ChatGPT, Claude, Gemini) çalıştır',
-    hint: 'Manuel veya Independent AI ile',
+    hint: 'Manuel veya Yanıt ile',
   },
   { id: 's3', label: 'Markanızın geçtiği soruları işaretle → baseline %', hint: 'Visibility Score hesabı' },
   { id: 's4', label: 'Geçmediğiniz sorularda hangi rakipler geçiyor not et', hint: 'Rakip listesi çıkar' },

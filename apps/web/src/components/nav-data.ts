@@ -166,7 +166,7 @@ export const NAV_PANELS: MegaPanel[] = [
       {
         heading: 'Hakkında',
         links: [
-          { href: '/about', title: 'Independent AI nedir?' },
+          { href: '/about', title: 'Yanıt nedir?' },
           { href: '/about#mission', title: 'Misyonumuz' },
           { href: '/about#team', title: 'Ekip' },
         ],

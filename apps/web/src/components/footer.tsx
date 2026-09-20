@@ -68,7 +68,7 @@ export function Footer() {
             </p>
             <div className="mt-6 flex items-center gap-3">
               <span className="chip own !text-[10.5px]">yanit.io</span>
-              <span className="chip !text-[10.5px]">v0.1 · lansman</span>
+              <span className="chip !text-[10.5px]">v0.3</span>
             </div>
           </div>
 

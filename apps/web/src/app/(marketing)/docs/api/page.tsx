@@ -2,13 +2,13 @@ import Link from 'next/link';
 import { Container } from '@/components/container';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
-import { LAUNCH_OFFER, capability } from '@independentai/shared';
+import { OFFER, capability } from '@independentai/shared';
 import { ArrowLeft, KeyRound, Gauge, ShieldCheck, Code2, AlertTriangle, Globe2 } from 'lucide-react';
 
 export const metadata = buildMetadata({
   title: 'API Referansı',
   description:
-    'Independent AI Public API v1: GET /api/v1/visibility ile görünürlük skoru, Share of Voice, trend, rakip dağılımı ve atıf kaynaklarını salt-okunur olarak çekin. Bearer token, 60 istek/dk.',
+    'Yanıt Public API v1: GET /api/v1/visibility ile görünürlük skoru, Share of Voice, trend, rakip dağılımı ve atıf kaynaklarını salt-okunur olarak çekin. Bearer token, 60 istek/dk.',
   path: '/docs/api',
   noIndex: false,
 });
@@ -168,7 +168,7 @@ function H2({ id, icon: Icon, children }: { id: string; icon?: React.ElementType
 
 export default function ApiDocs() {
   const api = capability('api');
-  const fair = LAUNCH_OFFER.fairUse;
+  const fair = OFFER.fairUse;
 
   return (
     <>
@@ -249,7 +249,7 @@ Authorization: Bearer iai_live_...`}</Code>
                     <code className="font-mono text-[12.5px]">read:visibility</code> (şu an tek scope).
                   </li>
                   <li>
-                    <span className="text-ink">Lansman adil kullanımı:</span> hesap başına {fair.apiTokens} aktif token.
+                    <span className="text-ink">Adil kullanım:</span> hesap başına {fair.apiTokens} aktif token.
                   </li>
                 </ul>
               </div>

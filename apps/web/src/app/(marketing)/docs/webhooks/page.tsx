@@ -6,7 +6,7 @@ import { Webhook, ArrowLeft } from 'lucide-react';
 
 export const metadata = buildMetadata({
   title: 'Webhooks — Planlanıyor',
-  description: 'Independent AI webhooks planlanıyor; henüz mevcut değil. Verinizi şimdilik Public API ile çekin.',
+  description: 'Yanıt webhooks planlanıyor; henüz mevcut değil. Verinizi şimdilik Public API ile çekin.',
   path: '/docs/webhooks',
   noIndex: true, // "Yakında" stub'ı — gerçek dokümantasyon gelene kadar indekslenmez.
 });

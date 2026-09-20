@@ -4,7 +4,7 @@
  * Üç ölçüm birbirine karıştırılmaz ve UI'da ayrı gösterilir:
  *   • `aiReferralSessions` — AI ürününden gelen **gerçek insan** ziyareti (browser SDK)
  *   • `crawlerHits`        — AI crawler/fetcher **istekleri** (server/edge); ziyaret veya öneri değildir
- *   • `syntheticRuns`      — Independent AI'ın kendi çalıştırdığı görünürlük ölçümü (ModelRun)
+ *   • `syntheticRuns`      — Yanıt'ın kendi çalıştırdığı görünürlük ölçümü (ModelRun)
  *
  * Benzersiz kişi iddiası üretilmez: "oturum" çerezsiz, kısa ömürlü bir gruplamadır.
  */

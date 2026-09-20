@@ -3,7 +3,8 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Gizlilik Politikası',
-  description: 'Independent AI gizlilik politikası — hangi verileri toplarız, nasıl saklarız, kimle paylaşırız.',
+  description:
+    'Yanıt (Independent AI) gizlilik politikası — hangi verileri toplarız, nasıl saklarız, kimle paylaşırız.',
   path: '/legal/privacy',
 });
 
@@ -61,7 +62,7 @@ export default function Privacy() {
             <ul className="list-disc list-inside space-y-1">
               <li>Hesabınızı yönetmek ve hizmetimizi sunmak</li>
               <li>Promptlarınızı AI provider\'lara göndererek sonuç üretmek</li>
-              <li>Faturalandırma (6 ay lansman sonrası)</li>
+              <li>Faturalandırma (deneme süresi sonrası, ekiple başlatılan abonelik)</li>
               <li>Destek talepleri ve iletişim</li>
               <li>Toplam kullanım istatistikleri (kişisel bilgi içermeyen)</li>
             </ul>

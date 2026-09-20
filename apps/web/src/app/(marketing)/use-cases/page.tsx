@@ -19,7 +19,7 @@ const BY_INDUSTRY = [
     name: 'SaaS şirketleri',
     pain: 'B2B alıcılarınız "en iyi CRM", "en iyi proje yönetim aracı" sorularını artık önce AI\'a soruyor. Cevabın ilk 3\'ünde yoksanız demo talebine bile düşmüyorsunuz.',
     solution:
-      'Independent AI ile sektörünüzdeki tüm değerlendirme sorularını izleyin. Görünürlüğünüzü rakiplerinizle karşılaştırın. Hangi modelde zayıfsınız anlayıp content stratejinizi oraya yönlendirin.',
+      'Yanıt ile sektörünüzdeki tüm değerlendirme sorularını izleyin. Görünürlüğünüzü rakiplerinizle karşılaştırın. Hangi modelde zayıfsınız anlayıp content stratejinizi oraya yönlendirin.',
     metrics: ['Kategori soruları görünürlüğü', 'Vs. rakipler SoV', 'Modele göre dağılım'],
   },
   {
@@ -119,7 +119,7 @@ export default function UseCasesPage() {
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
             Farklı sektörlerde aynı problem farklı şekillerde görünüyor. Bu sayfa size benzer bir konumdaki şirketlerin
-            Independent AI'ı nasıl kullandığına dair somut senaryolar sunar.
+            Yanıt'ı nasıl kullandığına dair somut senaryolar sunar.
           </p>
         </Container>
       </section>

@@ -52,7 +52,7 @@ export function TenantPlanForm({
             Plan
           </label>
           <select id={ids.plan} className="input" value={p} onChange={(e) => setP(e.target.value)}>
-            <option value="LAUNCH">LAUNCH (lansman)</option>
+            <option value="LAUNCH">LAUNCH (deneme / standart)</option>
             <option value="STARTER">STARTER</option>
             <option value="GROWTH">GROWTH</option>
           </select>

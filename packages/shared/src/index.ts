@@ -15,6 +15,7 @@ export const PROMPT_CATEGORIES = [
   { value: 'other', label: 'Diğer' },
 ] as const;
 
+/** @deprecated OFFER.trialDays (gün) kullanın; eski 6 aylık lansman teklifi kaldırıldı. */
 export const FREE_TRIAL_MONTHS = 6;
 
 export type DashboardMetrics = {

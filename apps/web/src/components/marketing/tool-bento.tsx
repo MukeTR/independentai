@@ -197,7 +197,7 @@ function FeaturedVisual({ kind }: { kind: 'gauge' | 'alert' | 'write' }) {
         <div className="text-[11.5px] text-ink-muted mt-2 leading-snug line-through opacity-70">
           “Ücretsiz planı yok”
         </div>
-        <div className="text-[11.5px] text-ink mt-0.5 leading-snug">→ İlk 6 ay tüm özellikler ücretsiz</div>
+        <div className="text-[11.5px] text-ink mt-0.5 leading-snug">→ Ücretsiz rapor, ardından 14 gün deneme</div>
       </div>
     );
   }

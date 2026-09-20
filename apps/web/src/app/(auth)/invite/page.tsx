@@ -4,7 +4,7 @@ import { previewInvite } from '@/server/team';
 import { AuthCentered } from '@/components/auth/auth-centered';
 import { InviteAccept } from './invite-accept';
 
-export const metadata = { title: 'Ekip daveti — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'Ekip daveti — Yanıt', robots: { index: false, follow: false } };
 
 /**
  * Davet linki: giriş yoksa → kayıt/giriş (aynı e-postayla) ve geri dönüş; girişliyse kabul butonu.

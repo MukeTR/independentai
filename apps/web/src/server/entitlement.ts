@@ -42,7 +42,7 @@ export type Entitlement = {
 const DAY = 86_400_000;
 
 const LIMITS: Record<PlanTier, Entitlement['limits']> = {
-  // Lansman: "adil kullanım" tavanları (pazarlama metniyle aynı: capabilities.ts)
+  // LAUNCH (deneme/standart plan): "adil kullanım" tavanları (pazarlama metniyle aynı: capabilities.ts OFFER.fairUse)
   LAUNCH: {
     ownBrands: 1,
     prompts: 200,
@@ -109,7 +109,7 @@ export type AgencyEntitlement = {
   /** Kalan koltuk/müşteri (0 ise ekleme reddedilir) */
   seatsLeft: number;
   clientsLeft: number;
-  /** Beyaz etiket (kaynak gizleme) bu planda var mı — lansmanda yok, dürüstçe belirtilir */
+  /** Beyaz etiket (kaynak gizleme) bu planda var mı — henüz yok, dürüstçe belirtilir */
   whiteLabel: boolean;
 };
 

@@ -15,7 +15,7 @@ export const GET = route('brands.list', async () => {
   return NextResponse.json(list);
 });
 
-/** Lansmanda hesap başına 1 kendi markası (entitlement.limits.ownBrands). */
+/** Şu an hesap başına 1 kendi markası (entitlement.limits.ownBrands). */
 export const POST = route('brands.create', async (req) => {
   const actor = await requireActor({ write: true });
   const body = await readJson<{ name?: unknown; aliases?: unknown; website?: unknown }>(req);

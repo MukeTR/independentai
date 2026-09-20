@@ -3,6 +3,7 @@ import { Sparkles } from 'lucide-react';
 import { OAuthButtons } from '@/components/auth/oauth-buttons';
 import { AuthSplit } from '@/components/auth/auth-split';
 import { RegisterForm } from './register-form';
+import { getOffer } from '@/server/offer';
 
 const OAUTH_ERRORS: Record<string, string> = {
   oauth_unavailable: 'Bu giriş yöntemi şu an kullanılamıyor.',
@@ -18,16 +19,19 @@ const OAUTH_ERRORS: Record<string, string> = {
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
+  const offer = await getOffer();
   const oauthError = error ? OAUTH_ERRORS[error] : undefined;
 
   return (
     <AuthSplit>
       <div className="chip mb-5">
         <Sparkles className="w-3 h-3 text-brand" />
-        <span className="font-mono">İlk 6 ay tamamen ücretsiz</span>
+        <span className="font-mono">{offer.trialDays} gün ücretsiz deneme · kart gerekmez</span>
       </div>
       <h1 className="font-display text-[32px] tracking-tight">Hesap oluştur</h1>
-      <p className="text-[14px] text-ink-muted mt-2">Kredi kartı gerekmez. Kayıt anında 6 aylık tam erişim başlar.</p>
+      <p className="text-[14px] text-ink-muted mt-2">
+        Kayıt anında {offer.trialDays} günlük tam erişim başlar. Deneme sonunda otomatik ücretlendirme yapılmaz.
+      </p>
 
       {oauthError && (
         <div className="text-[13px] text-danger bg-danger/5 border-hairline border-danger/20 rounded-lg p-3 mt-6">
@@ -37,7 +41,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
 
       <div className="mt-8">
         <OAuthButtons label="ile kaydol" />
-        <RegisterForm />
+        <RegisterForm trialDays={offer.trialDays} />
       </div>
 
       <p className="text-center text-[13px] text-ink-muted mt-6">

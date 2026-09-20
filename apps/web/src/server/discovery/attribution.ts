@@ -8,7 +8,7 @@
  *                       güven 100, metin PII'dan temizlenir ve 300 karaktere kırpılır.
  *   • `INFERRED`      — deterministik, açıklanabilir puanlama (LLM YOK). Her sinyalin katkısı
  *                       `evidence` içinde saklanır; eşiğin altındaysa KAYIT ÜRETİLMEZ.
- *   • `SYNTHETIC`     — Independent AI'ın kendi ölçümü (ModelRun). Gerçek ziyaretçi promptu
+ *   • `SYNTHETIC`     — Yanıt'ın kendi ölçümü (ModelRun). Gerçek ziyaretçi promptu
  *                       DEĞİLDİR; kayıt yazılmaz, yalnızca okuma amaçlı özet üretilir.
  *
  * Puan tablosu (sabit, belgeli — `SIGNAL_WEIGHTS`):
@@ -763,7 +763,7 @@ export type SyntheticSnapshot = {
 };
 
 export const SYNTHETIC_DISCLAIMER =
-  'Bu liste Independent AI’ın kendi ölçümlerinden (ModelRun) türetilmiştir. Gerçek bir ziyaretçinin sorduğu soru değildir; ziyaretçi promptu olarak sunulamaz.';
+  'Bu liste Yanıt’ın kendi ölçümlerinden (ModelRun) türetilmiştir. Gerçek bir ziyaretçinin sorduğu soru değildir; ziyaretçi promptu olarak sunulamaz.';
 
 /** Mevcut ModelRun sonuçlarından özet üretir — hiçbir kayıt YAZILMAZ. */
 export async function syntheticSnapshot(tenantId: string, days = 30): Promise<SyntheticSnapshot> {
@@ -987,7 +987,7 @@ export async function listAttributions(
     intentLabel: intentLabel(p.intent),
     confidence: p.visibility,
     provider: null,
-    providerLabel: 'Independent AI ölçümü',
+    providerLabel: 'Yanıt ölçümü',
     reportedText: null,
     evidence: p.providers.map((pr) => ({
       signal: 'referrerOnly' as const,

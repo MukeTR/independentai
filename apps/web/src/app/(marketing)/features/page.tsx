@@ -21,7 +21,7 @@ import {
   Code2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { CAPABILITIES, LAUNCH_OFFER } from '@independentai/shared';
+import { CAPABILITIES, OFFER } from '@independentai/shared';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { CtaBlock } from '@/components/marketing/cta-block';
@@ -125,7 +125,7 @@ const PILLARS = [
     id: 'collaboration',
     eyebrow: 'Takım',
     title: 'Çok kullanıcılı — pazarlama ekipleri için',
-    body: `Tek bir hesap altında ekip üyelerini e-posta ile davet edin (lansmanda ${LAUNCH_OFFER.fairUse.members} üyeye kadar). Roller ile yetki sınırlandırın.`,
+    body: `Tek bir hesap altında ekip üyelerini e-posta ile davet edin (${OFFER.fairUse.members} üyeye kadar). Roller ile yetki sınırlandırın.`,
     features: [
       {
         icon: Globe2,

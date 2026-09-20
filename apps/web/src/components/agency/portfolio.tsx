@@ -233,9 +233,8 @@ export function Portfolio({ initial }: { initial: PortfolioData }) {
         <div className="card p-10 text-center">
           <h2 className="font-display text-[20px]">Henüz müşteri yok</h2>
           <p className="text-[14px] text-ink-muted mt-2 max-w-md mx-auto">
-            İlk müşterinizi oluşturun ya da müşterinizin mevcut Independent AI hesabını onaylı bağlantıyla portföyünüze
-            ekleyin.
-            {` `}Lansman planında {data.entitlement.limits.clients} müşteriye kadar.
+            İlk müşterinizi oluşturun ya da müşterinizin mevcut Yanıt hesabını onaylı bağlantıyla portföyünüze ekleyin.
+            {` `}Başlangıç planında {data.entitlement.limits.clients} müşteriye kadar.
           </p>
           {canManage && (
             <div className="flex justify-center gap-2 mt-6 flex-wrap">

@@ -24,8 +24,8 @@ export default async function SettingsPage() {
           Marka ayarları
         </h1>
         <p className="text-[14px] text-ink-muted mt-2">
-          AI cevaplarında markanızı doğru tespit edebilmemiz için kullanılabilecek tüm yazımları ekleyin. Lansmanda
-          hesap başına bir kendi markası tanımlanır; çoklu marka planlanıyor.
+          AI cevaplarında markanızı doğru tespit edebilmemiz için kullanılabilecek tüm yazımları ekleyin. Şu an hesap
+          başına bir kendi markası tanımlanır; çoklu marka planlanıyor.
         </p>
         {!canWrite && (
           <p className="text-[12.5px] text-warning mt-3" role="status">

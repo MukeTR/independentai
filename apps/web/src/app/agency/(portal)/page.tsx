@@ -2,7 +2,7 @@ import { requirePageActor } from '@/server/authz';
 import { listClientCards, summarizePortfolio } from '@/server/agency';
 import { Portfolio } from '@/components/agency/portfolio';
 
-export const metadata = { title: 'Ajans portföyü — Independent AI' };
+export const metadata = { title: 'Ajans portföyü — Yanıt' };
 
 export default async function AgencyPortfolioPage() {
   const actor = await requirePageActor();

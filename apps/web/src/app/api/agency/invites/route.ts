@@ -13,10 +13,10 @@ const ROLE_LABEL: Record<string, string> = { ADMIN: 'Yönetici', STRATEGIST: 'St
 function inviteMail(agencyName: string, role: string, link: string) {
   const r = ROLE_LABEL[role] ?? role;
   return {
-    subject: `${agencyName} sizi Independent AI ajans ekibine davet etti`,
+    subject: `${agencyName} sizi Yanıt ajans ekibine davet etti`,
     html: `
   <div style="font-family:-apple-system,Segoe UI,sans-serif;max-width:520px;margin:0 auto;color:#14110D;line-height:1.6">
-    <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9A968B;margin-bottom:8px">Independent AI</div>
+    <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9A968B;margin-bottom:8px">Yanıt</div>
     <h2 style="font-size:20px;margin:0 0 12px">${agencyName} ajans ekibine davet</h2>
     <div style="font-size:14px;color:#444"><p><b>${agencyName}</b> ajansına <b>${r}</b> rolüyle davet edildiniz. Davet 7 gün geçerlidir.</p></div>
     <p style="margin-top:20px"><a href="${link}" style="display:inline-block;background:#4F46E5;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px">Daveti kabul et</a></p>

@@ -7,7 +7,7 @@
  *  - Limit: ajans üzerinden erişimde ajans planının `shareLinks` tavanı; doğrudan marka için 10.
  *  - Public rapor içeriği: yalnızca toplulaştırılmış görünürlük/SoV/trend/soru/rakip verisi.
  *    E-posta, AI yanıt metni, aday/kişisel veri, API token vb. ASLA dahil edilmez.
- *  - Beyaz etiket lansmanda yok: rapor "Independent AI ile hazırlandı" imzasıyla sunulur (dürüst).
+ *  - Beyaz etiket henüz yok: rapor "Yanıt ile hazırlandı" imzasıyla sunulur (dürüst).
  */
 import { prisma } from './prisma';
 import { ClientError, NotFoundError, PlanLimitError } from './errors';
@@ -177,8 +177,8 @@ export type SharedReport = {
   byProvider: { provider: string; visibility: number; runs: number }[];
   topPrompts: { text: string; visibility: number; runs: number }[];
   competitors: { name: string; sov: number; mentions: number }[];
-  /** Dürüst imza — beyaz etiket lansmanda yok */
-  poweredBy: 'Independent AI';
+  /** Dürüst imza — beyaz etiket henüz yok */
+  poweredBy: 'Yanıt';
 };
 
 /**
@@ -223,6 +223,6 @@ export async function buildSharedReport(share: {
       .slice(0, 10)
       .map((p) => ({ text: p.text, visibility: p.visibility, runs: p.runs })),
     competitors: analytics.competitors.slice(0, 8).map((c) => ({ name: c.name, sov: c.sov, mentions: c.mentions })),
-    poweredBy: 'Independent AI',
+    poweredBy: 'Yanıt',
   };
 }

@@ -173,7 +173,7 @@ function AgencySetup({ initialName, initialWebsite }: { initialName: string; ini
       <h1 className="font-display text-[26px] sm:text-[28px] tracking-tight mt-6">Ajansınızı tanıtın</h1>
       <p className="text-[14px] text-ink-muted mt-2">
         Ajans hesabında marka verisi tutulmaz; her müşteri için ayrı çalışma alanı açar, ekibinizi rollerle davet
-        edersiniz. Lansman döneminde ücretsiz: 5 koltuk, 10 müşteri.
+        edersiniz. Deneme süresinde 5 koltuk, 10 müşteri; Yanıt Agency ortaklığı için bize yazın.
       </p>
       <div className="mt-7 space-y-4">
         <div>

@@ -138,7 +138,7 @@ export function AgencyPreanalysis() {
       {results && (
         <div className="mt-6 flex items-center justify-between gap-3 flex-wrap text-[13px]">
           <span className="text-ink-muted">
-            Tam rapor, günlük izleme ve müşteri başına panel için ajans hesabı açın — lansman döneminde ücretsiz.
+            Tam rapor, günlük izleme ve müşteri başına panel için ajans hesabı açın — ücretsiz deneme, kart gerekmez.
           </span>
           <Link href="/register" className="btn-primary !py-2 text-[13px] inline-flex items-center gap-1.5">
             Ajans hesabı aç <ArrowRight className="w-4 h-4" aria-hidden />

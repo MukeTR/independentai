@@ -124,7 +124,7 @@ describe('deneme süresi (entitlement)', () => {
     await flushAfter();
   });
 
-  it('lansmanda tek kendi markası; ikincisi 409', async () => {
+  it('LAUNCH planında tek kendi markası; ikincisi 409', async () => {
     const { user } = await createTenant();
     await loginAs(user);
     expect((await call(createBrand, { method: 'POST', body: { name: 'Marka1' } })).status).toBe(201);

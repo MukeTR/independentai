@@ -41,7 +41,7 @@ export function RobotsTxtGenerator() {
     const lines: string[] = [];
 
     // Default rule
-    lines.push('# robots.txt — Independent AI tarafından üretildi');
+    lines.push('# robots.txt — Yanıt tarafından üretildi');
     lines.push('# https://independentai.space/blog/llms-txt-rehberi-2026');
     lines.push('');
     lines.push('User-Agent: *');

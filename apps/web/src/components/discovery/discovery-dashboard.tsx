@@ -399,7 +399,7 @@ function MeasurePanel({
           value={overview.channels.syntheticRuns}
           unit="çalıştırma"
           tone="neutral"
-          description="Independent AI’ın sizin adınıza çalıştırdığı prompt ölçümleri. Gerçek kullanıcı trafiği değildir; markanızın yanıtlarda görünürlüğünü test eder."
+          description="Yanıt’ın sizin adınıza çalıştırdığı prompt ölçümleri. Gerçek kullanıcı trafiği değildir; markanızın yanıtlarda görünürlüğünü test eder."
         />
       </div>
 

@@ -86,7 +86,7 @@ export function TopBar({
           )}
           <div
             className="hidden sm:flex items-center gap-1.5 chip own !text-[11px]"
-            title={user.tenant.active === false ? 'Deneme süresi doldu — salt-okunur' : 'Ücretsiz lansman süresi'}
+            title={user.tenant.active === false ? 'Deneme süresi doldu — salt-okunur' : 'Ücretsiz deneme süresi'}
           >
             <Sparkles className="w-3 h-3" aria-hidden />
             {user.tenant.active === false

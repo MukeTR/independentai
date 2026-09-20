@@ -21,11 +21,14 @@ export function RankChecker({
   label,
   accent,
   examplePrompt,
+  trialDays,
 }: {
   provider: Provider;
   label: string;
   accent: string;
   examplePrompt: string;
+  /** Deneme süresi (gün) — sunucudan getOffer() ile gelir */
+  trialDays: number;
 }) {
   const [brand, setBrand] = useState('');
   const [prompt, setPrompt] = useState(examplePrompt);
@@ -140,11 +143,11 @@ export function RankChecker({
             <Sparkles className="w-5 h-5 mx-auto mb-2" style={{ color: accent }} />
             <div className="font-display text-[16px]">Tek soru yetmez — her gün, 3 modelde, otomatik izleyin</div>
             <p className="text-[13px] text-ink-muted mt-1.5 max-w-md mx-auto">
-              Independent AI markanızı ChatGPT, Claude ve Gemini'de günlük takip eder, rakip karşılaştırması ve trend
-              verir. İlk 6 ay ücretsiz.
+              Yanıt markanızı ChatGPT, Claude ve Gemini'de günlük takip eder, rakip karşılaştırması ve trend verir.{' '}
+              {trialDays} gün ücretsiz deneme, kart gerekmez.
             </p>
             <Link href="/register" className="btn-primary inline-flex items-center gap-2 mt-4">
-              Ücretsiz başla <ArrowRight className="w-4 h-4" />
+              {trialDays} gün dene <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

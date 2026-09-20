@@ -15,6 +15,7 @@ import { CaseStudy } from '@/components/landing/case-study';
 import { AiChatDemo } from '@/components/landing/ai-chat-demo';
 import { FeatureBento } from '@/components/landing/feature-bento';
 import { FinalCta } from '@/components/landing/final-cta';
+import { getOffer } from '@/server/offer';
 
 export const metadata = buildMetadata({
   title: 'Müşteriniz yapay zekâya soruyor: sizi mi öneriyor, rakibinizi mi?',
@@ -27,10 +28,11 @@ export const metadata = buildMetadata({
  * Landing tek bir hikâyedir: SORU → CEVAP → GÖRÜNMÜYORSUN → NEDEN → YAPILACAKLAR → UYGULA → ÖLÇ → BÜYÜ.
  * Bölüm sırası ürünün çalışma sırasıdır; her bölümde panelin yalnızca ilgili parçası görünür.
  */
-export default function Landing() {
+export default async function Landing() {
+  const offer = await getOffer();
   return (
     <StoryProvider>
-      <SoftwareApplicationJsonLd />
+      <SoftwareApplicationJsonLd saasMonthlyTry={offer.saasMonthlyTry} trialDays={offer.trialDays} />
       <HeroScan />
       <StoryRail />
       <BuyerQuestions />

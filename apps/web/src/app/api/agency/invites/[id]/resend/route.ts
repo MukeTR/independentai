@@ -18,7 +18,7 @@ export const POST = route('agency.invite_resend', async (req, ctx) => {
   if (emailConfigured() || isTestEnv()) {
     const ok = await sendEmail({
       to: inv.email,
-      subject: `${actor.agency.name} sizi Independent AI ajans ekibine davet etti`,
+      subject: `${actor.agency.name} sizi Yanıt ajans ekibine davet etti`,
       html: `<p><b>${actor.agency.name}</b> ajansına davetiniz yenilendi (7 gün geçerli).</p><p><a href="${link}">Daveti kabul et</a></p>`,
       text: `${actor.agency.name} ajansına davetiniz yenilendi (7 gün geçerli): ${link}`,
       kind: 'agency_invite',

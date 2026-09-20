@@ -303,7 +303,7 @@ function Scanner({
                   href="/register"
                   className="mt-4 text-[12.5px] text-brand-deep hover:text-brand inline-flex items-center gap-1 text-center"
                 >
-                  AI cevapları ve rakipler için ücretsiz hesap{' '}
+                  AI cevapları ve rakipler için ücretsiz deneme hesabı{' '}
                   <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden />
                 </Link>
               )}

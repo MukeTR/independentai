@@ -65,7 +65,7 @@ export default function SolutionsIndex() {
         </Container>
       </section>
       <CtaBlock
-        eyebrow="Lansman · ücretsiz"
+        eyebrow="Önce ücretsiz"
         title={
           <>
             Önce ölç, <span className="text-brand">sonra düzelt.</span>

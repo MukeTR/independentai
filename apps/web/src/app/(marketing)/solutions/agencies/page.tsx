@@ -7,11 +7,13 @@ import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { AgencyPreanalysis } from '@/components/marketing/agency-preanalysis';
 import { buildMetadata } from '@/lib/seo';
 import { computeAgencyEntitlement } from '@/server/entitlement';
+import { getOffer } from '@/server/offer';
+import { formatTry } from '@independentai/shared';
 
 export const metadata = buildMetadata({
   title: 'Ajanslar için AI görünürlük portföyü — çok müşterili panel, roller, paylaşım linkleri',
   description:
-    'Müşterilerinizin ChatGPT, Claude ve Gemini görünürlüğünü tek portföyde izleyin: müşteri başına çalışma alanı, ekip rolleri, salt-okunur rapor linkleri. Lansman döneminde ücretsiz. 3 alan adı için anında ön-analiz.',
+    'Müşterilerinizin ChatGPT, Claude ve Gemini görünürlüğünü tek portföyde izleyin: müşteri başına çalışma alanı, ekip rolleri, salt-okunur rapor linkleri. Ücretsiz deneme, kart gerekmez. 3 alan adı için anında ön-analiz.',
   path: '/solutions/agencies',
 });
 
@@ -37,7 +39,7 @@ const PILLARS = [
   {
     icon: Link2,
     title: 'Mevcut hesabı onaylı bağlama',
-    body: 'Müşteriniz zaten Independent AI kullanıyorsa hesabını devralmazsınız: tek kullanımlık onay linkini hesap sahibi onaylar, veri müşteride kalır, bağlantı istendiği an kesilir.',
+    body: 'Müşteriniz zaten Yanıt kullanıyorsa hesabını devralmazsınız: tek kullanımlık onay linkini hesap sahibi onaylar, veri müşteride kalır, bağlantı istendiği an kesilir.',
   },
   {
     icon: Share2,
@@ -50,12 +52,12 @@ const HONEST = [
   { ok: true, text: 'Portföy, roller, atamalar, davetler, paylaşım linkleri: kodda var ve testli.' },
   {
     ok: true,
-    text: `Lansman planı: ${LAUNCH.limits.seats} koltuk, ${LAUNCH.limits.clients} müşteri, müşteri başına ${LAUNCH.limits.shareLinks} aktif paylaşım linki.`,
+    text: `Başlangıç planı: ${LAUNCH.limits.seats} koltuk, ${LAUNCH.limits.clients} müşteri, müşteri başına ${LAUNCH.limits.shareLinks} aktif paylaşım linki.`,
   },
-  { ok: false, text: 'Beyaz etiket lansmanda YOK: paylaşılan raporlar "Independent AI ile hazırlandı" imzası taşır.' },
+  { ok: false, text: 'Beyaz etiket henüz YOK: paylaşılan raporlar "Yanıt ile hazırlandı" imzası taşır.' },
   {
     ok: false,
-    text: 'Fiyat yok: lansman döneminde ücretsiz. Ücretli ajans planları duyurulmadı; süre sonunda portföy salt-okunur olur, veri silinmez.',
+    text: 'Ajans portföyü Yanıt aboneliğiyle çalışır: ücretsiz deneme, kart gerekmez; süre sonunda portföy salt-okunur olur, veri silinmez. Uygulamayı da isteyen ajanslar için Yanıt Agency ortaklığı teklifle.',
   },
   { ok: false, text: 'Aylık PDF rapor ve webhook yol haritasında; şu an yok.' },
 ];
@@ -73,7 +75,8 @@ const MATRIX: { cap: string; v: [boolean, boolean, boolean, boolean] }[] = [
   { cap: 'Müşteri hesabını silme / sahipliğini devretme', v: [false, false, false, false] },
 ];
 
-export default function AgenciesSolutionPage() {
+export default async function AgenciesSolutionPage() {
+  const offer = await getOffer();
   return (
     <>
       <BreadcrumbJsonLd
@@ -95,7 +98,7 @@ export default function AgenciesSolutionPage() {
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
             "Neden ChatGPT bizi önermiyor?" sorusuna veriyle cevap verin. Müşteri başına çalışma alanı, ekip rolleri,
-            onaylı hesap bağlama ve salt-okunur rapor linkleri — lansman döneminde ücretsiz.
+            onaylı hesap bağlama ve salt-okunur rapor linkleri — ücretsiz deneme, kart gerekmez.
           </p>
           <div className="mt-9 flex items-center gap-3 flex-wrap">
             <Link href="/register" className="btn-primary inline-flex items-center gap-2">
@@ -188,13 +191,13 @@ export default function AgenciesSolutionPage() {
       </Section>
 
       <CtaBlock
-        eyebrow="Ajanslar için lansman"
+        eyebrow="Ajanslar için"
         title={
           <>
-            Portföyünüzü bugün kurun; <span className="text-brand">lansman döneminde ücretsiz.</span>
+            Portföyünüzü bugün kurun; <span className="text-brand">{offer.trialDays} gün ücretsiz deneyin.</span>
           </>
         }
-        body={`Kayıt olun, kurulumda "Ajans olarak müşterilerim için" seçin, ilk müşterinizi açın. ${LAUNCH.limits.seats} koltuk ve ${LAUNCH.limits.clients} müşteriye kadar; fiyatlar duyurulduğunda haber veririz.`}
+        body={`Kayıt olun, kurulumda "Ajans olarak müşterilerim için" seçin, ilk müşterinizi açın. ${LAUNCH.limits.seats} koltuk ve ${LAUNCH.limits.clients} müşteriye kadar; kart gerekmez. Uygulamayı Yanıt Agency'ye bırakmak isterseniz ${formatTry(offer.agencyFromMonthlyTry)}/ay'dan başlayan sprintler için bize yazın.`}
         primaryLabel="Ajans hesabı aç"
         secondaryHref="/use-cases#agency"
         secondaryLabel="Ajans senaryosunu oku"

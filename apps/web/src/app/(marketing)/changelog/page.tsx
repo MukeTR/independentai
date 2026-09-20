@@ -8,11 +8,34 @@ import { CAPABILITIES } from '@independentai/shared';
 
 export const metadata = buildMetadata({
   title: 'Sürüm Notları — Yeniliklerden haberdar olun',
-  description: "Independent AI'a eklenen yeni özellikler, iyileştirmeler ve düzeltmeler.",
+  description: "Yanıt'a eklenen yeni özellikler, iyileştirmeler ve düzeltmeler.",
   path: '/changelog',
 });
 
 const RELEASES = [
+  {
+    version: 'v0.3.0',
+    date: '2026-09-20',
+    label: 'Yanıt',
+    sections: [
+      {
+        type: 'NEW' as const,
+        items: [
+          'Yeni teklif: şok raporu ve tüm ücretsiz araçlar hesap gerektirmez; Yanıt aylık abonelik, 14 gün ücretsiz deneme, kart gerekmez; Yanıt Agency aylık sprint, teklifle',
+          'Fiyat ve deneme süresi tek kaynaktan yönetilir (süper admin › Sistem › Teklif ve fiyat)',
+          'Yanıt landing: tek hikâyeli anlatım (Analiz → Düzelt → Ölç), sektör ve marka görselleri',
+        ],
+      },
+      {
+        type: 'IMPROVE' as const,
+        items: [
+          '"6 ay ücretsiz" lansman teklifi kaldırıldı; kayıt her zaman açık',
+          'Marka geçişi: pazarlama sayfaları, paylaşılan rapor imzası, e-postalar ve blog yazarı "Yanıt" oldu (alan adı independentai.space)',
+          'llms.txt yeni ürün anlatımıyla yeniden yazıldı',
+        ],
+      },
+    ],
+  },
   {
     version: 'v0.2.0',
     date: '2026-09-06',
@@ -58,7 +81,7 @@ const RELEASES = [
       },
       {
         type: 'PROMO' as const,
-        items: ['Lansmanda kayıt olan tüm kullanıcılara 6 ay tamamen ücretsiz erişim'],
+        items: ['Lansman dönemine özel ücretsiz erişim (sona erdi; güncel teklif için /pricing)'],
       },
     ],
   },
@@ -66,11 +89,11 @@ const RELEASES = [
 
 /** Yol haritası — tek kaynak: CAPABILITIES (status === 'roadmap'). Tarih sözü vermiyoruz. */
 const ROADMAP_NOTES: Record<string, string> = {
-  multi_brand: 'Tek hesapta birden fazla kendi markası. Lansmanda hesap başına 1 marka.',
+  multi_brand: 'Tek hesapta birden fazla kendi markası. Şu an hesap başına 1 marka.',
   webhooks: 'Olay tabanlı bildirimler (düşüş, cron tamamlandı). Şimdilik veriyi Public API ile çekin.',
   pdf_report: 'Otomatik müşteri/yönetim raporu üretimi.',
   perplexity: "Arama odaklı LLM'leri de izleme listesine ekliyoruz.",
-  billing: 'Ücretli planlar ve ödeme; fiyatlar duyurulmadı.',
+  billing: 'Kart ile self-servis ödeme; abonelik şimdilik ekiple başlatılır.',
 };
 const ROADMAP = CAPABILITIES.filter((c) => c.status === 'roadmap').map((c) => ({
   eta: 'planlanıyor',
@@ -102,7 +125,7 @@ export default function Changelog() {
             Her yeni özellik <span className="text-brand">burada.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Independent AI hızlı evriliyor. Yeni özellikler, iyileştirmeler ve düzeltmeler için takipte kalın.
+            Yanıt hızlı evriliyor. Yeni özellikler, iyileştirmeler ve düzeltmeler için takipte kalın.
           </p>
         </Container>
       </section>

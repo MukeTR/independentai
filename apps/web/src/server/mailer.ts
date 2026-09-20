@@ -108,7 +108,7 @@ export async function sendEmail(opts: {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM || 'Independent AI <bildirim@independentai.space>',
+        from: process.env.EMAIL_FROM || 'Yanıt <bildirim@independentai.space>',
         to: opts.to,
         subject: opts.subject,
         html: opts.html,
@@ -224,7 +224,7 @@ export async function sendSlack(
 function layout(title: string, bodyHtml: string, cta?: { label: string; href: string }): string {
   return `
   <div style="font-family:-apple-system,Segoe UI,sans-serif;max-width:520px;margin:0 auto;color:#14110D;line-height:1.6">
-    <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9A968B;margin-bottom:8px">Independent AI</div>
+    <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9A968B;margin-bottom:8px">Yanıt</div>
     <h2 style="font-size:20px;margin:0 0 12px">${title}</h2>
     <div style="font-size:14px;color:#444">${bodyHtml}</div>
     ${cta ? `<p style="margin-top:20px"><a href="${cta.href}" style="display:inline-block;background:#4F46E5;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px">${cta.label}</a></p>` : ''}
@@ -235,7 +235,7 @@ function layout(title: string, bodyHtml: string, cta?: { label: string; href: st
 export const templates = {
   passwordReset(link: string) {
     return {
-      subject: 'Şifre sıfırlama — Independent AI',
+      subject: 'Şifre sıfırlama — Yanıt',
       html: layout('Şifrenizi sıfırlayın', `<p>Aşağıdaki bağlantı 1 saat boyunca geçerlidir.</p>`, {
         label: 'Şifremi sıfırla',
         href: link,
@@ -245,7 +245,7 @@ export const templates = {
   },
   emailVerify(link: string) {
     return {
-      subject: 'E-posta adresinizi doğrulayın — Independent AI',
+      subject: 'E-posta adresinizi doğrulayın — Yanıt',
       html: layout('E-posta doğrulama', `<p>Hesabınızı doğrulamak için bağlantıya tıklayın (24 saat geçerli).</p>`, {
         label: 'E-postamı doğrula',
         href: link,
@@ -255,7 +255,7 @@ export const templates = {
   },
   invite(tenantName: string, role: string, link: string) {
     return {
-      subject: `${tenantName} sizi Independent AI'a davet etti`,
+      subject: `${tenantName} sizi Yanıt'a davet etti`,
       html: layout(
         `${tenantName} ekibine davet`,
         `<p><b>${tenantName}</b> hesabına <b>${role}</b> rolüyle davet edildiniz. Davet 7 gün geçerlidir.</p>`,

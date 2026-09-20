@@ -6,8 +6,7 @@ import { Mail, MessagesSquare, Newspaper, Briefcase } from 'lucide-react';
 
 export const metadata = buildMetadata({
   title: 'İletişim — Bize yazın',
-  description:
-    'Satış görüşmesi, destek, basın talepleri veya ortaklık önerileri. Independent AI ekibi 24 saat içinde döner.',
+  description: 'Satış görüşmesi, destek, basın talepleri veya ortaklık önerileri. Yanıt ekibi 24 saat içinde döner.',
   path: '/contact',
 });
 
@@ -83,9 +82,9 @@ export default function Contact() {
       <Section eyebrow="Adres" title="Türkiye merkezliyiz." className="bg-paper-2/40">
         <div className="card p-7 max-w-2xl">
           <div className="text-[14px] text-ink leading-relaxed">
-            Independent AI
+            Yanıt (Independent AI)
             <br />
-            (Şirket bilgileri lansman sonrası KVKK aydınlatma metninde yayınlanacak)
+            (Şirket bilgileri KVKK aydınlatma metninde yayınlanacak)
             <br />
             <span className="text-ink-muted">Türkiye</span>
           </div>

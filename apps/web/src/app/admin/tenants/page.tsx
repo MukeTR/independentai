@@ -9,7 +9,7 @@ export default async function AdminTenants() {
     <div className="max-w-6xl">
       <div className="eyebrow">Super Admin</div>
       <h1 className="font-display text-[36px] tracking-tight mt-2">Tenants</h1>
-      <p className="text-[14px] text-ink-muted mt-2">{tenants.length} tenant, hepsi lansman sürümünde.</p>
+      <p className="text-[14px] text-ink-muted mt-2">{tenants.length} tenant.</p>
 
       <div className="card mt-8 overflow-hidden">
         <table className="w-full text-[13px]">

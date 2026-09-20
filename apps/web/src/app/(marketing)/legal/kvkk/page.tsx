@@ -17,14 +17,14 @@ export default function Kvkk() {
 
         <div className="space-y-8 text-[15px] leading-[1.7] text-ink">
           <p className="text-ink-muted">
-            6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, veri sorumlusu sıfatıyla Independent AI
-            tarafından aşağıdaki açıklamalar yapılmaktadır.
+            6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, veri sorumlusu sıfatıyla Yanıt
+            (Independent AI) tarafından aşağıdaki açıklamalar yapılmaktadır.
           </p>
 
           {[
             {
               h: 'Veri sorumlusu',
-              c: 'Independent AI — independentai.space. Şirket bilgileri lansman sonrası tamamlanacaktır.',
+              c: 'Yanıt (Independent AI) — independentai.space. Şirket bilgileri (unvan, adres, MERSİS) güncellenecektir.',
             },
             {
               h: 'İşlenen kişisel veriler',
@@ -32,7 +32,7 @@ export default function Kvkk() {
             },
             {
               h: 'AI Discovery Sensor verisi',
-              c: "Müşterimiz kendi sitesine ölçüm script'ini eklerse, o sitenin ziyaretçilerine ait çerezsiz ve kişisel veri içermeyen olay özetleri işlenir: sayfa yolu (query string olmadan), yönlendiren sitenin alan adı, olay tipi, site sahibinin tanımladığı hedef/varlık etiketi ve zaman. Çerez, kalıcı ziyaretçi kimliği, parmak izi, form/sayfa metni ve kalıcı IP saklanmaz; ham IP yalnızca isteğin doğrulanması sırasında anlık kullanılır. Ham kayıtlar site sahibinin belirlediği sürede (varsayılan 90 gün) silinir. Bu veride veri sorumlusu, script'i ekleyen müşteridir; Independent AI veri işleyen sıfatıyla hareket eder.",
+              c: "Müşterimiz kendi sitesine ölçüm script'ini eklerse, o sitenin ziyaretçilerine ait çerezsiz ve kişisel veri içermeyen olay özetleri işlenir: sayfa yolu (query string olmadan), yönlendiren sitenin alan adı, olay tipi, site sahibinin tanımladığı hedef/varlık etiketi ve zaman. Çerez, kalıcı ziyaretçi kimliği, parmak izi, form/sayfa metni ve kalıcı IP saklanmaz; ham IP yalnızca isteğin doğrulanması sırasında anlık kullanılır. Ham kayıtlar site sahibinin belirlediği sürede (varsayılan 90 gün) silinir. Bu veride veri sorumlusu, script'i ekleyen müşteridir; Yanıt (Independent AI) veri işleyen sıfatıyla hareket eder.",
             },
             {
               h: 'İşleme amaçları',

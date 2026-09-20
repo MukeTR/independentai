@@ -4,7 +4,7 @@ import { prisma } from '@/server/prisma';
 import { AuthCentered } from '@/components/auth/auth-centered';
 import { OnboardingForm } from './onboarding-form';
 
-export const metadata = { title: 'Kurulum — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'Kurulum — Yanıt', robots: { index: false, follow: false } };
 
 /**
  * Sunucu tarafı guard: giriş yoksa /login; ajans üyesi → /agency; onboarding tamamlandıysa /dashboard;

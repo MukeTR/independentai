@@ -173,15 +173,15 @@ export default function Geo101() {
             <p>
               (1) Türkçe içerik AI modellerinde İngilizceye göre biraz daha hatalı yorumlanıyor — özellikle ek yapıları.
               Açık, net cümleler ve doğru özel ad yazımı önemli. (2) TR\'deki markaların çoğu yurt dışı GEO araçlarında
-              yok — yerel araç (Independent AI) kullanmak avantajlı. (3) TR pazarında rakip tanıma kültürü düşük — bu
-              sizin için fırsat.
+              yok — yerel araç (Yanıt) kullanmak avantajlı. (3) TR pazarında rakip tanıma kültürü düşük — bu sizin için
+              fırsat.
             </p>
           </Chapter>
 
           <Chapter id="tools" n="08" t="Hangi araçları kullanmalısınız?">
             <p>
-              (1) Bir GEO ölçüm aracı (Independent AI — TR\'ye özel) (2) Geleneksel SEO aracı (Google Search Console + 1
-              paid: Ahrefs/SEMrush) (3) Content analytics (kendi web sitenizde — Google Analytics yeterli)
+              (1) Bir GEO ölçüm aracı (Yanıt — TR\'ye özel) (2) Geleneksel SEO aracı (Google Search Console + 1 paid:
+              Ahrefs/SEMrush) (3) Content analytics (kendi web sitenizde — Google Analytics yeterli)
             </p>
           </Chapter>
 
@@ -227,7 +227,7 @@ export default function Geo101() {
 
           <Chapter id="roadmap" n="11" t="90 günlük başlangıç planı">
             <p>
-              <strong>Gün 1-7:</strong> Independent AI hesabı aç. 5-10 izlenebilir soru tanımla. İlk panelini ölç.
+              <strong>Gün 1-7:</strong> Yanıt hesabı aç. 5-10 izlenebilir soru tanımla. İlk panelini ölç.
             </p>
             <p>
               <strong>Gün 8-30:</strong> Rakiplerini düzgün tanımla. llms.txt ekle. AI modellerinin sevdiği içerik

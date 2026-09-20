@@ -23,7 +23,7 @@ export type KnownBot = (typeof KNOWN_BOTS)[number];
 export function buildRobotsSnippet(selected: readonly string[], sitemapUrl?: string | null): string {
   const bots = KNOWN_BOTS.filter((b) => selected.includes(b));
   if (bots.length === 0) return '';
-  const lines: string[] = ['# Independent AI — AI crawler izinleri (mevcut robots.txt dosyanızın sonuna ekleyin)'];
+  const lines: string[] = ['# Yanıt — AI crawler izinleri (mevcut robots.txt dosyanızın sonuna ekleyin)'];
   for (const b of bots) {
     lines.push(`User-agent: ${b}`);
     lines.push('Allow: /');

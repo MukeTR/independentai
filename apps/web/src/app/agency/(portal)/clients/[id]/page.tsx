@@ -6,7 +6,7 @@ import { prisma } from '@/server/prisma';
 import { listClientCards } from '@/server/agency';
 import { ClientDetail, type AssignedMember } from '@/components/agency/client-detail';
 
-export const metadata = { title: 'Müşteri detayı — Independent AI' };
+export const metadata = { title: 'Müşteri detayı — Yanıt' };
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

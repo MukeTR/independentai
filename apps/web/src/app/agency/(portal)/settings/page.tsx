@@ -3,7 +3,7 @@ import { requirePageActor, hasAgencyRole } from '@/server/authz';
 import { getAgencySummary } from '@/server/agency';
 import { AgencySettingsForm } from '@/components/agency/agency-settings-form';
 
-export const metadata = { title: 'Ajans ayarları — Independent AI' };
+export const metadata = { title: 'Ajans ayarları — Yanıt' };
 
 export default async function AgencySettingsPage() {
   const actor = await requirePageActor();
@@ -42,17 +42,17 @@ export default async function AgencySettingsPage() {
           Limitler ve kullanım
         </h2>
         <p className="text-[14px] text-ink-muted mt-2">
-          Lansman döneminde ajans hesabı ücretsizdir; fiyatlar henüz açıklanmadı. Süre sonunda portföy salt-okunur olur,
+          Ajans hesabı ücretsiz deneme ile başlar; fiyatlar /pricing sayfasında. Süre sonunda portföy salt-okunur olur,
           veri silinmez.
         </p>
         <div className="card mt-5 divide-y divide-hairline text-[13.5px]">
-          <Row k="Plan" v={ent.plan === 'LAUNCH' ? 'Lansman (ücretsiz)' : ent.plan} />
+          <Row k="Plan" v={ent.plan === 'LAUNCH' ? 'Başlangıç (deneme)' : ent.plan} />
           <Row k="Koltuk" v={`${ent.usage.seats} / ${ent.limits.seats}`} />
           <Row k="Müşteri çalışma alanı" v={`${ent.usage.clients} / ${ent.limits.clients}`} />
           <Row k="Paylaşım linki (müşteri başına aktif)" v={`${ent.limits.shareLinks}`} />
           <Row
             k="Beyaz etiket"
-            v={ent.whiteLabel ? 'Var' : 'Lansmanda yok — raporlar "Independent AI ile hazırlandı" imzası taşır'}
+            v={ent.whiteLabel ? 'Var' : 'Henüz yok — raporlar "Yanıt ile hazırlandı" imzası taşır'}
           />
           <Row k="Durum" v={ent.active ? 'Aktif' : 'Salt-okunur (deneme süresi doldu)'} />
         </div>

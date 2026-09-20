@@ -1,121 +1,130 @@
 import Link from 'next/link';
-import { Check, X, ArrowRight, Sparkles } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, Gift, Users } from 'lucide-react';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { Faq } from '@/components/marketing/faq';
 import { FaqJsonLd, BreadcrumbJsonLd } from '@/components/json-ld';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { buildMetadata } from '@/lib/seo';
-import { LAUNCH_OFFER } from '@independentai/shared';
-
-const FAIR = LAUNCH_OFFER.fairUse;
+import { formatTry } from '@independentai/shared';
+import { getOffer } from '@/server/offer';
+import { computeEntitlement } from '@/server/entitlement';
+import { ECOMMERCE_TOOL_LINKS, RANK_CHECKER_LINKS } from '@/components/nav-data';
+import { DASHBOARD_TOOLS } from '@/app/dashboard/tools/tools-data';
 
 export const metadata = buildMetadata({
-  title: 'Fiyatlandırma — İlk 6 ay ücretsiz',
+  title: 'Fiyatlandırma — Ücretsiz rapor, aylık abonelik, ajans sprinti',
   description:
-    'Lansman fırsatı: 2026-05-22 itibarıyla kayıt olan herkese ilk 6 ay tüm özellikler tamamen ücretsiz. Kredi kartı gerekmez.',
+    'Şok raporu ve tüm araçlar ücretsiz, hesap gerekmez. Yanıt aylık abonelik, ücretsiz deneme, kart gerekmez, istediğiniz zaman iptal. Yanıt Agency aylık sprint, teklifle.',
   path: '/pricing',
 });
 
-const PLANS = [
-  {
-    name: 'Launch',
-    price: '₺0',
-    period: '6 ay',
-    description: 'Lansman fırsatı — bugün kayıt olanların tamamına 6 ay boyunca her şey dahil.',
-    cta: { label: '6 ay ücretsiz başla', href: '/register' },
-    highlight: true,
-    features: [
-      { v: true, label: '3 model paralel (ChatGPT, Claude, Gemini)' },
-      { v: true, label: `${FAIR.prompts} izlenebilir soru (adil kullanım)` },
-      { v: true, label: `${FAIR.competitors} rakip takibi (adil kullanım)` },
-      { v: true, label: 'Her gün otomatik rerun' },
-      { v: true, label: 'Anında manuel "şimdi çalıştır"' },
-      { v: true, label: '30 günlük trend grafikleri' },
-      { v: true, label: 'Share of Voice rakip dağılımı' },
-      { v: true, label: 'Marka mention highlight' },
-      { v: true, label: 'E-posta + Slack uyarıları, haftalık rapor' },
-      { v: true, label: `Public API (${FAIR.apiTokens} token, 60 istek/dk)` },
-      { v: true, label: '13 GEO aracı' },
-      { v: true, label: `${FAIR.members} ekip üyesi (Owner / Admin / Viewer)` },
-    ],
-  },
-  {
-    name: 'Starter',
-    price: 'Duyurulacak',
-    period: 'ay (6 ay sonra) — fiyat açıklanmadı',
-    description:
-      'Bireysel kullanıcılar ve küçük ekipler için taslak kapsam. 6 ay lansman bittikten sonra; fiyat henüz belirlenmedi.',
-    cta: { label: 'Plan açıklanınca haber al', href: '/contact' },
-    features: [
-      { v: true, label: '3 model paralel' },
-      { v: true, label: '50 izlenebilir soru' },
-      { v: true, label: '10 rakip takibi' },
-      { v: true, label: 'Günlük rerun' },
-      { v: true, label: '30 günlük trend' },
-      { v: false, label: 'API erişimi' },
-      { v: false, label: 'Öncelikli destek' },
-      { v: true, label: '3 kullanıcı' },
-    ],
-  },
-  {
-    name: 'Growth',
-    price: 'Duyurulacak',
-    period: 'ay (6 ay sonra) — fiyat açıklanmadı',
-    description: 'Ajans ve kurumsal pazarlama ekipleri için taslak kapsam. Fiyat henüz belirlenmedi.',
-    cta: { label: 'Plan açıklanınca haber al', href: '/contact' },
-    features: [
-      { v: true, label: '3 model paralel' },
-      { v: true, label: 'Daha yüksek soru limiti' },
-      { v: true, label: 'Daha yüksek rakip limiti' },
-      { v: true, label: 'Çoklu marka (planlanıyor)' },
-      { v: true, label: 'Günlük rerun' },
-      { v: true, label: '90 günlük trend' },
-      { v: true, label: 'API erişimi (webhooks planlanıyor)' },
-      { v: true, label: 'Öncelikli destek' },
-      { v: true, label: 'Genişletilmiş ekip' },
-    ],
-  },
-];
+// Tek kaynak: entitlement.ts LAUNCH limitleri (pazarlama metni koddan sapmasın).
+const LIMITS = computeEntitlement({ plan: 'LAUNCH', trialEndsAt: new Date() }).limits;
+const PUBLIC_TOOL_COUNT = ECOMMERCE_TOOL_LINKS.length + RANK_CHECKER_LINKS.length;
+const PANEL_TOOL_COUNT = DASHBOARD_TOOLS.length;
 
-const PRICING_FAQS = [
-  {
-    question: '"6 ay ücretsiz" gerçekten ücretsiz mi?',
-    answer:
-      'Evet. Kayıt olurken kredi kartı bilgisi istemiyoruz. 6 ay sonunda sizi ücretlendiremeyiz; sadece "devam etmek ister misiniz?" mesajı gönderiyoruz. İstemezseniz hesap salt-okunur moda geçer, verileriniz silinmez.',
-  },
-  {
-    question: 'Deneme süresi bitince ne olur?',
-    answer:
-      'Hesap salt-okunur moda geçer: mevcut veriler, trendler ve raporlar görüntülenmeye devam eder; yeni sorgu, rerun ve düzenleme kapanır. Verileriniz silinmez. 7 gün ek süre tanınır. Ücretli plan duyurulduğunda devam etme seçeneği sunulur — fiyatlar henüz açıklanmadı.',
-  },
-  {
-    question: '6 ay sonra fiyatlar ne olacak?',
-    answer:
-      'Henüz nihai fiyatları açıklamadık çünkü gerçek kullanım verisi toplayıp adil bir fiyat belirleyeceğiz. Lansman kullanıcıları için bir erken kullanıcı avantajı değerlendiriyoruz; oran ve kapsam henüz belirlenmedi.',
-  },
-  {
-    question: 'AI provider maliyetlerini siz mi karşılıyorsunuz?',
-    answer:
-      'Lansmanda evet — kendi OpenAI, Anthropic, Google API maliyetlerimizi yansıtmıyoruz. 6 ay sonrası planlarda AI maliyetleri abonelik fiyatına dahil olacak; "kendi key\'inizi kullanın" opsiyonu da sunmayı planlıyoruz.',
-  },
-  {
-    question: 'Yıllık abonelik indirimi var mı?',
-    answer:
-      'Lansmanda fiyat yok, yıllık da yok. 6 ay sonrası planlarda yıllık ödeme indirimi değerlendiriyoruz; oran duyurulmadı.',
-  },
-  {
-    question: 'Plan değiştirebilir miyim, sınır aşarsam ne olur?',
-    answer: `Lansmanda adil kullanım sınırları var (${FAIR.prompts} soru, ${FAIR.competitors} rakip, ${FAIR.members} ekip üyesi, günde ${FAIR.manualRunsPerDay} manuel çalıştırma); sınıra yaklaşınca panel uyarır. 6 ay sonrası planlarda kademeli olarak uyarı + üst plana yumuşak geçiş tasarlıyoruz. Sürpriz fatura yok.`,
-  },
-  {
-    question: 'İndirim/öğrenci/non-profit indirimi var mı?',
-    answer:
-      'Öğrenci, erken aşama startup ve non-profit organizasyonlar için indirim değerlendiriyoruz; oran ve koşullar ücretli planlarla birlikte duyurulacak.',
-  },
-];
+export default async function PricingPage() {
+  const offer = await getOffer();
+  const saas = formatTry(offer.saasMonthlyTry);
+  const agency = formatTry(offer.agencyFromMonthlyTry);
 
-export default function PricingPage() {
+  const PLANS = [
+    {
+      name: 'Ücretsiz',
+      icon: Gift,
+      price: '₺0',
+      period: 'hesap gerekmez',
+      description: 'Nerede olduğunuzu görün: alan adınızı girin, şok raporu ve ücretsiz araçlar anında çalışsın.',
+      cta: { label: 'Sitemi analiz et', href: '/' },
+      secondary: { label: 'Ücretsiz araçlar', href: '/arac/e-ticaret-ai-gorunurluk-testi' },
+      highlight: false,
+      features: [
+        'Şok raporu: alan adınız için 0-100 AI görünürlük skoru ve bulgular',
+        `${PUBLIC_TOOL_COUNT} ücretsiz araç: e-ticaret AI testi, ürün sayfası testi, AI crawler testi, rank checker'lar`,
+        'Kayıt yok, e-posta duvarı yok, kart yok',
+        'Sonuç bağlantısı paylaşılabilir',
+      ],
+    },
+    {
+      name: 'Yanıt',
+      icon: Sparkles,
+      price: saas,
+      period: 'ay · aylık, istediğiniz zaman iptal',
+      description: `Biz bulalım, siz uygulayın. ${offer.trialDays} gün ücretsiz deneme; kart gerekmez, deneme sonunda otomatik ücretlendirme yapılmaz.`,
+      cta: { label: `${offer.trialDays} gün ücretsiz dene`, href: '/register' },
+      highlight: true,
+      features: [
+        'ChatGPT, Claude ve Gemini’de her gün otomatik ölçüm',
+        `${LIMITS.prompts} izlenebilir soru · ${LIMITS.competitors} rakip (adil kullanım)`,
+        'Görünürlük skoru, Share of Voice, 30 günlük trend',
+        'Neden görünmediğinizi gösteren bulgular ve yapılacaklar listesi',
+        `Panelde ${PANEL_TOOL_COUNT} GEO aracı (denetim, keşif, üretici, e-ticaret)`,
+        `Mağaza bağlantısı: ${LIMITS.storeConnections} mağaza, ${LIMITS.catalogProducts.toLocaleString('tr-TR')} ürün (beta)`,
+        'E-posta + Slack uyarıları, haftalık rapor, paylaşılabilir rapor linki',
+        `${LIMITS.members} ekip üyesi · Public API (${LIMITS.apiTokens} token, 60 istek/dk)`,
+      ],
+    },
+    {
+      name: 'Yanıt Agency',
+      icon: Users,
+      price: `${agency}’den`,
+      period: 'ay · aylık sprint, teklifle',
+      description:
+        'Biz bulalım, biz uygulayalım. Yanıt’taki yapılacaklar listesini ekibimiz uygular; ilerlemeyi aynı panelden izlersiniz.',
+      cta: { label: 'Ekiple görüş', href: '/contact#sales' },
+      highlight: false,
+      features: [
+        'Yanıt aboneliği dahil: ölçüm, bulgular, panel',
+        'Teknik düzeltmeler: şema, robots/llms.txt, sayfa yapısı',
+        'İçerik üretimi ve GEO/SEO uygulaması',
+        'Dijital PR, atıf ve entity çalışması',
+        'Aylık sprint planı ve ilerleme raporu',
+        'Kapsam ve fiyat teklifle netleşir',
+      ],
+    },
+  ];
+
+  const PRICING_FAQS = [
+    {
+      question: 'Gerçekten ücretsiz olan ne?',
+      answer: `Şok raporu (ana sayfadaki analiz) ve tüm /arac araçları ücretsizdir; hesap açmanız, e-posta bırakmanız veya kart girmeniz gerekmez. Sürekli izleme, rakip karşılaştırması ve yapılacaklar listesi Yanıt aboneliğindedir; ${offer.trialDays} gün ücretsiz denersiniz.`,
+    },
+    {
+      question: `${offer.trialDays} günlük deneme nasıl işler, kart gerekir mi?`,
+      answer:
+        'Kart gerekmez. Kayıt anında deneme başlar, tüm Yanıt özellikleri açıktır. Süre sonunda otomatik ücretlendirme yapılmaz; devam etmek isterseniz aboneliği başlatırsınız, istemezseniz hesap salt-okunur moda geçer ve verileriniz silinmez (7 gün ek süre tanınır).',
+    },
+    {
+      question: 'Aboneliği ne zaman iptal edebilirim?',
+      answer:
+        'İstediğiniz zaman. Yanıt aylık faturalanır, taahhüt yoktur. İptal ettiğiniz dönemin sonuna kadar erişiminiz sürer; sonrasında hesap salt-okunur olur, ölçüm geçmişiniz görüntülenmeye devam eder.',
+    },
+    {
+      question: 'Yanıt Agency fiyatı neden “-den başlayan”?',
+      answer: `Ajans hizmeti sitenizin büyüklüğüne, bulgu sayısına ve sprint kapsamına göre planlanır. ${agency}/ay başlangıç fiyatıdır; ön analizden sonra net teklif alırsınız. Yanıt aboneliği hizmete dahildir.`,
+    },
+    {
+      question: 'AI sağlayıcı maliyetleri fiyata dahil mi?',
+      answer:
+        'Evet. ChatGPT, Claude ve Gemini sorgu maliyetleri Yanıt aboneliğine dahildir; ayrıca API anahtarı almanız gerekmez. “Kendi anahtarınızı kullanın” seçeneğini değerlendiriyoruz; henüz yok.',
+    },
+    {
+      question: 'Adil kullanım sınırını aşarsam ne olur?',
+      answer: `Yanıt planında ${LIMITS.prompts} soru, ${LIMITS.competitors} rakip, ${LIMITS.members} ekip üyesi ve günde ${LIMITS.manualRunsPerDay} manuel çalıştırma sınırı vardır; sınıra yaklaşınca panel uyarır, sürpriz fatura yoktur. Daha yüksek limit için bize yazın.`,
+    },
+    {
+      question: 'Yıllık ödeme, öğrenci veya non-profit indirimi var mı?',
+      answer:
+        'Şu an yalnızca aylık abonelik var. Yıllık ödeme indirimi ile öğrenci, erken aşama startup ve non-profit indirimlerini değerlendiriyoruz; oran ve koşullar duyurulmadı.',
+    },
+    {
+      question: 'Ödemeyi nasıl yapıyorum?',
+      answer:
+        'Online kart ödemesi henüz açılmadı; deneme sonunda devam etmek istediğinizde ekibimiz sizinle aboneliği başlatır ve fatura keser. Kart ile self-servis ödeme yol haritamızda.',
+    },
+  ];
+
   return (
     <>
       <FaqJsonLd items={PRICING_FAQS} />
@@ -129,17 +138,17 @@ export default function PricingPage() {
       <section className="pt-24 pb-12">
         <Container className="text-center">
           <div className="inline-flex items-center gap-2 chip mx-auto">
-            <Sparkles className="w-3 h-3 text-brand" />
-            <span className="font-mono tracking-eyebrow">Lansman · 6 ay ücretsiz</span>
+            <Sparkles className="w-3 h-3 text-brand" aria-hidden />
+            <span className="font-mono tracking-eyebrow">Rapor ücretsiz · {offer.trialDays} gün deneme · kart yok</span>
           </div>
           <h1 className="font-display text-[52px] lg:text-[68px] tracking-tight mt-6 leading-[1.02]">
             Sade fiyatlandırma.
             <br />
-            <span className="text-brand">Önce ücretsiz, sonrası adil.</span>
+            <span className="text-brand">Önce ücretsiz görün, sonra karar verin.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-6 max-w-2xl mx-auto leading-relaxed">
-            Lansman sürümümüzdesiniz. Bugün kayıt olan herkese 6 ay boyunca tüm özellikleri adil kullanım sınırları
-            içinde sunuyoruz — kredi kartı bilgisi olmadan. Karşılığında bizden tek beklediğimiz: gerçek geri bildirim.
+            Nerede olduğunuzu görmek ücretsiz. Sürekli ölçüm ve yapılacaklar için Yanıt’ı {offer.trialDays} gün deneyin;
+            uygulamayı da bize bırakmak isterseniz Yanıt Agency aylık sprintle çalışır.
           </p>
         </Container>
       </section>
@@ -154,12 +163,15 @@ export default function PricingPage() {
               >
                 {p.highlight && (
                   <div className="chip own !text-[10px] mb-4 self-start">
-                    <Sparkles className="w-3 h-3" /> şu an aktif
+                    <Sparkles className="w-3 h-3" aria-hidden /> en çok tercih edilen
                   </div>
                 )}
-                <div className="eyebrow">{p.name}</div>
+                <div className="flex items-center gap-2">
+                  <p.icon className="w-4 h-4 text-brand" aria-hidden />
+                  <div className="eyebrow">{p.name}</div>
+                </div>
                 <div
-                  className={`font-display tracking-tight mt-2 tabular ${p.highlight ? 'text-[48px]' : 'text-[30px] leading-[1.6]'}`}
+                  className={`font-display tracking-tight mt-2 tabular ${p.highlight ? 'text-[48px]' : 'text-[40px]'}`}
                 >
                   {p.price}
                 </div>
@@ -167,14 +179,10 @@ export default function PricingPage() {
                 <p className="text-[13.5px] text-ink-muted mt-4 leading-relaxed">{p.description}</p>
 
                 <ul className="space-y-2.5 mt-6 flex-1">
-                  {p.features.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[13px]">
-                      {f.v ? (
-                        <Check className="w-3.5 h-3.5 mt-1 text-brand shrink-0" />
-                      ) : (
-                        <X className="w-3.5 h-3.5 mt-1 text-ink-faint shrink-0" />
-                      )}
-                      <span className={f.v ? 'text-ink' : 'text-ink-faint line-through'}>{f.label}</span>
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-[13px]">
+                      <Check className="w-3.5 h-3.5 mt-1 text-brand shrink-0" aria-hidden />
+                      <span className="text-ink">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -183,14 +191,22 @@ export default function PricingPage() {
                   href={p.cta.href}
                   className={`mt-7 ${p.highlight ? 'btn-primary' : 'btn-secondary'} w-full inline-flex items-center justify-center gap-2 text-[14px]`}
                 >
-                  {p.cta.label} <ArrowRight className="w-4 h-4" />
+                  {p.cta.label} <ArrowRight className="w-4 h-4" aria-hidden />
                 </Link>
+                {'secondary' in p && p.secondary && (
+                  <Link
+                    href={p.secondary.href}
+                    className="mt-3 text-center text-[12.5px] text-brand-deep hover:text-brand"
+                  >
+                    {p.secondary.label} →
+                  </Link>
+                )}
               </div>
             ))}
           </div>
 
           <p className="text-center text-[12px] text-ink-faint mt-10 font-mono">
-            // Ücretli planlar duyurulduğunda fiyatlar KDV dahil gösterilecek
+            // Fiyatlar ₺ cinsindendir; deneme sonunda otomatik ücretlendirme yapılmaz
           </p>
         </Container>
       </section>
@@ -200,13 +216,17 @@ export default function PricingPage() {
       </Section>
 
       <CtaBlock
-        eyebrow="6 ay boyunca her şey ücretsiz"
+        eyebrow="Önce ücretsiz"
         title={
           <>
-            Bugün başla, <span className="text-brand">karar 6 ay sonra.</span>
+            Bugün raporunuzu alın, <span className="text-brand">karar {offer.trialDays} gün sonra.</span>
           </>
         }
-        body="Kayıt 30 saniye sürer. İlk paneliniz mock veri ile bile çalışır, gerçek AI sorgularını da hemen tetikleyebilirsiniz."
+        body="Alan adınızı girin, şok raporunuzu görün. Sürekli ölçüm için hesap açın; kart gerekmez."
+        primaryHref="/register"
+        primaryLabel={`${offer.trialDays} gün ücretsiz dene`}
+        secondaryHref="/contact#sales"
+        secondaryLabel="Yanıt Agency ile görüş"
       />
     </>
   );

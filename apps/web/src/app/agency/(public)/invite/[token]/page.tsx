@@ -5,7 +5,7 @@ import { AuthCentered } from '@/components/auth/auth-centered';
 import { AgencyInviteAccept } from '@/components/agency/agency-invite-accept';
 import { AGENCY_ROLE_LABEL } from '@/components/agency/format';
 
-export const metadata = { title: 'Ajans daveti — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'Ajans daveti — Yanıt', robots: { index: false, follow: false } };
 
 /** Ajans davet linki: giriş yoksa giriş/kayıt (aynı e-postayla) ve geri dönüş; girişliyse kabul. */
 export default async function AgencyInvitePage({ params }: { params: Promise<{ token: string }> }) {

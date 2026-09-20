@@ -6,7 +6,7 @@ import { apiFetch, errorMessage } from '@/lib/api-client';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { useHydrated } from '@/lib/use-hydrated';
 
-export function RegisterForm() {
+export function RegisterForm({ trialDays }: { trialDays: number }) {
   const router = useRouter();
   const hydrated = useHydrated();
   const ids = { company: useId(), site: useId(), email: useId(), pass: useId(), passHelp: useId() };
@@ -106,7 +106,7 @@ export function RegisterForm() {
         className="btn-primary w-full mt-6 disabled:opacity-50"
         aria-busy={loading}
       >
-        {loading ? 'Hesap oluşturuluyor…' : '6 ay ücretsiz başlat'}
+        {loading ? 'Hesap oluşturuluyor…' : `${trialDays} gün ücretsiz dene`}
       </button>
       <p className="text-[11.5px] text-ink-faint text-center">
         Kayıt olarak{' '}

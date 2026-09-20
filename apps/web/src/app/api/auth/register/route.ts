@@ -7,12 +7,9 @@ import { enforceRateLimit, LIMITS } from '@/server/rate-limit';
 import { audit } from '@/server/audit';
 import { issueAuthToken } from '@/server/auth-tokens';
 import { absoluteUrl, sendEmail, templates } from '@/server/mailer';
-import { launchOfferOpen } from '@independentai/shared';
-import { ClientError } from '@/server/errors';
 
 export const POST = route('auth.register', async (req) => {
   await enforceRateLimit(req, LIMITS.register);
-  if (!launchOfferOpen()) throw new ClientError('Yeni kayıtlar şu an kapalı');
   const body = await readJson<{ email?: unknown; password?: unknown; companyName?: unknown; website?: unknown }>(req);
   const { user, tenant } = await registerWithPassword(body);
 

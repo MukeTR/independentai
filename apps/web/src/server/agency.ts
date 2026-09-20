@@ -10,6 +10,7 @@ import { ClientError, ConflictError, ForbiddenError, NotFoundError, PlanLimitErr
 import { cleanName, cleanWebsite, normalizeEmail, LIMITS as NLIMITS } from './normalize';
 import { hashToken, randomToken } from './auth-tokens';
 import { trialEnd } from './accounts';
+import { getOffer } from './offer';
 import { computeAgencyEntitlement } from './entitlement';
 import { agencyRoleToTenantRole, type Actor, type AgencyContext } from './authz';
 import { publish, agencyTopic, tenantTopic } from './realtime';
@@ -232,6 +233,7 @@ export async function createClientWorkspace(
         ),
       ].slice(0, 10)
     : [];
+  const { trialDays } = await getOffer();
   return prisma.$transaction(async (tx) => {
     // Eşzamanlı isteklerde limit aşımını önlemek için ajans satırını kilitle.
     await tx.$queryRaw`SELECT id FROM "AgencyAccount" WHERE id = ${actor.agency.id} FOR UPDATE`;
@@ -256,7 +258,13 @@ export async function createClientWorkspace(
       if (!m) throw new ClientError('Sorumlu üye bulunamadı');
     }
     const tenant = await tx.tenant.create({
-      data: { name, website, trialEndsAt: trialEnd(), kind: 'BRAND', onboardingCompletedAt: new Date() },
+      data: {
+        name,
+        website,
+        trialEndsAt: trialEnd(new Date(), trialDays),
+        kind: 'BRAND',
+        onboardingCompletedAt: new Date(),
+      },
     });
     await tx.alertConfig.create({ data: { tenantId: tenant.id, emailEnabled: false, weeklyReportEnabled: false } });
     const ws = await tx.agencyWorkspace.create({

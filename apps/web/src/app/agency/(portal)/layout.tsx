@@ -55,7 +55,7 @@ export default async function AgencyLayout({ children }: { children: React.React
             role="status"
             className="bg-brand-glow border-b border-brand/20 text-[13px] text-ink px-6 py-2.5 text-center"
           >
-            Ücretsiz lansman döneminiz {homeEnt.trialDaysLeft} gün sonra bitiyor. Süre sonunda portföy salt-okunur moda
+            Ücretsiz deneme süreniz {homeEnt.trialDaysLeft} gün sonra bitiyor. Süre sonunda portföy salt-okunur moda
             geçer; veriler silinmez.
           </div>
         )}

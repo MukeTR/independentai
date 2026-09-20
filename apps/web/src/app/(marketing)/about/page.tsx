@@ -5,7 +5,7 @@ import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'Hakkımızda — Independent AI nedir?',
+  title: 'Hakkımızda — Yanıt nedir?',
   description:
     'Türkiye merkezli, bağımsız bir AI brand visibility platformu. Neden kurulduk, ne için varız, nereye gidiyoruz.',
   path: '/about',
@@ -42,8 +42,8 @@ export default function About() {
           </p>
           <p>
             Bu yeni gerçeklikte markaların hâlâ "ne kadar görünüyoruz" sorusuna cevabı yok. Manuel olarak günde 20 soru
-            sorabilirsiniz, ama ölçüm yapamazsınız. SoV ya da trend göremezsiniz. <strong>Independent AI</strong> bu
-            boşluğu doldurmak için var.
+            sorabilirsiniz, ama ölçüm yapamazsınız. SoV ya da trend göremezsiniz. <strong>Yanıt</strong> bu boşluğu
+            doldurmak için var.
           </p>
           <p>
             Bağımsızlığımız temel taahhüdümüz: hiçbir AI sağlayıcısı ile menfaat ilişkimiz yok. Cevapları
@@ -93,7 +93,7 @@ export default function About() {
             },
             {
               t: 'Adil fiyatlandırma',
-              d: 'Lansmanda 6 ay ücretsiz. Sonrasında düşük gelirli (öğrenci, startup, non-profit) için kalıcı indirim.',
+              d: 'Rapor ve araçlar ücretsiz; abonelik aylık, taahhütsüz. Öğrenci, startup ve non-profit indirimi değerlendiriliyor.',
             },
             {
               t: 'Veri sahipliği',
@@ -111,9 +111,9 @@ export default function About() {
       <Section id="team" eyebrow="Takım" title="Küçük ama odaklı." className="bg-paper-2/40">
         <div className="card p-8 max-w-2xl">
           <p className="text-[15px] text-ink-muted leading-relaxed">
-            Independent AI 2026 başında Türkiye'de kuruldu. Solo bir founder + AI asistanı ile geliştiriliyor. Henüz
-            erken aşamadayız — kullanıcı sayısı arttıkça takım da büyüyecek. Şimdilik tüm fokus: gerçek bir GEO ürünü
-            inşa etmek ve kullanıcı geri bildirimi ile yön bulmak.
+            Yanıt (eski adıyla Independent AI) 2026 başında Türkiye'de kuruldu. Solo bir founder + AI asistanı ile
+            geliştiriliyor. Henüz erken aşamadayız — kullanıcı sayısı arttıkça takım da büyüyecek. Şimdilik tüm fokus:
+            gerçek bir GEO ürünü inşa etmek ve kullanıcı geri bildirimi ile yön bulmak.
           </p>
         </div>
       </Section>
@@ -124,7 +124,7 @@ export default function About() {
             Erken kullanıcı ol, <span className="text-brand">geleceğe söz hakkı kazan.</span>
           </>
         }
-        body="Lansman kullanıcılarımıza kalıcı early-adopter indirimi söz veriyoruz. Üstelik özellik yol haritasını da birlikte şekillendireceğiz."
+        body="Erken kullanıcılarımızla özellik yol haritasını birlikte şekillendiriyoruz. Rapor ücretsiz; abonelik için kart gerekmez."
       />
     </>
   );

@@ -41,7 +41,7 @@ export function LinkRequestDialog({ open, onClose }: { open: boolean; onClose: (
     <Modal
       open={open}
       onClose={close}
-      title="Mevcut bir Independent AI hesabını bağla"
+      title="Mevcut bir Yanıt hesabını bağla"
       description="Müşteriniz zaten kendi hesabında ölçüm yapıyorsa, onay linkini hesap sahibine iletin. Onaylayınca müşteri portföyünüze eklenir; veri müşteride kalır, istediği an bağlantıyı kesebilir."
     >
       {error && <InlineAlert className="mb-3">{error}</InlineAlert>}

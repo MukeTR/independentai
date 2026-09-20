@@ -16,7 +16,8 @@ import {
   Wrench,
   X,
 } from 'lucide-react';
-import { LAUNCH_OFFER } from '@independentai/shared';
+import { OFFER } from '@independentai/shared';
+import { getOffer } from '@/server/offer';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { Faq, type FaqItem } from '@/components/marketing/faq';
@@ -89,8 +90,9 @@ const PLATFORM_ICONS: Record<string, typeof Store> = {
  * Çözüm sayfası iskeleti: hero → nasıl çalışır → (kurulum | platform kartları) → veri kapsamı ve güvenlik →
  * ücretsiz araçlar → SSS (FAQPage JSON-LD) → kayıt CTA. Fiyat/rakam/müşteri logosu uydurulmaz.
  */
-export function SolutionPage({ config }: { config: SolutionConfig }) {
-  const fair = LAUNCH_OFFER.fairUse;
+export async function SolutionPage({ config }: { config: SolutionConfig }) {
+  const fair = OFFER.fairUse;
+  const offer = await getOffer();
   const platforms = SOLUTION_LINKS.filter((l) => l.href in PLATFORM_ICONS);
   return (
     <>
@@ -117,7 +119,7 @@ export function SolutionPage({ config }: { config: SolutionConfig }) {
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">{config.intro}</p>
           <div className="mt-8 flex items-center gap-3 flex-wrap">
             <Link href="/register" className="btn-primary inline-flex items-center gap-2">
-              Ücretsiz başla <ArrowRight className="w-4 h-4" aria-hidden />
+              {offer.trialDays} gün ücretsiz dene <ArrowRight className="w-4 h-4" aria-hidden />
             </Link>
             <Link href="/arac/e-ticaret-ai-gorunurluk-testi" className="btn-secondary inline-flex items-center gap-2">
               <Search className="w-4 h-4" aria-hidden /> Önce ücretsiz testi dene
@@ -278,8 +280,8 @@ export function SolutionPage({ config }: { config: SolutionConfig }) {
           ))}
         </div>
         <p className="text-[12.5px] text-ink-faint mt-6 font-mono">
-          // Lansman adil kullanımı: hesap başına {fair.storeConnections} mağaza bağlantısı, bağlantı başına{' '}
-          {fair.catalogProducts.toLocaleString('tr-TR')} ürün. Ücretli planlar duyurulmadı.
+          // Adil kullanım: hesap başına {fair.storeConnections} mağaza bağlantısı, bağlantı başına{' '}
+          {fair.catalogProducts.toLocaleString('tr-TR')} ürün. Fiyatlar: /pricing
         </p>
       </Section>
 
@@ -312,10 +314,10 @@ export function SolutionPage({ config }: { config: SolutionConfig }) {
       </Section>
 
       <CtaBlock
-        eyebrow="Lansman · ücretsiz"
+        eyebrow="Önce ücretsiz"
         title={config.cta.title}
         body={config.cta.body}
-        primaryLabel="Ücretsiz başla"
+        primaryLabel={`${offer.trialDays} gün ücretsiz dene`}
         secondaryHref="/arac/e-ticaret-ai-gorunurluk-testi"
         secondaryLabel="Önce ücretsiz testi dene"
       />

@@ -3,11 +3,12 @@ import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
+import { OFFER } from '@independentai/shared';
 import { ArrowRight, BookOpen, Rocket, Zap, KeyRound, Webhook, FileText } from 'lucide-react';
 
 export const metadata = buildMetadata({
   title: 'Dokümantasyon',
-  description: 'Independent AI kurulum, kullanım ve API rehberleri.',
+  description: 'Yanıt kurulum, kullanım ve API rehberleri.',
   path: '/docs',
 });
 
@@ -94,7 +95,7 @@ export default function Docs() {
         <Container className="max-w-4xl">
           <div className="eyebrow">Dokümantasyon</div>
           <h1 className="font-display text-[52px] lg:text-[68px] tracking-tight mt-4 leading-[1.02]">
-            Independent AI\'ı <span className="text-brand">en iyi şekilde kullanın.</span>
+            Yanıt\'ı <span className="text-brand">en iyi şekilde kullanın.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
             Kurulum, kullanım ve ileri seviye teknik dokümanlar. Public API yayında; webhooks yakında.
@@ -140,7 +141,7 @@ export default function Docs() {
               id: 'account',
               n: '01',
               t: 'Hesap oluştur',
-              c: 'İndependentai.space/register adresine gidin. Email, şifre, şirket adı yeterli. Kredi kartı bilgisi istenmez. 6 ay tüm özellikler ücretsiz.',
+              c: `independentai.space/register adresine gidin. E-posta, şifre, şirket adı yeterli. Kart gerekmez; ${OFFER.trialDays} gün boyunca tüm özellikler açık.`,
             },
             {
               id: 'onboarding',

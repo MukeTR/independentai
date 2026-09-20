@@ -3,7 +3,7 @@ import { requirePageActor } from '@/server/authz';
 import { listClientCards, summarizePortfolio } from '@/server/agency';
 import { ClientsManager } from '@/components/agency/clients-manager';
 
-export const metadata = { title: 'Müşteriler — Independent AI' };
+export const metadata = { title: 'Müşteriler — Yanıt' };
 
 export default async function AgencyClientsPage() {
   const actor = await requirePageActor();

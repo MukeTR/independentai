@@ -109,6 +109,34 @@ export async function clearConfigValue(key: ConfigKey): Promise<void> {
   delete process.env[key];
 }
 
+// ───────────── Düz (şifresiz) ayarlar ─────────────
+// Şifreleme yalnızca API anahtarları içindir. Teklif/fiyat gibi gizli olmayan ayarlar `encrypted: false`
+// ile düz metin saklanır; okunamazsa (DB hatası) çağıran taraf varsayılana düşer.
+
+/** Düz metin ayar oku — satır yoksa veya DB hatasında undefined. */
+export async function getPlainConfigValue(key: string): Promise<string | undefined> {
+  try {
+    const row = await prisma.systemConfig.findUnique({ where: { key } });
+    if (!row?.value) return undefined;
+    return row.encrypted ? decrypt(row.value) : row.value;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Düz metin ayar yaz (upsert). Boş değer satırı siler (varsayılana dön). */
+export async function setPlainConfigValue(key: string, value: string | null, userId: string): Promise<void> {
+  if (value === null || value === '') {
+    await prisma.systemConfig.deleteMany({ where: { key } });
+    return;
+  }
+  await prisma.systemConfig.upsert({
+    where: { key },
+    create: { key, value, encrypted: false, updatedBy: userId },
+    update: { value, encrypted: false, updatedBy: userId },
+  });
+}
+
 /** Admin sağlık ekranı: provider anahtar durumu + aktif model + fiyat/grounding bilgisi. */
 export async function providerHealth() {
   const [keys] = await Promise.all([listConfigStatus()]);

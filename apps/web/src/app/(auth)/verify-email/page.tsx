@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AuthCentered } from '@/components/auth/auth-centered';
 import { VerifyClient } from './verify-client';
 
-export const metadata = { title: 'E-posta doğrulama — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'E-posta doğrulama — Yanıt', robots: { index: false, follow: false } };
 
 export default async function VerifyEmailPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const { token } = await searchParams;

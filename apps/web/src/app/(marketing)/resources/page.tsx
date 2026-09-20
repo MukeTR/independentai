@@ -7,7 +7,7 @@ import { ArrowRight, BookOpen, Library, FileText, MessagesSquare } from 'lucide-
 
 export const metadata = buildMetadata({
   title: 'Kaynaklar — GEO öğrenmenin tüm yolları',
-  description: 'GEO 101 rehberi, AI pazarlama sözlüğü, blog yazıları ve dokümantasyon. Independent AI bilgi merkezi.',
+  description: 'GEO 101 rehberi, AI pazarlama sözlüğü, blog yazıları ve dokümantasyon. Yanıt bilgi merkezi.',
   path: '/resources',
 });
 

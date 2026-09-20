@@ -22,7 +22,7 @@ export type PlatformDetection = {
   /** 0-1 */
   confidence: number;
   evidence: string[];
-  /** Independent AI'da doğrudan bağlayıcı var mı */
+  /** Yanıt'ta doğrudan bağlayıcı var mı */
   connectorAvailable: boolean;
 };
 

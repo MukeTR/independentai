@@ -8,7 +8,7 @@ import { AiSeoChecklist } from '@/components/marketing/ai-seo-checklist';
 import { VisibilityCalculator } from '@/components/marketing/visibility-calculator';
 import { SchemaGenerator } from '@/components/marketing/schema-generator';
 import { GeoAuditChecklist } from '@/components/marketing/geo-audit-checklist';
-import { buildMetadata, SITE_URL, ORG_ID, WEBSITE_ID } from '@/lib/seo';
+import { buildMetadata, SITE_URL, ORG_ID, WEBSITE_ID, BRAND_NAME } from '@/lib/seo';
 import { POSTS, getPostBySlug, getRelatedPosts, getWordCount } from '@/data/blog-posts';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 
@@ -95,11 +95,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           wordCount: getWordCount(post),
           articleSection: post.category,
           isPartOf: { '@id': WEBSITE_ID },
-          author: { '@type': 'Organization', '@id': ORG_ID, name: 'Independent AI' },
+          author: { '@type': 'Organization', '@id': ORG_ID, name: BRAND_NAME },
           publisher: {
             '@type': 'Organization',
             '@id': ORG_ID,
-            name: 'Independent AI',
+            name: BRAND_NAME,
             logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon.svg` },
           },
         }}

@@ -40,7 +40,7 @@ export const CAPABILITIES: Capability[] = [
     status: 'beta',
     note: 'Provider web arama açıkken native atıf; kapalıysa yalnızca metin içi linkler',
   },
-  { key: 'geo_tools', label: '13 GEO aracı', status: 'live' },
+  { key: 'geo_tools', label: 'GEO araçları (panel + ücretsiz herkese açık araçlar)', status: 'live' },
   {
     key: 'alerts',
     label: 'E-posta + Slack uyarıları ve haftalık rapor',
@@ -147,16 +147,16 @@ export const CAPABILITIES: Capability[] = [
     key: 'multi_brand',
     label: 'Çoklu marka (tek hesapta birden fazla kendi markası)',
     status: 'roadmap',
-    note: 'Lansmanda hesap başına 1 kendi markası; ajanslar için çalışma alanları mevcut',
+    note: 'Şu an hesap başına 1 kendi markası; ajanslar için çalışma alanları mevcut',
   },
   { key: 'webhooks', label: 'Giden webhooks (olay bildirimleri)', status: 'roadmap' },
   { key: 'pdf_report', label: 'Aylık PDF rapor', status: 'roadmap' },
   { key: 'perplexity', label: 'Perplexity / Grok takibi', status: 'roadmap' },
   {
     key: 'billing',
-    label: 'Ücretli planlar ve ödeme',
+    label: 'Kart ile online ödeme',
     status: 'roadmap',
-    note: 'Lansman süresince ücretsiz; fiyatlar duyurulmadı',
+    note: 'Fiyatlar açık (bkz. OFFER); ödeme sağlayıcısı henüz bağlı değil, abonelik teklifle başlatılır',
   },
 ];
 
@@ -170,12 +170,21 @@ export function isLive(key: string): boolean {
   return capability(key).status === 'live';
 }
 
-/** Lansman teklifi — tek kaynak. Tarihler ISO; bitiş boşsa süresiz (env ile kapatılır). */
-export const LAUNCH_OFFER = {
-  startsAt: '2026-05-22',
-  trialMonths: 6,
-  /** Teklifin yeni kayıtlara kapanma tarihi; null = açık. Deploy'da env LAUNCH_OFFER_ENDS_AT ile ayarlanır. */
-  endsAt: (typeof process !== 'undefined' && process.env?.LAUNCH_OFFER_ENDS_AT) || null,
+/**
+ * Teklif ve fiyat — TEK kaynak (varsayılanlar). Sunucu tarafında SystemConfig ile geçersiz kılınabilir
+ * (`apps/web/src/server/offer.ts` → getOffer()); istemci/statik bağlamlar bu varsayılanları kullanır.
+ *
+ *  - Ücretsiz: şok raporu + tüm /arac araçları (hesap gerekmez)
+ *  - Yanıt (SaaS): aylık abonelik, `trialDays` gün ücretsiz deneme, kart gerekmez
+ *  - Yanıt Agency: aylık sprint, `agencyFromMonthlyTry`'dan başlayan fiyat, teklifle
+ */
+export const OFFER = {
+  /** Deneme süresi (gün) — kayıt anında trialEndsAt = now + trialDays */
+  trialDays: 14,
+  /** Yanıt SaaS aylık fiyat (₺/ay; KDV gösterimi iş kararı — sayfada belirtilmez) */
+  saasMonthlyTry: 2490,
+  /** Yanıt Agency aylık sprint başlangıç fiyatı (₺/ay'dan başlayan; teklifle) */
+  agencyFromMonthlyTry: 30000,
   /** "Adil kullanım" tavanları (entitlement.ts LAUNCH limitleriyle aynı) */
   fairUse: {
     prompts: 200,
@@ -188,7 +197,32 @@ export const LAUNCH_OFFER = {
   },
 } as const;
 
-export function launchOfferOpen(now = new Date()): boolean {
-  if (!LAUNCH_OFFER.endsAt) return true;
-  return now < new Date(LAUNCH_OFFER.endsAt);
+export type Offer = {
+  trialDays: number;
+  saasMonthlyTry: number;
+  agencyFromMonthlyTry: number;
+  fairUse: typeof OFFER.fairUse;
+};
+
+/** ₺ biçimlendirme — "₺2.490" (tr-TR binlik ayırıcı, kuruş yok). */
+export function formatTry(amount: number): string {
+  return `₺${Math.round(amount).toLocaleString('tr-TR')}`;
+}
+
+/**
+ * @deprecated OFFER kullanın. Eski "6 ay ücretsiz lansman" teklifi kaldırıldı; bu alias yalnızca
+ * geriye uyumluluk için kalır (trialMonths artık OFFER.trialDays'ten türetilir, endsAt her zaman null).
+ */
+export const LAUNCH_OFFER = {
+  startsAt: '2026-05-22',
+  /** @deprecated ay cinsinden yaklaşık deneme süresi; OFFER.trialDays kullanın */
+  trialMonths: OFFER.trialDays / 30,
+  /** @deprecated kayıt hiçbir zaman kapanmaz */
+  endsAt: null as string | null,
+  fairUse: OFFER.fairUse,
+} as const;
+
+/** Kayıt her zaman açık (eski lansman kapanış tarihi kaldırıldı). */
+export function launchOfferOpen(_now = new Date()): boolean {
+  return true;
 }

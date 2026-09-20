@@ -44,7 +44,7 @@ test('kayıt → onboarding → panel; ayarlar; çıkış', async ({ page }) => 
   await page.getByLabel('Şirket adı').fill('E2E Şirketi');
   await page.getByLabel('E-posta').fill(email);
   await page.getByLabel('Şifre', { exact: true }).fill(PASSWORD);
-  await page.getByRole('button', { name: '6 ay ücretsiz başlat' }).click();
+  await page.getByRole('button', { name: /gün ücretsiz dene/ }).click();
   await expect(page).toHaveURL(/\/onboarding/);
 
   // Adım 1

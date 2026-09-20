@@ -25,7 +25,7 @@ function fmt(iso: string | null): string {
 
 /**
  * Rapor paylaşım linkleri (marka bağlamı). Link yalnızca oluşturma anında bir kez gösterilir;
- * listede token yok. "Independent AI ile hazırlandı" imzası kaldırılamaz (beyaz etiket lansmanda yok).
+ * listede token yok. "Yanıt ile hazırlandı" imzası kaldırılamaz (beyaz etiket henüz yok).
  */
 export function ShareLinks({ readOnly = false }: { readOnly?: boolean }) {
   const hydrated = useHydrated();
@@ -165,8 +165,8 @@ export function ShareLinks({ readOnly = false }: { readOnly?: boolean }) {
         <form onSubmit={create} className="card p-5 sm:p-6">
           <div className="text-[14px] font-medium">Yeni paylaşım linki</div>
           <p className="text-[12px] text-ink-muted mt-1">
-            Salt-okunur, giriş gerektirmeyen rapor. E-posta, AI yanıt metni veya kişisel veri içermez; "Independent AI
-            ile hazırlandı" imzası taşır.
+            Salt-okunur, giriş gerektirmeyen rapor. E-posta, AI yanıt metni veya kişisel veri içermez; "Yanıt ile
+            hazırlandı" imzası taşır.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] gap-2 mt-3">
             <div>

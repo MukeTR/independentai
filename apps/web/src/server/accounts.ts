@@ -3,7 +3,8 @@
  * Tüm çok-tablolu yazımlar TEK transaction içinde; yarım tenant kalmaz.
  */
 import { Prisma } from '@independentai/db';
-import { FREE_TRIAL_MONTHS } from '@independentai/shared';
+import { OFFER } from '@independentai/shared';
+import { getOffer } from './offer';
 import { prisma } from './prisma';
 import { hashPassword } from './password';
 import { ClientError, ConflictError, PlanLimitError } from './errors';
@@ -20,10 +21,9 @@ import {
 import { computeEntitlement } from './entitlement';
 import { log } from './logger';
 
-export function trialEnd(from = new Date()): Date {
-  const d = new Date(from);
-  d.setMonth(d.getMonth() + FREE_TRIAL_MONTHS);
-  return d;
+/** Deneme bitişi: kayıt anı + `days` gün (varsayılan OFFER.trialDays; kayıt akışı getOffer() ile geçer). */
+export function trialEnd(from = new Date(), days: number = OFFER.trialDays): Date {
+  return new Date(from.getTime() + days * 86_400_000);
 }
 
 function isUniqueViolation(err: unknown): boolean {
@@ -42,10 +42,13 @@ export async function registerWithPassword(input: {
   const password = validatePassword(input.password);
   const companyName = cleanName(input.companyName, 'Şirket adı', LIMITS.companyName);
   const website = cleanWebsite(input.website);
+  const { trialDays } = await getOffer();
 
   try {
     return await prisma.$transaction(async (tx) => {
-      const tenant = await tx.tenant.create({ data: { name: companyName, website, trialEndsAt: trialEnd() } });
+      const tenant = await tx.tenant.create({
+        data: { name: companyName, website, trialEndsAt: trialEnd(new Date(), trialDays) },
+      });
       const user = await tx.user.create({
         data: {
           tenantId: tenant.id,
@@ -124,9 +127,12 @@ export async function upsertOAuthUser(provider: 'google' | 'linkedin', profile: 
   // Yeni kullanıcı — e-posta doğrulanmamışsa yine de hesap açılır ama emailVerifiedAt boş kalır.
   const finalEmail = email ?? `${provider}_${profile.sub}@users.independentai.space`;
   const tenantName = (profile.name || finalEmail.split('@')[0] || 'Markam').slice(0, LIMITS.companyName);
+  const { trialDays } = await getOffer();
   try {
     const { user, tenant } = await prisma.$transaction(async (tx) => {
-      const tenant = await tx.tenant.create({ data: { name: tenantName, trialEndsAt: trialEnd() } });
+      const tenant = await tx.tenant.create({
+        data: { name: tenantName, trialEndsAt: trialEnd(new Date(), trialDays) },
+      });
       const user = await tx.user.create({
         data: {
           tenantId: tenant.id,

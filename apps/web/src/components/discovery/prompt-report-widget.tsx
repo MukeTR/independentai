@@ -9,7 +9,7 @@
  *   • Hiçbir alan zorunlu değildir; ziyaretçi yalnızca AI ürününü seçip gönderebilir.
  *   • Serbest metin 300 karakterle sınırlıdır ve sunucuda PII'dan temizlenir.
  *
- * Bileşen müşteri sitesine gömülmez; Independent AI'ın kendi sayfalarında ve ileride SDK
+ * Bileşen müşteri sitesine gömülmez; Yanıt'ın kendi sayfalarında ve ileride SDK
  * tarafından çağrılacak biçimde kullanılır. Uç: `POST /api/collect/v1/report`.
  */
 import { useEffect, useId, useMemo, useState } from 'react';

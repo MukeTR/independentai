@@ -85,7 +85,7 @@ export function VisibilityCalculator() {
               onChange={(e) => setBrandMentions(Math.max(0, Number(e.target.value)))}
               className="input"
             />
-            <div className="text-[10.5px] text-ink-faint mt-1">Independent AI panelinden veya manuel sayım</div>
+            <div className="text-[10.5px] text-ink-faint mt-1">Yanıt panelinden veya manuel sayım</div>
           </div>
           <div>
             <label className="eyebrow block mb-2">Rakiplerin toplam mention sayısı</label>

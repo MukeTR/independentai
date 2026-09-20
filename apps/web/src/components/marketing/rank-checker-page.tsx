@@ -2,6 +2,7 @@ import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { RankChecker } from '@/components/marketing/rank-checker';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
+import { getOffer } from '@/server/offer';
 
 type Provider = 'OPENAI' | 'ANTHROPIC' | 'GOOGLE';
 
@@ -38,7 +39,7 @@ const PROVIDER_NOTES: Record<Provider, { how: string; tips: string[] }> = {
   },
 };
 
-export function RankCheckerPage({
+export async function RankCheckerPage({
   provider,
   label,
   accent,
@@ -51,6 +52,7 @@ export function RankCheckerPage({
   examplePrompt: string;
   path: string;
 }) {
+  const offer = await getOffer();
   return (
     <>
       <BreadcrumbJsonLd
@@ -73,7 +75,13 @@ export function RankCheckerPage({
           </div>
 
           <div className="max-w-xl mx-auto mt-10">
-            <RankChecker provider={provider} label={label} accent={accent} examplePrompt={examplePrompt} />
+            <RankChecker
+              provider={provider}
+              label={label}
+              accent={accent}
+              examplePrompt={examplePrompt}
+              trialDays={offer.trialDays}
+            />
           </div>
         </Container>
       </Section>
@@ -89,9 +97,9 @@ export function RankCheckerPage({
               verir; ama görünürlük zamanla ve modeller arası değişir.
             </p>
             <p className="text-[15px] text-ink-muted mt-4 leading-relaxed">
-              Independent AI bu fotoğrafı sürekli çeker: ChatGPT, Claude ve Gemini'de günlük takip, rakip
-              karşılaştırması, sentiment ve trend analizi. Eksik kaldığınız soruları ve hangi kaynaklara atıf
-              verildiğini gösterir; GEO Audit ile sayfanızı puanlar. İlk 6 ay tüm kullanıcılara ücretsiz.
+              Yanıt bu fotoğrafı sürekli çeker: ChatGPT, Claude ve Gemini'de günlük takip, rakip karşılaştırması,
+              sentiment ve trend analizi. Eksik kaldığınız soruları ve hangi kaynaklara atıf verildiğini gösterir; GEO
+              Audit ile sayfanızı puanlar. {offer.trialDays} gün ücretsiz deneme, kart gerekmez.
             </p>
 
             <h3 className="font-display text-[20px] tracking-tight mt-10">{label} markaları nasıl seçiyor?</h3>

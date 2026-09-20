@@ -1,9 +1,9 @@
 import type { BlogPost } from './blog-posts';
 
-const editor = { name: 'Independent AI ekibi', role: 'Editöryal' };
-const research = { name: 'Independent AI ekibi', role: 'Araştırma' };
-const tech = { name: 'Independent AI ekibi', role: 'Teknik içerik' };
-const strategy = { name: 'Independent AI ekibi', role: 'Strateji' };
+const editor = { name: 'Yanıt ekibi', role: 'Editöryal' };
+const research = { name: 'Yanıt ekibi', role: 'Araştırma' };
+const tech = { name: 'Yanıt ekibi', role: 'Teknik içerik' };
+const strategy = { name: 'Yanıt ekibi', role: 'Strateji' };
 
 export const BATCH_3: BlogPost[] = [
   {
@@ -59,7 +59,7 @@ export const BATCH_3: BlogPost[] = [
         'Sitenize "Perplexity referrer" trafiği geliyor mu? Analytics\'inizde yeni bir trafik kategorisi.',
         'Brand search artışı (Google Trends).',
         'Sosyal medyada "AI bana sizi önerdi" demek.',
-        'Independent AI gibi tracker araçlar.',
+        'Yanıt gibi tracker araçlar.',
         'Manuel test: aylık 10 sektör sorusunu Perplexity\'de sorun, kaynak listesinde sizinki var mı?',
       ] },
       { type: 'h2', text: 'Citation alma stratejisi' },
@@ -99,7 +99,7 @@ export const BATCH_3: BlogPost[] = [
       { type: 'h2', text: 'PR partneri seçimi' },
       { type: 'p', text: 'GEO odaklı PR ajansı seçerken bakılacaklar: müşterilerinin AI cevaplarındaki görünürlüğünü ölçüyorlar mı, sentiment monitoring yapıyorlar mı, AI bot trafiği analiz yapıyorlar mı, citation tracking için araç kullanıyorlar mı, sadece "backlink getirdik" raporu mu veriyorlar?' },
       { type: 'h2', text: 'In-house vs ajans' },
-      { type: 'p', text: 'Küçük markalar için: in-house bir PR kişisi + Independent AI yeterli. Aylık 1-2 hedef yayında geçmek, 1 podcast misafirliği, 1 industry mention. Orta ve büyük markalar için: ajans desteği avantajlı ama GEO-aware olduğundan emin olun.' },
+      { type: 'p', text: 'Küçük markalar için: in-house bir PR kişisi + Yanıt yeterli. Aylık 1-2 hedef yayında geçmek, 1 podcast misafirliği, 1 industry mention. Orta ve büyük markalar için: ajans desteği avantajlı ama GEO-aware olduğundan emin olun.' },
     ],
   },
   {
@@ -193,7 +193,7 @@ export const BATCH_3: BlogPost[] = [
       { type: 'h2', text: 'Rakip izleme rutini' },
       { type: 'p', text: '3-5 ana rakibi sürekli izleyin. Aylık review\'da her birinin: Visibility Score değişimi, SoV pozisyonu, yeni yayınladığı içerikler (RSS subscription), PR/medya aktivitesi (Google Alerts), sosyal medya aktivitesi.' },
       { type: 'h2', text: 'Rakip değişimine reaksiyon' },
-      { type: 'p', text: 'Eğer bir rakibinizin görünürlüğü aniden arttıysa, neden olduğunu analiz edin: yeni içerik yayını mı, PR kampanyası mı, influencer mention dalgası mı, yeni özellik lansmanı mı, award/ranking kazanımı mı? Independent AI dashboard\'unda "rakipler" sekmesi tam olarak bu sorulara cevap verir.' },
+      { type: 'p', text: 'Eğer bir rakibinizin görünürlüğü aniden arttıysa, neden olduğunu analiz edin: yeni içerik yayını mı, PR kampanyası mı, influencer mention dalgası mı, yeni özellik lansmanı mı, award/ranking kazanımı mı? Yanıt dashboard\'unda "rakipler" sekmesi tam olarak bu sorulara cevap verir.' },
     ],
   },
   {
@@ -289,7 +289,7 @@ export const BATCH_3: BlogPost[] = [
         'Ay 2: Wikipedia sayfası önerisi + 1 sektör raporu çalışması.',
         'Ay 3: G2 yorum dalgası + AMA etkinliği.',
       ] },
-      { type: 'p', text: '90 gün sonunda 6 taktikten birden ilerleme + bu hareketin Independent AI dashboard\'unuza yansıması = ölçülebilir GEO ilerleme.' },
+      { type: 'p', text: '90 gün sonunda 6 taktikten birden ilerleme + bu hareketin Yanıt dashboard\'unuza yansıması = ölçülebilir GEO ilerleme.' },
     ],
   },
   {
@@ -361,7 +361,7 @@ export const BATCH_3: BlogPost[] = [
         'Pop-up\'lar arkasına gizlenmiş içerik.',
         'Infinite scroll without pagination.',
       ] },
-      { type: 'h2', text: 'Independent AI mimarisi örneği' },
+      { type: 'h2', text: 'Yanıt mimarisi örneği' },
       { type: 'p', text: '/ (homepage), /features, /pricing, /use-cases, /how-it-works — pillar sayfalar. /blog/* — alt makaleler (84 sayfa). /resources/geo-101 + /resources/glossary — derin rehber + sözlük. /docs/* — teknik dokümantasyon. /legal/* — yasal sayfalar. Tüm yapı 3 tıklama derinliğinde, her sayfada breadcrumb, iç linkleme zengin.' },
     ],
   },
@@ -656,7 +656,7 @@ export const BATCH_3: BlogPost[] = [
         'Profound: $500-2000/ay.',
         'Otterly: $200-800/ay.',
         'AthenaHQ: pay-as-you-go.',
-        'Independent AI: 6 ay ücretsiz, sonra TR pazarına uygun fiyatlandırma.',
+        'Yanıt: ücretsiz şok raporu ve araçlar; aylık abonelik, 14 gün ücretsiz deneme.',
       ] },
       { type: 'h2', text: 'In-house alternatif' },
       { type: 'ul', items: [

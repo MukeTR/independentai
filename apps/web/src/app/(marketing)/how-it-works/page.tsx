@@ -8,7 +8,7 @@ import { MessagesSquare, Bot, GitBranch, Database, BarChart3 } from 'lucide-reac
 export const metadata = buildMetadata({
   title: 'Nasıl çalışır — Veri akışı, sorgu hattı, ölçüm metodolojisi',
   description:
-    "Sorgularınız nasıl çalışır, mention'lar nasıl çıkartılır, metrikler nasıl hesaplanır — Independent AI'ın altında ne var, açıkça anlatıyoruz.",
+    "Sorgularınız nasıl çalışır, mention'lar nasıl çıkartılır, metrikler nasıl hesaplanır — Yanıt'ın altında ne var, açıkça anlatıyoruz.",
   path: '/how-it-works',
 });
 
@@ -73,8 +73,8 @@ export default function HowItWorks() {
             <span className="text-brand">Altında ne var, açıkça anlatıyoruz.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Independent AI'ın veri toplama hattı, ölçüm metodolojisi ve agregasyon mantığı. Sayılarınızın nereden
-            geldiğini bilmek, onlara güvenmenin temelidir.
+            Yanıt'ın veri toplama hattı, ölçüm metodolojisi ve agregasyon mantığı. Sayılarınızın nereden geldiğini
+            bilmek, onlara güvenmenin temelidir.
           </p>
         </Container>
       </section>

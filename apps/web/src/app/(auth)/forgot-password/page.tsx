@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AuthCentered } from '@/components/auth/auth-centered';
 import { ForgotForm } from './forgot-form';
 
-export const metadata = { title: 'Şifremi unuttum — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'Şifremi unuttum — Yanıt', robots: { index: false, follow: false } };
 
 export default function ForgotPasswordPage() {
   return (

@@ -1,8 +1,8 @@
 import { SolutionPage } from '@/components/marketing/solution-page';
 import { buildMetadata } from '@/lib/seo';
-import { LAUNCH_OFFER } from '@independentai/shared';
+import { OFFER } from '@independentai/shared';
 
-const fair = LAUNCH_OFFER.fairUse;
+const fair = OFFER.fairUse;
 
 export const metadata = buildMetadata({
   title: 'E-ticaret için AI görünürlüğü — mağazanı bağla, ürünlerini ölç',
@@ -53,7 +53,7 @@ export default function EcommerceSolutionPage() {
           },
           {
             question: 'Ücreti nedir?',
-            answer: `Lansman döneminde ücretsiz. Adil kullanım sınırları: hesap başına ${fair.storeConnections} mağaza bağlantısı, bağlantı başına ${fair.catalogProducts.toLocaleString('tr-TR')} ürün. Ücretli planlar ve fiyatlar henüz duyurulmadı.`,
+            answer: `Ücretsiz araçlar için hesap gerekmez. Mağaza bağlantısı Yanıt aboneliğine dahildir (ücretsiz deneme, kart gerekmez; fiyat için /pricing). Adil kullanım: hesap başına ${fair.storeConnections} mağaza bağlantısı, bağlantı başına ${fair.catalogProducts.toLocaleString('tr-TR')} ürün.`,
           },
           {
             question: 'AI görünürlüğünü nasıl ölçüyorsunuz?',

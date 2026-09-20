@@ -78,7 +78,7 @@ export default function ShopifySolutionPage() {
           {
             question: 'Birden fazla Shopify mağazam var; hepsini bağlayabilir miyim?',
             answer:
-              'Her mağaza ayrı bir bağlantıdır. Lansman adil kullanımında hesap başına 2 mağaza bağlantısı vardır; daha fazlası için bize yazın.',
+              'Her mağaza ayrı bir bağlantıdır. Adil kullanımda hesap başına 2 mağaza bağlantısı vardır; daha fazlası için bize yazın.',
           },
           {
             question: 'Özel alan adımı mı, myshopify adresimi mi gireceğim?',

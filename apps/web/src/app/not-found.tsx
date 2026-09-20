@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 
-export const metadata = { title: 'Sayfa bulunamadı — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'Sayfa bulunamadı — Yanıt', robots: { index: false, follow: false } };
 
 export default function NotFound() {
   return (

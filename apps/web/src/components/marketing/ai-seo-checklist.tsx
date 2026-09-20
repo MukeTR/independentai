@@ -25,7 +25,7 @@ const ITEMS: Item[] = [
   { id: 'i17', category: 'İçerik', label: 'Reddit/Quora/EksiSözlük forum görünürlüğü' },
   { id: 'i18', category: 'Ölçüm', label: 'Google Search Console aktif' },
   { id: 'i19', category: 'Ölçüm', label: 'Google Analytics 4 veya alternatif' },
-  { id: 'i20', category: 'Ölçüm', label: 'Independent AI ile aylık GEO raporu' },
+  { id: 'i20', category: 'Ölçüm', label: 'Yanıt ile aylık GEO raporu' },
   { id: 'i21', category: 'Ölçüm', label: '5-10 kategorik soruyu sürekli izle' },
   { id: 'i22', category: 'Iterate', label: '3-5 rakip izlemesi sürekli aktif' },
   { id: 'i23', category: 'Iterate', label: 'AI crawler logları aylık analiz' },

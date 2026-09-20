@@ -5,7 +5,7 @@ import { Logo } from '@/components/logo';
 import { resolveShare, buildSharedReport, recordShareView, type SharedReport } from '@/server/report-share';
 
 export const metadata = {
-  title: 'Paylaşılan görünürlük raporu — Independent AI',
+  title: 'Paylaşılan görünürlük raporu — Yanıt',
   robots: { index: false, follow: false },
 };
 export const dynamic = 'force-dynamic';
@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 /**
  * Public, salt-okunur rapor sayfası. Token DB'de hash ile eşlenir; iptal/süre dolumu → 410 ekranı
  * (App Router sayfaları özel HTTP durum kodu döndüremez; JSON ucu /api/share/[token] 410 verir).
- * İçerikte kişisel veri yok; "Independent AI ile hazırlandı" imzası beyaz etiket olmadığını dürüstçe belirtir.
+ * İçerikte kişisel veri yok; "Yanıt ile hazırlandı" imzası beyaz etiket olmadığını dürüstçe belirtir.
  */
 export default async function SharePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -45,7 +45,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <header className="max-w-5xl w-full mx-auto px-6 pt-7 flex items-center justify-between gap-4">
         <Logo />
         <span className="chip !text-[10.5px]">
-          <Sparkles className="w-3 h-3 text-brand" aria-hidden /> Independent AI ile hazırlandı
+          <Sparkles className="w-3 h-3 text-brand" aria-hidden /> Yanıt ile hazırlandı
         </span>
       </header>
       <main id="main" className="flex-1 w-full max-w-5xl mx-auto px-6 py-10">
@@ -54,7 +54,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <footer className="text-center pb-8 text-[12px] text-ink-faint">
         Bu rapor{' '}
         <Link href="/" className="underline hover:text-ink">
-          Independent AI
+          Yanıt
         </Link>{' '}
         ile hazırlanmıştır · Ölçüm yöntemi:{' '}
         <Link href="/docs" className="underline hover:text-ink">

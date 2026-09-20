@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AuthCentered } from '@/components/auth/auth-centered';
 import { ResetForm } from './reset-form';
 
-export const metadata = { title: 'Şifre sıfırla — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'Şifre sıfırla — Yanıt', robots: { index: false, follow: false } };
 
 export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const { token } = await searchParams;

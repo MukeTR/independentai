@@ -13,7 +13,15 @@ import type { MegaPanel } from './mega-menu';
  * Mobil gezinme (lg altı): hamburger → tam ekran panel, gruplar akordeon (native <details>).
  * Rota değişince kapanır; açıkken arka plan kaydırması kilitlenir; Esc kapatır.
  */
-export function MobileMenu({ panels, themeClass }: { panels: MegaPanel[]; themeClass?: string }) {
+export function MobileMenu({
+  panels,
+  themeClass,
+  ctaLabel = 'Hesap aç',
+}: {
+  panels: MegaPanel[];
+  themeClass?: string;
+  ctaLabel?: string;
+}) {
   const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
   const pathname = usePathname();
@@ -132,7 +140,7 @@ export function MobileMenu({ panels, themeClass }: { panels: MegaPanel[]; themeC
                 href="/register"
                 className="btn-primary inline-flex items-center justify-center gap-1.5 text-[14px]"
               >
-                Ücretsiz başla <ArrowRight className="w-4 h-4" aria-hidden />
+                {ctaLabel} <ArrowRight className="w-4 h-4" aria-hidden />
               </Link>
               <Link href="/login" className="btn-secondary inline-flex items-center justify-center text-[14px]">
                 Giriş

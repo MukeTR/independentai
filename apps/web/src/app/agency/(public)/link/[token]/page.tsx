@@ -5,7 +5,7 @@ import { previewLinkRequest } from '@/server/agency';
 import { AuthCentered } from '@/components/auth/auth-centered';
 import { AgencyLinkAccept } from '@/components/agency/agency-link-accept';
 
-export const metadata = { title: 'Ajans erişim isteği — Independent AI', robots: { index: false, follow: false } };
+export const metadata = { title: 'Ajans erişim isteği — Yanıt', robots: { index: false, follow: false } };
 
 /** Marka sahibi için onay ekranı: ajans hesabınıza erişim istiyor; veri sizde kalır; istediğinizde kesebilirsiniz. */
 export default async function AgencyLinkPage({ params }: { params: Promise<{ token: string }> }) {

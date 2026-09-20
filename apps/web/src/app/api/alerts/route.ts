@@ -46,7 +46,7 @@ export const PUT = route('alerts.update', async (req) => {
     await enforceRateLimit(req, LIMITS.slackTest, `tenant:${actor.tenantId}`);
     const ok = await sendSlack(
       cfg.slackWebhookUrl,
-      '✅ Independent AI — Slack bağlantınız çalışıyor! Haftalık raporlar ve düşüş uyarıları buraya gelecek.',
+      '✅ Yanıt — Slack bağlantınız çalışıyor! Haftalık raporlar ve düşüş uyarıları buraya gelecek.',
       { kind: 'slack_test', tenantId: actor.tenantId },
     );
     testResult = ok ? 'sent' : 'failed';

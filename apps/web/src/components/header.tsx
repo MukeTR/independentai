@@ -5,8 +5,11 @@ import { MegaMenu } from './mega-menu';
 import { MobileMenu } from './mobile-menu';
 import { Container } from './container';
 import { NAV_PANELS } from './nav-data';
+import { getOffer } from '@/server/offer';
 
-export function Header({ themeClass }: { themeClass?: string } = {}) {
+export async function Header({ themeClass }: { themeClass?: string } = {}) {
+  const offer = await getOffer();
+  const ctaLabel = `${offer.trialDays} gün dene`;
   return (
     <header className="relative z-40">
       <div className="border-b-hairline border-hairline/60 backdrop-blur-sm bg-paper/80 sticky top-0 z-40">
@@ -33,9 +36,9 @@ export function Header({ themeClass }: { themeClass?: string } = {}) {
                 href="/register"
                 className="btn-primary !py-2 !px-3 sm:!px-4 inline-flex items-center gap-1.5 text-[13.5px] whitespace-nowrap"
               >
-                Ücretsiz başla <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+                {ctaLabel} <ArrowRight className="w-3.5 h-3.5" aria-hidden />
               </Link>
-              <MobileMenu panels={NAV_PANELS} themeClass={themeClass} />
+              <MobileMenu panels={NAV_PANELS} themeClass={themeClass} ctaLabel={ctaLabel} />
             </div>
           </div>
         </Container>

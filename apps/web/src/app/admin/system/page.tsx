@@ -7,16 +7,20 @@ import { queueSummary } from '@/server/run-prompt';
 import { prisma } from '@/server/prisma';
 import { emailConfigured } from '@/server/mailer';
 import { cronSecret } from '@/server/env';
+import { getOffer } from '@/server/offer';
+import { OFFER } from '@independentai/shared';
+import { OfferForm } from './offer-form';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminSystem() {
   await requireSuperAdmin();
-  const [configs, health, queue, notifications] = await Promise.all([
+  const [configs, health, queue, notifications, offer] = await Promise.all([
     listConfigStatus(),
     providerHealth(),
     queueSummary(),
     prisma.notificationLog.findMany({ orderBy: { createdAt: 'desc' }, take: 10 }),
+    getOffer(),
   ]);
 
   return (
@@ -24,8 +28,22 @@ export default async function AdminSystem() {
       <div className="eyebrow">Super Admin</div>
       <h1 className="font-display text-[36px] tracking-tight mt-2">Sistem</h1>
       <p className="text-[14px] text-ink-muted mt-2">
-        Provider/model durumu, cron kuyruğu, bildirim teslimatı, API key yönetimi.
+        Provider/model durumu, cron kuyruğu, bildirim teslimatı, API key yönetimi, teklif ve fiyat.
       </p>
+
+      {/* Teklif ve fiyat */}
+      <OfferForm
+        current={{
+          trialDays: offer.trialDays,
+          saasMonthlyTry: offer.saasMonthlyTry,
+          agencyFromMonthlyTry: offer.agencyFromMonthlyTry,
+        }}
+        defaults={{
+          trialDays: OFFER.trialDays,
+          saasMonthlyTry: OFFER.saasMonthlyTry,
+          agencyFromMonthlyTry: OFFER.agencyFromMonthlyTry,
+        }}
+      />
 
       {/* Providers + models */}
       <div className="card p-6 mt-8">

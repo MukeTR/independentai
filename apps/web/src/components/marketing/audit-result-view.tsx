@@ -293,7 +293,7 @@ export function PlatformBadge({
           <Plug className="w-3.5 h-3.5" aria-hidden />
           {variant === 'dashboard'
             ? `${platform.label} mağazanı bağla — katalog verisiyle sürekli izleme`
-            : `Independent AI ile ${platform.label} mağazanı bağla`}
+            : `Yanıt ile ${platform.label} mağazanı bağla`}
           <ArrowRight className="w-3.5 h-3.5" aria-hidden />
         </Link>
       ) : (

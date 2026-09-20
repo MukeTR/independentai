@@ -11,6 +11,7 @@ import { Section } from '@/components/section';
 import { BreadcrumbJsonLd, FaqJsonLd } from '@/components/json-ld';
 import { Faq, type FaqItem } from '@/components/marketing/faq';
 import { CtaBlock } from '@/components/marketing/cta-block';
+import { getOffer } from '@/server/offer';
 
 export type ScoringAxis = { key: string; label: string; weight: number; description: string };
 
@@ -33,7 +34,7 @@ export const COMMERCE_TOOL_LINKS = [
   },
 ] as const;
 
-export function CommerceToolPage({
+export async function CommerceToolPage({
   path,
   eyebrow,
   title,
@@ -58,6 +59,7 @@ export function CommerceToolPage({
   children?: ReactNode;
 }) {
   const crumbName = typeof title === 'string' ? title : eyebrow;
+  const offer = await getOffer();
   return (
     <>
       <BreadcrumbJsonLd
@@ -184,11 +186,11 @@ export function CommerceToolPage({
         eyebrow="Sürekli izleme"
         title={
           <>
-            Tek tarama fotoğraf çeker; <span className="text-brand">Independent AI</span> her gün ölçer.
+            Tek tarama fotoğraf çeker; <span className="text-brand">Yanıt</span> her gün ölçer.
           </>
         }
-        body="Mağazanı bağla, ürünlerinin ChatGPT, Claude ve Gemini cevaplarında nasıl anıldığını rakiplerinle karşılaştır. İlk 6 ay ücretsiz."
-        primaryLabel="Ücretsiz başla"
+        body={`Mağazanı bağla, ürünlerinin ChatGPT, Claude ve Gemini cevaplarında nasıl anıldığını rakiplerinle karşılaştır. ${offer.trialDays} gün ücretsiz deneme, kart gerekmez.`}
+        primaryLabel={`${offer.trialDays} gün dene`}
         secondaryHref="/features"
         secondaryLabel="Özellikleri gör"
       />

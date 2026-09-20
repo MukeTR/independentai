@@ -495,7 +495,7 @@ describe('rapor paylaşım linkleri', () => {
     const pub = await call(publicShare, { params: { token } });
     expect(pub.status).toBe(200);
     expect((pub.json as J).brandName).toBe('Paylaşılan Marka');
-    expect((pub.json as J).poweredBy).toBe('Independent AI');
+    expect((pub.json as J).poweredBy).toBe('Yanıt');
     expect(pub.headers.get('x-robots-tag')).toContain('noindex');
     const body = JSON.stringify(pub.json);
     expect(body).not.toContain(brand.email);

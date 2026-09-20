@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
 import { Container } from '@/components/container';
 import { Reveal } from '@/components/marketing/reveal';
+import { getOffer } from '@/server/offer';
+import { formatTry } from '@independentai/shared';
 
 const SAAS = [
   'AI görünürlük takibi',
@@ -23,7 +25,8 @@ const AGENCY = [
   'Aylık growth sprint',
 ];
 
-export function TwoPaths() {
+export async function TwoPaths() {
+  const offer = await getOffer();
   return (
     <section id="agency" className="py-20 lg:py-28 border-t border-hairline scroll-mt-16">
       <Container>
@@ -62,7 +65,7 @@ export function TwoPaths() {
                   Yanıt'ı kullan <ArrowRight className="w-4 h-4" aria-hidden />
                 </Link>
                 <span className="block sm:inline text-[12px] text-ink-faint font-mono mt-3 sm:mt-0 sm:ml-3">
-                  ilk 6 ay ücretsiz · kart yok
+                  {formatTry(offer.saasMonthlyTry)}/ay · {offer.trialDays} gün ücretsiz · kart yok
                 </span>
               </div>
             </div>
@@ -93,7 +96,7 @@ export function TwoPaths() {
                   Ekiple görüş <ArrowRight className="w-4 h-4" aria-hidden />
                 </Link>
                 <span className="block sm:inline text-[12px] text-ink-faint font-mono mt-3 sm:mt-0 sm:ml-3">
-                  aylık sprint · rapor Yanıt'ta
+                  {formatTry(offer.agencyFromMonthlyTry)}/ay’dan · aylık sprint · rapor Yanıt’ta
                 </span>
               </div>
             </div>

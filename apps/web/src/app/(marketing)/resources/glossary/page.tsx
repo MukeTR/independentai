@@ -3,6 +3,7 @@ import { Container } from '@/components/container';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
+import { OFFER } from '@independentai/shared';
 import { ArrowLeft } from 'lucide-react';
 
 export const metadata = buildMetadata({
@@ -70,12 +71,12 @@ const TERMS = [
   {
     term: 'Tenant',
     tr: 'Müşteri hesabı',
-    d: "Independent AI'da bir şirketin hesabı. Bir tenant altında birden fazla user, brand, competitor olabilir.",
+    d: "Yanıt'ta bir şirketin hesabı. Bir tenant altında birden fazla user, brand, competitor olabilir.",
   },
   {
     term: 'Trial',
     tr: 'Deneme süresi',
-    d: "Independent AI'da kayıt tarihinden itibaren 6 ay olan ücretsiz erişim süresi.",
+    d: `Yanıt'ta kayıt tarihinden itibaren ${OFFER.trialDays} gün süren, kart gerektirmeyen ücretsiz tam erişim.`,
   },
   {
     term: 'Visibility Score',
@@ -155,7 +156,7 @@ export default function Glossary() {
             Bu terimleri <span className="text-brand">eyleme dök.</span>
           </>
         }
-        body="Independent AI ile markanızın AI görünürlüğünü ölçmeye bugün başlayın."
+        body="Yanıt ile markanızın AI görünürlüğünü ölçmeye bugün başlayın; rapor ücretsiz."
       />
     </>
   );
