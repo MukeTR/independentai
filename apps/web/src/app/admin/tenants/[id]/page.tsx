@@ -3,6 +3,10 @@ import { notFound } from 'next/navigation';
 import { requireSuperAdmin, getTenantDetail } from '@/server/admin';
 import { computeEntitlement } from '@/server/entitlement';
 import { TenantPlanForm } from './plan-form';
+import { GiftDialog } from './gift-dialog';
+import { ScreenGuide } from '@/components/admin/screen-guide';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminTenantDetail({ params }: { params: Promise<{ id: string }> }) {
   await requireSuperAdmin();
@@ -37,6 +41,10 @@ export default async function AdminTenantDetail({ params }: { params: Promise<{ 
       </div>
 
       <TenantPlanForm tenantId={tenant.id} plan={tenant.plan} trialEndsAt={tenant.trialEndsAt.toISOString()} />
+      <div className="flex items-center gap-3 mt-4 flex-wrap">
+        <GiftDialog tenantId={tenant.id} trialEndsAt={tenant.trialEndsAt.toISOString()} />
+        <ScreenGuide />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8">
         {/* Users */}
