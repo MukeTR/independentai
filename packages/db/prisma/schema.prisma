@@ -1356,13 +1356,17 @@ model ModelUsageSnapshot {
   id          String   @id @default(cuid())
   /// Kaynak anahtarı; şimdilik yalnız "openrouter"
   source      String
-  /// Kaynağın bildirdiği gün, YYYY-MM-DD
+  /// Pencerenin BİTTİĞİ gün, YYYY-MM-DD (tek bir günün verisi değil; bkz. windowDays)
   dataDate    String
   totalTokens String
   /// ModelShare[]
   models      Json
   /// AuthorShare[]
   authors     Json
+  /// AppsBlock — trafiği üreten uygulamalar: { view, windowDays, items[] }. Eski satırlarda NULL.
+  apps        Json?
+  /// Pencerenin uzunluğu (gün). Kaynağın "week" görünümü = 7. Eski satırlarda NULL; okuyan taraf 7 varsayar.
+  windowDays  Int?
   sourceUrl   String
   fetchedAt   DateTime @default(now())
 

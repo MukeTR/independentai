@@ -144,4 +144,11 @@ export const LIMITS = {
     global: { limit: 5000, windowMs: 60_000 },
   },
   agencyDeclare: { name: 'agency-declare', limit: 5, windowMs: 3_600_000 },
+  // Ham veri ucu: salt-okur, tek bir kaydı döndürür; blocklist ile aynı cömertlikte.
+  publicModelRankings: {
+    name: 'model-rankings',
+    limit: 60,
+    windowMs: 60_000,
+    global: { limit: 5000, windowMs: 60_000 },
+  },
 } as const satisfies Record<string, LimitSpec>;
