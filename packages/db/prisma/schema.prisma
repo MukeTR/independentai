@@ -321,6 +321,17 @@ enum AuditKind {
   COMMERCE // mağaza AI commerce readiness (URL veya katalog)
   PRODUCT_PAGE // tek ürün sayfası uygunluk testi
   CRAWLER // AI crawler & indexability testi
+  ONPAGE_SEO // /arac/seo-karnesi
+  SOCIAL_PREVIEW // /arac/whatsapp-onizleme
+  SECURITY_HEADERS // /arac/guvenlik-basliklari (+TLS)
+  REDIRECTS // /arac/yonlendirme-zinciri
+  BROKEN_LINKS // /arac/kirik-link-bulucu
+  ROBOTS_SITEMAP // /arac/robots-sitemap-kontrol
+  HREFLANG // /arac/hreflang-kontrol
+  SCHEMA_AUDIT // /arac/schema-denetimi
+  QUESTION_COVERAGE // /arac/satin-alma-sorusu-kapsama
+  TRUST_SIGNALS // /arac/guven-sinyalleri
+  COMPARE // /arac/rakip-kiyas
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -810,19 +821,166 @@ model IntegrationWebhookDelivery {
   @@index([connectionId, receivedAt])
 }
 
-// Kayıtsız (public) araç sonuçları — kısa saklama, anonim id, hassas veri yok
+// Kayıtsız (public) araç sonuçları — kısa saklama (30 gün), anonim id, hassas veri yok
 model PublicScan {
-  id        String    @id @default(cuid())
-  kind      AuditKind
-  urlHash   String // sha256(normalize(url)) — ham URL saklanmaz
-  hostname  String
-  score     Int?
-  result    Json
-  createdAt DateTime  @default(now())
-  expiresAt DateTime
+  id          String    @id @default(cuid())
+  kind        AuditKind
+  urlHash     String // sha256(url|kind|sector|competitorUrl) — ham URL saklanmaz
+  hostname    String
+  score       Int?
+  result      Json
+  visitorHash String? // sha256(VISITOR_SALT|ip|uaFamily) — ham IP yok
+  tenantId    String? // FK'sız; deleteTenantCascade null'lar
+  sector      String? // SECTOR_SLUGS slug'ı
+  meta        Json? // {competitorHostname?, waf?, partial?}
+  partial     Boolean   @default(false)
+  views       Int       @default(0) // /rapor görüntüleme
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
 
   @@index([expiresAt])
   @@index([urlHash, kind, createdAt])
+  @@index([hostname, createdAt])
+  @@index([visitorHash, createdAt])
+  @@index([tenantId, createdAt])
+}
+
+// ───────────────────────────────────────────────────────────────
+//  Gece programı (2026-09-21): lead paneli, yasaklı siteler, duyurular, ajans tespiti
+// ───────────────────────────────────────────────────────────────
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+}
+
+enum LeadSource {
+  TOOL
+  CONTACT
+  ONBOARDING
+  RANK_CHECK
+  ADMIN
+}
+
+// Satış lead'i — araç taramalarından (yalnız hostname+skor) veya iletişim formundan (PII, yalnız consentAt ile).
+// Bu tablodaki hiçbir alan LLM'e gönderilmez (server/leads.ts sözleşmesi + tests/unit/leads-no-llm.test.ts).
+model Lead {
+  id              String      @id @default(cuid())
+  hostname        String?     @unique // sitesiz iletişim lead'i için null
+  firstSeenAt     DateTime    @default(now())
+  lastSeenAt      DateTime    @default(now())
+  scanCount       Int         @default(0)
+  lastScore       Int?
+  bestScore       Int?
+  kinds           AuditKind[] @default([])
+  platform        String?
+  sector          String?
+  tenantId        String? // FK'sız; deleteTenantCascade null'lar
+  status          LeadStatus  @default(NEW)
+  source          LeadSource  @default(TOOL)
+  ownerUserId     String?
+  // İletişim formu — yalnız consentAt ile; LLM'e ASLA gönderilmez
+  contactName     String?
+  contactEmail    String?
+  contactPhone    String?
+  company         String?
+  message         String?     @db.Text
+  topic           String? // satis | ajans | destek | basin | ortaklik
+  consentAt       DateTime? // KVKK aydınlatma onayı
+  iysConsentAt    DateTime? // ticari ileti izni (ayrı kutu)
+  utm             Json? // {src, sektor, token, source, medium, campaign}
+  lastReportToken String?
+  notes           String?     @db.Text
+  activity        Json? // [{at, action, note, byUserId?}]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([status, lastSeenAt])
+  @@index([lastSeenAt])
+  @@index([contactEmail])
+  @@index([tenantId])
+  @@index([source, createdAt])
+  @@index([sector])
+}
+
+// Taranması engellenen siteler — hostname normalize (küçük harf, www. yok, punycode); yönlendirme yalnız YouTube.
+model BlockedSite {
+  id          String   @id @default(cuid())
+  hostname    String   @unique
+  redirectUrl String // yalnız https://(www.)?youtube.com/… | https://youtu.be/…
+  note        String?
+  hits        Int      @default(0)
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum AnnouncementTone {
+  INFO
+  PROMO
+  WARN
+}
+
+enum AnnouncementPlacement {
+  LANDING
+  PRICING
+  TOOLS
+  APP
+}
+
+// Admin'den yönetilen duyuru şeridi (ton, yerleşim, tarih aralığı).
+model Announcement {
+  id          String                @id @default(cuid())
+  tone        AnnouncementTone      @default(INFO)
+  placement   AnnouncementPlacement @default(LANDING)
+  text        String
+  href        String?
+  ctaLabel    String?
+  enabled     Boolean               @default(false)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdById String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([placement, enabled])
+}
+
+enum AgencySubject {
+  TENANT
+  VISITOR
+}
+
+enum AgencySignalStatus {
+  CANDIDATE
+  CONTACTED
+  CONVERTED
+  DISMISSED
+  DECLARED
+}
+
+// Ajans adayı sinyali — tenant veya pseudonim ziyaretçi (visitorHash) başına tek satır.
+// Tenant: ek sütun yok (industry zaten var; ajans beyanı declaredAt'ta).
+model AgencySignal {
+  id         String             @id @default(cuid())
+  subject    AgencySubject
+  subjectId  String // tenantId | visitorHash
+  score      Int                @default(0)
+  reasons    Json // [{key, weight, evidence}]
+  hostnames  String[]           @default([]) // ≤20 farklı host (kanıt)
+  status     AgencySignalStatus @default(CANDIDATE)
+  declaredAt DateTime?
+  note       String?
+  computedAt DateTime           @default(now())
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@unique([subject, subjectId])
+  @@index([status, score])
+  @@index([computedAt])
 }
 
 // ───────────────────────────────────────────────────────────────

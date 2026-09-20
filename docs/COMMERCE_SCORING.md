@@ -81,6 +81,10 @@ Her gerçek `syncedAt` damgası taşır; sonuç "katalog X tarihinde senkronland
 - Limitler: IP başına 10/saat + küresel 500/saat (araç başına); oturumlu kullanıcıda tenant bazlı `LIMITS.tool`.
   Ürün yazıcı: IP 5/saat + küresel 100/saat; sağlayıcı anahtarı yoksa 503 (sahte çıktı üretilmez).
 - E-posta duvarı yoktur; PII saklanmaz (yalnızca URL, hostname, skor ve bulgular).
+- Gizlilik (gece programı): `PublicScan.visitorHash` = sha256(tuz | IP | tarayıcı ailesi) **pseudonim** kimliktir; ham IP ve
+  tam User-Agent saklanmaz, saklama süresi 30 gündür (`expiresAt`, günlük cron siler). `urlHash` artık
+  sha256(url|tür|sektör|rakipUrl)'dir. Lead kaydı yalnız hostname + skor taşır; iletişim formu verisi yalnız açık rızayla
+  (`consentAt`) yazılır ve hiçbir alan LLM'e gönderilmez.
 
 ## Sınırlamalar (dürüst beyan)
 

@@ -19,7 +19,16 @@
     "test": {
       "dependsOn": ["^build"],
       "outputs": [],
-      "env": ["IAI_TEST_MODE", "IAI_ALLOW_MOCK", "CI"]
+      "env": [
+        "IAI_TEST_MODE",
+        "IAI_ALLOW_MOCK",
+        "CI",
+        "REPORT_TOKEN_SECRET",
+        "SALES_EMAIL",
+        "E2E_PORT",
+        "NIGHT_INTEGRATE",
+        "VISITOR_SALT"
+      ]
     },
     "test:integration": {
       "dependsOn": ["^build"],
@@ -35,7 +44,12 @@
         "IAI_LOG_SILENT",
         "NEXT_PUBLIC_SITE_URL",
         "REALTIME_PUBLISH",
-        "CI"
+        "CI",
+        "REPORT_TOKEN_SECRET",
+        "SALES_EMAIL",
+        "E2E_PORT",
+        "NIGHT_INTEGRATE",
+        "VISITOR_SALT"
       ]
     }
   }

@@ -1,6 +1,7 @@
 /**
  * Panel araç kutusu — TEK kaynak. Pazarlama sayfaları araç sayısını buradan (DASHBOARD_TOOLS.length) okur;
- * elle sayı yazılmaz.
+ * elle sayı yazılmaz. URL tabanlı/ücretsiz araçlar `lib/tool-registry.ts`'ten türetilir (`dashboard && enabled`);
+ * yalnız panelde olan tarayıcı-içi araçlar `PANEL_ONLY_TOOLS`'ta elle tutulur.
  */
 import {
   FileText,
@@ -18,19 +19,59 @@ import {
   PenLine,
   Store,
   PackageSearch,
-  Bot as BotIcon,
   Tags,
+  Search,
+  MessageCircle,
+  ShieldCheck,
+  ArrowRightLeft,
+  Unlink,
+  Map,
+  Languages,
+  Braces,
+  HelpCircle,
+  BadgeCheck,
+  Scale,
 } from 'lucide-react';
+import { TOOL_REGISTRY, dashboardToolPath, type ToolEntry, type ToolGroup, type ToolIcon } from '@/lib/tool-registry';
+
+export type DashboardToolCategory = 'Denetim' | 'Keşif' | 'Üretici' | 'Hesaplayıcı' | 'E-ticaret' | 'Site sağlığı';
 
 export type DashboardTool = {
   href: string;
   icon: typeof Gauge;
   title: string;
   desc: string;
-  category: 'Denetim' | 'Keşif' | 'Üretici' | 'Hesaplayıcı' | 'E-ticaret';
+  category: DashboardToolCategory;
 };
 
-export const DASHBOARD_TOOLS: DashboardTool[] = [
+const ICONS: Record<ToolIcon, typeof Gauge> = {
+  Gauge,
+  MessageCircle,
+  ShieldCheck,
+  ArrowRightLeft,
+  Unlink,
+  Map,
+  Languages,
+  Braces,
+  HelpCircle,
+  BadgeCheck,
+  Scale,
+  Store,
+  PackageSearch,
+  Bot,
+  Tags,
+  Search,
+};
+
+const GROUP_CATEGORY: Record<ToolGroup, DashboardToolCategory> = {
+  'site-sagligi': 'Site sağlığı',
+  'paylasim-dil': 'Site sağlığı',
+  'ai-gorunurluk': 'Denetim',
+  'e-ticaret': 'E-ticaret',
+};
+
+/** Yalnız panelde olan (registry dışı) araçlar. */
+export const PANEL_ONLY_TOOLS: DashboardTool[] = [
   {
     href: '/dashboard/tools/geo-audit',
     icon: Gauge,
@@ -122,34 +163,29 @@ export const DASHBOARD_TOOLS: DashboardTool[] = [
     desc: '25 maddelik interaktif checklist, kategori bazlı skor, rapor indir.',
     category: 'Denetim',
   },
-  {
-    href: '/dashboard/tools/ecommerce-visibility',
-    icon: Store,
-    title: 'E-ticaret AI Görünürlük Testi',
-    desc: 'Mağazanızı 6 eksende puanlar; bağlı katalog veri kalitesi ve ticari soru önerileriyle birlikte.',
-    category: 'E-ticaret',
-  },
-  {
-    href: '/dashboard/tools/product-page',
-    icon: PackageSearch,
-    title: 'Ürün Sayfası Testi',
-    desc: 'Product JSON-LD, açıklama özgünlüğü, görsel alt metni, SSS/özellik tablosu ve AI cevap uyumu.',
-    category: 'E-ticaret',
-  },
-  {
-    href: '/dashboard/tools/ai-crawler',
-    icon: BotIcon,
-    title: 'AI Crawler Testi',
-    desc: 'robots.txt bot matrisi (GPTBot, ClaudeBot, PerplexityBot…), noindex/canonical/sitemap/llms.txt.',
-    category: 'E-ticaret',
-  },
-  {
-    href: '/dashboard/tools/product-writer',
-    icon: Tags,
-    title: 'Ürün Açıklama Yazıcı',
-    desc: 'Yalnızca verdiğiniz özelliklerle açıklama + 5 SSS + meta + Product JSON-LD iskeleti.',
-    category: 'E-ticaret',
-  },
 ];
 
-export const DASHBOARD_TOOL_CATEGORIES = ['Denetim', 'Keşif', 'Üretici', 'Hesaplayıcı', 'E-ticaret'] as const;
+/** Registry girişi → panel kartı (ikon adı lucide bileşenine çevrilir). */
+export function toDashboardTool(entry: ToolEntry): DashboardTool {
+  return {
+    href: dashboardToolPath(entry),
+    icon: ICONS[entry.icon],
+    title: entry.title,
+    desc: entry.description,
+    category: GROUP_CATEGORY[entry.group],
+  };
+}
+
+export const DASHBOARD_TOOLS: DashboardTool[] = [
+  ...PANEL_ONLY_TOOLS,
+  ...TOOL_REGISTRY.filter((t) => t.dashboard && t.enabled).map(toDashboardTool),
+];
+
+export const DASHBOARD_TOOL_CATEGORIES = [
+  'Denetim',
+  'Keşif',
+  'Üretici',
+  'Hesaplayıcı',
+  'E-ticaret',
+  'Site sağlığı',
+] as const satisfies readonly DashboardToolCategory[];

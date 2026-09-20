@@ -254,6 +254,10 @@ export async function deleteTenantCascade(tenantId: string): Promise<void> {
     prisma.brandFact.deleteMany({ where: { tenantId } }),
     prisma.apiToken.deleteMany({ where: { tenantId } }),
     prisma.notificationLog.deleteMany({ where: { tenantId } }),
+    // Lead/PublicScan tenant bağını koparır (hostname bazlı kayıt kalır, kişisel bağ kalkar); ajans sinyali silinir
+    prisma.lead.updateMany({ where: { tenantId }, data: { tenantId: null } }),
+    prisma.publicScan.updateMany({ where: { tenantId }, data: { tenantId: null } }),
+    prisma.agencySignal.deleteMany({ where: { subject: 'TENANT', subjectId: tenantId } }),
     prisma.tenant.delete({ where: { id: tenantId } }), // User/Brand/Prompt/ModelRun/Mention/Invite cascade
   ]);
   log.info('tenant.deleted', { tenantId });
@@ -330,6 +334,32 @@ export async function exportTenantData(tenantId: string) {
       select: { id: true, name: true, prefix: true, scopes: true, createdAt: true, lastUsedAt: true, revokedAt: true },
     }),
   ]);
+  // Gece programı: tenant'a bağlı lead/public tarama özetleri ve ajans sinyali (KVKK veri taşınabilirliği)
+  const [leads, publicScans, agencySignal] = await Promise.all([
+    prisma.lead.findMany({
+      where: { tenantId },
+      select: {
+        id: true,
+        hostname: true,
+        status: true,
+        source: true,
+        scanCount: true,
+        lastScore: true,
+        bestScore: true,
+        sector: true,
+        firstSeenAt: true,
+        lastSeenAt: true,
+      },
+    }),
+    prisma.publicScan.findMany({
+      where: { tenantId },
+      select: { id: true, kind: true, hostname: true, score: true, sector: true, createdAt: true, expiresAt: true },
+    }),
+    prisma.agencySignal.findUnique({
+      where: { subject_subjectId: { subject: 'TENANT', subjectId: tenantId } },
+      select: { score: true, status: true, reasons: true, declaredAt: true, computedAt: true },
+    }),
+  ]);
   return {
     exportedAt: new Date().toISOString(),
     tenant,
@@ -340,5 +370,8 @@ export async function exportTenantData(tenantId: string) {
     brandFacts: facts,
     alertConfig: alert,
     apiTokens: tokens,
+    leads,
+    publicScans,
+    agencySignal,
   };
 }

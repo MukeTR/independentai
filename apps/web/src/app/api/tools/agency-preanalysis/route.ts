@@ -7,6 +7,7 @@ import { runGeoAudit, normalizeAuditUrl, type AuditFinding } from '@/server/geo-
 import { parsePublicUrl, safeFetch, UnsafeUrlError } from '@/server/safe-fetch';
 import { detectPlatform, PLATFORM_LABELS } from '@/server/commerce/platform-detect';
 import type { PreanalysisItem } from '@/lib/preanalysis-types';
+import { blockedJson, findBlockedSite } from '@/server/blocklist';
 
 export const maxDuration = 60;
 
@@ -48,6 +49,12 @@ export const POST = route('tools.agency_preanalysis', async (req) => {
   if (!Array.isArray(body.domains) || body.domains.length === 0) throw new ClientError('En az bir alan adı girin');
   if (body.domains.length > MAX_DOMAINS) throw new ClientError(`En fazla ${MAX_DOMAINS} alan adı`);
   const domains = [...new Set(body.domains.map(normalizeDomain))];
+
+  // Yasaklı site (yalnız okuma; "kalıcı kayıt yok" sözleşmesi korunur): hiçbir alan adı taranmaz
+  for (const domain of domains) {
+    const blocked = await findBlockedSite(domain);
+    if (blocked) return blockedJson(blocked);
+  }
 
   await hydrateEnvFromConfig();
   const results: PreanalysisItem[] = await Promise.all(

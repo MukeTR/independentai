@@ -110,6 +110,38 @@ export const CAPABILITIES: Capability[] = [
   },
   { key: 'activity_feed', label: 'Aktivite akışı', status: 'live' },
 
+  // ── Yanıt Agency, lead ve duyuru (gece programı 2026-09-21) ──
+  {
+    key: 'agency_service',
+    label: 'Yanıt Agency uygulama hizmeti',
+    status: 'beta',
+    note: 'Teklifle; iletişim formu üzerinden başlar; kodda hizmet akışı yok',
+  },
+  {
+    key: 'agency_partner_program',
+    label: 'Ajans ortaklık programı',
+    status: 'beta',
+    note: 'Çalışma alanları canlı; ortaklık koşulları teklifle, başvuru iletişim formundan',
+  },
+  {
+    key: 'announcements',
+    label: 'Duyuru şeridi (admin yönetimli)',
+    status: 'live',
+    note: 'Ton, yerleşim ve tarih aralığı; kapatma tarayıcıda hatırlanır',
+  },
+  {
+    key: 'lead_capture',
+    label: 'Lead kaydı (araç taramaları + iletişim formu)',
+    status: 'live',
+    note: 'Araçlardan yalnız hostname ve skor; kişisel veri yalnız açık rızayla ve LLM’e gönderilmez',
+  },
+  {
+    key: 'tasks',
+    label: 'Yapılacaklar listesi',
+    status: 'roadmap',
+    note: 'Panelde henüz yok; landing’deki örnek temsilidir',
+  },
+
   // ── AI Discovery Sensor ──
   {
     key: 'discovery_sensor',

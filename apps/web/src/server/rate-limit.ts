@@ -133,4 +133,15 @@ export const LIMITS = {
   slackTest: { name: 'slack-test', limit: 3, windowMs: 3_600_000 },
   invite: { name: 'invite', limit: 20, windowMs: 3_600_000 },
   tool: { name: 'tool', limit: 30, windowMs: 3_600_000 },
+  // ── Gece programı: iletişim formu, kalıcı rapor, yasaklı site ipucu, duyurular, ajans beyanı ──
+  contact: { name: 'contact', limit: 5, windowMs: 3_600_000, global: { limit: 200, windowMs: 3_600_000 } },
+  publicReport: { name: 'public-report', limit: 60, windowMs: 3_600_000, global: { limit: 5000, windowMs: 3_600_000 } },
+  publicBlocklist: { name: 'blocklist', limit: 60, windowMs: 60_000, global: { limit: 5000, windowMs: 60_000 } },
+  publicAnnouncements: {
+    name: 'announcements',
+    limit: 60,
+    windowMs: 60_000,
+    global: { limit: 5000, windowMs: 60_000 },
+  },
+  agencyDeclare: { name: 'agency-declare', limit: 5, windowMs: 3_600_000 },
 } as const satisfies Record<string, LimitSpec>;

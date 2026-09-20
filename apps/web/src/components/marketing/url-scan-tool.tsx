@@ -11,6 +11,7 @@ import { Check, Link2, Loader2, Search } from 'lucide-react';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { ApiError } from '@/lib/api-client';
 import { useHydrated } from '@/lib/use-hydrated';
+import { handleBlockedResponse } from '@/lib/blocked-redirect';
 
 export type ScanState<T> =
   | { status: 'idle' }
@@ -107,6 +108,7 @@ export function UrlScanTool<T>({
       setCountdown(null);
       try {
         const result = await scanFetch<T>(endpoint, { url: value });
+        if (handleBlockedResponse(result)) return; // yasaklı site → yönlendirme (allowlist istemcide yeniden doğrulanır)
         setState({ status: 'done', url: value, result });
       } catch (err) {
         const e =

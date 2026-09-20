@@ -15,7 +15,7 @@ export default function ToolsHub() {
         sunucu kaydı yok, gizliliğiniz korunur.
       </p>
 
-      {CATEGORIES.map((cat) => (
+      {CATEGORIES.filter((cat) => TOOLS.some((t) => t.category === cat)).map((cat) => (
         <section key={cat} className="mt-10">
           <div className="eyebrow mb-4">{cat}</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

@@ -22,6 +22,11 @@ export default defineConfig({
       IAI_ALLOW_MOCK: '1',
       NODE_ENV: 'test',
       REALTIME_PUBLISH: '1',
+      REPORT_TOKEN_SECRET: 'test-report-token-secret-32chars-long!!',
+      VISITOR_SALT: 'test-visitor-salt-16plus',
+      SALES_EMAIL: 'satis@test.local',
+      E2E_PORT: process.env.E2E_PORT ?? '',
+      NIGHT_INTEGRATE: process.env.NIGHT_INTEGRATE ?? '',
     },
   },
 });

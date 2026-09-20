@@ -8,6 +8,8 @@ import { seedBotRegistry } from '@/server/discovery/crawler-ingest';
 import { cronSecret, siteUrl } from '@/server/env';
 import { log } from '@/server/logger';
 import { cronAuthorized } from '@/server/cron-auth';
+import { pruneExpiredPublicScans } from '@/server/public-scan-maintenance';
+import { runAgencySignals } from '@/server/agency-signal';
 
 export const maxDuration = 300; // Vercel Hobby/Pro varsayılan ve Hobby maksimumu (fluid compute)
 
@@ -59,6 +61,15 @@ export async function GET(req: NextRequest) {
       await pruneRateLimitBuckets();
     } catch {
       /* best-effort */
+    }
+    // Gece bakımı (yalnız ilk hop): süresi dolmuş public taramalar + ajans sinyalleri; hata turu durdurmaz.
+    if (hop === 0) {
+      try {
+        await pruneExpiredPublicScans({ deadlineAt: startedAt + 285_000 });
+        await runAgencySignals({ deadlineAt: startedAt + 285_000 });
+      } catch (err) {
+        log.warn('cron.night_maintenance_failed', { err });
+      }
     }
   }
 

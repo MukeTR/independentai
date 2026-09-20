@@ -6,6 +6,7 @@ import { enforceRateLimit, LIMITS, type LimitSpec } from '@/server/rate-limit';
 import { safeFetch, parsePublicUrl, UnsafeUrlError } from '@/server/safe-fetch';
 import { normalizeAuditUrl } from '@/server/geo-audit';
 import { detectPlatform, PLATFORM_LABELS } from '@/server/commerce/platform-detect';
+import { blockedJson, findBlockedSite } from '@/server/blocklist';
 
 export const maxDuration = 30;
 
@@ -35,6 +36,8 @@ export const POST = route('tools.platform_detect', async (req) => {
   } catch (err) {
     throw new ClientError(err instanceof UnsafeUrlError ? err.message : 'Geçersiz mağaza adresi');
   }
+  const blocked = await findBlockedSite(new URL(url).hostname);
+  if (blocked) return blockedJson(blocked);
 
   let res;
   try {

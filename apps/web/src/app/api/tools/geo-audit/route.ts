@@ -8,6 +8,7 @@ import { runGeoAudit, normalizeAuditUrl } from '@/server/geo-audit';
 import { parsePublicUrl, UnsafeUrlError } from '@/server/safe-fetch';
 import { enforceRateLimit, LIMITS } from '@/server/rate-limit';
 import { log } from '@/server/logger';
+import { blockedJson, findBlockedSite } from '@/server/blocklist';
 
 export const maxDuration = 60;
 
@@ -25,6 +26,9 @@ export const POST = route('tools.geo_audit', async (req) => {
   } catch (err) {
     throw new ClientError(err instanceof UnsafeUrlError ? err.message : 'Geçersiz URL');
   }
+  // Yasaklı site: fetch/persist yok, 200 {blocked, redirectUrl}
+  const blocked = await findBlockedSite(new URL(url).hostname);
+  if (blocked) return blockedJson(blocked);
 
   await hydrateEnvFromConfig();
   const result = await runGeoAudit(url);

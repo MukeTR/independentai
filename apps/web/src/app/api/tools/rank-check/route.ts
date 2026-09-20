@@ -7,6 +7,7 @@ import { enforceRateLimit, LIMITS } from '@/server/rate-limit';
 import { getActor } from '@/server/authz';
 import { mockAllowed } from '@/server/env';
 import { cleanName } from '@/server/normalize';
+import { blockedJson, findBlockedSite, normalizeHostname } from '@/server/blocklist';
 
 export const maxDuration = 60;
 
@@ -19,13 +20,19 @@ export const POST = route('tools.rank_check', async (req) => {
   if (actor) await enforceRateLimit(req, LIMITS.tool, `tenant:${actor.tenantId}`);
   else await enforceRateLimit(req, LIMITS.publicRankCheck);
 
-  const body = await readJson<{ brand?: unknown; prompt?: unknown; provider?: unknown }>(req);
+  const body = await readJson<{ brand?: unknown; prompt?: unknown; provider?: unknown; website?: unknown }>(req);
   const brand = cleanName(body.brand, 'Marka adı');
   const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : '';
   if (prompt.length < 3 || prompt.length > 300) throw new ClientError('Soru 3-300 karakter olmalı');
   const provider = body.provider;
   if (provider !== 'OPENAI' && provider !== 'ANTHROPIC' && provider !== 'GOOGLE')
     throw new ClientError('Geçersiz sağlayıcı');
+  // İsteğe bağlı web sitesi: yasaklı listede ise model çağrısı yapılmaz
+  const websiteHost = typeof body.website === 'string' ? normalizeHostname(body.website) : null;
+  if (websiteHost) {
+    const blocked = await findBlockedSite(websiteHost);
+    if (blocked) return blockedJson(blocked);
+  }
 
   await hydrateEnvFromConfig();
   const adapter = getAdapter(provider as ProviderId, { allowMock: mockAllowed() });
