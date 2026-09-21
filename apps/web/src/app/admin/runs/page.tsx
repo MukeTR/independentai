@@ -28,7 +28,9 @@ export default async function AdminRuns() {
           <tbody className="divide-y divide-hairline">
             {runs.length === 0 && (
               <tr>
-                <td colSpan={8} className="text-center py-12 text-ink-muted">Henüz çalıştırma yok.</td>
+                <td colSpan={8} className="text-center py-12 text-ink-muted">
+                  Henüz çalıştırma yok.
+                </td>
               </tr>
             )}
             {runs.map((r) => (
@@ -47,7 +49,11 @@ export default async function AdminRuns() {
                 <td className="px-4 py-2.5 text-right tabular text-ink-faint">{r.tokensUsed ?? '—'}</td>
                 <td className="px-4 py-2.5 text-right tabular text-ink-faint">{r.latencyMs}ms</td>
                 <td className="px-4 py-2.5">
-                  {r.isMocked ? <span className="chip !text-[10px]">mock</span> : <span className="text-positive">●</span>}
+                  {r.isMocked ? (
+                    <span className="chip !text-[10px]">mock</span>
+                  ) : (
+                    <span className="text-positive">●</span>
+                  )}
                 </td>
               </tr>
             ))}

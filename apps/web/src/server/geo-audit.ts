@@ -4,7 +4,8 @@
  * Bağımlılıksız: regex tabanlı HTML analizi + opsiyonel LLM "anlaşılabilirlik" pass'i.
  */
 import { complete } from '@independentai/ai';
-import { safeFetch } from './safe-fetch';
+import { safeFetch, UnsafeUrlError } from './safe-fetch';
+import { ClientError } from './errors';
 
 export type AuditStatus = 'pass' | 'warn' | 'fail';
 export type AuditFinding = { category: string; status: AuditStatus; title: string; detail: string; fix?: string };
@@ -20,22 +21,39 @@ export type GeoAuditResult = {
     freshness: number;
   };
   findings: AuditFinding[];
+  /**
+   * Sayfa hiç okunamadıysa doldurulur. Bu durumda `overallScore` bir DEĞERLENDİRME DEĞİLDİR;
+   * ölçüm hiç yapılamamıştır. Arayüz bu alanı görünce skor yerine "taranamadı" durumunu göstermeli.
+   */
+  unreachable?: { reason: 'network' | 'http'; status: number | null };
 };
 
 const FETCH_TIMEOUT = 12000;
 const CURRENT_YEAR = new Date().getFullYear();
 
+/**
+ * SSRF-güvenli metin çekme. Güvensiz URL (özel ağ, yasak host/port) → ClientError (kullanıcıya
+ * açık mesaj); ağ/HTTP hatası → null.
+ */
 export async function fetchText(url: string, timeout = FETCH_TIMEOUT): Promise<string | null> {
   try {
-    // SSRF-güvenli: internal/loopback/metadata adresleri engellenir, redirect'ler yeniden doğrulanır.
-    const res = await safeFetch(url, {
-      timeout,
-      headers: { 'User-Agent': 'IndependentAI-GEOBot/1.0 (+https://independentai.space)' },
-    });
+    const res = await safeFetch(url, { timeout });
     if (!res || !res.ok) return null;
-    return await res.text();
-  } catch {
+    return res.text;
+  } catch (err) {
+    if (err instanceof UnsafeUrlError) throw new ClientError(err.message);
     return null;
+  }
+}
+
+/** Kullanıcı girdisini normalize eder ve güvensizse ClientError fırlatır (fetch yapmaz). */
+export function normalizeAuditUrl(rawUrl: string): string {
+  let url = rawUrl.trim();
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  try {
+    return new URL(url).toString();
+  } catch {
+    throw new ClientError('Geçersiz URL');
   }
 }
 
@@ -53,6 +71,24 @@ function countMatches(re: RegExp, html: string): number {
   return (html.match(re) || []).length;
 }
 
+/**
+ * `fetchText` her başarısızlığı `null`'a indirger; burada nedeni ayırmamız gerekiyor:
+ * adres hiç çözülmediyse (yazım hatası, kapalı alan adı) verilecek mesaj, sunucunun 403 dönmesinden farklı.
+ */
+async function fetchPageDetailed(
+  url: string,
+): Promise<{ html: string } | { html: null; reason: 'network' | 'http'; status: number | null }> {
+  try {
+    const res = await safeFetch(url, { timeout: FETCH_TIMEOUT });
+    if (!res) return { html: null, reason: 'network', status: null };
+    if (!res.ok) return { html: null, reason: 'http', status: res.status };
+    return { html: res.text };
+  } catch (err) {
+    if (err instanceof UnsafeUrlError) throw new ClientError(err.message);
+    return { html: null, reason: 'network', status: null };
+  }
+}
+
 export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   let url = rawUrl.trim();
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
@@ -64,19 +100,33 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
     }
   })();
 
-  const html = await fetchText(url);
+  const page = await fetchPageDetailed(url);
   const findings: AuditFinding[] = [];
 
-  if (html === null) {
+  if (page.html === null) {
+    const isHttp = page.reason === 'http';
     return {
       url,
       overallScore: 0,
       breakdown: { answerFirst: 0, citationAuthority: 0, aiComprehension: 0, technical: 0, freshness: 0 },
+      unreachable: { reason: page.reason, status: page.status },
       findings: [
-        { category: 'Erişim', status: 'fail', title: 'Sayfa çekilemedi', detail: 'URL yanıt vermedi veya engelledi. HTTPS, erişilebilirlik ve bot engellerini kontrol edin.' },
+        {
+          category: 'Erişim',
+          status: 'fail',
+          title: isHttp ? `Sayfa ${page.status} döndürdü` : 'Adrese ulaşılamadı',
+          detail: isHttp
+            ? `Sunucu cevap verdi ama sayfayı vermedi (HTTP ${page.status}). Bot engeli, güvenlik duvarı ya da kaldırılmış bir sayfa olabilir.`
+            : 'Alan adı çözülemedi veya sunucu hiç cevap vermedi. Yazımı kontrol edin; site açıksa sunucu bizim isteğimizi engelliyor olabilir.',
+          fix: isHttp
+            ? 'Sunucu/CDN kurallarında YanitBot ve diğer yapay zekâ tarayıcılarına izin verin, sonra yeniden deneyin.'
+            : 'Adresi tarayıcıda açıp çalıştığını doğrulayın, ardından tam adresi (https:// dahil) yapıştırarak tekrar deneyin.',
+        },
       ],
     };
   }
+
+  const html = page.html;
 
   const text = stripTags(html);
   const wordCount = text.split(/\s+/).filter(Boolean).length;
@@ -109,12 +159,53 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   if (noindex) technical = Math.max(0, technical - 40);
   technical = Math.min(100, technical);
 
-  findings.push(statusFinding('Teknik', isHttps, 'HTTPS', 'Site güvenli bağlantı kullanıyor.', 'SSL sertifikası kurun.'));
-  findings.push(statusFinding('Teknik', hasJsonLd, 'Yapısal veri (JSON-LD)', 'Sayfada schema.org yapısal verisi var.', 'Organization/FAQ JSON-LD ekleyin — Schema aracımızı kullanın.'));
-  findings.push(statusFinding('Teknik', hasMetaDesc, 'Meta açıklama', 'Anlamlı bir meta açıklama mevcut.', '20+ karakterlik açıklayıcı meta description ekleyin.'));
-  findings.push(statusFinding('Teknik', aiBotsAllowed, 'AI bot erişimi', 'GPTBot ve diğer AI crawler\'lar engellenmemiş.', 'robots.txt\'de AI botlara izin verin — robots.txt aracımızı kullanın.'));
-  findings.push(statusFinding('Teknik', !!llmsTxt, 'llms.txt', 'Sitenizde llms.txt bulundu.', 'llms.txt ekleyin — AI\'a markanızı doğrudan anlatır.'));
-  if (noindex) findings.push({ category: 'Teknik', status: 'fail', title: 'noindex etiketi', detail: 'Sayfa arama motorlarına kapalı işaretlenmiş!', fix: 'robots meta etiketinden noindex\'i kaldırın.' });
+  findings.push(
+    statusFinding('Teknik', isHttps, 'HTTPS', 'Site güvenli bağlantı kullanıyor.', 'SSL sertifikası kurun.'),
+  );
+  findings.push(
+    statusFinding(
+      'Teknik',
+      hasJsonLd,
+      'Yapısal veri (JSON-LD)',
+      'Sayfada schema.org yapısal verisi var.',
+      'Organization/FAQ JSON-LD ekleyin — Schema aracımızı kullanın.',
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'Teknik',
+      hasMetaDesc,
+      'Meta açıklama',
+      'Anlamlı bir meta açıklama mevcut.',
+      '20+ karakterlik açıklayıcı meta description ekleyin.',
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'Teknik',
+      aiBotsAllowed,
+      'AI bot erişimi',
+      "GPTBot ve diğer AI crawler'lar engellenmemiş.",
+      "robots.txt'de AI botlara izin verin — robots.txt aracımızı kullanın.",
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'Teknik',
+      !!llmsTxt,
+      'llms.txt',
+      'Sitenizde llms.txt bulundu.',
+      "llms.txt ekleyin — AI'a markanızı doğrudan anlatır.",
+    ),
+  );
+  if (noindex)
+    findings.push({
+      category: 'Teknik',
+      status: 'fail',
+      title: 'noindex etiketi',
+      detail: 'Sayfa arama motorlarına kapalı işaretlenmiş!',
+      fix: "robots meta etiketinden noindex'i kaldırın.",
+    });
 
   // ───────── CONTENT STRUCTURE / ANSWER-FIRST ─────────
   const h1 = countMatches(/<h1[\s>]/gi, html);
@@ -135,10 +226,42 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   answerFirst += hasQuestionHeadings ? 14 : 0;
   answerFirst = Math.min(100, answerFirst);
 
-  findings.push(statusFinding('İçerik', h1 === 1, 'Tek H1 başlık', 'Sayfada tam olarak bir H1 var.', h1 === 0 ? 'Bir H1 başlık ekleyin.' : 'Birden fazla H1 var, tek H1 kullanın.'));
-  findings.push(statusFinding('İçerik', h2 >= 2, 'Alt başlık hiyerarşisi', 'Yeterli H2 alt başlık ile içerik bölümlenmiş.', 'İçeriği H2/H3 ile bölümleyin — AI bölümleri ayrı ayrı alıntılar.'));
-  findings.push(statusFinding('İçerik', lists >= 1, 'Liste yapısı', 'Liste/tablo var — AI bunları kolay alıntılar.', 'Karşılaştırma ve adımları madde/numaralı liste yapın.'));
-  findings.push(statusFinding('İçerik', hasFaq || hasQuestionHeadings, 'Soru-cevap formatı', 'FAQ veya soru başlıkları mevcut.', 'Soru formatında başlıklar + kısa net cevaplar ekleyin.'));
+  findings.push(
+    statusFinding(
+      'İçerik',
+      h1 === 1,
+      'Tek H1 başlık',
+      'Sayfada tam olarak bir H1 var.',
+      h1 === 0 ? 'Bir H1 başlık ekleyin.' : 'Birden fazla H1 var, tek H1 kullanın.',
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'İçerik',
+      h2 >= 2,
+      'Alt başlık hiyerarşisi',
+      'Yeterli H2 alt başlık ile içerik bölümlenmiş.',
+      'İçeriği H2/H3 ile bölümleyin — AI bölümleri ayrı ayrı alıntılar.',
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'İçerik',
+      lists >= 1,
+      'Liste yapısı',
+      'Liste/tablo var — AI bunları kolay alıntılar.',
+      'Karşılaştırma ve adımları madde/numaralı liste yapın.',
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'İçerik',
+      hasFaq || hasQuestionHeadings,
+      'Soru-cevap formatı',
+      'FAQ veya soru başlıkları mevcut.',
+      'Soru formatında başlıklar + kısa net cevaplar ekleyin.',
+    ),
+  );
 
   // ───────── CITATION AUTHORITY ─────────
   const outboundLinks = countMatches(/<a[^>]+href=["']https?:\/\//gi, html);
@@ -152,8 +275,24 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   citationAuthority += wordCount >= 600 ? 15 : wordCount >= 300 ? 8 : 0;
   citationAuthority = Math.min(100, citationAuthority);
 
-  findings.push(statusFinding('Otorite', outboundLinks >= 3, 'Dış kaynak bağlantıları', 'Güvenilir dış kaynaklara atıf var.', 'Verileri otoriter kaynaklara linkleyin — AI güveni artar.'));
-  findings.push(statusFinding('Otorite', hasReferences, 'Kaynak gösterimi', 'İçerikte kaynak/referans dili var.', 'İstatistik ve iddialara kaynak ekleyin.'));
+  findings.push(
+    statusFinding(
+      'Otorite',
+      outboundLinks >= 3,
+      'Dış kaynak bağlantıları',
+      'Güvenilir dış kaynaklara atıf var.',
+      'Verileri otoriter kaynaklara linkleyin — AI güveni artar.',
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'Otorite',
+      hasReferences,
+      'Kaynak gösterimi',
+      'İçerikte kaynak/referans dili var.',
+      'İstatistik ve iddialara kaynak ekleyin.',
+    ),
+  );
 
   // ───────── FRESHNESS ─────────
   const hasPublished = /article:published_time|datePublished/i.test(html);
@@ -167,8 +306,24 @@ export async function runGeoAudit(rawUrl: string): Promise<GeoAuditResult> {
   freshness += wordCount >= 300 ? 20 : 0;
   freshness = Math.min(100, freshness);
 
-  findings.push(statusFinding('Tazelik', hasModified || hasPublished, 'Tarih meta verisi', 'Yayın/güncelleme tarihi işaretlenmiş.', 'dateModified/datePublished schema alanı ekleyin.'));
-  findings.push(statusFinding('Tazelik', mentionsCurrentYear, 'Güncel yıl referansı', `İçerik ${CURRENT_YEAR} yılına atıf yapıyor.`, 'İçeriği güncel tutun, yıl referanslarını yenileyin.'));
+  findings.push(
+    statusFinding(
+      'Tazelik',
+      hasModified || hasPublished,
+      'Tarih meta verisi',
+      'Yayın/güncelleme tarihi işaretlenmiş.',
+      'dateModified/datePublished schema alanı ekleyin.',
+    ),
+  );
+  findings.push(
+    statusFinding(
+      'Tazelik',
+      mentionsCurrentYear,
+      'Güncel yıl referansı',
+      `İçerik ${CURRENT_YEAR} yılına atıf yapıyor.`,
+      'İçeriği güncel tutun, yıl referanslarını yenileyin.',
+    ),
+  );
 
   // ───────── AI COMPREHENSION (opsiyonel LLM) ─────────
   let aiComprehension = heuristicComprehension(wordCount, h2, lists, hasFaq);

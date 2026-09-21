@@ -1,0 +1,140 @@
+{
+  "work": "W6",
+  "nav": [
+    {
+      "panel": "Araçlar",
+      "section": "featured",
+      "href": "/arac",
+      "title": "Tüm ücretsiz araçlar",
+      "description": "Tek adres girin; SEO karnesi, WhatsApp önizleme, güvenlik, kırık link, schema, rakip kıyası ve daha fazlası.",
+      "badge": null
+    },
+    {
+      "panel": "Ürün",
+      "section": "Ürün",
+      "href": "/demo",
+      "title": "Demo turu",
+      "description": "60 saniyede Yanıt: tara, raporu paylaş, sektör sorusu, panel.",
+      "badge": null
+    },
+    {
+      "panel": "Şirket",
+      "section": "Şirket",
+      "href": "/contact#sales",
+      "title": "Satış görüşmesi",
+      "description": "Form; süre taahhüdü yok, KVKK ve İYS onayı ayrı.",
+      "badge": null
+    }
+  ],
+  "footer": [
+    {
+      "column": "Ücretsiz araçlar",
+      "href": "/arac",
+      "label": "Tüm araçlar"
+    },
+    {
+      "column": "Şirket",
+      "href": "/demo",
+      "label": "Demo"
+    }
+  ],
+  "sitemap": [
+    {
+      "path": "/arac",
+      "priority": 0.8,
+      "change": "weekly",
+      "lastmod": "TOOLS_REVISION"
+    },
+    {
+      "path": "/demo",
+      "priority": 0.5,
+      "change": "monthly",
+      "lastmod": "TOOLS_REVISION"
+    },
+    {
+      "path": "/contact",
+      "priority": 0.4,
+      "change": "yearly",
+      "lastmod": "TOOLS_REVISION"
+    }
+  ],
+  "dock": [],
+  "dashboardTools": [],
+  "registryEnable": [],
+  "adminNav": [],
+  "layoutSlots": [],
+  "blogInlineTools": [],
+  "blogSpread": [],
+  "capabilities": [
+    {
+      "key": "public_report",
+      "label": "Kalıcı rapor bağlantısı (/rapor/<token>)",
+      "status": "live",
+      "note": "HMAC imzalı; 30 gün; kayıtlı sonuçtan çizilir, ağ/LLM yok; OG kartı; noindex"
+    },
+    {
+      "key": "contact_form",
+      "label": "İletişim formu (/contact#form)",
+      "status": "live",
+      "note": "KVKK ve İYS onayı ayrı kutular; honeypot; lead kaydı; SALES_EMAIL yoksa NotificationLog skipped; kullanıcıya otomatik e-posta yok"
+    },
+    {
+      "key": "contact_mailto_redirect",
+      "label": "mailto:satis@ → /contact#sales yönlendirmesi",
+      "status": "roadmap",
+      "note": "INTEGRATE/W7: pricing, landing 'Ekiple görüş', footer 'Satış' mailto bağlantıları /contact#sales olur; W6 paylaşılan dosyalara dokunmadı"
+    },
+    {
+      "key": "tool_hub_auto_list",
+      "label": "Araç hub’ı (/arac) TOOL_REGISTRY listesi",
+      "status": "live",
+      "note": "enabled=true olan araçlar gruplu tasarımda otomatik görünür; yasaklı site ipucu yuvası (blockedHint prop) W5 BlockedSiteHint için INTEGRATE’te bağlanır (arac/page.tsx içindeki yorum satırı)"
+    },
+    {
+      "key": "score_method_links",
+      "label": "‘Skor nasıl hesaplanır?’ bağlantıları",
+      "status": "live",
+      "note": "Hedef /arac/<slug>#nasil-hesaplanir; /docs#skorlar anchor’ı henüz yok, INTEGRATE eklerse metin değişmeden hedef güncellenir"
+    },
+    {
+      "key": "report_robots",
+      "label": "/rapor robots davranışı",
+      "status": "live",
+      "note": "robots.ts’e disallow EKLENMEDİ (MF-8, paylaşılan dosya); sayfa metadata robots noindex,follow + JSON yanıtta X-Robots-Tag"
+    }
+  ],
+  "llmsTxt": [
+    {
+      "section": "Önemli sayfalar",
+      "href": "/arac",
+      "label": "Ücretsiz site araçları",
+      "note": "Tek adres, tüm araçlar; hesap yok, e-posta duvarı yok, yapay zekâ puanlamada yok; kalıcı rapor 30 gün"
+    },
+    {
+      "section": "Önemli sayfalar",
+      "href": "/demo",
+      "label": "Demo turu",
+      "note": "Dört adım: tarama → kalıcı rapor → sektör sorusu → panel; demo hesabı yok, satış görüşmesi formdan"
+    }
+  ],
+  "docsIndex": [
+    {
+      "file": "docs/SATIS_KITI_TR.md",
+      "title": "Satış kiti (TR)"
+    },
+    {
+      "file": "docs/DEMO_AKISI.md",
+      "title": "Demo akışı"
+    }
+  ],
+  "changelog": [
+    {
+      "type": "NEW",
+      "item": "Kalıcı rapor bağlantısı: her ücretsiz tarama 30 gün geçerli /rapor/<token> üretir — skor halkası, eksenler, ilk 5 öneri, WhatsApp paylaşımı ve OG kartı; giriş gerekmez, yapay zekâ kullanılmaz"
+    },
+    {
+      "type": "NEW",
+      "item": "İletişim formu (/contact#form) ve ücretsiz araç hub'ı (/arac): tek adresle tüm araçlar, demo turu (/demo); KVKK ve ticari ileti izni ayrı kutularda, kişisel veri yapay zekâ servislerine gitmez"
+    }
+  ]
+}

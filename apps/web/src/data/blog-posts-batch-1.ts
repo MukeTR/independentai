@@ -1,9 +1,9 @@
 import type { BlogPost } from './blog-posts';
 
-const editor = { name: 'Independent AI ekibi', role: 'Editöryal' };
-const research = { name: 'Independent AI ekibi', role: 'Araştırma' };
-const tech = { name: 'Independent AI ekibi', role: 'Teknik içerik' };
-const strategy = { name: 'Independent AI ekibi', role: 'Strateji' };
+const editor = { name: 'Yanıt ekibi', role: 'Editöryal' };
+const research = { name: 'Yanıt ekibi', role: 'Araştırma' };
+const tech = { name: 'Yanıt ekibi', role: 'Teknik içerik' };
+const strategy = { name: 'Yanıt ekibi', role: 'Strateji' };
 
 export const BATCH_1: BlogPost[] = [
   {
@@ -18,14 +18,14 @@ export const BATCH_1: BlogPost[] = [
       { type: 'p', text: 'Eğer son 12 ayda dijital pazarlamayla yakından ilgilendiyseniz "GEO" (Generative Engine Optimization) terimi kulağınıza giderek daha sık çalıyordur. Pazarlamacıların büyük kısmı için hâlâ ne anlama geldiği bulanık; bazı SEO uzmanları "yeni bir buzzword" deyip geçiyor. Oysa GEO 2026 itibarıyla SEO\'dan bağımsız bir disiplin olarak hızla şekilleniyor — ve müşteri kazanım yolculuğunun en üst noktasını yöneten yeni mekanik bu.' },
       { type: 'h2', text: 'GEO ne demek, neden yeni bir kategori?' },
       { type: 'p', text: 'GEO, bir markanın ChatGPT, Claude, Gemini, Perplexity gibi üretken yapay zeka motorlarında ne sıklıkla, hangi sırada ve hangi tonla geçtiğini ölçme ve optimize etme disiplinidir. Çıkış noktası basit bir gözlem: kullanıcılar artık "en iyi muhasebe yazılımı" sorusunu Google\'a değil, AI sohbet ürünlerine soruyor. Cevap olarak bir link listesi değil, "şunları öneririm" formatında 2-3 marka adı alıyor.' },
-      { type: 'p', text: 'SEO disiplinli olduğu kadar mevcut hâliyle bu yeni gerçekliği kapsamıyor. Site otoritesi, anahtar kelime sıralaması, backlink profil — hiçbiri "Claude bana hangi 3 markayı önerdi?" sorusuna doğrudan cevap vermiyor. Bu boşluk, son 18 ayda ABD\'de Profound, Otterly, AthenaHQ; Türkiye\'de ise Independent AI gibi yeni nesil ölçüm araçları doğurdu.' },
+      { type: 'p', text: 'SEO disiplinli olduğu kadar mevcut hâliyle bu yeni gerçekliği kapsamıyor. Site otoritesi, anahtar kelime sıralaması, backlink profil — hiçbiri "Claude bana hangi 3 markayı önerdi?" sorusuna doğrudan cevap vermiyor. Bu boşluk, son 18 ayda ABD\'de Profound, Otterly, AthenaHQ; Türkiye\'de ise Yanıt gibi yeni nesil ölçüm araçları doğurdu.' },
       { type: 'h2', text: 'SEO ile GEO arasındaki dört temel fark' },
       { type: 'p', text: 'İki disiplini iç içe sanmak yaygın bir hata. Aralarındaki farklar yüzeyde değil, mekanikte:' },
       { type: 'ul', items: [
         'Sıralama vs öneri: SEO\'da 10. sırada olmak hâlâ bir tıklama getirebilir; uzun kuyruk değerlidir. GEO\'da AI\'nın önerdiği 3 markadan biri değilseniz görünmüyorsunuz — 4. ve sonrası sıfırla aynı.',
         'Link vs metin: SEO link tıklatmaya yönelik bir kanaldır; kullanıcıyı sitenize getirir. GEO\'da kullanıcı zaten cevabı almıştır; sizi listenin başında görmesi tek başına değerlidir.',
         'Anahtar kelime vs niyet: Google klasik olarak anahtar kelime eşleştirir. AI modeli niyete göre cevap üretir; "İstanbul\'da dijital ajans" sorusuna anlamsal cevap verir, kelime kelime eşleme aramaz.',
-        'Ölçüm: SEO için Google Search Console, Ahrefs, SEMrush var. GEO için yakın zamana kadar sistematik ölçüm aracı yoktu — Independent AI ve benzerleri bu boşluğu dolduruyor.',
+        'Ölçüm: SEO için Google Search Console, Ahrefs, SEMrush var. GEO için yakın zamana kadar sistematik ölçüm aracı yoktu — Yanıt ve benzerleri bu boşluğu dolduruyor.',
       ] },
       { type: 'h2', text: 'Neden artık kritik? Üç istatistik' },
       { type: 'p', text: 'GEO\'nun "şimdi" konuşulması bir moda değil, yapısal bir değişimin sonucu. Üç sayı kritik bağlamı oluşturuyor:' },
@@ -36,7 +36,7 @@ export const BATCH_1: BlogPost[] = [
       ] },
       { type: 'h2', text: 'Pratik ne yapmalı? Üç başlangıç adımı' },
       { type: 'p', text: 'GEO çalışmasına başlamak için aylar süren stratejik planlama gerekmiyor. Üç somut adımla bugün başlayabilirsiniz:' },
-      { type: 'p', text: '1. Ölçün. Kategori sorularınızı izlemeden hiçbir şey yapamazsınız. Independent AI ile 5-10 izlenebilir soru tanımlayın, baseline görünürlük raporunu alın. Hangi sorularda geçiyorsunuz, hangilerinde rakipleriniz önde — bu görünürlük olmadan strateji olmaz.' },
+      { type: 'p', text: '1. Ölçün. Kategori sorularınızı izlemeden hiçbir şey yapamazsınız. Yanıt ile 5-10 izlenebilir soru tanımlayın, baseline görünürlük raporunu alın. Hangi sorularda geçiyorsunuz, hangilerinde rakipleriniz önde — bu görünürlük olmadan strateji olmaz.' },
       { type: 'p', text: '2. İçerik üretin. AI cevapları model eğitim verisinin ve gerçek zamanlı web aramasının karışımıdır. Markanız hakkında web\'de zengin, doğru içerik varsa AI cevaplarında geçme olasılığınız artar. Özellikle "X karşılaştırması" ve "Top N" formatlı bağımsız içerikler değerli.' },
       { type: 'p', text: '3. llms.txt ekleyin. Web sitenizin köküne llms.txt dosyası koyarak AI crawler\'larına markanız hakkında yapılandırılmış bilgi verin. Bu standart 2025\'te ortaya çıktı, 2026\'da hızla yayılıyor. Maliyeti 30 dakika, etkisi haftalar içinde görülmeye başlıyor.' },
       { type: 'quote', text: '"Ölçemediğinizi yönetemezsiniz." — Peter Drucker (50 yıl önce, hâlâ geçerli).' },
@@ -54,7 +54,7 @@ export const BATCH_1: BlogPost[] = [
     body: [
       { type: 'p', text: 'Markanız 5 yıldır pazarda, binlerce müşteriniz var, NPS puanınız yüksek — ama bir test yaptınız: ChatGPT "en iyi …" sorularına cevap verirken sizi listeye almıyor. Rakipleriniz cevapta var, siz yoksunuz. Bu durum genellikle rastgele değildir; arkasında yapısal sebepler bulunur ve farkına vardığınız anda düzeltmeye başlayabilirsiniz.' },
       { type: 'h2', text: 'Sebep 1: Eğitim verisi kesim tarihi' },
-      { type: 'p', text: 'Her AI modeli belirli bir tarihte eğitim verisini "dondurur". GPT-4 örneğin Nisan 2023 kesimi ile çalışıyor olabilir. Eğer markanız 2024\'te lansman yaptıysa veya o döneme kadar dijital varlığınız zayıfsa model sizi tanımıyor. Çözüm: kendi haberinizi yapmak. Yeni ürünler, lansmanlar, partnership\'ler için aktif PR çalışması yapın. Yeni model versiyonları çıktıkça güncellenirler.' },
+      { type: 'p', text: 'Her AI modeli belirli bir tarihte eğitim verisini "dondurur". GPT-5 ailesi örneğin kendi kesim tarihinden sonrasını doğrudan bilmez. Eğer markanız 2024\'te lansman yaptıysa veya o döneme kadar dijital varlığınız zayıfsa model sizi tanımıyor. Çözüm: kendi haberinizi yapmak. Yeni ürünler, lansmanlar, partnership\'ler için aktif PR çalışması yapın. Yeni model versiyonları çıktıkça güncellenirler.' },
       { type: 'h2', text: 'Sebep 2: Yetersiz web sinyali' },
       { type: 'p', text: 'AI bir markayı önermeden önce "bu marka bu kategoride kıymetli mi" sorusunun cevabını arar. Bu cevap için baktığı yer: hakkınızda yazılmış bağımsız içerikler. Kendi web siteniz, sosyal medyanız sayılmaz — onlar marka pazarlama dilinde, AI bunu filtreler. Değerli olan: 3rd party karşılaştırma makaleleri, sektör raporları, bağımsız blog\'lardaki anılmalar. Eğer bu tip içeriklerde yoksanız "popüler değil" sınıfına itilirsiniz.' },
       { type: 'h2', text: 'Sebep 3: Yanlış kategori sinyali' },
@@ -64,7 +64,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'h2', text: 'Sebep 5: JavaScript ile yüklenen içerik' },
       { type: 'p', text: 'Son ve sürpriz: AI crawler\'larının çoğu (özellikle GPTBot) JavaScript render etmez. Modern bir SPA olarak inşa edilmiş bir siteniz varsa, hakkınızdaki temel bilgiler bot için "boş sayfa" gibi görünebilir. AI eğitim verisi bu nedenle eksik kalır. Çözüm: SSR (server-side rendering) veya SSG (static site generation). Next.js, Astro, Nuxt gibi framework\'ler bunu kolaylaştırır.' },
       { type: 'h2', text: 'Şimdi ne yapmalı?' },
-      { type: 'p', text: 'Önce ölçün: hangi modelde, hangi sorularda yoksunuz? Independent AI ile 20 dakikada baseline alın. Sonra yukarıdaki 5 sebepten hangileri sizi etkiliyor analiz edin — genelde 2-3 tanesi aynı anda iş başında. Bir sonraki 90 günde her sebep için somut bir aksiyon planı çıkartın. 6 ay sonra ölçtüğünüzde fark belirgin olacak.' },
+      { type: 'p', text: 'Önce ölçün: hangi modelde, hangi sorularda yoksunuz? Yanıt ile 20 dakikada baseline alın. Sonra yukarıdaki 5 sebepten hangileri sizi etkiliyor analiz edin — genelde 2-3 tanesi aynı anda iş başında. Bir sonraki 90 günde her sebep için somut bir aksiyon planı çıkartın. 6 ay sonra ölçtüğünüzde fark belirgin olacak.' },
       { type: 'p', text: 'GEO sabır işidir ama umutsuz değildir. Sistematik gidersek 6 ay içinde görünürlüğünüzü 2-3 katına çıkarmak gerçekçi bir hedef.' },
     ],
   },
@@ -106,7 +106,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'h2', text: 'Ölçüm pratiği: aylık review' },
       { type: 'p', text: 'Ölçüm bir kez kurulduktan sonra aylık 30 dakikalık bir aktivitedir. Önerilen ritim: ayda bir kez aşağıdaki gündem ile 30 dakikalık ekip toplantısı:' },
       { type: 'p', text: '1. Visibility Score değişimi (5 dk). 2. SoV trendi ve rakip karşılaştırması (5 dk). 3. Top performing + underperforming sorular (5 dk). 4. Aksiyon listesinin gözden geçirilmesi (10 dk). 5. Önümüzdeki ay için 3 somut adım (5 dk).' },
-      { type: 'p', text: 'Independent AI bu dört metriği tek dashboard\'da sunar; PDF rapor şablonu yol haritasında. Şu an için kendi şablonunuzu kurabilir, dashboard\'daki sayıları kopya/yapıştır ile aylık raporunuza koyabilirsiniz.' },
+      { type: 'p', text: 'Yanıt bu dört metriği tek dashboard\'da sunar; PDF rapor şablonu yol haritasında. Şu an için kendi şablonunuzu kurabilir, dashboard\'daki sayıları kopya/yapıştır ile aylık raporunuza koyabilirsiniz.' },
     ],
   },
   {
@@ -122,7 +122,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'h2', text: 'Gün 1-30: Temel kurulum ve baseline' },
       { type: 'p', text: 'İlk ay tamamen ölçüm altyapısı kurmaya ayrılır. İçerik dalgasına henüz girmeyiz — önce nerede olduğumuzu bilmemiz lazım. Bu ayın detaylı haftalık planı:' },
       { type: 'ul', items: [
-        'Hafta 1: Independent AI hesabı oluştur. 5-10 izlenebilir kategorik soru tanımla ("en iyi …" formatında, marka-içermez). 3-5 ana rakibi ekle.',
+        'Hafta 1: Yanıt hesabı oluştur. 5-10 izlenebilir kategorik soru tanımla ("en iyi …" formatında, marka-içermez). 3-5 ana rakibi ekle.',
         'Hafta 2: İlk baseline raporu — hangi sorularda markanız geçiyor, hangilerinde rakipler önde? Görsel bir tablo çıkart, tüm pazarlama ekibinin görebileceği yere koy.',
         'Hafta 3: Teknik temizlik. llms.txt oluştur (sayfanın ortasındaki interaktif jeneratör kullanılabilir). robots.txt\'i güncelle — GPTBot, ClaudeBot, PerplexityBot explicit allow.',
         'Hafta 4: İlk içerik açığı analizi. Hangi alt konularda hiç içeriğin yok? Hangi rakip içeriklerinde AI tarafından kaynak gösteriliyor? Boş alanların listesi çıkar.',
@@ -160,7 +160,7 @@ export const BATCH_1: BlogPost[] = [
     body: [
       { type: 'p', text: 'AI bir marka önerirken üç farklı bilgi kaynağından beslenir: eğitim verisi (model train edilirken internetten alınmış statik snapshot), canlı web araması (cevap üretirken yapılan real-time arama), ve RAG (retrieval-augmented generation) bağlamı. Her kaynak farklı zaman ölçeğinde çalışır ve farklı içerik stratejilerine cevap verir. Bu üçünü ayırt etmeden GEO çalışması yapmak, kör atış gibidir.' },
       { type: 'h2', text: 'Kaynak 1: Eğitim verisi' },
-      { type: 'p', text: 'Bir LLM\'in temel "dünya bilgisi", eğitim sırasında işlenen milyarlarca web sayfasından gelir. GPT-4 örneğin Nisan 2023 kesimi ile eğitilmiş olabilir; sonrası bilgisi yok. Bu eğitim verisi içinde markanızdan ne sıklıkla bahsedildiği, hangi bağlamlarda anıldığı, hangi kategoriye dahil olduğunuz — hepsi bir tür "model belleği" oluşturuyor.' },
+      { type: 'p', text: 'Bir LLM\'in temel "dünya bilgisi", eğitim sırasında işlenen milyarlarca web sayfasından gelir. GPT-5 ailesi örneğin kendi kesim tarihine kadarki veriyle eğitilmiştir; sonrasının bilgisi eğitim verisinde yok. Bu eğitim verisi içinde markanızdan ne sıklıkla bahsedildiği, hangi bağlamlarda anıldığı, hangi kategoriye dahil olduğunuz — hepsi bir tür "model belleği" oluşturuyor.' },
       { type: 'p', text: 'Eğitim verisindeki etkiyi maksimize etmek için en kritik unsur: bağımsız kaynaklarda anılmak. Sizin kendi web siteniz, sosyal medyanız sayılmaz; AI modeli marka pazarlama dilini filtreler. Değerli olan G2/Capterra, TechCrunch/Webrazzi, Wikipedia, bağımsız blog ve karşılaştırma siteleri. Bu kaynaklarda anılmak yıllara yayılan bir yatırımdır; etkisi yavaş başlar ama uzun ömürlüdür.' },
       { type: 'h2', text: 'Kaynak 2: Canlı web araması' },
       { type: 'p', text: 'ChatGPT Browse, Perplexity ve Gemini gibi ürünler, kullanıcı sorusu geldiğinde arka planda canlı web araması yapıyor. Bu son birkaç saatten son birkaç günlük güncel içeriklerin AI cevaplarına girmesini sağlıyor. Burada güncellik, taze blog post\'lar, son haberler ön plana çıkıyor.' },
@@ -245,7 +245,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'p', text: 'Dosyayı koyduktan sonra doğrulayın:' },
       { type: 'code', text: 'curl -I https://siteniz.com/llms.txt\n# 200 OK + Content-Type: text/markdown beklenir' },
       { type: 'p', text: 'Tarayıcıdan da kontrol edebilirsiniz; markdown ham olarak görünmeli. Google\'da kullandığınız Search Console gibi llms.txt için resmi bir doğrulama paneli henüz yok; loglarınızdan AI bot ziyaretlerinin artmasını gözlemleyerek etkisini ölçersiniz.' },
-      { type: 'p', text: 'Independent AI\'in kendi llms.txt\'ini independentai.space/llms.txt adresinde görebilirsiniz — referans olarak kullanın. Bütün marketing pages\'lerimizi, kategorimizi ve önemli URL\'leri orada bulacaksınız.' },
+      { type: 'p', text: 'Yanıt\'ın kendi llms.txt\'ini yanit.io/llms.txt adresinde görebilirsiniz — referans olarak kullanın. Bütün marketing pages\'lerimizi, kategorimizi ve önemli URL\'leri orada bulacaksınız.' },
     ],
   },
   {
@@ -288,7 +288,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'ul', items: [
         '18. Google Search Console aktif, anahtar sorgular izleniyor.',
         '19. Google Analytics 4 (veya Plausible/PostHog) ile davranış izleme.',
-        '20. Independent AI ile aylık GEO görünürlük raporu.',
+        '20. Yanıt ile aylık GEO görünürlük raporu.',
         '21. 5-10 kategorik soruyu sürekli izle, baseline + trend.',
       ] },
       { type: 'h2', text: 'Bölüm 4: Iterate (madde 22-25)' },
@@ -363,7 +363,7 @@ export const BATCH_1: BlogPost[] = [
         'ChatGPT için: Bağımsız karşılaştırma içeriklerinde geçmeyi hedefleyin. Niş blog\'lar, Reddit, GitHub.',
       ] },
       { type: 'h2', text: 'Tek bir model üzerinden ölçüm yetmez' },
-      { type: 'p', text: 'GEO ölçümünüzde sadece bir modele bakarsanız yanılgılı tablo elde edersiniz. Independent AI 3 modeli (ChatGPT, Claude, Gemini) paralel sorgulayıp "modele göre dağılım" gösteriyor — bu görünüm size farklı modellerdeki güç-zayıflıkları net olarak söyler. Yol haritamızda Perplexity ve Grok da var.' },
+      { type: 'p', text: 'GEO ölçümünüzde sadece bir modele bakarsanız yanılgılı tablo elde edersiniz. Yanıt 3 modeli (ChatGPT, Claude, Gemini) paralel sorgulayıp "modele göre dağılım" gösteriyor — bu görünüm size farklı modellerdeki güç-zayıflıkları net olarak söyler. Yol haritamızda Perplexity ve Grok da var.' },
       { type: 'p', text: 'Üç model arasında dengeli güç oluşturmak en sağlıklı durumdur. Tek bir modelde %90 olmak, üç modelde %50-50-50 olmaktan kıymetlidir gibi görünür ama gerçekte tek modelin algoritma değişikliği sizi anında düşürür. Çeşitlilik = istikrar.' },
     ],
   },
@@ -380,7 +380,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'h2', text: 'Hazırlık: gerekli araçlar' },
       { type: 'p', text: 'Denetim öncesi elinizde olması gerekenler:' },
       { type: 'ul', items: [
-        'Independent AI hesabı (veya bir GEO tracking aracı).',
+        'Yanıt hesabı (veya bir GEO tracking aracı).',
         '10-15 kategorik soru listesi (sektörünüzde tipik sorular).',
         'Rakiplerinizin listesi (3-5 ana, 5-10 ikincil).',
         'Sitenizin yapılandırma erişimi (robots.txt, llms.txt için).',
@@ -390,7 +390,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'p', text: 'İlk 5 adım dış görünümünüzü ölçer:' },
       { type: 'ul', items: [
         '1. Kategori sorularını listele (10-15 adet). Müşterilerinizin sorabileceği soruları yazın, kendi markanızı içermeyenler.',
-        '2. Her soruyu 3 modelde (ChatGPT, Claude, Gemini) manuel veya Independent AI ile çalıştır.',
+        '2. Her soruyu 3 modelde (ChatGPT, Claude, Gemini) manuel veya Yanıt ile çalıştır.',
         '3. Markanızın geçtiği soruları işaretle → baseline görünürlük yüzdesi.',
         '4. Geçmediğiniz sorularda hangi rakiplerin geçtiğini not et → rakip listesi.',
         '5. Geçtiğiniz sorularda hangi pozisyondasınız (1.sıra mı, 5.sıra mı) ve sentiment ne (pozitif/nötr/negatif).',
@@ -416,7 +416,7 @@ export const BATCH_1: BlogPost[] = [
       ] },
       { type: 'h2', text: 'Aksiyon planı hazırlama' },
       { type: 'p', text: 'Denetim sonrası 30/60/90 günlük plan çıkartın. Genelde önce teknik düzeltmeler (llms.txt, robots.txt, schema) çünkü hızlı uygulanır; sonra içerik üretimi (yavaş ama sürdürülebilir); en son link building/PR (uzun vadeli).' },
-      { type: 'p', text: 'GEO audit\'i 3 ayda bir tekrarlayın. Aralarda sürekli izleme Independent AI dashboard\'unda olur ama 3 ayda bir bütüncül bakış kazandırır.' },
+      { type: 'p', text: 'GEO audit\'i 3 ayda bir tekrarlayın. Aralarda sürekli izleme Yanıt dashboard\'unda olur ama 3 ayda bir bütüncül bakış kazandırır.' },
     ],
   },
   {
@@ -503,7 +503,7 @@ export const BATCH_1: BlogPost[] = [
       { type: 'p', text: 'Visibility Score, izlenen tüm AI sorgularında markanızın geçtiği oranı veren tek sayıdır. GEO\'nun en temel KPI\'si bu — tek bir sayıya bakıp markanızın AI cevaplarındaki sağlığını anlayabilirsiniz. Ama basit görünüşünün ardında bazı nüanslar var; doğru yorumlanmazsa yanıltıcı olabilir.' },
       { type: 'h2', text: 'Matematik' },
       { type: 'code', text: 'Visibility Score = (Markanızın geçtiği sorgular / Toplam sorgular) × 100' },
-      { type: 'p', text: 'Independent AI\'da bu hesap son 30 günün tüm ModelRun\'ları üzerinden yapılır: her gün × her aktif prompt × her model = 1 run. Yani 10 promptunuz × 3 model × 30 gün = 900 run. Bu 900 run\'ın kaçında markanız geçti? O yüzde Visibility Score\'unuz.' },
+      { type: 'p', text: 'Yanıt\'ta bu hesap son 30 günün tüm ModelRun\'ları üzerinden yapılır: her gün × her aktif prompt × her model = 1 run. Yani 10 promptunuz × 3 model × 30 gün = 900 run. Bu 900 run\'ın kaçında markanız geçti? O yüzde Visibility Score\'unuz.' },
       { type: 'p', text: 'Alternatif olarak son 7 gün, son 90 gün gibi farklı pencereler de mümkün. Default 30 gün; çünkü çok kısa pencereler (7 gün) anlık dalgalanmalardan etkilenir, çok uzun (90 gün) yavaş değişiklikleri gizler.' },
       { type: 'h2', text: 'Yorum nüansları' },
       { type: 'p', text: 'Score\'a tek başına bakmak yanıltıcı. Aşağıdaki nüanslar kritik:' },
@@ -515,7 +515,7 @@ export const BATCH_1: BlogPost[] = [
         'Tek bir skor anlık değer, trend daha önemlidir. Düşük ama yükselen skor, yüksek ama düşen skordan daha iyi haberi.',
       ] },
       { type: 'h2', text: 'Sektör benchmarkları (tahmini)' },
-      { type: 'p', text: 'Sektör bazlı Visibility Score benchmarklar (Independent AI gözlemlerinden, tahmini):' },
+      { type: 'p', text: 'Sektör bazlı Visibility Score benchmarklar (Yanıt gözlemlerinden, tahmini):' },
       { type: 'ul', items: [
         'B2B SaaS: 30-60% normal, 70+% sektör lideri.',
         'E-ticaret (genel ürün): 40-70% normal, 80+% kategori dominasyonu.',
@@ -556,7 +556,7 @@ export const BATCH_1: BlogPost[] = [
         '5. Rakipsiz ölçüm: Görünürlüğünüz yüksek ama rakipleriniz daha yüksekse hâlâ kaybediyorsunuz. Mutlak değer değil, göreceli pozisyon önemli. Doğrusu: SoV (Share of Voice) ile birlikte oku.',
       ] },
       { type: 'h2', text: 'Hata 6: Aksiyon hatası' },
-      { type: 'p', text: '6. İçerik üretmeden ölçüm: Bazı markalar Independent AI hesabı açıyor, baseline alıyor, sonra hiçbir şey yapmadan ayda bir bakıyor. Sadece ölçmek değiştirmez. İçerik dalgaları + teknik iyileştirmeler + PR çalışmaları gerek.' },
+      { type: 'p', text: '6. İçerik üretmeden ölçüm: Bazı markalar Yanıt hesabı açıyor, baseline alıyor, sonra hiçbir şey yapmadan ayda bir bakıyor. Sadece ölçmek değiştirmez. İçerik dalgaları + teknik iyileştirmeler + PR çalışmaları gerek.' },
       { type: 'p', text: 'Doğrusu: ölçüm + sürekli iyileştirme çevrimi. Her aylık review\'da "geçen ay ne yaptık, etkisi ne oldu, gelecek ay ne yapacağız" üçlüsünü adresleyin.' },
       { type: 'h2', text: 'Hata 7: Sabırsızlık' },
       { type: 'p', text: '7. Sabırsızlık: "1 ay oldu, görünürlük artmadı, bu iş işe yaramıyor" diyerek bırakmak. GEO etkisi 6 ayda görünür. AI modelleri eğitim verilerini yavaş güncellerler; yapılan content değişiklikleri haftalar değil aylar içinde yansır.' },
@@ -662,7 +662,7 @@ export const BATCH_1: BlogPost[] = [
       ] },
       { type: 'h2', text: 'ROI ve zaman beklentisi' },
       { type: 'p', text: 'B2B SaaS\'ta GEO ROI\'si 6-12 ayda görünür. Alıcılar AI\'dan aldıkları 2-3 marka önerisini kısa listeye alıyor; sonra demo talep ediyor. Demo talebine bile dönüşmediyse — büyük olasılıkla AI listesinde olmadığınız için. AI Visibility Score artışınız 3-6 ay sonra demo trafiğinize doğrudan yansır.' },
-      { type: 'p', text: 'Independent AI ile başlangıç hesabınızı oluşturun, ilk 5-10 izleme sorusunu girin, ay sonu raporunu paydaşlarla paylaşın. Bu basit alışkanlık, B2B SaaS pazarlamanızın bir sonraki dalgasının temelini atar.' },
+      { type: 'p', text: 'Yanıt ile başlangıç hesabınızı oluşturun, ilk 5-10 izleme sorusunu girin, ay sonu raporunu paydaşlarla paylaşın. Bu basit alışkanlık, B2B SaaS pazarlamanızın bir sonraki dalgasının temelini atar.' },
     ],
   },
   {
@@ -701,9 +701,9 @@ export const BATCH_1: BlogPost[] = [
         'TripAdvisor, Foursquare, Yelp profillerini güncel tutun (yabancı ziyaretçi için kritik).',
         'Yerel sosyal medya hesabı + düzenli yayın. Instagram konum etiketleri + müşteri share\'leri AI sinyali.',
       ] },
-      { type: 'h2', text: 'Independent AI lokal işletme için ne kadar uygun?' },
-      { type: 'p', text: 'Independent AI öncelikle kategorik GEO için tasarlandı (büyük marka ölçeği). Lokal işletmeler için sınırlı ölçüde uygundur — eğer şehir bazlı kategorik sorularda izlenmek istiyorsanız ("Beşiktaş kahveci" gibi) prompt olarak ekleyebilirsiniz. Ama lokal SEO yatırımınız (Google Maps, yorumlar) baz olmalı.' },
-      { type: 'p', text: 'İdeal kullanım senaryosu: lokal işletme + sektörel marka iddiası karışımı olan markalar. Örneğin İstanbul\'da 5 şubeli bir kahve zinciri "Türkiye\'de en iyi specialty coffee zinciri" diye konumlanmak istiyorsa hem lokal SEO hem GEO\'ya yatırım yapmalı; Independent AI ile sektörel görünürlüğünü izleyebilir.' },
+      { type: 'h2', text: 'Yanıt lokal işletme için ne kadar uygun?' },
+      { type: 'p', text: 'Yanıt öncelikle kategorik GEO için tasarlandı (büyük marka ölçeği). Lokal işletmeler için sınırlı ölçüde uygundur — eğer şehir bazlı kategorik sorularda izlenmek istiyorsanız ("Beşiktaş kahveci" gibi) prompt olarak ekleyebilirsiniz. Ama lokal SEO yatırımınız (Google Maps, yorumlar) baz olmalı.' },
+      { type: 'p', text: 'İdeal kullanım senaryosu: lokal işletme + sektörel marka iddiası karışımı olan markalar. Örneğin İstanbul\'da 5 şubeli bir kahve zinciri "Türkiye\'de en iyi specialty coffee zinciri" diye konumlanmak istiyorsa hem lokal SEO hem GEO\'ya yatırım yapmalı; Yanıt ile sektörel görünürlüğünü izleyebilir.' },
     ],
   },
   {
@@ -784,7 +784,7 @@ export const BATCH_1: BlogPost[] = [
         'Organik katılım: Bir kişi (CEO, founder, dev lead) gerçek hesaptan ilgili konularda yorum yapsın. Marka adı belli ama satış yapmıyor.',
         'AMA (Ask Me Anything) etkinlikler: r/Entrepreneur, r/SaaS gibi subreddit\'lerde "Brand X founder here, AMA" tarzı. Yılda 1-2 kez yapılabilir.',
         'Bağımsız konuşmalar: Markanızla ilgili thread\'lerde kullanıcı soru sorduğunda dürüst, yararlı cevap. "Biz X markasıyız, bu konuda Y çözümünü öneriyoruz" dürüstlük üzerinden çalışır.',
-        'Subreddit moderasyon ortaklığı: kendi subreddit\'inizi açmak (r/independentai gibi) bazen değerli; ama küçük subreddit\'ler değil ana kategori subreddit\'lerinde anılmak daha kıymetli.',
+        'Subreddit moderasyon ortaklığı: kendi subreddit\'inizi açmak (markanızın adıyla) bazen değerli; ama küçük subreddit\'ler değil ana kategori subreddit\'lerinde anılmak daha kıymetli.',
       ] },
       { type: 'h2', text: 'Yapılmaması gerekenler' },
       { type: 'p', text: 'Reddit\'te bir hata kalıcı zarar verir. Kaçınılması gerekenler:' },

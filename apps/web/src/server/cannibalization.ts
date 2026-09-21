@@ -47,7 +47,7 @@ async function locsFromSitemap(xml: string, depth = 0): Promise<string[]> {
   const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map((m) => unescapeXml(m[1]!.trim())).filter(Boolean);
   // sitemap index → alt sitemap'lere işaret eder (sayfa değil)
   if (/<sitemapindex/i.test(xml) && depth < 2 && locs.length) {
-    const childXml = await fetchText(locs[0]!);
+    const childXml = await fetchText(locs[0]!).catch(() => null);
     if (childXml) return locsFromSitemap(childXml, depth + 1);
   }
   return locs;
@@ -101,7 +101,7 @@ export async function runCannibalization(input: string): Promise<Cannibalization
   // Sayfaları paralel çek + metne indir
   const pages = await Promise.all(
     urls.map(async (u) => {
-      const html = await fetchText(u, 9000);
+      const html = await fetchText(u, 9000).catch(() => null);
       if (!html) return null;
       const text = stripTags(html);
       if (text.length < 100) return null;

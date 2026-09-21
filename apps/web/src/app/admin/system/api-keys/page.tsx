@@ -21,8 +21,8 @@ export default async function AdminApiKeys() {
       </div>
       <h1 className="font-display text-[36px] tracking-tight mt-2">AI Provider API Keys</h1>
       <p className="text-[14px] text-ink-muted mt-2 max-w-2xl">
-        Platform-wide API key yönetimi. Buradan girilen değerler Vercel env\'ini override eder ve
-        tüm tenant\'ların AI sorgularında kullanılır. AES-256-GCM ile şifrelenerek DB\'de saklanır.
+        Platform-wide API key yönetimi. Buradan girilen değerler Vercel env\'ini override eder ve tüm tenant\'ların AI
+        sorgularında kullanılır. AES-256-GCM ile şifrelenerek DB\'de saklanır.
       </p>
 
       {/* Security notice */}
@@ -30,9 +30,9 @@ export default async function AdminApiKeys() {
         <div className="flex items-start gap-3">
           <ShieldCheck className="w-4 h-4 text-brand mt-0.5 shrink-0" />
           <div className="text-[12.5px] text-ink-muted leading-relaxed">
-            <strong className="text-ink">Güvenlik:</strong> Key\'ler JWT_SECRET\'tan türetilen anahtarla
-            AES-256-GCM şifrelenir. JWT_SECRET değişirse mevcut key\'ler decrypt edilemez —
-            yeniden girilmesi gerekir. Buraya girilen değerler ekranda asla tam olarak gösterilmez.
+            <strong className="text-ink">Güvenlik:</strong> Key\'ler JWT_SECRET\'tan türetilen anahtarla AES-256-GCM
+            şifrelenir. JWT_SECRET değişirse mevcut key\'ler decrypt edilemez — yeniden girilmesi gerekir. Buraya
+            girilen değerler ekranda asla tam olarak gösterilmez.
           </div>
         </div>
       </div>
@@ -45,9 +45,15 @@ export default async function AdminApiKeys() {
       <div className="card p-6 mt-8">
         <div className="eyebrow mb-3">Key resolution sırası</div>
         <ol className="space-y-2 text-[13px] text-ink-muted list-decimal list-inside">
-          <li><strong className="text-ink">DB (buradan)</strong> — varsa öncelikli olarak bu kullanılır.</li>
-          <li><strong className="text-ink">Vercel env variable</strong> — DB boşsa fallback.</li>
-          <li><strong className="text-ink">Mock mode</strong> — ikisi de yoksa otomatik mock cevaplar.</li>
+          <li>
+            <strong className="text-ink">DB (buradan)</strong> — varsa öncelikli olarak bu kullanılır.
+          </li>
+          <li>
+            <strong className="text-ink">Vercel env variable</strong> — DB boşsa fallback.
+          </li>
+          <li>
+            <strong className="text-ink">Mock mode</strong> — ikisi de yoksa otomatik mock cevaplar.
+          </li>
         </ol>
         <p className="text-[12px] text-ink-faint mt-4 font-mono">
           // Run sırasında hydrateEnvFromConfig() çağrılır, DB değerleri process.env\'e enjekte edilir.
@@ -60,8 +66,8 @@ export default async function AdminApiKeys() {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-4 h-4 text-warning mt-0.5 shrink-0" />
             <div className="text-[12.5px] text-ink leading-relaxed">
-              <strong>Hiçbir AI key tanımlı değil.</strong> Şu an tüm sorgular mock mode\'da çalışıyor —
-              gerçek AI cevapları üretilmiyor. En az bir provider için key ekleyin.
+              <strong>Hiçbir AI key tanımlı değil.</strong> Şu an tüm sorgular mock mode\'da çalışıyor — gerçek AI
+              cevapları üretilmiyor. En az bir provider için key ekleyin.
             </div>
           </div>
         </div>

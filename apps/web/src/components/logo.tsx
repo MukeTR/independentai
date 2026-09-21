@@ -1,15 +1,16 @@
 import Link from 'next/link';
 import { cn } from '@/lib/cn';
 
+/**
+ * Yanıt logosu — yalnız kelime markası (monogram yok). Kelimenin arkasında ince bir cam yüzey:
+ * yarı saydam zemin + backdrop-blur + üstte tek beyaz ışık çizgisi. Nokta tek vurgu rengindedir.
+ */
 export function Logo({ className }: { className?: string }) {
   return (
-    <Link href="/" className={cn('inline-flex items-center gap-2.5 group', className)}>
-      <span className="relative inline-flex items-center justify-center h-8 w-8 rounded-md bg-ink text-paper-3 font-display text-[15px] tracking-tight">
-        iA
-        <span className="absolute -inset-px rounded-md ring-1 ring-brand/30 group-hover:ring-brand/60 transition" />
-      </span>
-      <span className="font-display text-[17px] tracking-tight">
-        Independent <span className="text-brand">AI</span>
+    <Link href="/" className={cn('group inline-flex items-center', className)} aria-label="yanıt — ana sayfa">
+      <span className="glass-word relative inline-flex items-baseline rounded-xl px-3 py-1.5">
+        <span className="font-display text-[19px] tracking-[-0.02em] lowercase">yanıt</span>
+        <span className="text-brand text-[19px] font-display">.</span>
       </span>
     </Link>
   );

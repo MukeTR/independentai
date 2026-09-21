@@ -14,7 +14,10 @@ export function ToolPageShell({
 }) {
   return (
     <div className="max-w-5xl">
-      <Link href="/dashboard/tools" className="inline-flex items-center gap-1.5 text-[12px] text-ink-faint hover:text-ink">
+      <Link
+        href="/dashboard/tools"
+        className="inline-flex items-center gap-1.5 text-[12px] text-ink-faint hover:text-ink"
+      >
         <ArrowLeft className="w-3 h-3" /> Tüm araçlar
       </Link>
       <div className="eyebrow mt-4">{eyebrow}</div>

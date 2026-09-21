@@ -1,13 +1,11 @@
+export * from './metrics';
+export * from './capabilities';
+
 export const PROVIDER_LABELS = {
   OPENAI: 'ChatGPT',
   ANTHROPIC: 'Claude',
   GOOGLE: 'Gemini',
-} as const;
-
-export const PROVIDER_MODEL_DEFAULTS = {
-  OPENAI: 'gpt-4o-mini',
-  ANTHROPIC: 'claude-haiku-4-5',
-  GOOGLE: 'gemini-1.5-flash',
+  PERPLEXITY: 'Perplexity',
 } as const;
 
 export const PROMPT_CATEGORIES = [
@@ -18,12 +16,14 @@ export const PROMPT_CATEGORIES = [
   { value: 'other', label: 'Diğer' },
 ] as const;
 
+/** @deprecated OFFER.trialDays (gün) kullanın; eski 6 aylık lansman teklifi kaldırıldı. */
 export const FREE_TRIAL_MONTHS = 6;
 
 export type DashboardMetrics = {
-  visibilityScore: number;     // 0-100, kaç % çalıştırmada markam geçti
-  shareOfVoice: number;        // 0-100, markamın geçtiği yerlerde rakiplere oran
-  totalRuns: number;
+  visibilityScore: number; // 0-100, geçerli run'ların % kaçında markam geçti
+  shareOfVoice: number; // 0-100, kendi bahis / (kendi + rakip bahis)
+  totalRuns: number; // geçerli (SUCCESS) run sayısı
+  erroredRuns: number; // paydaya girmeyen hatalı run sayısı
   totalMentions: number;
   trend: { date: string; visibility: number }[];
   competitorBreakdown: { name: string; count: number }[];

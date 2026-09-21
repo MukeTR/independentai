@@ -1,0 +1,34 @@
+{
+  "work": "W4",
+  "adminNav": [
+    { "href": "/admin/leads", "label": "Lead’ler", "icon": "Inbox", "order": 20 },
+    { "href": "/admin/scans", "label": "Taramalar", "icon": "ScanSearch", "order": 30 },
+    { "href": "/admin/announcements", "label": "Duyurular", "icon": "Megaphone", "order": 60 }
+  ],
+  "layoutSlots": [
+    {
+      "layout": "home",
+      "component": "AnnouncementBanner",
+      "props": { "placement": "LANDING" },
+      "import": "@/components/announcement-banner"
+    },
+    {
+      "layout": "marketing",
+      "component": "AnnouncementBanner",
+      "props": { "placement": "TOOLS" },
+      "import": "@/components/announcement-banner"
+    },
+    {
+      "layout": "dashboard",
+      "component": "AnnouncementBanner",
+      "props": { "placement": "APP" },
+      "import": "@/components/announcement-banner"
+    }
+  ],
+  "changelog": [
+    {
+      "type": "NEW",
+      "item": "Admin: lead paneli (CRM aşamaları, aktivite günlüğü, maskeli e-posta, CSV), KPI şeridi + 14 gün sparkline, taramalar ekranı, duyuru şeridi, hediye süre, kullanıcı/şirket sayfalama ve arama, her ekranda \"Bu ekran ne işe yarar?\""
+    }
+  ]
+}

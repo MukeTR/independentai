@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import type { BlogPost } from '@/data/blog-posts';
+import { getReadTimeMin, type BlogPost } from '@/data/blog-posts';
 
 /** Blog yazı kartları grid'i — /blog ve /blog/sayfa/[page] arasında paylaşılır. */
 export function PostGrid({ posts }: { posts: BlogPost[] }) {
@@ -10,7 +10,7 @@ export function PostGrid({ posts }: { posts: BlogPost[] }) {
         <Link key={p.slug} href={`/blog/${p.slug}`} className="card p-7 hover:bg-paper-3 transition group">
           <div className="flex items-center gap-3 flex-wrap">
             <span className="chip">{p.category}</span>
-            <span className="text-[11px] text-ink-faint font-mono">{p.readTimeMin} dk</span>
+            <span className="text-[11px] text-ink-faint font-mono">{getReadTimeMin(p)} dk</span>
             <span className="text-[11px] text-ink-faint">·</span>
             <span className="text-[11px] text-ink-faint">
               {new Date(p.publishedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}

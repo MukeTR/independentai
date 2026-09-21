@@ -27,9 +27,7 @@ export function Section({
             {title}
           </h2>
         )}
-        {intro && (
-          <p className="text-[16px] lg:text-[18px] text-ink-muted mt-5 max-w-2xl leading-relaxed">{intro}</p>
-        )}
+        {intro && <p className="text-[16px] lg:text-[18px] text-ink-muted mt-5 max-w-2xl leading-relaxed">{intro}</p>}
         {children && <div className={cn(eyebrow || title || intro ? 'mt-14' : '')}>{children}</div>}
       </Container>
     </section>

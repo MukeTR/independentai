@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 import type { RadarEntity } from '@/server/insights';
 
 const COLORS = ['#4F46E5', '#E11D48', '#F59E0B', '#0EA5E9'];

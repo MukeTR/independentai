@@ -16,9 +16,7 @@ async function getSitemapUrls() {
   const res = await fetch(`${SITE}/sitemap.xml`);
   if (!res.ok) throw new Error(`sitemap alınamadı: ${res.status}`);
   const xml = await res.text();
-  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-    .map((m) => m[1])
-    .filter((u) => !u.includes('?')); // query-param URL'leri atla
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).filter((u) => !u.includes('?')); // query-param URL'leri atla
 }
 
 async function main() {

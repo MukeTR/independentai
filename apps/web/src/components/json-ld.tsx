@@ -3,12 +3,7 @@ import { SITE_URL, BRAND_NAME, ORG_ID, WEBSITE_ID } from '@/lib/seo';
 type Json = Record<string, unknown> | unknown[];
 
 export function JsonLd({ data }: { data: Json }) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
 }
 
 export function OrganizationJsonLd() {
@@ -29,7 +24,7 @@ export function OrganizationJsonLd() {
         // Gerçek profiller oluşturuldukça doldurulacak (LinkedIn, X, GitHub, Crunchbase).
         sameAs: [],
         description:
-          'Yapay zekaların verdiği cevaplarda markanızın görünürlüğünü, sıralamasını ve rakiplerle karşılaştırmasını ölçen bağımsız platform.',
+          'Yanıt: markanızın yapay zekâ cevaplarındaki görünürlüğünü analiz eden, neden görünmediğinizi bulan ve yapılacak işleri çıkaran platform; isteyene Yanıt Agency uygulama hizmeti.',
       }}
     />
   );
@@ -56,7 +51,17 @@ export function WebSiteJsonLd() {
   );
 }
 
-export function SoftwareApplicationJsonLd() {
+/**
+ * SoftwareApplication — fiyat getOffer()'dan gelir (sayfa async okuyup geçer). Ücretsiz deneme ayrı Offer olarak
+ * belirtilir; uydurma aggregateRating yok.
+ */
+export function SoftwareApplicationJsonLd({
+  saasMonthlyTry,
+  trialDays,
+}: {
+  saasMonthlyTry: number;
+  trialDays: number;
+}) {
   return (
     <JsonLd
       data={{
@@ -66,14 +71,25 @@ export function SoftwareApplicationJsonLd() {
         operatingSystem: 'Web',
         applicationCategory: 'BusinessApplication',
         description:
-          'AI brand visibility / GEO (Generative Engine Optimization) platformu. ChatGPT, Claude ve Gemini cevaplarında marka takibi.',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-          availability: 'https://schema.org/InStock',
-          description: 'İlk 6 ay tüm kullanıcılara ücretsiz lansman promosyonu',
-        },
+          'AI görünürlük analizi ve yapılacak işler platformu: ChatGPT, Gemini ve Claude cevaplarında marka takibi, neden analizi, görev listesi.',
+        offers: [
+          {
+            '@type': 'Offer',
+            name: 'Ücretsiz rapor ve araçlar',
+            price: '0',
+            priceCurrency: 'TRY',
+            availability: 'https://schema.org/InStock',
+            description: 'Şok raporu ve herkese açık araçlar; hesap gerekmez',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Yanıt aylık abonelik',
+            price: String(saasMonthlyTry),
+            priceCurrency: 'TRY',
+            availability: 'https://schema.org/InStock',
+            description: `Aylık abonelik; ${trialDays} gün ücretsiz deneme, kart gerekmez, istediğiniz zaman iptal`,
+          },
+        ],
         aggregateRating: undefined, // gerçek inceleme gelene kadar bırakıyoruz
       }}
     />

@@ -1,17 +1,24 @@
 import { NextResponse } from 'next/server';
-import { requireSuperAdmin, triggerManualCron, ForbiddenError } from '@/server/admin';
-import { UnauthorizedError } from '@/server/session';
+import { route } from '@/server/route';
+import { readJson } from '@/server/errors';
+import { requireSuperAdmin } from '@/server/authz';
+import { triggerManualCron } from '@/server/admin';
+import { audit } from '@/server/audit';
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
-export async function POST() {
-  try {
-    await requireSuperAdmin();
-    const result = await triggerManualCron();
-    return NextResponse.json(result);
-  } catch (err) {
-    if (err instanceof UnauthorizedError) return NextResponse.json({ message: 'Yetkisiz' }, { status: 401 });
-    if (err instanceof ForbiddenError) return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
-    return NextResponse.json({ message: err instanceof Error ? err.message : 'Hata' }, { status: 500 });
-  }
-}
+export const POST = route('admin.trigger_cron', async (req) => {
+  const actor = await requireSuperAdmin();
+  const body =
+    req.headers.get('content-length') && req.headers.get('content-length') !== '0'
+      ? await readJson<{ force?: unknown }>(req).catch(() => ({ force: false }))
+      : { force: false };
+  const result = await triggerManualCron(actor.userId, { force: body.force === true });
+  await audit({
+    action: 'admin.trigger_cron',
+    actorUserId: actor.userId,
+    meta: { force: body.force === true, ...result },
+    req,
+  });
+  return NextResponse.json(result);
+});

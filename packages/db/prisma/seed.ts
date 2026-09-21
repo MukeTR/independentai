@@ -34,7 +34,7 @@ async function main() {
   await prisma.user.create({
     data: {
       tenantId: tenant.id,
-      email: 'demo@independentai.space',
+      email: 'demo@yanit.io',
       passwordHash: hashPassword('demo1234'),
       name: 'Demo Kullanıcı',
       role: 'OWNER',
@@ -68,7 +68,7 @@ async function main() {
   const prompts = [
     { text: 'Restoranlar için en iyi kar-zarar takip yazılımı hangisi?', category: 'discovery' },
     { text: 'Uber Eats satıcıları hangi muhasebe programını kullanmalı?', category: 'discovery' },
-    { text: 'Türkiye\'deki en iyi restoran POS sistemleri nelerdir?', category: 'comparison' },
+    { text: "Türkiye'deki en iyi restoran POS sistemleri nelerdir?", category: 'comparison' },
     { text: 'KarPanel vs Adisyo karşılaştırması', category: 'comparison' },
     { text: 'Küçük market işletmesi için kar marjı hesaplama yazılımı önerir misin?', category: 'discovery' },
   ];
@@ -84,7 +84,7 @@ async function main() {
   const providers: { provider: AiProvider; modelName: string }[] = [
     { provider: 'OPENAI', modelName: 'gpt-4o-mini' },
     { provider: 'ANTHROPIC', modelName: 'claude-haiku-4-5' },
-    { provider: 'GOOGLE', modelName: 'gemini-1.5-flash' },
+    { provider: 'GOOGLE', modelName: 'gemini-2.5-flash' },
   ];
 
   const today = new Date();
@@ -146,7 +146,7 @@ async function main() {
 
   console.log('✅ Seed tamamlandı.');
   console.log('   Tenant: KarPanel Demo');
-  console.log('   Login : demo@independentai.space / demo1234');
+  console.log('   Login : demo@yanit.io / demo1234');
   console.log(`   Ücretsiz deneme bitişi: ${trialEndsAt.toISOString().slice(0, 10)}`);
 }
 

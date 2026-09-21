@@ -1,9 +1,9 @@
 import type { BlogPost } from './blog-posts';
 
-const editor = { name: 'Independent AI ekibi', role: 'Editöryal' };
-const research = { name: 'Independent AI ekibi', role: 'Araştırma' };
-const tech = { name: 'Independent AI ekibi', role: 'Teknik içerik' };
-const strategy = { name: 'Independent AI ekibi', role: 'Strateji' };
+const editor = { name: 'Yanıt ekibi', role: 'Editöryal' };
+const research = { name: 'Yanıt ekibi', role: 'Araştırma' };
+const tech = { name: 'Yanıt ekibi', role: 'Teknik içerik' };
+const strategy = { name: 'Yanıt ekibi', role: 'Strateji' };
 
 export const BATCH_4: BlogPost[] = [
   {
@@ -116,7 +116,7 @@ export const BATCH_4: BlogPost[] = [
         'Hosting: Vercel veya Cloudflare Pages.',
         'CDN: Cloudflare (AI bot trafiğini ayrıca tracking edebilir).',
         'Analytics: PostHog veya Plausible (privacy-first).',
-        'GEO tracking: Independent AI.',
+        'GEO tracking: Yanıt.',
         'Schema generator: kendi bileşenlerinizi yazın.',
       ] },
       { type: 'h2', text: 'Neden bu seçimler?' },
@@ -125,13 +125,13 @@ export const BATCH_4: BlogPost[] = [
         'Headless CMS: structured data kontrolü, çoklu kanal yayın.',
         'Vercel/Cloudflare: edge network performansı, AI bot traffic monitoring.',
         'PostHog/Plausible: GA4\'ten daha hafif, GDPR/KVKK uyumlu.',
-        'Independent AI: TR pazarına özel GEO tracking.',
+        'Yanıt: TR pazarına özel GEO tracking.',
       ] },
       { type: 'h2', text: 'Eskilerle uyumluluk' },
-      { type: 'p', text: 'WordPress\'iniz varsa stack\'ı baştan kurmaya gerek yok. Rank Math, Yoast, hız optimizasyonu eklentileri + Independent AI ile başlangıç yapın. Migrate kararını veri sonrası verin.' },
+      { type: 'p', text: 'WordPress\'iniz varsa stack\'ı baştan kurmaya gerek yok. Rank Math, Yoast, hız optimizasyonu eklentileri + Yanıt ile başlangıç yapın. Migrate kararını veri sonrası verin.' },
       { type: 'h2', text: 'Bütçe planlama' },
       { type: 'ul', items: [
-        'Küçük marka (1-2 dev): Vercel free + Sanity free + Cloudflare free + Plausible $9/ay + Independent AI 6 ay free.',
+        'Küçük marka (1-2 dev): Vercel free + Sanity free + Cloudflare free + Plausible $9/ay + Yanıt (ücretsiz rapor, aylık abonelik).',
         'Orta marka (3-5 dev): Vercel Pro $20/ay + Sanity Growth $99/ay + diğerleri orantılı.',
         'Kurumsal: Custom pricing, $500-2000/ay total stack.',
       ] },
@@ -172,20 +172,20 @@ export const BATCH_4: BlogPost[] = [
         'Generic "biz harikayız" cümleler.',
         'Eksik schema markup.',
       ] },
-      { type: 'h2', text: 'Independent AI\'ın landing page yapısı' },
-      { type: 'p', text: 'Kendi landing page\'imiz tüm bu prensipleri uyguluyor: net H1, somut value prop, sosyal kanıt (lansman fırsatı), FAQ\'le yapılandırılmış özellikler, JSON-LD structured data, mobile-responsive. Görmek için: independentai.space.' },
+      { type: 'h2', text: 'Yanıt\'ın landing page yapısı' },
+      { type: 'p', text: 'Kendi landing page\'imiz tüm bu prensipleri uyguluyor: net H1, somut value prop, sosyal kanıt, FAQ\'le yapılandırılmış özellikler, JSON-LD structured data, mobile-responsive. Görmek için: yanit.io.' },
     ],
   },
   {
     slug: 'ai-visibility-tracking-tool-nasil-gelistirilir',
     title: 'AI visibility tracking tool nasıl geliştirilir?',
-    excerpt: 'Kendi GEO tracker\'ınızı inşa etmek istiyor musunuz? Independent AI\'nin altyapısından öğrenilenler.',
+    excerpt: 'Kendi GEO tracker\'ınızı inşa etmek istiyor musunuz? Yanıt\'ın altyapısından öğrenilenler.',
     publishedAt: '2025-10-12',
     readTimeMin: 9,
     category: 'Ürün',
     author: tech,
     body: [
-      { type: 'p', text: 'GEO tracking aracı kendi kendine yazılabilir mi? Evet, ama hesaba katmanız gereken karmaşıklıklar var. Independent AI\'nin altyapısını yaparken aldığımız dersleri paylaşalım.' },
+      { type: 'p', text: 'GEO tracking aracı kendi kendine yazılabilir mi? Evet, ama hesaba katmanız gereken karmaşıklıklar var. Yanıt\'ın altyapısını yaparken aldığımız dersleri paylaşalım.' },
       { type: 'h2', text: 'Temel bileşenler' },
       { type: 'ul', items: [
         'Multi-provider adapter (OpenAI, Anthropic, Google API\'leri).',
@@ -204,7 +204,7 @@ export const BATCH_4: BlogPost[] = [
         'Tam ürün: 6-9 ay (analytics, reports, API).',
       ] },
       { type: 'h2', text: 'Make vs buy kararı' },
-      { type: 'p', text: 'Bunları çözmek için 3-6 ay gerekli. Existing araç (Independent AI dahil) kullanmak çoğu marka için doğru karar; kendi yazma sadece çok özelleşmiş ihtiyaçlar için. Build kararı ancak şu durumlarda mantıklı: kurumsal compliance (veriler dışarı çıkamaz), niş özellikler (mevcut araç desteklemiyor), 50+ tenant yöneten ajans.' },
+      { type: 'p', text: 'Bunları çözmek için 3-6 ay gerekli. Existing araç (Yanıt dahil) kullanmak çoğu marka için doğru karar; kendi yazma sadece çok özelleşmiş ihtiyaçlar için. Build kararı ancak şu durumlarda mantıklı: kurumsal compliance (veriler dışarı çıkamaz), niş özellikler (mevcut araç desteklemiyor), 50+ tenant yöneten ajans.' },
     ],
   },
   {
@@ -261,7 +261,7 @@ export const BATCH_4: BlogPost[] = [
         'AI referrer trafiği: Analytics\'inizde Perplexity, ChatGPT, Gemini referrer\'ları için segment kurun.',
         'Brand search hacmi: Google Trends ile aylık takip.',
         'Conversion rate (organik): toplam değil, AI-referred trafik için ayrı.',
-        'AI mention sayısı: Independent AI ile.',
+        'AI mention sayısı: Yanıt ile.',
       ] },
       { type: 'h2', text: 'Pratik' },
       { type: 'p', text: 'Toplam organik trafik düşse bile, kalan trafiğin kalitesi artıyor (daha yüksek niyetli kullanıcılar). Sayıyı değil, conversion oranını izleyin. CMO raporlarınızda eski "organic traffic" KPI\'sını "AI-influenced traffic" KPI\'sıyla değiştirin.' },
@@ -279,7 +279,7 @@ export const BATCH_4: BlogPost[] = [
       { type: 'p', text: 'GEO ROI ölçümü SEO\'dan zor. SEO\'da "şu anahtar kelimede 1. sıraya çıktık, şu kadar tıklama aldık" diyebiliyordunuz. GEO\'da hem ölçüm hem etki dolaylı.' },
       { type: 'h2', text: 'Güvenilir metrikler' },
       { type: 'ul', items: [
-        'AI Visibility Score değişimi (Independent AI ile).',
+        'AI Visibility Score değişimi (Yanıt ile).',
         'Brand search hacmi (Google Trends, GSC).',
         'AI referral trafiği (analytics\'te yeni kategori).',
         'Sales attribution survey ("nereden bizi duydunuz?" sorusu).',
@@ -382,7 +382,7 @@ export const BATCH_4: BlogPost[] = [
       { type: 'p', text: 'Geride olmak avantaj da olabilir — yapılması gerekenler net, rakipler henüz uyanmamış. 2026\'da GEO\'ya yatırım yapan TR markaları 2027-2028\'de belirgin lider olacak.' },
       { type: 'h2', text: 'TR markaları için ilk 6 ay planı' },
       { type: 'ul', items: [
-        'Ay 1: Independent AI hesabı, baseline, llms.txt.',
+        'Ay 1: Yanıt hesabı, baseline, llms.txt.',
         'Ay 2-3: 4-6 derin Türkçe makale (karşılaştırma, FAQ, definitif rehber).',
         'Ay 4: Wikipedia sayfası önerisi (eğer notable\'sanız).',
         'Ay 5: 1 podcast misafirliği, 1 yetkili medya mention.',
@@ -417,8 +417,8 @@ export const BATCH_4: BlogPost[] = [
       ] },
       { type: 'h2', text: 'AI-first iddiası mı, gerçek mi?' },
       { type: 'p', text: 'Bir startup\'ın AI-first olup olmadığını anlamak için 5 soru: (1) Ürünleri olmadan AI ürünleri var mı? (2) Ekipte AI tool kullanımı dokümante mi? (3) GEO strateji ekipte uzman var mı? (4) Veri yapıları AI-ready mı? (5) Roadmap\'te AI dependent feature\'lar var mı?' },
-      { type: 'h2', text: 'Independent AI olarak kendi pratiğimiz' },
-      { type: 'p', text: 'Independent AI olarak biz de: ürün geliştirmede AI aktif kullanılıyor, içerik (bu blog dahil) AI-yardımlı üretiliyor, GEO başlı başına bir prensip. Kendi araçlarımızı kendi markamız için kullanıyoruz — "dogfooding".' },
+      { type: 'h2', text: 'Yanıt olarak kendi pratiğimiz' },
+      { type: 'p', text: 'Yanıt olarak biz de: ürün geliştirmede AI aktif kullanılıyor, içerik (bu blog dahil) AI-yardımlı üretiliyor, GEO başlı başına bir prensip. Kendi araçlarımızı kendi markamız için kullanıyoruz — "dogfooding".' },
     ],
   },
   {
@@ -522,7 +522,7 @@ export const BATCH_4: BlogPost[] = [
     category: 'Ürün',
     author: tech,
     body: [
-      { type: 'p', text: 'Aylık paydaş raporunuza GEO bölümü ekliyorsanız, aşağıdaki şablon işe yarar. Independent AI dashboard\'undan veriyi alıp bu yapıya oturtabilirsiniz.' },
+      { type: 'p', text: 'Aylık paydaş raporunuza GEO bölümü ekliyorsanız, aşağıdaki şablon işe yarar. Yanıt dashboard\'undan veriyi alıp bu yapıya oturtabilirsiniz.' },
       { type: 'h2', text: 'Sekiz başlıklı şablon' },
       { type: 'ul', items: [
         '1. Executive summary (3 cümle).',
@@ -535,7 +535,7 @@ export const BATCH_4: BlogPost[] = [
         '8. Aksiyon planı (gelecek ay için 3 madde).',
       ] },
       { type: 'h2', text: 'Format' },
-      { type: 'p', text: '5-10 sayfa PDF; yönetici özetli, görsel destekli. Independent AI yol haritasında otomatik PDF raporu var; o gelene kadar manuel template kullanın.' },
+      { type: 'p', text: '5-10 sayfa PDF; yönetici özetli, görsel destekli. Yanıt yol haritasında otomatik PDF raporu var; o gelene kadar manuel template kullanın.' },
       { type: 'h2', text: 'Hedef kitleye göre' },
       { type: 'ul', items: [
         'CEO/CMO: 1 sayfalık özet (Visibility Score + 3 maddelik aksiyon).',
@@ -613,7 +613,7 @@ export const BATCH_4: BlogPost[] = [
         'FAQPage schema.',
       ] },
       { type: 'h2', text: 'Citation ölçümü' },
-      { type: 'p', text: 'Citation\'larınızı ölçmek için: aylık 5-10 sektör sorusunu Perplexity\'de sorun, kaynak listesinde sizinki var mı kontrol edin. Analytics\'inizde Perplexity referrer trafiği görün. Manuel test küçük markalar için yeterli; ölçek büyüdükçe Independent AI gibi araç önerilir.' },
+      { type: 'p', text: 'Citation\'larınızı ölçmek için: aylık 5-10 sektör sorusunu Perplexity\'de sorun, kaynak listesinde sizinki var mı kontrol edin. Analytics\'inizde Perplexity referrer trafiği görün. Manuel test küçük markalar için yeterli; ölçek büyüdükçe Yanıt gibi araç önerilir.' },
       { type: 'h2', text: 'Citation hedefi' },
       { type: 'p', text: 'Pratik hedef: 6 ay içinde sektörünüzdeki 5-10 ana sorguda en az birinde Perplexity citation\'ı olarak görünmek. Bu hedefe ulaşırsanız GEO ekibinizin temel başarısı sağlanmış demektir.' },
     ],
@@ -646,8 +646,8 @@ export const BATCH_4: BlogPost[] = [
       ] },
       { type: 'h2', text: 'Mevcut SEO/marketing kişiler için geçiş' },
       { type: 'p', text: 'Mevcut SEO uzmanları GEO\'ya geçişte avantajlı — bilgi tabanı büyük ölçüde transfer edilebilir. Ek olarak öğrenilmesi gerekenler: AI modelleri ne işyapıyor, prompt engineering temel, structured data\'da derinleşme. 3-6 aylık öğrenme sürecinden sonra "GEO Manager" pozisyonuna geçiş gerçekçi.' },
-      { type: 'h2', text: 'Independent AI olarak bizim katkımız' },
-      { type: 'p', text: 'Independent AI olarak bu rolleri okuyan herkesin işe alım/CV listesine ekleyebileceği bir başucu kaynak. Blog yazılarımız, GEO 101 rehberi, sözlük — hepsi yeni mesleklere hazırlık için tasarlandı. 2026 sonu hedefimiz: TR\'deki ilk "GEO Manager Sertifika" programını lansman etmek.' },
+      { type: 'h2', text: 'Yanıt olarak bizim katkımız' },
+      { type: 'p', text: 'Yanıt olarak bu rolleri okuyan herkesin işe alım/CV listesine ekleyebileceği bir başucu kaynak. Blog yazılarımız, GEO 101 rehberi, sözlük — hepsi yeni mesleklere hazırlık için tasarlandı. 2026 sonu hedefimiz: TR\'deki ilk "GEO Manager Sertifika" programını lansman etmek.' },
     ],
   },
 ];

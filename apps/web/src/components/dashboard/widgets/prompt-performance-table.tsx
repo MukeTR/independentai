@@ -8,15 +8,7 @@ function Sparkline({ data }: { data: number[] }) {
   if (!data || data.length < 2) {
     return (
       <svg width={80} height={24} className="overflow-visible" aria-hidden>
-        <line
-          x1={0}
-          y1={12}
-          x2={80}
-          y2={12}
-          stroke="#EFEDE5"
-          strokeWidth={2}
-          strokeLinecap="round"
-        />
+        <line x1={0} y1={12} x2={80} y2={12} stroke="#EFEDE5" strokeWidth={2} strokeLinecap="round" />
       </svg>
     );
   }
@@ -51,11 +43,7 @@ function Sparkline({ data }: { data: number[] }) {
   );
 }
 
-export function PromptPerformanceTable({
-  prompts,
-}: {
-  prompts: ComprehensiveAnalytics['promptPerformance'];
-}) {
+export function PromptPerformanceTable({ prompts }: { prompts: ComprehensiveAnalytics['promptPerformance'] }) {
   const rows = prompts ?? [];
 
   return (
@@ -81,9 +69,7 @@ export function PromptPerformanceTable({
                 <th className="pb-2 pr-4 font-mono font-normal">Soru</th>
                 <th className="pb-2 pr-4 font-mono font-normal">Kategori</th>
                 <th className="pb-2 pr-4 font-mono font-normal">Görünürlük</th>
-                <th className="pb-2 pr-4 text-right font-mono font-normal">
-                  Ort. Sıra
-                </th>
+                <th className="pb-2 pr-4 text-right font-mono font-normal">Ort. Sıra</th>
                 <th className="pb-2 text-right font-mono font-normal">Trend</th>
               </tr>
             </thead>
@@ -91,10 +77,7 @@ export function PromptPerformanceTable({
               {rows.map((p) => {
                 const vis = Math.max(0, Math.min(100, p.visibility));
                 return (
-                  <tr
-                    key={p.id}
-                    className="group transition-colors hover:bg-paper-2"
-                  >
+                  <tr key={p.id} className="group transition-colors hover:bg-paper-2">
                     <td className="py-3 pr-4 align-middle">
                       <Link
                         href={`/dashboard/prompts/${p.id}`}
@@ -115,14 +98,9 @@ export function PromptPerformanceTable({
                     </td>
                     <td className="py-3 pr-4 align-middle">
                       <div className="flex items-center gap-2">
-                        <span className="tabular w-9 shrink-0 font-mono text-[12px] text-ink">
-                          {vis.toFixed(0)}%
-                        </span>
+                        <span className="tabular w-9 shrink-0 font-mono text-[12px] text-ink">{vis.toFixed(0)}%</span>
                         <div className="h-1.5 w-20 overflow-hidden rounded-full bg-paper-4">
-                          <div
-                            className="h-full rounded-full bg-brand"
-                            style={{ width: `${vis}%` }}
-                          />
+                          <div className="h-full rounded-full bg-brand" style={{ width: `${vis}%` }} />
                         </div>
                       </div>
                     </td>

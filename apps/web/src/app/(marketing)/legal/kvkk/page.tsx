@@ -13,22 +13,26 @@ export default function Kvkk() {
       <Container className="max-w-3xl">
         <div className="eyebrow">Yasal</div>
         <h1 className="font-display text-[40px] tracking-tight mt-3 mb-4">KVKK Aydınlatma Metni</h1>
-        <p className="text-[12px] text-ink-faint font-mono mb-12">Son güncelleme: 2026-05-22</p>
+        <p className="text-[12px] text-ink-faint font-mono mb-12">Son güncelleme: 2026-09-21</p>
 
         <div className="space-y-8 text-[15px] leading-[1.7] text-ink">
           <p className="text-ink-muted">
-            6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, veri sorumlusu sıfatıyla Independent AI
-            tarafından aşağıdaki açıklamalar yapılmaktadır.
+            6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, veri sorumlusu sıfatıyla Yanıt tarafından
+            aşağıdaki açıklamalar yapılmaktadır.
           </p>
 
           {[
             {
               h: 'Veri sorumlusu',
-              c: 'Independent AI — independentai.space. Şirket bilgileri lansman sonrası tamamlanacaktır.',
+              c: 'Yanıt — yanit.io. Şirket bilgileri (unvan, adres, MERSİS) güncellenecektir.',
             },
             {
               h: 'İşlenen kişisel veriler',
               c: 'Ad-soyad (opsiyonel), e-posta adresi, şirket adı, web sitesi, IP adresi ve oturum logları. Kredi kartı bilgisi şu an istenmemektedir.',
+            },
+            {
+              h: 'AI Discovery Sensor verisi',
+              c: "Müşterimiz kendi sitesine ölçüm script'ini eklerse, o sitenin ziyaretçilerine ait çerezsiz ve kişisel veri içermeyen olay özetleri işlenir: sayfa yolu (query string olmadan), yönlendiren sitenin alan adı, olay tipi, site sahibinin tanımladığı hedef/varlık etiketi ve zaman. Çerez, kalıcı ziyaretçi kimliği, parmak izi, form/sayfa metni ve kalıcı IP saklanmaz; ham IP yalnızca isteğin doğrulanması sırasında anlık kullanılır. Ham kayıtlar site sahibinin belirlediği sürede (varsayılan 90 gün) silinir. Bu veride veri sorumlusu, script'i ekleyen müşteridir; Yanıt veri işleyen sıfatıyla hareket eder.",
             },
             {
               h: 'İşleme amaçları',
@@ -36,15 +40,19 @@ export default function Kvkk() {
             },
             {
               h: 'Aktarım',
-              c: 'Verileriniz yurt dışında bulunan hosting altyapısında (Vercel ve Neon — ABD) saklanır. Yurt dışı aktarımı için açık rızanız kayıt sırasında alınır.',
+              c: 'Verileriniz yurt dışında bulunan hosting altyapısında saklanır: veri tabanı Supabase (Almanya — Frankfurt), uygulama Vercel üzerinde çalışır. Yurt dışı aktarımı için açık rızanız kayıt sırasında alınır.',
             },
             {
               h: 'Saklama süresi',
               c: 'Hesabınız aktif olduğu sürece + 1 yıl. Talep ettiğinizde 30 gün içinde silinir.',
             },
             {
+              h: 'Ücretsiz araçlar ve iletişim formu',
+              c: 'Ücretsiz site araçlarında (/arac) yalnızca girdiğiniz herkese açık web sitesi taranır; hesap, e-posta veya kayıt istenmez. Tarama kaydında ham IP adresi ve tam tarayıcı bilgisi SAKLANMAZ; kötüye kullanımı önlemek için IP ve tarayıcı ailesinden tuzlu bir özet (pseudonim ziyaretçi kimliği) üretilir ve bu özet geri çevrilemez. Tarama sonucu, alan adı ve skor 30 gün saklanır; kalıcı rapor bağlantısı bu sürenin sonunda kapanır. Alan adı ve skor, satış ekibimizin sizinle iletişime geçip geçmeyeceğine karar vermesi için lead kaydı olarak tutulur; bu kayıtta kişisel veri yoktur. Ad soyad, e-posta, telefon ve mesajınız yalnızca iletişim formunu doldurup KVKK aydınlatma onayını verdiğinizde işlenir ve yalnızca talebinizi yanıtlamak için kullanılır; ticari elektronik ileti (İYS) izni ayrı ve isteğe bağlı bir kutuyla alınır. Formdan veya araçlardan gelen hiçbir veri yapay zekâ servislerine (ChatGPT, Claude, Gemini vb.) gönderilmez; skorlar deterministik tarayıcıyla hesaplanır. Silme veya düzeltme talebiniz için destek@yanit.io adresine yazabilirsiniz.',
+            },
+            {
               h: 'Veri sahibi hakları',
-              c: 'Madde 11 çerçevesinde tüm haklarınızı kullanmak için destek@independentai.space adresine yazabilirsiniz. 30 gün içinde size dönüş yaparız.',
+              c: 'Madde 11 çerçevesinde tüm haklarınızı kullanmak için destek@yanit.io adresine yazabilirsiniz. 30 gün içinde size dönüş yaparız.',
             },
           ].map((s) => (
             <section key={s.h}>

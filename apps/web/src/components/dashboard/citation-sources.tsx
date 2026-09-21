@@ -8,8 +8,8 @@ export function CitationSources({ sources }: { sources: CitationSource[] }) {
       <div className="card p-6 h-full">
         <Header />
         <p className="text-[13px] text-ink-muted mt-3">
-          Henüz atıf verisi yok. Modeller cevaplarında kaynak gösterdikçe (özellikle Gemini/Perplexity), en çok
-          atıf alan siteler burada birikecek.
+          Henüz atıf verisi yok. Modeller cevaplarında kaynak gösterdikçe (özellikle Gemini/Perplexity), en çok atıf
+          alan siteler burada birikecek.
         </p>
       </div>
     );

@@ -33,7 +33,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
     publishedAt: '2026-05-15',
     readTimeMin: 7,
     category: 'GEO',
-    author: { name: 'Independent AI ekibi', role: 'Editöryal' },
+    author: { name: 'Yanıt ekibi', role: 'Editöryal' },
     body: [
       { type: 'p', text: 'Son 25 yılda SEO (Search Engine Optimization) markaların web\'de bulunabilmesinin tek yoluydu. Google\'da sıralama, backlink, içerik kalitesi, teknik optimizasyon — hepsi tek bir amaca hizmet ediyordu: kullanıcı bir arama yaptığında ilk sayfada olmak.' },
       { type: 'p', text: 'Ama kullanıcı davranışı değişti. 2025 itibarıyla milyonlarca insan artık "en iyi muhasebe yazılımı" sorusunu Google\'a değil, ChatGPT\'ye veya Claude\'a soruyor. Cevap olarak link listesi değil, "şunları öneririm" formatında 2-3 marka adı geliyor.' },
@@ -44,7 +44,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
         'Sıralama vs öneri: SEO\'da 10. sırada olmak bile bir tıklama getirebilir. GEO\'da AI\'nın önerdiği 3 markadan biri değilseniz, görünmüyorsunuz.',
         'Link vs metin: SEO link tıklatmaya yönelik. GEO\'da kullanıcı zaten cevabı alıyor; sizi listenin başında görmesi önemli.',
         'Anahtar kelime vs niyet: AI cevapları niyete göre üretiliyor. "İstanbul\'da dijital ajans" sorusuna AI, anahtar kelime eşleştirmesi değil, anlamsal cevap üretir.',
-        'Ölçüm: SEO için Google Search Console var. GEO için… yakın zamana kadar yoktu. Independent AI bu boşluğu dolduruyor.',
+        'Ölçüm: SEO için Google Search Console var. GEO için… yakın zamana kadar yoktu. Yanıt bu boşluğu dolduruyor.',
       ] },
       { type: 'h2', text: 'GEO için ne yapmalı?' },
       { type: 'p', text: '1. Ölçün. Kategori sorularınızı izlemeden hiçbir şey yapamazsınız. Hangi sorularda geçiyorsunuz, hangilerinde rakipleriniz önde — bu görünürlük olmadan strateji olmaz.' },
@@ -61,7 +61,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
     publishedAt: '2026-05-10',
     readTimeMin: 9,
     category: 'AI',
-    author: { name: 'Independent AI ekibi', role: 'Araştırma' },
+    author: { name: 'Yanıt ekibi', role: 'Araştırma' },
     body: [
       { type: 'p', text: 'Bir markayı izleyen birçok müşterimiz şunu fark etti: ChatGPT cevabında 1. sıradalar, Gemini cevabında hiç geçmiyorlar. Neden? Üç model aynı sorunun cevabını üretirken farklı veri kaynaklarından, farklı algoritmik tercihlerle yola çıkıyor.' },
       { type: 'h2', text: 'Test metodolojisi' },
@@ -88,7 +88,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
     publishedAt: '2026-05-05',
     readTimeMin: 6,
     category: 'GEO',
-    author: { name: 'Independent AI ekibi', role: 'Teknik içerik' },
+    author: { name: 'Yanıt ekibi', role: 'Teknik içerik' },
     body: [
       { type: 'p', text: 'llms.txt, web sitenizin köküne koyduğunuz bir markdown dosyası. AI modellerinin markanız hakkında doğru, yapılandırılmış bilgi alabilmesi için tasarlandı. Robots.txt\'in arama motorları için yaptığını AI için yapıyor.' },
       { type: 'h2', text: 'Neden gerekli?' },
@@ -100,7 +100,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
         '3. Content-Type olarak text/markdown veya text/plain ayarlayın.',
         '4. robots.txt\'inizde AI crawler\'ları (GPTBot, ClaudeBot, PerplexityBot) explicit allow edin.',
       ] },
-      { type: 'p', text: 'llms.txt eklemek 30 dakika sürer. Etkisi haftalar içinde AI cevaplarında görünmeye başlar. Independent AI\'nin kendi sitesinin llms.txt\'sini independentai.space/llms.txt adresinde görebilirsiniz — referans olarak kullanabilirsiniz.' },
+      { type: 'p', text: 'llms.txt eklemek 30 dakika sürer. Etkisi haftalar içinde AI cevaplarında görünmeye başlar. Yanıt\'ın kendi sitesinin llms.txt\'sini yanit.io/llms.txt adresinde görebilirsiniz — referans olarak kullanabilirsiniz.' },
     ],
   },
   {
@@ -110,7 +110,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
     publishedAt: '2026-04-28',
     readTimeMin: 8,
     category: 'Pazarlama',
-    author: { name: 'Independent AI ekibi', role: 'Editöryal' },
+    author: { name: 'Yanıt ekibi', role: 'Editöryal' },
     body: [
       { type: 'p', text: 'Türkiye SaaS, e-ticaret ve hizmet pazarlarında bir gerçek: müşterileriniz AI\'yı SEO\'dan çok daha hızlı benimsiyor. 2026 Q1 itibarıyla TR\'de ChatGPT aktif kullanıcı sayısı 8 milyona yaklaştı.' },
       { type: 'h2', text: 'TR pazarında neden GEO öncelikli?' },
@@ -120,7 +120,7 @@ const ORIGINAL_POSTS: BlogPost[] = [
         'Türk kullanıcılar yabancı kullanıcılara göre AI önerisine daha çok güveniyor (Statista 2026).',
       ] },
       { type: 'h2', text: 'Ne yapmalı?' },
-      { type: 'p', text: '1. Ölçün. Markanız bugün AI cevaplarında nerede? Independent AI 6 ay ücretsiz.' },
+      { type: 'p', text: '1. Ölçün. Markanız bugün AI cevaplarında nerede? Yanıt ile ücretsiz şok raporu alın; sürekli izleme için 14 gün deneme.' },
       { type: 'p', text: '2. İçerik stratejinizi GEO-uyumlu hale getirin. AI modellerinin markanızı doğru anlayacağı, yetkili, yapılandırılmış içerik üretin.' },
       { type: 'p', text: '3. llms.txt ekleyin.' },
       { type: 'p', text: '4. Her ay ölçün ve iterate edin. SEO\'da 3 ayda etki görürdüyseniz, GEO\'da etkiyi 6 ayda görmeyi planlayın.' },
@@ -191,6 +191,14 @@ export function getWordCount(post: BlogPost): number {
     }
     return acc;
   }, 0);
+}
+
+/**
+ * Gerçek okuma süresi (dk) — gövdedeki kelime sayısından, 200 kelime/dk ile.
+ * `readTimeMin` alanı elle girilmişti ve gerçeği yansıtmıyordu; arayüz artık bunu kullanır.
+ */
+export function getReadTimeMin(post: BlogPost): number {
+  return Math.max(1, Math.round(getWordCount(post) / 200));
 }
 
 /** Kategoriye göre gruplanmış yazılar — arşiv sayfası için (publishedAt desc korunur). */

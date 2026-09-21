@@ -12,8 +12,8 @@ export default function HallucinationPage() {
       </div>
       <h1 className="font-display text-[36px] tracking-tight">Halüsinasyon Tespiti</h1>
       <p className="text-[15px] text-ink-muted mt-3 max-w-2xl mb-8">
-        AI motorları markanız hakkında yanlış bilgi veriyor olabilir — uydurma özellikler, yanlış fiyat, hatalı kuruluş bilgisi.
-        Doğrulanmış gerçeklerinizi girin, son cevapları tarayıp çelişkileri yakalayalım.
+        AI motorları markanız hakkında yanlış bilgi veriyor olabilir — uydurma özellikler, yanlış fiyat, hatalı kuruluş
+        bilgisi. Doğrulanmış gerçeklerinizi girin, son cevapları tarayıp çelişkileri yakalayalım.
       </p>
 
       <HallucinationTool />

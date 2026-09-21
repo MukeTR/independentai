@@ -1,0 +1,17 @@
+name = "independentai-sensor"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Sitenizin tüm istekleri bu Worker'dan geçer; Worker yanıtı değiştirmez.
+# routes = [{ pattern = "ornek.com/*", zone_name = "ornek.com" }]
+
+[vars]
+# Panelden aldığınız public site anahtarı (iais_…). Gizli değildir.
+IAI_SITE_KEY = "iais_DEGISTIRIN"
+# Collector kökü. Kendi kurulumunuz varsa değiştirin.
+IAI_ENDPOINT = "https://independentai.space"
+# Ham IP gönderimi (ters DNS doğrulaması için). Kapalı bırakmak en gizlilik dostu seçenektir.
+IAI_SEND_IP = "0"
+
+# IAI_INGEST_SECRET bir SIR'dır; vars içine YAZMAYIN:
+#   npx wrangler secret put IAI_INGEST_SECRET

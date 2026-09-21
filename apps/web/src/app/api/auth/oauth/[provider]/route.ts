@@ -1,6 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import {
-  isOAuthProvider, enabledOAuthProviders, buildAuthorizeUrl, makeState, OAUTH_STATE_COOKIE,
+  isOAuthProvider,
+  enabledOAuthProviders,
+  buildAuthorizeUrl,
+  makeState,
+  OAUTH_STATE_COOKIE,
 } from '@/server/oauth';
 
 /** OAuth akışını başlatır: state üretir, cookie'ye yazar, provider'a yönlendirir. */

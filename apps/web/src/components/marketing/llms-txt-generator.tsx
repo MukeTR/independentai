@@ -7,14 +7,14 @@ type KeyUrl = { label: string; url: string; description: string };
 
 const DEFAULT_FORM = {
   name: 'Acme Yazılım',
-  tagline: 'KOBİ\'ler için bulut tabanlı muhasebe ve ön muhasebe yazılımı.',
+  tagline: "KOBİ'ler için bulut tabanlı muhasebe ve ön muhasebe yazılımı.",
   description:
-    'Acme, 2018\'den beri 5.000+ KOBİ\'ye hizmet veriyor. Web tabanlı arayüz, mobil uygulama, e-fatura entegrasyonu, KDV ve gelir vergisi otomatik hesaplama özellikleri sunar.',
+    "Acme, 2018'den beri 5.000+ KOBİ'ye hizmet veriyor. Web tabanlı arayüz, mobil uygulama, e-fatura entegrasyonu, KDV ve gelir vergisi otomatik hesaplama özellikleri sunar.",
   website: 'https://acme.com',
   founded: '2018',
   location: 'Ankara',
   customerCount: '5.000+',
-  targetAudience: 'KOBİ\'ler (1-50 çalışan)',
+  targetAudience: "KOBİ'ler (1-50 çalışan)",
   keyUrls: [
     { label: 'Ana sayfa', url: 'https://acme.com/', description: 'Ürün özeti' },
     { label: 'Fiyatlandırma', url: 'https://acme.com/fiyat', description: 'Plan seçenekleri' },
@@ -45,19 +45,26 @@ function buildLlmsTxt(f: typeof DEFAULT_FORM): string {
     }
     lines.push('');
   }
-  const aboutFields = ([
-    ['Kuruluş', f.founded],
-    ['Lokasyon', f.location],
-    ['Müşteri sayısı', f.customerCount],
-    ['Hedef kitle', f.targetAudience],
-  ] as const).filter(([, v]) => v.trim() !== '');
+  const aboutFields = (
+    [
+      ['Kuruluş', f.founded],
+      ['Lokasyon', f.location],
+      ['Müşteri sayısı', f.customerCount],
+      ['Hedef kitle', f.targetAudience],
+    ] as const
+  ).filter(([, v]) => v.trim() !== '');
   if (aboutFields.length) {
     lines.push('## Hakkında');
     lines.push('');
     for (const [k, v] of aboutFields) lines.push(`- ${k}: ${v.trim()}`);
     lines.push('');
   }
-  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+  return (
+    lines
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim() + '\n'
+  );
 }
 
 export function LlmsTxtGenerator() {
@@ -125,11 +132,7 @@ export function LlmsTxtGenerator() {
             <div className="text-[11px] text-ink-faint font-mono">Markanız için anında üret · ücretsiz</div>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={resetExample}
-          className="text-[11px] text-ink-faint hover:text-ink font-mono"
-        >
+        <button type="button" onClick={resetExample} className="text-[11px] text-ink-faint hover:text-ink font-mono">
           örneği sıfırla
         </button>
       </div>
@@ -155,7 +158,9 @@ export function LlmsTxtGenerator() {
               onChange={(e) => set('tagline', e.target.value)}
               placeholder="Ne yapan bir şirket olduğunuz, tek cümle"
             />
-            <div className="text-[10.5px] text-ink-faint mt-1">Bu cümle markdown çıktısında blockquote olarak görünür</div>
+            <div className="text-[10.5px] text-ink-faint mt-1">
+              Bu cümle markdown çıktısında blockquote olarak görünür
+            </div>
           </div>
 
           <div>
@@ -254,9 +259,11 @@ export function LlmsTxtGenerator() {
                   <button
                     type="button"
                     onClick={() => removeUrl(i)}
+                    aria-label={`Sayfayı kaldır: ${u.url || i + 1}`}
+                    title="Sayfayı kaldır"
                     className="col-span-1 text-ink-faint hover:text-danger flex items-center justify-center h-9"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-4 h-4" aria-hidden />
                   </button>
                 </div>
               ))}
@@ -300,8 +307,15 @@ export function LlmsTxtGenerator() {
         <ol className="text-[12.5px] text-ink-muted space-y-1.5 list-decimal list-inside">
           <li>Üstteki formu kendi markanıza göre doldurun.</li>
           <li>"llms.txt indir" butonu ile dosyayı bilgisayarınıza kaydedin.</li>
-          <li>Web sunucunuzun kök dizinine yükleyin: <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">https://siteniz.com/llms.txt</code></li>
-          <li>Content-Type olarak <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">text/markdown</code> veya <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">text/plain</code> ayarlayın.</li>
+          <li>
+            Web sunucunuzun kök dizinine yükleyin:{' '}
+            <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">https://siteniz.com/llms.txt</code>
+          </li>
+          <li>
+            Content-Type olarak{' '}
+            <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">text/markdown</code> veya{' '}
+            <code className="font-mono text-[11px] bg-paper-4 px-1.5 py-0.5 rounded">text/plain</code> ayarlayın.
+          </li>
           <li>robots.txt'inize AI crawler\'ları (GPTBot, ClaudeBot, PerplexityBot) explicit allow edin.</li>
         </ol>
       </div>

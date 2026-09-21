@@ -8,3 +8,19 @@ dist
 *.tsbuildinfo
 packages/db/prisma/dev.db*
 .DS_Store
+
+# Supabase CLI geçici dosyaları
+supabase/.temp
+
+# Test çıktıları
+apps/web/playwright-report
+apps/web/test-results
+coverage
+.migration-dry-run/
+
+# Yerel çalışma dosyaları (public repoya girmez)
+CLAUDE_*.md
+docs/PRICING_RESEARCH_*.md
+
+# Başka bir aracın ürettiği yerel görseller (bu depoya ait değil)
+.codex-artifacts/

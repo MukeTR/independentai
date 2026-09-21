@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Kullanım Şartları',
-  description: 'Independent AI kullanım şartları ve hizmet sözleşmesi.',
+  description: 'Yanıt kullanım şartları ve hizmet sözleşmesi.',
   path: '/legal/terms',
 });
 
@@ -19,15 +19,15 @@ export default function Terms() {
           {[
             {
               h: '1. Hizmetin kapsamı',
-              c: 'Independent AI, kullanıcılarının tanımladığı sorgular için OpenAI, Anthropic ve Google\'ın yapay zeka modellerine API çağrısı yapar, cevap metinlerinde marka tespiti yapar ve sonuçları görselleştirir. Hizmet "olduğu gibi" sunulur; sonuçların doğruluğu, tamlığı veya güncelliği garanti edilmez.',
+              c: 'Yanıt, kullanıcılarının tanımladığı sorgular için OpenAI, Anthropic ve Google\'ın yapay zeka modellerine API çağrısı yapar, cevap metinlerinde marka tespiti yapar ve sonuçları görselleştirir. Hizmet "olduğu gibi" sunulur; sonuçların doğruluğu, tamlığı veya güncelliği garanti edilmez.',
             },
             {
-              h: '2. Lansman promosyonu',
-              c: '2026-05-22 tarihinde kayıt olan tüm kullanıcılar 6 ay boyunca tüm özelliklere ücretsiz erişir. 6 ay sonunda otomatik ücretlendirme YAPILMAZ; kullanmaya devam etmek için aktif bir tercih yapmanız gerekir.',
+              h: '2. Ücretsiz deneme',
+              c: 'Yeni hesaplar, kayıt anından itibaren fiyatlandırma sayfasında belirtilen süre boyunca (varsayılan 14 gün) tüm özelliklere ücretsiz erişir; kart bilgisi istenmez. Deneme sonunda otomatik ücretlendirme YAPILMAZ; kullanmaya devam etmek için aktif bir tercih yapmanız gerekir. Ücretsiz araçlar ve rapor hesap gerektirmez.',
             },
             {
               h: '3. Kullanıcı sorumlulukları',
-              c: 'İzlediğiniz prompt metinleri AI provider\'lara aktarılır. Telif hakkı ihlali, kişisel veri içeren veya yasa dışı içerik gönderemezsiniz. Hesap güvenliği (güçlü şifre, paylaşmama) sizin sorumluluğunuzdadır.',
+              c: "İzlediğiniz prompt metinleri AI provider'lara aktarılır. Telif hakkı ihlali, kişisel veri içeren veya yasa dışı içerik gönderemezsiniz. Hesap güvenliği (güçlü şifre, paylaşmama) sizin sorumluluğunuzdadır.",
             },
             {
               h: '4. Bizim sorumluluğumuz',

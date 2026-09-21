@@ -1,14 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireSession, handleRouteError } from '@/server/session';
+import { NextResponse } from 'next/server';
+import { route } from '@/server/route';
+import { requireActor } from '@/server/authz';
 import { getDashboardMetrics } from '@/server/repo';
 
-export async function GET(req: NextRequest) {
-  try {
-    const session = await requireSession();
-    const days = Number(req.nextUrl.searchParams.get('days') ?? 30);
-    const metrics = await getDashboardMetrics(session.tenantId, days);
-    return NextResponse.json(metrics);
-  } catch (err) {
-    return handleRouteError(err);
-  }
-}
+export const GET = route('dashboard.metrics', async (req) => {
+  const actor = await requireActor();
+  const raw = Number(new URL(req.url).searchParams.get('days') ?? 30);
+  const days = Number.isFinite(raw) ? Math.min(90, Math.max(1, Math.floor(raw))) : 30;
+  return NextResponse.json(await getDashboardMetrics(actor.tenantId, days));
+});

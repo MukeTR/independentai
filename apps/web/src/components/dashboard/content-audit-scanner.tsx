@@ -3,7 +3,12 @@
 import { useState } from 'react';
 import { Search, Loader2, FileSearch, Zap } from 'lucide-react';
 
-type Card = { title: string; detail: string; difficulty: 'Kolay' | 'Orta' | 'Zor'; impact: 'Yüksek' | 'Orta' | 'Düşük' };
+type Card = {
+  title: string;
+  detail: string;
+  difficulty: 'Kolay' | 'Orta' | 'Zor';
+  impact: 'Yüksek' | 'Orta' | 'Düşük';
+};
 type Result = {
   url: string;
   contentScore: number;
@@ -42,19 +47,32 @@ export function ContentAuditScanner() {
     }
   }
 
-  const sorted = result ? [...result.recommendations].sort((a, b) => IMPACT_RANK[a.impact] - IMPACT_RANK[b.impact]) : [];
+  const sorted = result
+    ? [...result.recommendations].sort((a, b) => IMPACT_RANK[a.impact] - IMPACT_RANK[b.impact])
+    : [];
 
   return (
     <div>
       <form onSubmit={scan} className="flex gap-3">
-        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://siteniz.com/blog/yazi" className="input flex-1" />
-        <button type="submit" disabled={loading} className="btn-primary inline-flex items-center gap-2 whitespace-nowrap">
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://siteniz.com/blog/yazi"
+          className="input flex-1"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary inline-flex items-center gap-2 whitespace-nowrap"
+        >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           {loading ? 'Analiz ediliyor…' : 'Analiz et'}
         </button>
       </form>
 
-      {error && <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>}
+      {error && (
+        <div className="mt-4 text-[13px] text-danger bg-danger/5 border border-danger/20 rounded-lg p-3">{error}</div>
+      )}
 
       {result && (
         <div className="mt-8 space-y-6">
@@ -89,7 +107,9 @@ export function ContentAuditScanner() {
               {sorted.map((c, i) => (
                 <div key={i} className="card p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge tone={c.impact === 'Yüksek' ? 'positive' : c.impact === 'Orta' ? 'warning' : 'muted'}>{c.impact} etki</Badge>
+                    <Badge tone={c.impact === 'Yüksek' ? 'positive' : c.impact === 'Orta' ? 'warning' : 'muted'}>
+                      {c.impact} etki
+                    </Badge>
                     <Badge tone="muted">{c.difficulty}</Badge>
                   </div>
                   <div className="font-display text-[14.5px] leading-tight">{c.title}</div>

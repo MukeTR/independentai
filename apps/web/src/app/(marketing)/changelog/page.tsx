@@ -4,14 +4,61 @@ import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
 import { Sparkles, Wrench, Plus, Zap } from 'lucide-react';
+import { CAPABILITIES } from '@independentai/shared';
 
 export const metadata = buildMetadata({
   title: 'Sürüm Notları — Yeniliklerden haberdar olun',
-  description: 'Independent AI\'a eklenen yeni özellikler, iyileştirmeler ve düzeltmeler.',
+  description: "Yanıt'a eklenen yeni özellikler, iyileştirmeler ve düzeltmeler.",
   path: '/changelog',
 });
 
 const RELEASES = [
+  {
+    version: 'v0.3.0',
+    date: '2026-09-20',
+    label: 'Yanıt',
+    sections: [
+      {
+        type: 'NEW' as const,
+        items: [
+          'Yeni teklif: şok raporu ve tüm ücretsiz araçlar hesap gerektirmez; Yanıt aylık abonelik, 14 gün ücretsiz deneme, kart gerekmez; Yanıt Agency aylık sprint, teklifle',
+          'Fiyat ve deneme süresi tek kaynaktan yönetilir (süper admin › Sistem › Teklif ve fiyat)',
+          'Yanıt landing: tek hikâyeli anlatım (Analiz → Düzelt → Ölç), sektör ve marka görselleri',
+        ],
+      },
+      {
+        type: 'IMPROVE' as const,
+        items: [
+          '"6 ay ücretsiz" lansman teklifi kaldırıldı; kayıt her zaman açık',
+          'Marka geçişi: pazarlama sayfaları, paylaşılan rapor imzası, e-postalar ve blog yazarı "Yanıt" oldu (alan adı yanit.io)',
+          'llms.txt yeni ürün anlatımıyla yeniden yazıldı',
+        ],
+      },
+    ],
+  },
+  {
+    version: 'v0.2.0',
+    date: '2026-09-06',
+    label: 'Public API',
+    sections: [
+      {
+        type: 'NEW' as const,
+        items: [
+          'Public API v1 (GET /api/v1/visibility) ve API dokümantasyonu (/docs/api) yayında — salt-okunur, token bazlı, 60 istek/dk',
+          'Ekip daveti ve roller (Owner / Admin / Viewer)',
+          'E-posta doğrulama ve şifre sıfırlama',
+          'Native web arama atıfları — Top Citation Sources (beta)',
+        ],
+      },
+      {
+        type: 'IMPROVE' as const,
+        items: [
+          'Deneme süresi sonunda salt-okunur mod (veriler silinmez, 7 gün ek süre)',
+          'Dağıtık rate limit (API ve kimlik doğrulama uçları)',
+        ],
+      },
+    ],
+  },
   {
     version: 'v0.1.0',
     date: '2026-05-22',
@@ -23,7 +70,7 @@ const RELEASES = [
           'İlk halka açık sürüm 🎉',
           '3 AI provider (ChatGPT, Claude, Gemini) paralel sorgu',
           'Akıllı marka tespiti (alias matching + pozisyon takibi)',
-          'Görünürlük skoru, Share of Voice, 30 günlük trend dashboard\'u',
+          'Görünürlük skoru, Share of Voice, 30 günlük trend paneli',
           'Onboarding (3-adımlı: marka, rakipler, ilk promptlar)',
           'Vercel Cron ile günlük otomatik rerun',
           'Manuel "şimdi çalıştır" özelliği',
@@ -34,22 +81,25 @@ const RELEASES = [
       },
       {
         type: 'PROMO' as const,
-        items: [
-          'Lansmanda kayıt olan tüm kullanıcılara 6 ay tamamen ücretsiz erişim',
-        ],
+        items: ['Lansman dönemine özel ücretsiz erişim (sona erdi; güncel teklif için /pricing)'],
       },
     ],
   },
 ];
 
-const ROADMAP = [
-  { eta: 'Q2 2026', t: 'Perplexity adapter', d: 'Arama odaklı LLM\'leri de izleme listesine ekliyoruz.' },
-  { eta: 'Q2 2026', t: 'Email anomali uyarıları', d: 'Görünürlüğünüz beklenmedik düşerse anında email ile haber.' },
-  { eta: 'Q3 2026', t: 'LLM-tabanlı sentiment', d: 'Heuristic yerine küçük model ile daha doğru tonal değerlendirme.' },
-  { eta: 'Q3 2026', t: 'API + Webhooks', d: 'Verilerinizi kendi araçlarınıza çekin.' },
-  { eta: 'Q4 2026', t: 'Aylık PDF rapor', d: 'Otomatik müşteri/yönetim raporu üretimi.' },
-  { eta: '2027', t: 'Grok adapter, çoklu dil, custom modeller', d: 'Hedef pazarı genişletme aşaması.' },
-];
+/** Yol haritası — tek kaynak: CAPABILITIES (status === 'roadmap'). Tarih sözü vermiyoruz. */
+const ROADMAP_NOTES: Record<string, string> = {
+  multi_brand: 'Tek hesapta birden fazla kendi markası. Şu an hesap başına 1 marka.',
+  webhooks: 'Olay tabanlı bildirimler (düşüş, cron tamamlandı). Şimdilik veriyi Public API ile çekin.',
+  pdf_report: 'Otomatik müşteri/yönetim raporu üretimi.',
+  perplexity: "Arama odaklı LLM'leri de izleme listesine ekliyoruz.",
+  billing: 'Kart ile self-servis ödeme; abonelik şimdilik ekiple başlatılır.',
+};
+const ROADMAP = CAPABILITIES.filter((c) => c.status === 'roadmap').map((c) => ({
+  eta: 'planlanıyor',
+  t: c.label,
+  d: ROADMAP_NOTES[c.key] ?? c.note ?? '',
+}));
 
 const ICONS = {
   NEW: { Icon: Plus, color: 'text-brand', label: 'Yeni' },
@@ -61,7 +111,12 @@ const ICONS = {
 export default function Changelog() {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Sürüm notları', href: '/changelog' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Sürüm notları', href: '/changelog' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
@@ -70,7 +125,7 @@ export default function Changelog() {
             Her yeni özellik <span className="text-brand">burada.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Independent AI hızlı evriliyor. Yeni özellikler, iyileştirmeler ve düzeltmeler için takipte kalın.
+            Yanıt hızlı evriliyor. Yeni özellikler, iyileştirmeler ve düzeltmeler için takipte kalın.
           </p>
         </Container>
       </section>
@@ -97,7 +152,9 @@ export default function Changelog() {
                         </div>
                         <ul className="space-y-2 pl-6 border-l-2 border-hairline">
                           {s.items.map((it, j) => (
-                            <li key={j} className="text-[14.5px] text-ink-muted leading-relaxed">{it}</li>
+                            <li key={j} className="text-[14.5px] text-ink-muted leading-relaxed">
+                              {it}
+                            </li>
                           ))}
                         </ul>
                       </div>
@@ -110,7 +167,7 @@ export default function Changelog() {
         </Container>
       </section>
 
-      <Section eyebrow="Yol haritası" title="Yakında geliyor." className="bg-paper-2/40">
+      <Section eyebrow="Yol haritası" title="Planlanıyor — henüz üründe yok." className="bg-paper-2/40">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {ROADMAP.map((r) => (
             <div key={r.t} className="card p-5 border-dashed border-2 border-hairline bg-transparent">

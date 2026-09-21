@@ -1,27 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { seedDemoData } from '@/server/seed-demo';
+import { cronAuthorized } from '@/server/cron-auth';
+import { isProduction } from '@/server/env';
+import { log } from '@/server/logger';
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 /**
- * Prod'da demo tenant + örnek veri oluşturur (idempotent, SADECE demo tenant'ına dokunur).
- * Guard: Authorization: Bearer <CRON_SECRET>. Vercel prod env'inde CRON_SECRET tanımlı.
- *
- * Tetikleme:
- *   curl -X POST -H "Authorization: Bearer $CRON_SECRET" https://independentai.space/api/admin/seed-demo
+ * Demo tenant + örnek veri (idempotent, SADECE demo tenant'ına dokunur).
+ * Guard: Authorization: Bearer <CRON_SECRET>. Production'da ayrıca IAI_ALLOW_DEMO_SEED=1 şart.
  */
 export async function POST(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  const expected = process.env.CRON_SECRET;
-  if (!expected || auth !== `Bearer ${expected}`) {
-    return NextResponse.json({ message: 'Yetkisiz' }, { status: 401 });
+  if (!cronAuthorized(req)) return NextResponse.json({ message: 'Yetkisiz', code: 'unauthorized' }, { status: 401 });
+  if (isProduction() && process.env.IAI_ALLOW_DEMO_SEED !== '1') {
+    return NextResponse.json(
+      { message: "Production'da demo seed kapalı (IAI_ALLOW_DEMO_SEED=1 gerekli)", code: 'forbidden' },
+      { status: 403 },
+    );
   }
-
   try {
     const result = await seedDemoData();
-    return NextResponse.json({ ok: true, ...result, note: 'Demo verisi hazır. demo@independentai.space / demo1234 ile giriş yapabilirsiniz.' });
+    return NextResponse.json({ ok: true, ...result });
   } catch (err) {
-    console.error('[seed-demo]', err);
-    return NextResponse.json({ message: err instanceof Error ? err.message : 'Seed başarısız' }, { status: 500 });
+    log.error('seed-demo.failed', { err });
+    return NextResponse.json({ message: 'Seed başarısız', code: 'internal' }, { status: 500 });
   }
 }

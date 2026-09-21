@@ -1,0 +1,246 @@
+{
+  "work": "W7",
+  "nav": [
+    {
+      "panel": "Çözümler",
+      "section": "Kime göre",
+      "href": "/solutions/agencies",
+      "title": "Ajans ortaklığı",
+      "description": "Müşteri portföyü, roller, ortaklık programı",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Kime göre",
+      "href": "/yanit-agency",
+      "title": "Yanıt Agency",
+      "description": "Analizi biz yaptık, uygulamayı da biz yapalım — teklifle",
+      "badge": "beta"
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Kime göre",
+      "href": "/use-cases#saas",
+      "title": "SaaS",
+      "description": "Kategori sorularında görünürlük",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Kime göre",
+      "href": "/use-cases#enterprise",
+      "title": "Kurumsal",
+      "description": "Marka doğruluğu ve düşüş uyarıları",
+      "badge": null
+    },
+    {
+      "panel": "Ürün",
+      "section": "Ürün",
+      "href": "/how-it-works",
+      "title": "Nasıl çalışır",
+      "description": "Analiz → Düzelt → Ölç; skor formülleri açık",
+      "badge": null
+    },
+    {
+      "panel": "Ürün",
+      "section": "Özellikler",
+      "href": "/features#tracking",
+      "title": "Ölç",
+      "description": "3 model, günlük, tarih damgalı",
+      "badge": null
+    },
+    {
+      "panel": "Ürün",
+      "section": "Özellikler",
+      "href": "/features#analytics",
+      "title": "Anla",
+      "description": "Görünürlük boşluğu, sahipsiz sorular, atıf (beta)",
+      "badge": null
+    },
+    {
+      "panel": "Ürün",
+      "section": "Özellikler",
+      "href": "/features#tools",
+      "title": "Düzelt",
+      "description": "Ücretsiz araçlar, panel araçları, Yanıt Agency",
+      "badge": null
+    },
+    {
+      "panel": "Ürün",
+      "section": "Özellikler",
+      "href": "/features#reports",
+      "title": "Raporlama ve paylaşım",
+      "description": "Haftalık rapor, paylaşım linki, Public API",
+      "badge": null
+    },
+    {
+      "panel": "Kaynaklar",
+      "section": "Öğren",
+      "href": "/resources/geo-101",
+      "title": "GEO 101",
+      "description": "12 bölümlük rehber",
+      "badge": null
+    },
+    {
+      "panel": "Kaynaklar",
+      "section": "Öğren",
+      "href": "/resources/glossary",
+      "title": "Sözlük",
+      "description": "Görünürlük, SoV, atıf, YanitBot",
+      "badge": null
+    },
+    {
+      "panel": "Kaynaklar",
+      "section": "Teknik",
+      "href": "/docs",
+      "title": "Dokümantasyon",
+      "description": "Kurulum, skor yöntemi (#skorlar), araç uçları",
+      "badge": null
+    },
+    {
+      "panel": "Kaynaklar",
+      "section": "Teknik",
+      "href": "/docs/api",
+      "title": "Public API",
+      "description": "Salt-okunur görünürlük verisi; ücretsiz araç uçları",
+      "badge": null
+    },
+    {
+      "panel": "Kaynaklar",
+      "section": "Teknik",
+      "href": "/bot",
+      "title": "YanitBot",
+      "description": "Tarayıcımız ne çeker, nasıl engellenir",
+      "badge": null
+    },
+    {
+      "panel": "Şirket",
+      "section": "Şirket",
+      "href": "/about",
+      "title": "Yanıt nedir",
+      "description": "Misyon, yöntem ilkeleri, ekip",
+      "badge": null
+    },
+    {
+      "panel": "Şirket",
+      "section": "Şirket",
+      "href": "/about#mission",
+      "title": "Misyon",
+      "description": "Ölçeriz, söz vermeyiz",
+      "badge": null
+    },
+    {
+      "panel": "Şirket",
+      "section": "Şirket",
+      "href": "/about#team",
+      "title": "Ekip",
+      "description": "Roller; isim yok",
+      "badge": null
+    },
+    {
+      "panel": "Şirket",
+      "section": "Şirket",
+      "href": "/yanit-agency",
+      "title": "Yanıt Agency",
+      "description": "Uygulama hizmeti, teklifle",
+      "badge": "beta"
+    }
+  ],
+  "footer": [
+    { "column": "Ürün", "href": "/how-it-works", "label": "Nasıl çalışır" },
+    { "column": "Ürün", "href": "/features", "label": "Özellikler" },
+    { "column": "Çözümler", "href": "/solutions/agencies", "label": "Ajans ortaklığı" },
+    { "column": "Çözümler", "href": "/yanit-agency", "label": "Yanıt Agency" },
+    { "column": "Çözümler", "href": "/use-cases", "label": "Kim için" },
+    { "column": "Kaynaklar", "href": "/resources/geo-101", "label": "GEO 101" },
+    { "column": "Kaynaklar", "href": "/resources/glossary", "label": "Sözlük" },
+    { "column": "Kaynaklar", "href": "/docs", "label": "Dokümantasyon" },
+    { "column": "Kaynaklar", "href": "/docs/api", "label": "Public API" },
+    { "column": "Kaynaklar", "href": "/bot", "label": "YanitBot" },
+    { "column": "Şirket", "href": "/about", "label": "Yanıt nedir" },
+    { "column": "Şirket", "href": "/yanit-agency", "label": "Yanıt Agency" },
+    { "column": "Şirket", "href": "/legal/kvkk", "label": "KVKK aydınlatması" },
+    { "column": "Şirket", "href": "/legal/privacy", "label": "Gizlilik politikası" },
+    { "column": "Şirket", "href": "/legal/terms", "label": "Kullanım şartları" },
+    { "column": "Şirket", "href": "/legal/cookies", "label": "Çerez politikası" }
+  ],
+  "sitemap": [
+    { "path": "/", "priority": 1.0, "change": "weekly", "lastmod": "STORY_REVISION" },
+    { "path": "/features", "priority": 0.8, "change": "weekly", "lastmod": "STORY_REVISION" },
+    { "path": "/how-it-works", "priority": 0.7, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/use-cases", "priority": 0.7, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/about", "priority": 0.5, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/yanit-agency", "priority": 0.8, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/solutions/agencies", "priority": 0.8, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/bot", "priority": 0.3, "change": "yearly", "lastmod": "STORY_REVISION" },
+    { "path": "/resources", "priority": 0.7, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/resources/geo-101", "priority": 0.7, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/resources/glossary", "priority": 0.6, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/docs", "priority": 0.5, "change": "monthly", "lastmod": "STORY_REVISION" },
+    { "path": "/docs/api", "priority": 0.6, "change": "monthly", "lastmod": "STORY_REVISION" }
+  ],
+  "dock": [],
+  "dashboardTools": [],
+  "registryEnable": [],
+  "adminNav": [],
+  "layoutSlots": [
+    {
+      "layout": "home",
+      "component": "BlockedSiteHint",
+      "props": {},
+      "import": "@/components/blocked-site-hint"
+    }
+  ],
+  "blogInlineTools": [],
+  "blogSpread": [],
+  "capabilities": [
+    {
+      "key": "agency_service",
+      "label": "Yanıt Agency uygulama hizmeti",
+      "status": "beta",
+      "note": "Yanıt Agency uygulama hizmeti; teklifle, iletişim formu üzerinden; kodda hizmet akışı yok"
+    },
+    {
+      "key": "tasks",
+      "label": "Yapılacaklar listesi (haftalık iş listesi)",
+      "status": "roadmap",
+      "note": "Task modeli/rotası yok; landing ve /features 'Yapılacaklar · yakında' etiketiyle anlatır (spec §8)"
+    }
+  ],
+  "llmsTxt": [
+    {
+      "section": "Önemli sayfalar",
+      "href": "/yanit-agency",
+      "label": "Yanıt Agency",
+      "note": "Uygulama hizmeti: teknik düzeltme, şema/entity, içerik, kaynak çalışması; aylık sprint, teklifle; sonuç sözü yok, ölçüm var (beta)"
+    },
+    {
+      "section": "Önemli sayfalar",
+      "href": "/solutions/agencies",
+      "label": "Ajans ortaklık programı",
+      "note": "Müşteri portföyü, roller, paylaşım linkleri, 3 alan adı ön-analiz; beyaz etiket yakında"
+    },
+    {
+      "section": "YanitBot",
+      "href": "/bot",
+      "label": "YanitBot",
+      "note": "User-Agent: YanitBot/1.0 (+<SITE_URL>/bot) — geçiş süresince eski araçlarda IndependentAI-GEOBot/1.0; yalnızca herkese açık sayfalar, kullanıcı isteğiyle; sunucu/WAF düzeyinde UA engeliyle durur, robots.txt uyumu yakında"
+    }
+  ],
+  "docsIndex": [{ "file": "docs/PAZARLAMA_HIKAYESI.md", "title": "Pazarlama hikâyesi ve dürüstlük etiketleri" }],
+  "changelog": [
+    {
+      "type": "IMPROVED",
+      "item": "Landing dürüstlük etiketleri: temsili senaryo (.example alan adları), uydurma otorite puanı kaldırıldı, \"Yapılacaklar · yakında\" rozetleri, iki yol listesi yetenek matrisiyle sınırlı"
+    },
+    {
+      "type": "IMPROVED",
+      "item": "Yanıt hikâyesi pazarlama sayfalarında: /features Ölç→Anla→Düzelt (#tracking #analytics #detection #tools #reports), /how-it-works skor formülleri, /use-cases 9 sektör, /about yöntem ilkeleri ve ekip"
+    },
+    {
+      "type": "IMPROVED",
+      "item": "Yanıt Agency hizmet sayfası (/yanit-agency, teklifle, beta) ve ajans ortaklık programı (/solutions/agencies#ortaklik); YanitBot sayfası (/bot); /docs#skorlar ve ücretsiz araç uçları belgesi"
+    },
+    { "type": "FIXED", "item": "Rank checker sayfalarında FAQ JSON-LD ve görünür SSS" }
+  ]
+}

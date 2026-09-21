@@ -1,57 +1,86 @@
+import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowRight, Briefcase, Crown, Megaphone, Newspaper, Search } from 'lucide-react';
 import { Container } from '@/components/container';
 import { Section } from '@/components/section';
 import { CtaBlock } from '@/components/marketing/cta-block';
 import { BreadcrumbJsonLd } from '@/components/json-ld';
 import { buildMetadata } from '@/lib/seo';
-import { ArrowRight, Building2, Store, ShoppingBag, Briefcase, Megaphone, Crown, Search, Newspaper } from 'lucide-react';
 
 export const metadata = buildMetadata({
-  title: 'Kullanım senaryoları — SaaS, e-ticaret, ajans, kurumsal',
-  description: 'Hangi sektörde, hangi rolde olursanız olun: AI cevaplarında görünürlüğünüz pazarlama hedeflerinizi etkiliyor. Senaryolarla anlatımı.',
+  title: 'Kim için — 9 sektör, 4 rol',
+  description:
+    'Klinik, hukuk, SaaS, e-ticaret, ajans, eğitim, turizm, gayrimenkul ve B2B üretici: sektörünüze göre hangi sorular, hangi kontroller.',
   path: '/use-cases',
 });
 
-const BY_INDUSTRY = [
+/**
+ * 9 sektör (görseller public/img/sektor/*.webp). INTEGRATE, PREP `data/sectors.ts` (SECTORS) gelince bu listeyi
+ * oradan türetir; slug ve görsel adları birebir aynıdır.
+ */
+const SECTORS = [
   {
+    slug: 'klinik',
+    id: 'klinik',
+    name: 'Klinik ve sağlık',
+    q: '“İstanbul’da güvenilir saç ekimi kliniği?”',
+    d: 'Bilgilendirme ve görünürlük ölçümü; reklam mevzuatına uygun dil.',
+  },
+  {
+    slug: 'hukuk-danismanlik',
+    id: 'hukuk',
+    name: 'Hukuk ve danışmanlık',
+    q: '“Boşanma davası için avukat nasıl seçilir?”',
+    d: 'Uzmanlık sayfaları, soru-cevap içerik, entity tutarlılığı.',
+  },
+  {
+    slug: 'saas',
     id: 'saas',
-    icon: Building2,
-    name: 'SaaS şirketleri',
-    pain: 'B2B alıcılarınız "en iyi CRM", "en iyi proje yönetim aracı" sorularını artık önce AI\'ya soruyor. Cevabın ilk 3\'ünde yoksanız demo talebine bile düşmüyorsunuz.',
-    solution: 'Independent AI ile sektörünüzdeki tüm değerlendirme sorularını izleyin. Görünürlüğünüzü rakiplerinizle karşılaştırın. Hangi modelde zayıfsınız anlayıp content stratejinizi oraya yönlendirin.',
-    metrics: ['Kategori soruları görünürlüğü', 'Vs. rakipler SoV', 'Modele göre dağılım'],
+    name: 'SaaS',
+    q: '“KOBİ için en iyi CRM hangisi?”',
+    d: 'Kategori sorularında görünürlük, karşılaştırma içeriği, atıf kaynakları.',
   },
   {
+    slug: 'eticaret-altyapi',
     id: 'ecommerce',
-    icon: ShoppingBag,
-    name: 'E-ticaret markaları',
-    pain: '"En iyi spor ayakkabı markası" veya "kahve makinesi önerir misin" sorularında siz olmayabilirsiniz. Marka sıralamasında üst 3\'te değilseniz tıklama almıyorsunuz.',
-    solution: 'Kategori sorularınızı sistematik izleyin. Yeni ürün lansmanlarında ay başında görünürlük baseline\'ı alın, kampanya sonrası ölçün — etkisini AI cevaplarında somut görün.',
-    metrics: ['Kategori görünürlüğü', 'Pozisyon takibi', 'Kampanya öncesi/sonrası fark'],
+    name: 'E-ticaret',
+    q: '“Shopify mi ikas mı?”',
+    d: 'Ürün şeması, katalog yapısı, AI crawler erişimi; mağaza bağlantısı.',
   },
   {
-    id: 'restaurant',
-    icon: Store,
-    name: 'Restoran & yerel işletmeler',
-    pain: '"İstanbul\'da iyi italyan restoranı" veya "Ankara çorbacısı" sorularında AI hangi yerleri öneriyor? Sizin yeriniz orada mı?',
-    solution: 'Lokasyon bazlı sorularınızı izleyin. Rakip restoranlarla karşılaştırın. Google My Business ve sosyal medya stratejinizin AI çıktısına yansıdığını ölçün.',
-    metrics: ['Lokal görünürlük', 'Rakip restoranlar SoV', 'Modele göre öneri'],
-  },
-  {
+    slug: 'ajans',
     id: 'agency',
-    icon: Briefcase,
     name: 'Dijital ajanslar',
-    pain: 'Müşterileriniz "neden bizi öneri listesinde göremiyoruz" diye soracak — siz cevap veremezseniz başka ajansa gidecekler.',
-    solution: 'Birden fazla müşteri markasının AI görünürlüğünü tek panelde takip edin. Aylık raporlarınıza yeni bir KPI ekleyin: "Müşterinizin AI Visibility Score\'u". Müşteri retention\'ı için yeni bir hikaye.',
-    metrics: ['Multi-tenant yönetim', 'Aylık PDF rapor (yakında)', 'Müşteri bazlı dashboard'],
+    q: '“Trendyol mağazamı yönetecek ajans?”',
+    d: 'Müşteri portföyü, roller, paylaşım linkleri; ortaklık programı.',
   },
   {
+    slug: 'egitim',
+    id: 'egitim',
+    name: 'Eğitim',
+    q: '“Yazılım bootcamp’i önerir misin?”',
+    d: 'Program sayfaları, mezun kanıtı, sık sorulan sorular.',
+  },
+  {
+    slug: 'turizm',
+    id: 'turizm',
+    name: 'Turizm ve konaklama',
+    q: '“Kapadokya’da butik otel?”',
+    d: 'Konum, tesis ve fiyat bilgisinin yapılandırılmış sunumu.',
+  },
+  {
+    slug: 'gayrimenkul',
+    id: 'gayrimenkul',
+    name: 'Gayrimenkul',
+    q: '“Ankara’da satılık daire hangi bölge?”',
+    d: 'Bölge rehberleri, ilan sayfası şeması, güven sinyalleri.',
+  },
+  {
+    slug: 'b2b-uretici',
     id: 'enterprise',
-    icon: Crown,
-    name: 'Kurumsal markalar',
-    pain: 'Marka itibarı yıllarca yatırım yapılarak inşa edildi. AI cevaplarında hatalı, eksik veya rakip yanlı bir tasvirden anında haberdar olmanız gerek.',
-    solution: '"Marka adınız nedir, ne yapar, ne için ünlüdür" gibi temel soruları izleyin. Hatalı bilgi tespit ederseniz iletişim/PR ekibiniz proaktif düzeltmeye gidebilir.',
-    metrics: ['Brand health monitoring', 'Sentiment trend', 'Anomali uyarıları (yakında)'],
+    name: 'B2B üretici ve kurumsal',
+    q: '“Toptan tekstil üreticisi Türkiye”',
+    d: 'Marka doğruluğu, ihracat sayfaları, kurumsal entity; düşüş uyarıları.',
   },
 ];
 
@@ -60,92 +89,113 @@ const BY_ROLE = [
     id: 'marketing',
     icon: Megaphone,
     name: 'Pazarlama liderleri',
-    summary: 'CMO / VP Marketing. Yıllık planlamada yeni bir KPI: AI Visibility. Bütçe ayırma argümanı olarak somut veri.',
+    summary:
+      'Yeni bir KPI: yapay zekâ görünürlüğü. Bütçe konuşmasında somut veri: hangi sorularda rakibiniz var, siz yoksunuz; 30 günde ne değişti.',
   },
   {
     id: 'founder',
     icon: Crown,
-    name: 'Kurucular / CEO',
-    summary: 'Solo ya da küçük ekip kurucusu. Müşteri kazanımı yolunuzun en üst noktasında AI duruyor — orada görünmek hayati.',
+    name: 'Kurucular / patronlar',
+    summary:
+      'Dört sayı yeter: kaç müşteri sorusu, kaçında rakibiniz var, kaçında siz varsınız, kaç fırsat. Jargon yok; haftalık e-postada gelir.',
   },
   {
     id: 'seo',
     icon: Search,
-    name: 'SEO uzmanları',
-    summary: 'Geleneksel sıralama takibinin yanına GEO sıralaması ekleyin. Müşterinize geleceği önceden gören danışman olun.',
+    name: 'SEO ve içerik uzmanları',
+    summary:
+      'Klasik sıralama takibinin yanına ChatGPT/Claude/Gemini görünürlüğü. Atıf kaynakları, sahipsiz sorular, sayfa düzeyinde bulgular; Public API ile kendi raporunuza çekin.',
   },
   {
     id: 'pr',
     icon: Newspaper,
-    name: 'PR / iletişim',
-    summary: 'Geleneksel media monitoring artık yetmez. AI nasıl konuşuyor sizden hakkınızda? Sentiment kayışını erken yakalayın.',
+    name: 'Kurumsal iletişim',
+    summary:
+      'Yapay zekâ markanız hakkında ne söylüyor, doğru mu söylüyor? Bağlam cümleleri ve sentiment ile yanlış bilgiyi erken yakalayın.',
   },
 ];
 
 export default function UseCasesPage() {
   return (
     <>
-      <BreadcrumbJsonLd items={[{ name: 'Ana sayfa', href: '/' }, { name: 'Kullanım senaryoları', href: '/use-cases' }]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Ana sayfa', href: '/' },
+          { name: 'Kim için', href: '/use-cases' },
+        ]}
+      />
 
       <section className="pt-24 pb-16">
         <Container className="max-w-4xl">
-          <div className="eyebrow">Kullanım senaryoları</div>
-          <h1 className="font-display text-[52px] lg:text-[68px] tracking-tight mt-4 leading-[1.02]">
-            Hangi sektörde olursanız olun, müşterileriniz <span className="text-brand">AI'ya soruyor.</span>
+          <div className="eyebrow">Kim için · 9 sektör, 4 rol</div>
+          <h1 className="font-display text-[48px] lg:text-[68px] tracking-tight mt-4 leading-[1.02]">
+            Hangi sektörde olursanız olun, <span className="text-brand">müşteriniz yapay zekâya soruyor.</span>
           </h1>
           <p className="text-[17px] text-ink-muted mt-7 leading-relaxed max-w-2xl">
-            Farklı sektörlerde aynı problem farklı şekillerde görünüyor. Bu sayfa size benzer bir konumdaki
-            şirketlerin Independent AI'ı nasıl kullandığına dair somut senaryolar sunar.
+            Aynı sorun sektörden sektöre farklı görünür: klinikte “güvenilir mi”, SaaS’ta “hangisi daha iyi”, ajansta
+            “kim yönetsin”. Her sektör sayfasında müşterinin sorduğu 5 soru, 3 kontrol ve gömülü ücretsiz araç var.
           </p>
         </Container>
       </section>
 
-      {/* By industry */}
       <section className="py-10">
         <Container>
           <div className="eyebrow">Sektöre göre</div>
-          <h2 className="font-display text-[36px] tracking-tight mt-3 mb-12">Beş tipik sektör.</h2>
-
-          <div className="space-y-10">
-            {BY_INDUSTRY.map((u) => (
-              <div key={u.id} id={u.id} className="card p-8 lg:p-10 grid grid-cols-12 gap-8">
-                <div className="col-span-12 lg:col-span-4">
-                  <u.icon className="w-7 h-7 text-brand" />
-                  <h3 className="font-display text-[28px] mt-4 leading-tight">{u.name}</h3>
-                  <div className="mt-4 space-y-2">
-                    {u.metrics.map((m) => (
-                      <div key={m} className="text-[12px] text-ink-faint font-mono">// {m}</div>
-                    ))}
-                  </div>
+          <h2 className="font-display text-[36px] tracking-tight mt-3 mb-10">Dokuz sektör, dokuz soru seti.</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {SECTORS.map((s) => (
+              <Link
+                key={s.slug}
+                id={s.id}
+                href={`/sektor/${s.slug}`}
+                className="card overflow-hidden group hover:-translate-y-0.5 transition-transform scroll-mt-20"
+              >
+                <div className="relative aspect-[16/9] bg-paper-2">
+                  <Image
+                    src={`/img/sektor/${s.slug}.webp`}
+                    alt={`${s.name} — yapay zekâ görünürlüğü`}
+                    fill
+                    sizes="(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover"
+                  />
                 </div>
-                <div className="col-span-12 lg:col-span-8 space-y-5">
-                  <div>
-                    <div className="eyebrow">Problem</div>
-                    <p className="text-[15px] text-ink mt-2 leading-relaxed">{u.pain}</p>
-                  </div>
-                  <div>
-                    <div className="eyebrow text-brand-deep">Çözüm</div>
-                    <p className="text-[15px] text-ink-muted mt-2 leading-relaxed">{u.solution}</p>
-                  </div>
+                <div className="p-6">
+                  <h3 className="font-display text-[20px] leading-snug">{s.name}</h3>
+                  <p className="text-[13.5px] text-ink mt-2 leading-relaxed">{s.q}</p>
+                  <p className="text-[13px] text-ink-muted mt-2 leading-relaxed">{s.d}</p>
+                  <span className="inline-flex items-center gap-1.5 text-[13px] text-brand-deep mt-4 group-hover:text-brand">
+                    Sektör sayfası <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
+          </div>
+          <div className="mt-8 flex flex-wrap items-center gap-4 text-[13.5px]">
+            <Link href="/sektor" className="inline-flex items-center gap-1.5 text-brand-deep hover:text-brand">
+              Tüm sektörler <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+            </Link>
+            <Link
+              href="/solutions/agencies"
+              className="inline-flex items-center gap-1.5 text-brand-deep hover:text-brand"
+            >
+              <Briefcase className="w-3.5 h-3.5" aria-hidden /> Ajans ortaklık programı
+            </Link>
           </div>
         </Container>
       </section>
 
-      {/* By role */}
       <Section
+        id="roller"
         eyebrow="Role göre"
-        title="Hangi rolde olursan ol, AI görünürlüğü senin işin."
-        intro="Marketing, PR, SEO, kurucu — herkesin gündeminde aynı soru: 'AI bizden bahsediyor mu?'"
+        title="Hangi rolde olursanız olun, aynı soru."
+        intro="Pazarlama, kurucu, SEO, kurumsal iletişim: herkesin gündeminde 'yapay zekâ bizi öneriyor mu?' Yanıt herkese kendi dilinde cevap verir."
         className="bg-paper-2/40"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {BY_ROLE.map((r) => (
-            <div key={r.id} id={r.id} className="card p-7">
+            <div key={r.id} id={r.id} className="card p-7 scroll-mt-20">
               <div className="flex items-center gap-3">
-                <r.icon className="w-5 h-5 text-brand" />
+                <r.icon className="w-5 h-5 text-brand" aria-hidden />
                 <h3 className="font-display text-[20px]">{r.name}</h3>
               </div>
               <p className="text-[14px] text-ink-muted mt-3 leading-relaxed">{r.summary}</p>
@@ -154,7 +204,17 @@ export default function UseCasesPage() {
         </div>
       </Section>
 
-      <CtaBlock />
+      <CtaBlock
+        eyebrow="Önce ücretsiz"
+        title={
+          <>
+            Sektörünüzün sorularında <span className="text-brand">nerede olduğunuzu görün.</span>
+          </>
+        }
+        body="Ücretsiz araçlar hesap istemez. Sürekli ölçüm için hesap açın; kart gerekmez. Uygulamayı istemezseniz Yanıt Agency yapar (teklifle)."
+        secondaryHref="/yanit-agency"
+        secondaryLabel="Yanıt Agency"
+      />
     </>
   );
 }

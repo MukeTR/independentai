@@ -1,9 +1,9 @@
 import type { BlogPost } from './blog-posts';
 
-const editor = { name: 'Independent AI ekibi', role: 'Editöryal' };
-const research = { name: 'Independent AI ekibi', role: 'Araştırma' };
-const tech = { name: 'Independent AI ekibi', role: 'Teknik içerik' };
-const strategy = { name: 'Independent AI ekibi', role: 'Strateji' };
+const editor = { name: 'Yanıt ekibi', role: 'Editöryal' };
+const research = { name: 'Yanıt ekibi', role: 'Araştırma' };
+const tech = { name: 'Yanıt ekibi', role: 'Teknik içerik' };
+const strategy = { name: 'Yanıt ekibi', role: 'Strateji' };
 
 export const BATCH_2: BlogPost[] = [
   {
@@ -164,7 +164,7 @@ export const BATCH_2: BlogPost[] = [
       { type: 'ul', items: [
         'Google Alerts: temel ama ücretsiz.',
         'Brand24, Mention.com: profesyonel araçlar.',
-        'Independent AI: AI cevaplarındaki mention\'ları izler.',
+        'Yanıt: AI cevaplarındaki mention\'ları izler.',
         'Manuel: ayda bir kere "yourbrand" araması ile Google + Twitter + LinkedIn + Reddit.',
       ] },
       { type: 'h2', text: 'Mention ve backlink: ikisi de yatay devam' },
@@ -237,8 +237,8 @@ export const BATCH_2: BlogPost[] = [
       ] },
       { type: 'h2', text: 'AI bot\'lar için neden değerli?' },
       { type: 'p', text: 'AI modelinin bir alanı "anlaması" için tek bir izole makale yetmez. Cluster yapısı, modele "bu site bu konunun her açısını işlemiş" mesajını verir.' },
-      { type: 'h2', text: 'Independent AI\'ın cluster örneği' },
-      { type: 'p', text: 'Independent AI\'in /resources/geo-101 + /blog yapısı tipik bir cluster örneği. 12 bölümlük GEO rehberi pillar; 80+ blog makalesi alt makaleler. 6 aylık plan ile başlayın: Ay 1 pillar, Ay 2-5 ayda 2 alt makale (8 alt), Ay 6 gözden geçirme.' },
+      { type: 'h2', text: 'Yanıt\'ın cluster örneği' },
+      { type: 'p', text: 'Yanıt\'ın /resources/geo-101 + /blog yapısı tipik bir cluster örneği. 12 bölümlük GEO rehberi pillar; 80+ blog makalesi alt makaleler. 6 aylık plan ile başlayın: Ay 1 pillar, Ay 2-5 ayda 2 alt makale (8 alt), Ay 6 gözden geçirme.' },
     ],
   },
   {
@@ -398,8 +398,8 @@ export const BATCH_2: BlogPost[] = [
         'Karşılaştırma içerikleri.',
         'Aylık update edilen "state of …" raporlar.',
       ] },
-      { type: 'h2', text: 'Independent AI olarak Perplexity adapter\'ı' },
-      { type: 'p', text: 'Yol haritamızda Q2 2026 için Perplexity entegrasyonu var. O zamana kadar manuel olarak Perplexity\'de sektör sorularınızı sorup hangi kaynaklara citation verdiğini gözlemleyin.' },
+      { type: 'h2', text: 'Yanıt olarak Perplexity adapter\'ı' },
+      { type: 'p', text: 'Yol haritamızda Perplexity entegrasyonu planlanıyor. O zamana kadar manuel olarak Perplexity\'de sektör sorularınızı sorup hangi kaynaklara citation verdiğini gözlemleyin.' },
     ],
   },
   {
@@ -485,13 +485,13 @@ export const BATCH_2: BlogPost[] = [
   {
     slug: 'geo-araclari-karsilastirmasi',
     title: 'GEO araçları karşılaştırması',
-    excerpt: 'Profound, Otterly, AthenaHQ, Independent AI ve diğerleri. 2026\'nın GEO araç pazarına panoramik bakış.',
+    excerpt: 'Profound, Otterly, AthenaHQ, Yanıt ve diğerleri. 2026\'nın GEO araç pazarına panoramik bakış.',
     publishedAt: '2026-01-19',
     readTimeMin: 10,
     category: 'Ürün',
     author: research,
     body: [
-      { type: 'p', text: 'GEO araç pazarı 2024\'te ABD ağırlıklı oluştu, 2026\'da hızla genişledi. Bugün 10+ araç var. TR pazarı için Independent AI ilk yerli oyuncu.' },
+      { type: 'p', text: 'GEO araç pazarı 2024\'te ABD ağırlıklı oluştu, 2026\'da hızla genişledi. Bugün 10+ araç var. TR pazarı için Yanıt ilk yerli oyuncu.' },
       { type: 'h2', text: 'Global oyuncular' },
       { type: 'ul', items: [
         'Profound: Kurumsal odaklı, $1k-3k/ay paketler.',
@@ -500,17 +500,17 @@ export const BATCH_2: BlogPost[] = [
         'BrandAI: RAG ve LLM özelleştirme odaklı.',
         'PressPad: PR ekiplerine özel.',
       ] },
-      { type: 'h2', text: 'Independent AI farkı' },
+      { type: 'h2', text: 'Yanıt farkı' },
       { type: 'ul', items: [
         'TR pazarına ve Türkçeye optimize.',
-        'İlk 6 ay tüm kullanıcılara ücretsiz lansman.',
+        'Ücretsiz şok raporu ve araçlar; sürekli izleme 14 gün ücretsiz deneme.',
         'Sade, hızlı, kullanıcı dostu arayüz.',
         'Bağımsız üçüncü taraf.',
         'Yerel destek, Türkçe arayüz.',
       ] },
       { type: 'h2', text: 'Karşılaştırma matrisi' },
       { type: 'ul', items: [
-        'Bütçe sınırlı, TR pazarındayım: Independent AI.',
+        'Bütçe sınırlı, TR pazarındayım: Yanıt.',
         'Bütçe geniş, global pazar: Profound.',
         'Ajansım, çoklu müşteri yönetiyorum: Otterly.',
         'Sadece denemek istiyorum: AthenaHQ.',
@@ -529,7 +529,7 @@ export const BATCH_2: BlogPost[] = [
         'Adil fiyatlandırma.',
       ] },
       { type: 'h2', text: 'Sonuç: hangi araç doğru?' },
-      { type: 'p', text: 'Türkiye merkezli, Türkçe sorularla çalışan markalar için Independent AI başlangıç noktası. Global ölçekte kurumsal ihtiyaç için Profound; ajanslar için Otterly. Birkaçını paralel test etmek için 30-60 gün ayırın.' },
+      { type: 'p', text: 'Türkiye merkezli, Türkçe sorularla çalışan markalar için Yanıt başlangıç noktası. Global ölçekte kurumsal ihtiyaç için Profound; ajanslar için Otterly. Birkaçını paralel test etmek için 30-60 gün ayırın.' },
     ],
   },
   {
@@ -668,8 +668,8 @@ export const BATCH_2: BlogPost[] = [
         '4. HTML\'inize <script type="application/ld+json"> içinde gömün.',
         '5. Google Rich Results Test ile doğrulayın.',
       ] },
-      { type: 'h2', text: 'Independent AI\'ın yaklaşımı' },
-      { type: 'p', text: 'Independent AI sitesinin tüm sayfalarında JSON-LD var: Organization + WebSite + BreadcrumbList her yerde, Landing\'de + SoftwareApplication + FAQPage, Blog\'da BlogPosting.' },
+      { type: 'h2', text: 'Yanıt\'ın yaklaşımı' },
+      { type: 'p', text: 'Yanıt sitesinin tüm sayfalarında JSON-LD var: Organization + WebSite + BreadcrumbList her yerde, Landing\'de + SoftwareApplication + FAQPage, Blog\'da BlogPosting.' },
       { type: 'h2', text: 'ROI: ne kadar etki?' },
       { type: 'ul', items: [
         'FAQPage schema\'sı olan sayfalardan Perplexity citation 2-3x yüksek.',

@@ -1,10 +1,9 @@
 import { prisma } from './prisma';
 import { encrypt, decrypt, maskKey } from './crypto';
+import { describeModels } from '@independentai/ai';
+import { mockAllowed } from './env';
 
-export type ConfigKey =
-  | 'OPENAI_API_KEY'
-  | 'ANTHROPIC_API_KEY'
-  | 'GOOGLE_API_KEY';
+export type ConfigKey = 'OPENAI_API_KEY' | 'ANTHROPIC_API_KEY' | 'GOOGLE_API_KEY' | 'PERPLEXITY_API_KEY';
 
 export const CONFIG_KEYS: { key: ConfigKey; label: string; provider: string; help: string; pattern?: string }[] = [
   {
@@ -27,6 +26,13 @@ export const CONFIG_KEYS: { key: ConfigKey; label: string; provider: string; hel
     provider: 'Google',
     help: 'aistudio.google.com → API key',
     pattern: 'AIza...',
+  },
+  {
+    key: 'PERPLEXITY_API_KEY',
+    label: 'Perplexity (Sonar)',
+    provider: 'Perplexity',
+    help: 'perplexity.ai → Settings → API',
+    pattern: 'pplx-...',
   },
 ];
 
@@ -108,4 +114,48 @@ export async function setConfigValue(key: ConfigKey, value: string, userId: stri
 export async function clearConfigValue(key: ConfigKey): Promise<void> {
   await prisma.systemConfig.deleteMany({ where: { key } });
   delete process.env[key];
+}
+
+// ───────────── Düz (şifresiz) ayarlar ─────────────
+// Şifreleme yalnızca API anahtarları içindir. Teklif/fiyat gibi gizli olmayan ayarlar `encrypted: false`
+// ile düz metin saklanır; okunamazsa (DB hatası) çağıran taraf varsayılana düşer.
+
+/** Düz metin ayar oku — satır yoksa veya DB hatasında undefined. */
+export async function getPlainConfigValue(key: string): Promise<string | undefined> {
+  try {
+    const row = await prisma.systemConfig.findUnique({ where: { key } });
+    if (!row?.value) return undefined;
+    return row.encrypted ? decrypt(row.value) : row.value;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Düz metin ayar yaz (upsert). Boş değer satırı siler (varsayılana dön). */
+export async function setPlainConfigValue(key: string, value: string | null, userId: string): Promise<void> {
+  if (value === null || value === '') {
+    await prisma.systemConfig.deleteMany({ where: { key } });
+    return;
+  }
+  await prisma.systemConfig.upsert({
+    where: { key },
+    create: { key, value, encrypted: false, updatedBy: userId },
+    update: { value, encrypted: false, updatedBy: userId },
+  });
+}
+
+/** Admin sağlık ekranı: provider anahtar durumu + aktif model + fiyat/grounding bilgisi. */
+export async function providerHealth() {
+  const [keys] = await Promise.all([listConfigStatus()]);
+  await hydrateEnvFromConfig();
+  const models = describeModels();
+  return {
+    mockAllowed: mockAllowed(),
+    providers: models.map((m) => {
+      // CONFIG_KEYS.provider etiketleri sağlayıcı enum'unun büyük harfli karşılığıdır
+      // ('OpenAI' → OPENAI, 'Perplexity' → PERPLEXITY); yeni sağlayıcı eklemek ayrıca eşleme istemez.
+      const k = keys.find((c) => c.provider.toUpperCase().startsWith(m.provider));
+      return { ...m, keySource: k?.source ?? 'none', configured: (k?.source ?? 'none') !== 'none' };
+    }),
+  };
 }

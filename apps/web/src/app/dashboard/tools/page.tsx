@@ -1,104 +1,6 @@
 import Link from 'next/link';
-import {
-  ArrowRight, FileText, Bot, Code, ClipboardCheck, Calculator, CheckCircle2, Wrench,
-  Gauge, FileSearch, KeyRound, Link2, GitFork, ShieldAlert, PenLine,
-} from 'lucide-react';
-
-const TOOLS = [
-  {
-    href: '/dashboard/tools/geo-audit',
-    icon: Gauge,
-    title: 'GEO Audit (0-100 skor)',
-    desc: 'URL girin, sayfanızı gerçek zamanlı tarayıp AI-hazırlık skorunu 5 eksende çıkaralım.',
-    category: 'Denetim',
-  },
-  {
-    href: '/dashboard/tools/content-audit',
-    icon: FileSearch,
-    title: 'İçerik Denetleyicisi',
-    desc: 'Sayfanızı analiz edip AI-alıntılanabilirliği artıracak önceliklendirilmiş aksiyon kartları verir.',
-    category: 'Denetim',
-  },
-  {
-    href: '/dashboard/tools/cannibalization',
-    icon: GitFork,
-    title: 'Kanibalizasyon Denetleyici',
-    desc: 'Aynı konu için yarışan kendi sayfalarınızı tespit edin — AI alıntılarını birbirinden çalmasın.',
-    category: 'Denetim',
-  },
-  {
-    href: '/dashboard/tools/hallucination',
-    icon: ShieldAlert,
-    title: 'Halüsinasyon Tespiti',
-    desc: 'AI cevaplarında markanız hakkında yanlış bilgi var mı? Gerçeklerinizle karşılaştırıp yakalar.',
-    category: 'Denetim',
-  },
-  {
-    href: '/dashboard/tools/keyword-finder',
-    icon: KeyRound,
-    title: 'Prompt / Anahtar Kelime Bulucu',
-    desc: 'Müşterilerinizin AI\'a soracağı yüksek niyetli soruları bulun, tek tıkla takibe ekleyin.',
-    category: 'Keşif',
-  },
-  {
-    href: '/dashboard/tools/backlink-finder',
-    icon: Link2,
-    title: 'Backlink Bulucu',
-    desc: 'AI motorlarının sektörünüzde en çok atıf verdiği siteler — en değerli outreach hedefleriniz.',
-    category: 'Keşif',
-  },
-  {
-    href: '/dashboard/tools/aeo-writer',
-    icon: PenLine,
-    title: 'AEO İçerik Yazıcı',
-    desc: 'AI-alıntılanabilir FAQ, Q&A sayfası, meta ve sosyal içerik üretir. Boşlukları kapatın.',
-    category: 'Üretici',
-  },
-  {
-    href: '/dashboard/tools/llms-txt',
-    icon: FileText,
-    title: 'llms.txt Generator',
-    desc: 'AI bot\'lara markanızı doğrudan anlatan markdown dosyası üret. 30 saniyede hazır.',
-    category: 'Üretici',
-  },
-  {
-    href: '/dashboard/tools/robots',
-    icon: Bot,
-    title: 'robots.txt Generator',
-    desc: 'AI crawler\'larını yönet (GPTBot, ClaudeBot, PerplexityBot), sitemap referansı ekle.',
-    category: 'Üretici',
-  },
-  {
-    href: '/dashboard/tools/schema',
-    icon: Code,
-    title: 'Schema Markup Generator',
-    desc: 'Organization JSON-LD üret, HTML\'inize yapıştır. AI gözündeki kanonik bilginiz.',
-    category: 'Üretici',
-  },
-  {
-    href: '/dashboard/tools/audit',
-    icon: ClipboardCheck,
-    title: 'GEO Audit Checklist',
-    desc: '10 adımlık manuel denetim, her adımda not alma, markdown rapor olarak indir.',
-    category: 'Denetim',
-  },
-  {
-    href: '/dashboard/tools/visibility',
-    icon: Calculator,
-    title: 'Visibility Score Hesaplayıcı',
-    desc: 'Promptlarınızı ve mention sayılarınızı gir, anlık Score + SoV çıktısı al.',
-    category: 'Hesaplayıcı',
-  },
-  {
-    href: '/dashboard/tools/checklist',
-    icon: CheckCircle2,
-    title: 'AI SEO Checklist',
-    desc: '25 maddelik interaktif checklist, kategori bazlı skor, rapor indir.',
-    category: 'Denetim',
-  },
-];
-
-const CATEGORIES = ['Denetim', 'Keşif', 'Üretici', 'Hesaplayıcı'];
+import { ArrowRight, Wrench } from 'lucide-react';
+import { DASHBOARD_TOOLS as TOOLS, DASHBOARD_TOOL_CATEGORIES as CATEGORIES } from './tools-data';
 
 export default function ToolsHub() {
   return (
@@ -109,11 +11,11 @@ export default function ToolsHub() {
       </div>
       <h1 className="font-display text-[36px] tracking-tight">GEO araç kutusu</h1>
       <p className="text-[15px] text-ink-muted mt-3 max-w-2xl">
-        AI çağında markanızı optimize etmek için ihtiyacınız olan tüm araçlar tek bir yerde.
-        Hepsi tarayıcıda çalışır, sunucu kaydı yok, gizliliğiniz korunur.
+        AI çağında markanızı optimize etmek için ihtiyacınız olan tüm araçlar tek bir yerde. Hepsi tarayıcıda çalışır,
+        sunucu kaydı yok, gizliliğiniz korunur.
       </p>
 
-      {CATEGORIES.map((cat) => (
+      {CATEGORIES.filter((cat) => TOOLS.some((t) => t.category === cat)).map((cat) => (
         <section key={cat} className="mt-10">
           <div className="eyebrow mb-4">{cat}</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -145,10 +47,38 @@ export default function ToolsHub() {
         <div className="eyebrow mb-2">Ücretsiz public araçlar</div>
         <p className="text-[13.5px] text-ink-muted leading-relaxed">
           Kayıt gerektirmeyen hızlı kontrol araçları:{' '}
-          <a href="/arac/chatgpt-rank-checker" className="text-brand-deep hover:text-brand underline">ChatGPT</a>,{' '}
-          <a href="/arac/claude-rank-checker" className="text-brand-deep hover:text-brand underline">Claude</a> ve{' '}
-          <a href="/arac/gemini-rank-checker" className="text-brand-deep hover:text-brand underline">Gemini</a> rank checker.
-          Aklında olan bir araç var mı? <a href="/contact" className="text-brand-deep hover:text-brand underline">İletişim</a>'den bize yaz.
+          <a href="/arac/chatgpt-rank-checker" className="text-brand-deep hover:text-brand underline">
+            ChatGPT
+          </a>
+          ,{' '}
+          <a href="/arac/claude-rank-checker" className="text-brand-deep hover:text-brand underline">
+            Claude
+          </a>{' '}
+          ve{' '}
+          <a href="/arac/gemini-rank-checker" className="text-brand-deep hover:text-brand underline">
+            Gemini
+          </a>{' '}
+          rank checker;{' '}
+          <a href="/arac/e-ticaret-ai-gorunurluk-testi" className="text-brand-deep hover:text-brand underline">
+            e-ticaret AI görünürlük
+          </a>
+          ,{' '}
+          <a href="/arac/urun-sayfasi-testi" className="text-brand-deep hover:text-brand underline">
+            ürün sayfası
+          </a>
+          ,{' '}
+          <a href="/arac/ai-crawler-testi" className="text-brand-deep hover:text-brand underline">
+            AI crawler
+          </a>{' '}
+          testleri ve{' '}
+          <a href="/arac/urun-aciklama-yazici" className="text-brand-deep hover:text-brand underline">
+            ürün açıklama yazıcı
+          </a>
+          . Aklında olan bir araç var mı?{' '}
+          <a href="/contact" className="text-brand-deep hover:text-brand underline">
+            İletişim
+          </a>
+          'den bize yaz.
         </p>
       </div>
     </div>

@@ -7,11 +7,7 @@ const FILL: Record<string, string> = {
   PASSING: 'bg-ink-faint',
 };
 
-export function MentionTypeBar({
-  mentionTypes,
-}: {
-  mentionTypes: ComprehensiveAnalytics['mentionTypes'];
-}) {
+export function MentionTypeBar({ mentionTypes }: { mentionTypes: ComprehensiveAnalytics['mentionTypes'] }) {
   const max = Math.max(1, ...mentionTypes.map((m) => m.count));
 
   return (
@@ -30,18 +26,11 @@ export function MentionTypeBar({
             const fill = FILL[m.type] ?? 'bg-ink-faint';
             return (
               <div key={m.type} className="flex items-center gap-3">
-                <span className="w-28 shrink-0 truncate text-[13px] text-ink-muted">
-                  {m.label}
-                </span>
+                <span className="w-28 shrink-0 truncate text-[13px] text-ink-muted">{m.label}</span>
                 <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-paper-4">
-                  <div
-                    className={`h-full rounded-full ${fill}`}
-                    style={{ width: `${pct}%` }}
-                  />
+                  <div className={`h-full rounded-full ${fill}`} style={{ width: `${pct}%` }} />
                 </div>
-                <span className="w-10 shrink-0 text-right font-mono text-[13px] tabular text-ink">
-                  {m.count}
-                </span>
+                <span className="w-10 shrink-0 text-right font-mono text-[13px] tabular text-ink">{m.count}</span>
               </div>
             );
           })}

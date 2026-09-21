@@ -43,9 +43,7 @@ export function ActivityFeed({ activity }: { activity: ComprehensiveAnalytics['a
                       <Check className="h-3.5 w-3.5 shrink-0 text-positive" />
                       <span className="text-positive">
                         anıldı
-                        {item.position != null && (
-                          <span className="text-ink-faint"> · #{item.position}</span>
-                        )}
+                        {item.position != null && <span className="text-ink-faint"> · #{item.position}</span>}
                       </span>
                       {item.sentiment && (
                         <span

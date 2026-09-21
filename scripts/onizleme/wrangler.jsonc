@@ -1,0 +1,16 @@
+{
+  "name": "yanit-onizleme",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // Sitenin iç bağlantıları eğik çizgisiz (/about); gereksiz 307 atlamasın.
+    "html_handling": "drop-trailing-slash",
+    "run_worker_first": ["/api/*", "/robots.txt", "/_vercel/*"]
+  },
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true }
+}

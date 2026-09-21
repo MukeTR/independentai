@@ -7,7 +7,7 @@ import { POSTS, getPostsByCategory } from '@/data/blog-posts';
 
 export const metadata = buildMetadata({
   title: 'Tüm yazılar — Blog arşivi',
-  description: `Independent AI blogundaki ${POSTS.length} yazının tamamı. GEO, AI brand visibility ve marka stratejisi üzerine rehberler, kategoriye göre düzenlendi.`,
+  description: `Yanıt blogundaki ${POSTS.length} yazının tamamı. GEO, AI brand visibility ve marka stratejisi üzerine rehberler, kategoriye göre düzenlendi.`,
   path: '/blog/arsiv',
 });
 
@@ -32,7 +32,7 @@ export default function BlogArchive() {
         data={{
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
-          name: 'Independent AI — Blog arşivi',
+          name: 'Yanıt — Blog arşivi',
           url: `${SITE_URL}/blog/arsiv`,
           inLanguage: 'tr-TR',
           mainEntity: {
@@ -51,19 +51,13 @@ export default function BlogArchive() {
       <section className="pt-24 pb-12">
         <Container className="max-w-4xl">
           <div className="eyebrow">Arşiv · {POSTS.length} yazı</div>
-          <h1 className="font-display text-[48px] lg:text-[60px] tracking-tight mt-4 leading-[1.04]">
-            Tüm yazılar
-          </h1>
+          <h1 className="font-display text-[48px] lg:text-[60px] tracking-tight mt-4 leading-[1.04]">Tüm yazılar</h1>
           <p className="text-[16px] text-ink-muted mt-6 leading-relaxed max-w-2xl">
-            Independent AI blogundaki her yazı, kategoriye göre tek sayfada. Aradığınız konuya doğrudan ulaşın.
+            Yanıt blogundaki her yazı, kategoriye göre tek sayfada. Aradığınız konuya doğrudan ulaşın.
           </p>
           <div className="mt-7 flex flex-wrap gap-2">
             {groups.map((g) => (
-              <a
-                key={g.category}
-                href={`#${g.category}`}
-                className="chip hover:bg-paper-3 transition"
-              >
+              <a key={g.category} href={`#${g.category}`} className="chip hover:bg-paper-3 transition">
                 {g.category} · {g.posts.length}
               </a>
             ))}
@@ -88,7 +82,11 @@ export default function BlogArchive() {
                     >
                       <span className="text-[15.5px] leading-snug">{p.title}</span>
                       <span className="shrink-0 text-[11px] text-ink-faint font-mono tabular">
-                        {new Date(p.publishedAt).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        {new Date(p.publishedAt).toLocaleDateString('tr-TR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })}
                       </span>
                     </Link>
                   </li>

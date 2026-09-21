@@ -1,11 +1,11 @@
 import { Link2, ExternalLink, Info } from 'lucide-react';
-import { requireSession } from '@/server/session';
+import { requirePageActor } from '@/server/authz';
 import { getBacklinkTargets } from '@/server/insights';
 
 export const metadata = { title: 'Backlink Bulucu' };
 
 export default async function BacklinkFinderPage() {
-  const session = await requireSession();
+  const session = await requirePageActor();
   const targets = await getBacklinkTargets(session.tenantId);
 
   return (
@@ -17,8 +17,8 @@ export default async function BacklinkFinderPage() {
       <h1 className="font-display text-[36px] tracking-tight">Backlink Bulucu</h1>
       <p className="text-[15px] text-ink-muted mt-3 max-w-2xl mb-8">
         AI motorlarının sektörünüzdeki sorulara cevap verirken en çok atıf verdiği siteler. Bu sitelerde yer almak
-        (içerik, listeleme, inceleme, bahsedilme) AI görünürlüğünüzü doğrudan artırır — en yüksek frekanslılar en değerli
-        outreach hedefleriniz.
+        (içerik, listeleme, inceleme, bahsedilme) AI görünürlüğünüzü doğrudan artırır — en yüksek frekanslılar en
+        değerli outreach hedefleriniz.
       </p>
 
       {targets.length === 0 ? (
@@ -45,7 +45,13 @@ export default async function BacklinkFinderPage() {
                   </div>
                   <div className="mt-1.5 space-y-0.5">
                     {t.sampleUrls.map((u) => (
-                      <a key={u} href={u} target="_blank" rel="noopener noreferrer" className="block text-[11.5px] text-ink-faint hover:text-brand-deep truncate max-w-lg">
+                      <a
+                        key={u}
+                        href={u}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-[11.5px] text-ink-faint hover:text-brand-deep truncate max-w-lg"
+                      >
                         {u}
                       </a>
                     ))}

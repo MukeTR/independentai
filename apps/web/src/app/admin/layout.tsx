@@ -3,14 +3,34 @@ import Link from 'next/link';
 import { getSession } from '@/server/session';
 import { prisma } from '@/server/prisma';
 import { Logo } from '@/components/logo';
-import { LayoutDashboard, Building2, Users as UsersIcon, Activity, Settings as SettingsIcon, ArrowLeft, KeyRound } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Building2,
+  Users as UsersIcon,
+  Activity,
+  Settings as SettingsIcon,
+  ArrowLeft,
+  KeyRound,
+  Inbox,
+  ScanSearch,
+  Briefcase,
+  Megaphone,
+  Ban,
+  Image as ImageIcon,
+} from 'lucide-react';
 
 export const metadata = { robots: { index: false, follow: false } };
 
 const ADMIN_NAV = [
   { href: '/admin', label: 'Genel Bakış', icon: LayoutDashboard, exact: true },
+  { href: '/admin/leads', label: "Lead'ler", icon: Inbox },
+  { href: '/admin/scans', label: 'Taramalar', icon: ScanSearch },
+  { href: '/admin/agency-candidates', label: 'Ajans adayları', icon: Briefcase },
   { href: '/admin/tenants', label: 'Tenants', icon: Building2 },
   { href: '/admin/users', label: 'Kullanıcılar', icon: UsersIcon },
+  { href: '/admin/announcements', label: 'Duyurular', icon: Megaphone },
+  { href: '/admin/referanslar', label: 'Referanslar', icon: ImageIcon },
+  { href: '/admin/blocked-sites', label: 'Yasaklı siteler', icon: Ban },
   { href: '/admin/runs', label: 'Run kayıtları', icon: Activity },
   { href: '/admin/system', label: 'Sistem', icon: SettingsIcon },
   { href: '/admin/system/api-keys', label: 'API Keys', icon: KeyRound },
@@ -22,19 +42,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { isSuperAdmin: true, email: true },
+    select: { isSuperAdmin: true, email: true, sessionVersion: true },
   });
-  if (!user?.isSuperAdmin) redirect('/dashboard');
+  if (!user?.isSuperAdmin || user.sessionVersion !== session.sv) redirect('/dashboard');
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-[240px] shrink-0 border-r-hairline border-hairline bg-paper-2 min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col md:flex-row">
+      <aside className="w-full md:w-[240px] shrink-0 border-b md:border-b-0 md:border-r border-hairline bg-paper-2 md:min-h-screen flex flex-col">
         <div className="p-5">
           <Logo />
           <div className="chip own !text-[10px] mt-3">Super Admin</div>
         </div>
 
-        <nav className="px-3 mt-2 flex-1">
+        <nav aria-label="Admin gezinmesi" className="px-3 mt-2 flex-1 flex md:flex-col gap-1 overflow-x-auto">
           {ADMIN_NAV.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
@@ -56,7 +76,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </aside>
 
-      <main className="flex-1 p-10 overflow-x-hidden">{children}</main>
+      <main className="flex-1 p-5 md:p-10 overflow-x-hidden min-w-0">{children}</main>
     </div>
   );
 }

@@ -13,14 +13,8 @@ function labelFor(category: string): string {
   return CATEGORY_LABELS[category?.toLowerCase()] ?? category ?? 'Diğer';
 }
 
-export function CategoryBreakdown({
-  categories,
-}: {
-  categories: ComprehensiveAnalytics['categoryBreakdown'];
-}) {
-  const rows = [...(categories ?? [])].sort(
-    (a, b) => b.visibility - a.visibility,
-  );
+export function CategoryBreakdown({ categories }: { categories: ComprehensiveAnalytics['categoryBreakdown'] }) {
+  const rows = [...(categories ?? [])].sort((a, b) => b.visibility - a.visibility);
 
   return (
     <div className="card p-6 h-full flex flex-col">
@@ -37,23 +31,14 @@ export function CategoryBreakdown({
             return (
               <li key={row.category}>
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="truncate text-[13px] font-medium text-ink">
-                    {labelFor(row.category)}
-                  </span>
-                  <span className="shrink-0 font-mono tabular text-[13px] text-ink">
-                    {pct}%
-                  </span>
+                  <span className="truncate text-[13px] font-medium text-ink">{labelFor(row.category)}</span>
+                  <span className="shrink-0 font-mono tabular text-[13px] text-ink">{pct}%</span>
                 </div>
                 <div className="mt-2 flex items-center gap-3">
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-paper-4">
-                    <div
-                      className="h-full rounded-full bg-brand transition-[width]"
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className="h-full rounded-full bg-brand transition-[width]" style={{ width: `${pct}%` }} />
                   </div>
-                  <span className="shrink-0 font-mono tabular text-[11px] text-ink-faint">
-                    {row.runs} çalışma
-                  </span>
+                  <span className="shrink-0 font-mono tabular text-[11px] text-ink-faint">{row.runs} çalışma</span>
                 </div>
               </li>
             );

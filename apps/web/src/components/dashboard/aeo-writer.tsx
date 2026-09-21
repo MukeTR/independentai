@@ -37,7 +37,12 @@ export function AeoWriter() {
       if (res.ok && data) {
         setResult(data);
       } else {
-        setResult({ type, label: 'Hata', available: false, content: data?.message || 'İçerik üretilemedi, tekrar deneyin.' });
+        setResult({
+          type,
+          label: 'Hata',
+          available: false,
+          content: data?.message || 'İçerik üretilemedi, tekrar deneyin.',
+        });
       }
     } catch {
       setResult({ type, label: 'Hata', available: false, content: 'Bağlantı hatası, tekrar deneyin.' });
@@ -74,31 +79,62 @@ export function AeoWriter() {
         </div>
         <div>
           <label className="text-[13px] text-ink-muted">Konu</label>
-          <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Örn. e-ticaret için muhasebe entegrasyonu" className="input mt-1.5" />
+          <input
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="Örn. e-ticaret için muhasebe entegrasyonu"
+            className="input mt-1.5"
+          />
         </div>
         <div>
           <label className="text-[13px] text-ink-muted">Marka (opsiyonel)</label>
-          <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Markanız" className="input mt-1.5" />
+          <input
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            placeholder="Markanız"
+            className="input mt-1.5"
+          />
         </div>
         <div>
           <label className="text-[13px] text-ink-muted">Ek notlar (opsiyonel)</label>
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Ton, hedef kitle, vurgulanacak özellikler…" className="input mt-1.5 resize-y" />
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            placeholder="Ton, hedef kitle, vurgulanacak özellikler…"
+            className="input mt-1.5 resize-y"
+          />
         </div>
-        <button type="submit" disabled={loading} className="btn-primary w-full inline-flex items-center justify-center gap-2">
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary w-full inline-flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
           {loading ? 'Üretiliyor…' : 'İçerik üret'}
         </button>
       </form>
 
       <div className="card p-6 min-h-[300px]">
-        {!result && !loading && <div className="text-[13px] text-ink-faint h-full flex items-center justify-center text-center">Soldan ayarları girip içerik üretin.</div>}
-        {loading && <div className="h-full flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-ink-faint" /></div>}
+        {!result && !loading && (
+          <div className="text-[13px] text-ink-faint h-full flex items-center justify-center text-center">
+            Soldan ayarları girip içerik üretin.
+          </div>
+        )}
+        {loading && (
+          <div className="h-full flex items-center justify-center">
+            <Loader2 className="w-6 h-6 animate-spin text-ink-faint" />
+          </div>
+        )}
         {result && (
           <div>
             <div className="flex items-center justify-between mb-3">
               <div className="eyebrow">{result.label}</div>
               {result.available && (
-                <button onClick={copy} className="text-[12px] inline-flex items-center gap-1.5 text-ink-muted hover:text-brand-deep">
+                <button
+                  onClick={copy}
+                  className="text-[12px] inline-flex items-center gap-1.5 text-ink-muted hover:text-brand-deep"
+                >
                   {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
                 </button>
               )}
