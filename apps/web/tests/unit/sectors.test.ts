@@ -114,3 +114,35 @@ describe('STATS', () => {
     expect(TOOL_REGISTRY.length).toBe(18);
   });
 });
+
+describe('W8 sektör sayfaları', () => {
+  const APP = path.join(ROOT, 'src/app/(marketing)/sektor');
+  it('dizin ve [slug] sayfaları var; [slug] force-dynamic + notFound, generateStaticParams yok', () => {
+    expect(existsSync(path.join(APP, 'page.tsx'))).toBe(true);
+    const slugPage = readFileSync(path.join(APP, '[slug]/page.tsx'), 'utf8');
+    expect(slugPage).toMatch(/export const dynamic = 'force-dynamic'/);
+    expect(slugPage).toMatch(/notFound\(\)/);
+    expect(slugPage).not.toMatch(/generateStaticParams/);
+  });
+  it('şablon: h1 headline, 5 soru FaqJsonLd dışında, gömülü araç sektör ön-seçili, JSON-LD dörtlüsü, CTA çifti', () => {
+    const landing = readFileSync(path.join(ROOT, 'src/components/marketing/sector-landing.tsx'), 'utf8');
+    expect(landing).toMatch(/<h1[^>]*>\s*\{sector\.headline\}/);
+    expect(landing).toMatch(/priority/);
+    expect(landing).toMatch(/alt=\{sector\.imageAlt\}/);
+    expect(landing).toMatch(/<FaqJsonLd items=\{faqItems\}/);
+    expect(landing).not.toMatch(/showcaseQuestions[\s\S]{0,200}FaqJsonLd/);
+    expect(landing).toMatch(/<SiteTool slug=\{sector\.featuredTool\} sectorSelect="required" defaultSector=\{sector\.slug\}/);
+    expect(landing).toMatch(/<Suspense/);
+    for (const c of ['BreadcrumbJsonLd', 'FaqJsonLd', 'WebPageJsonLd', 'ServiceJsonLd']) expect(landing).toContain(`<${c}`);
+    expect(landing).not.toMatch(/aggregateRating/);
+    expect(landing).toContain('Sitemi tara');
+    expect(landing).toContain('Yanıt Agency ile konuş');
+    expect(landing).toMatch(/\/contact\?src=\$\{SECTOR_CONTACT_SRC\}&sektor=/);
+  });
+  it('her sektörün headline’ı h1 kalıbına uyar ve regulated sektörlerde bilgilendirme dili var', () => {
+    for (const s of SECTORS) {
+      expect(s.headline.endsWith('için yapay zekâ görünürlük testi')).toBe(true);
+      if (s.regulated) expect(textOf(s)).toMatch(/bilgilendirme/i);
+    }
+  });
+});

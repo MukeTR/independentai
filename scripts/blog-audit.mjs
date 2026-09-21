@@ -36,6 +36,7 @@ const DATA_FILES = [
   'blog-posts-batch-2.ts',
   'blog-posts-batch-3.ts',
   'blog-posts-batch-4.ts',
+  'blog-posts-batch-5.ts',
 ];
 const OUT = path.resolve(ROOT, args.out ?? 'docs/BLOG_AUDIT.md');
 const JSON_OUT = args.json ? path.resolve(ROOT, args.json) : null;
@@ -267,6 +268,7 @@ async function loadPosts() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'blog-audit-'));
   try {
     for (const f of DATA_FILES) {
+      if (!fs.existsSync(path.join(DATA_DIR, f))) continue;
       const src = fs.readFileSync(path.join(DATA_DIR, f), 'utf8');
       const patched = src.replace(/from '(\.\/blog-posts[^']*)'/g, (m, p) =>
         p.endsWith('.ts') ? m : `from '${p}.ts'`,
@@ -275,7 +277,16 @@ async function loadPosts() {
     }
     const mod = await import(pathToFileURL(path.join(tmp, 'blog-posts.ts')).href);
     if (!Array.isArray(mod.POSTS)) throw new Error('POSTS dizisi bulunamadı');
-    return mod.POSTS;
+    // Henüz POSTS'a spread edilmemiş batch dosyaları (ör. gece programı BATCH_5) da denetlensin.
+    const seen = new Set(mod.POSTS.map((p) => p.slug));
+    const extra = [];
+    for (const f of DATA_FILES) {
+      const m = /blog-posts-batch-(\d+)\.ts$/.exec(f);
+      if (!m || !fs.existsSync(path.join(tmp, f))) continue;
+      const batch = await import(pathToFileURL(path.join(tmp, f)).href);
+      for (const p of batch[`BATCH_${m[1]}`] ?? []) if (!seen.has(p.slug)) extra.push(p) && seen.add(p.slug);
+    }
+    return [...mod.POSTS, ...extra];
   } catch (err) {
     console.error('[blog-audit] TS verisi yüklenemedi. Node >= 22.18 (yerleşik tip soyma) gerekir;');
     console.error('             alternatif: `npx tsx scripts/blog-audit.mjs`');

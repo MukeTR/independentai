@@ -63,3 +63,20 @@ export const WEBSITE_ID = `${SITE}/#website`;
 
 /** IndexNow (Bing/Yandex anlık indeksleme) anahtarı — public/<key>.txt ile eşleşir. */
 export const INDEXNOW_KEY = '392951a5a37d9cb5307632a96bcc596d';
+
+/** Kök göreli → mutlak URL (JSON-LD `url`/`item` alanları, llms.txt). */
+export function absoluteUrl(path: string): string {
+  return path.startsWith('http') ? path : `${SITE}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
+/** /sektor/<slug> — `absolute` ile tam URL. (data/sectors.ts aynı yolu üretir; SEO yardımcıları burada toplanır.) */
+export function sectorPath(slug: string, absolute = false): string {
+  const p = `/sektor/${slug}`;
+  return absolute ? absoluteUrl(p) : p;
+}
+
+/** /arac/<slug> — `absolute` ile tam URL. (lib/tool-registry.ts aynı yolu üretir.) */
+export function toolPath(slug: string, absolute = false): string {
+  const p = `/arac/${slug}`;
+  return absolute ? absoluteUrl(p) : p;
+}

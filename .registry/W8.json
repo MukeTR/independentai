@@ -1,0 +1,302 @@
+{
+  "work": "W8",
+  "nav": [
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/saas",
+      "title": "SaaS",
+      "description": "CRM, ön muhasebe, proje yönetimi soruları",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/ajans",
+      "title": "Ajans",
+      "description": "Kendi siteniz ve müşteri siteleri",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/klinik",
+      "title": "Klinik",
+      "description": "Bilgilendirme ve görünürlük ölçümü",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/hukuk-danismanlik",
+      "title": "Hukuk ve danışmanlık",
+      "description": "Büro/ofis kimliği ve uzmanlık",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/eticaret-altyapi",
+      "title": "E-ticaret altyapısı",
+      "description": "Altyapı ve mağazalar için",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/egitim",
+      "title": "Eğitim",
+      "description": "Program sayfaları ve Course şeması",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/gayrimenkul",
+      "title": "Gayrimenkul",
+      "description": "İlan paylaşımı ve güven sinyalleri",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/turizm",
+      "title": "Turizm",
+      "description": "Çok dilli sayfalar ve rezervasyon linki",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor/b2b-uretici",
+      "title": "B2B üretici",
+      "description": "İhracat soruları ve sertifikalar",
+      "badge": null
+    },
+    {
+      "panel": "Çözümler",
+      "section": "Sektöre göre",
+      "href": "/sektor",
+      "title": "Tüm sektörler",
+      "description": "9 sektör için satın alma soruları ve test",
+      "badge": null
+    }
+  ],
+  "footer": [
+    {
+      "column": "Sektörler",
+      "href": "/sektor/saas",
+      "label": "SaaS"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/ajans",
+      "label": "Ajans"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/klinik",
+      "label": "Klinik"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/hukuk-danismanlik",
+      "label": "Hukuk ve danışmanlık"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/eticaret-altyapi",
+      "label": "E-ticaret altyapısı"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/egitim",
+      "label": "Eğitim"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/gayrimenkul",
+      "label": "Gayrimenkul"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/turizm",
+      "label": "Turizm"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor/b2b-uretici",
+      "label": "B2B üretici"
+    },
+    {
+      "column": "Sektörler",
+      "href": "/sektor",
+      "label": "Tüm sektörler"
+    }
+  ],
+  "sitemap": [
+    {
+      "path": "/sektor",
+      "priority": 0.7,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/saas",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/ajans",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/klinik",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/hukuk-danismanlik",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/eticaret-altyapi",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/egitim",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/gayrimenkul",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/turizm",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    },
+    {
+      "path": "/sektor/b2b-uretici",
+      "priority": 0.8,
+      "change": "monthly",
+      "lastmod": "SECTORS_REVISION"
+    }
+  ],
+  "blogInlineTools": [
+    {
+      "slug": "whatsapp-link-onizlemesi-bos-gorunuyor",
+      "toolSlug": "whatsapp-onizleme",
+      "title": "Linkiniz WhatsApp’ta nasıl görünüyor?",
+      "body": "Adresinizi yazın; kartın WhatsApp, LinkedIn ve X’te nasıl çizileceğini, og:image’ın boyutunu ve HTTP durumunu 20 saniyede görün."
+    },
+    {
+      "slug": "musteriniz-chatgpt-ye-ne-soruyor-sektor-sektor",
+      "toolSlug": "satin-alma-sorusu-kapsama",
+      "title": "Sektörünüzün sorularına sitenizde cevap var mı?",
+      "body": "Sektörünüzü seçin, adresinizi yazın; 25 satın alma sorusu sitenizdeki soru başlıkları, SSS ve fiyat/konum sinyalleriyle eşleştirilir."
+    },
+    {
+      "slug": "organization-localbusiness-schema-turkiye",
+      "toolSlug": "schema-denetimi",
+      "title": "Şemanızı şimdi denetleyin",
+      "body": "Sayfanızdaki JSON-LD blokları okunur; Organization/LocalBusiness tipi, zorunlu alanlar, söz dizimi ve sayfayla tutarlılık kontrol edilir."
+    }
+  ],
+  "blogSpread": [
+    "BATCH_5"
+  ],
+  "capabilities": [
+    {
+      "key": "sector_pages",
+      "label": "Sektör sayfaları (9)",
+      "status": "live",
+      "note": "/sektor/<slug>: 5 satın alma sorusu, 3 kontrol, sektör ön-seçili kapsama testi; klinik ve hukuk bilgilendirme dili"
+    }
+  ],
+  "llmsTxt": [
+    {
+      "section": "Sektörler",
+      "href": "/sektor/saas",
+      "label": "SaaS",
+      "note": "CRM, ön muhasebe, proje yönetimi soruları"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/ajans",
+      "label": "Ajans",
+      "note": "Kendi siteniz ve müşteri siteleri"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/klinik",
+      "label": "Klinik",
+      "note": "Bilgilendirme ve görünürlük ölçümü"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/hukuk-danismanlik",
+      "label": "Hukuk ve danışmanlık",
+      "note": "Büro/ofis kimliği ve uzmanlık"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/eticaret-altyapi",
+      "label": "E-ticaret altyapısı",
+      "note": "Altyapı ve mağazalar için"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/egitim",
+      "label": "Eğitim",
+      "note": "Program sayfaları ve Course şeması"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/gayrimenkul",
+      "label": "Gayrimenkul",
+      "note": "İlan paylaşımı ve güven sinyalleri"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/turizm",
+      "label": "Turizm",
+      "note": "Çok dilli sayfalar ve rezervasyon linki"
+    },
+    {
+      "section": "Sektörler",
+      "href": "/sektor/b2b-uretici",
+      "label": "B2B üretici",
+      "note": "İhracat soruları ve sertifikalar"
+    },
+    {
+      "section": "Önemli sayfalar",
+      "href": "/sektor",
+      "label": "Sektörler",
+      "note": "9 sektör için satın alma soruları ve test"
+    }
+  ],
+  "changelog": [
+    {
+      "type": "NEW",
+      "item": "9 sektör sayfası (/sektor/<slug>) ve sektör dizini: müşterinin yapay zekâya sorduğu 5 soru, 3 sektör kontrolü, sektör ön-seçili satın alma sorusu kapsama testi, Service/WebPage JSON-LD"
+    },
+    {
+      "type": "IMPROVED",
+      "item": "llms.txt yeniden yazıldı (araç ve sektör listeleri registry'den, ölçüm yöntemi ve sınırlamalar bölümleri); blog batch 5 (6 yazı: OG etiketleri, sektör soruları, Organization şeması, klinik kontrol listesi, yönlendirme zinciri, güvenlik başlıkları)"
+    }
+  ]
+}

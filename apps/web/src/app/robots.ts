@@ -7,6 +7,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
+        // /rapor/<token> ve /share/<token> bilerek disallow DEĞİL: sayfalar `noindex` meta ile yönetilir; robots'ta
+        // yasaklanırsa arama motoru noindex'i göremez ve paylaşılan linkler "engellendi" olarak listelenir (spec §7.4).
         disallow: ['/dashboard/', '/admin/', '/api/'],
       },
 

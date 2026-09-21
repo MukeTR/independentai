@@ -71,6 +71,8 @@ export type SiteToolProps<T extends SiteToolResult> = {
   sectorSelect?: boolean | 'required';
   /** Rakip URL alanı (rakip-kiyas) */
   competitorInput?: boolean;
+  /** Sektör ön-seçimi (sektör landing'i gömer); `?sektor=` sorgu parametresi bunu ezer */
+  defaultSector?: string;
   /** Araca özel ek görünüm (bot matrisi, mockup, kıyas tablosu …) — öneri kartlarının üstünde */
   renderExtra?: (result: T, ctx: { url: string; shareUrl: string }) => ReactNode;
   /** Tüm sonuç görünümünü değiştirmek isteyen araç (nadir) */
@@ -104,6 +106,7 @@ export function SiteTool<T extends SiteToolResult = SiteToolResult>({
   variant = 'public',
   sectorSelect = false,
   competitorInput = false,
+  defaultSector,
   renderExtra,
   renderResult,
   inputLabel = 'Site adresi',
@@ -116,7 +119,8 @@ export function SiteTool<T extends SiteToolResult = SiteToolResult>({
   const params = useSearchParams();
   const [sector, setSector] = useState(() => {
     const q = params.get('sektor');
-    return q && isSectorSlug(q) ? q : '';
+    if (q && isSectorSlug(q)) return q;
+    return defaultSector && isSectorSlug(defaultSector) ? defaultSector : '';
   });
   const [competitor, setCompetitor] = useState(() => params.get('rakip') ?? '');
   const ids = useMemo(() => ({ input: `scan-url-${slug}`, sector: `sektor-${slug}`, rakip: `rakip-${slug}` }), [slug]);
