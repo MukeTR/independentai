@@ -1,7 +1,18 @@
-# Vitrin önizlemesi — Cloudflare Workers
+# Vitrin — Cloudflare Workers
 
 Sitenin **backend bağlanmadan** yayımlanan statik bir kopyası.
-Canlı adres: https://yanit-onizleme.mkemalkaratas95.workers.dev
+
+| Adres | Ne için | Dizine girer mi |
+| --- | --- | --- |
+| https://yanit.io | Marka alan adı, herkese açık | Evet — sitenin kendi robots.txt'i geçerli |
+| https://yanit-onizleme.mkemalkaratas95.workers.dev | Test/önizleme | Hayır — robots.txt her şeyi kapatır |
+
+Worker alan adına göre davranır: önizleme adresinde arama motorlarına kapalıdır ve
+`/api/*` "vitrin kopyası" der; yanit.io'da robots açıktır ve `/api/*` ziyaretçiye
+destek@yanit.io adresini gösterir.
+
+`yanit.io/*` ve `www.yanit.io/*` Worker rotaları Cloudflare'da tanımlıdır; DNS'e
+dokunulmamıştır. Rota silinirse alan adı yine 522 verir (arkasındaki eski origin cevap vermiyor).
 
 ## Ne işe yarar
 

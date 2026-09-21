@@ -57,7 +57,8 @@ async function seedFromSitemap() {
     if (!skip(p)) pages.add(p);
   }
   // sitemap'te olmayan ama gerekli olanlar
-  for (const p of ['/', '/llms.txt', '/manifest.webmanifest', '/favicon.ico', '/opengraph-image']) pages.add(p);
+  // sitemap.xml'in KENDİSİ de kaydedilmeli: robots.txt onu işaret ediyor, yoksa 404 olur.
+  for (const p of ['/', '/llms.txt', '/sitemap.xml', '/opengraph-image']) pages.add(p);
 }
 
 /** HTML, CSS ve JS içinden yerel varlık yollarını toplar. */
@@ -174,9 +175,9 @@ for (let round = 1; round <= 3; round++) {
 // Cloudflare statik dosyaları Worker'a uğramadan servis ettiği için başlıklar `_headers`'ta.
 await writeFile(
   path.join(OUT, '_headers'),
-  `# Vitrin önizlemesi: arama motorlarına "dizine ekleme" sinyali.
+  `# Güvenlik başlıkları. Dizine ekleme kararı BURADA VERİLMEZ: önizleme adresi ile marka
+# alan adı farklı davranmalı, bunu Worker robots.txt üzerinden yapar.
 /*
-  X-Robots-Tag: noindex, nofollow
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
